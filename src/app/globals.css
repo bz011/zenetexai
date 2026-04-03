@@ -2,26 +2,138 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─── Keyframes ──────────────────────────────────────────────────────────── */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-@media (prefers-color-scheme: dark) {
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #060B18;
+    --surface: rgba(255,255,255,0.03);
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.14);
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg);
+    color: #e2e8f0;
+  }
+
+  ::selection {
+    background: rgba(99, 102, 241, 0.35);
+    color: #fff;
+  }
+
+  /* Arabic typography */
+  [dir="rtl"] {
+    font-family: "Segoe UI", "Helvetica Neue", Arial,
+      "Noto Sans Arabic", "Cairo", "Tajawal", sans-serif;
+    letter-spacing: 0;
+  }
+
+  [dir="rtl"] .gradient-text {
+    background-image: linear-gradient(to left, #a78bfa, #818cf8, #6366f1);
+  }
+
+  [dir="rtl"] .label {
+    letter-spacing: 0.02em;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}
+/* ─── Utilities ──────────────────────────────────────────────────────────── */
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
+
+  /* ── Animation helpers ── */
+  .animate-fade-up {
+    animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out both;
+  }
+
+  /* Stagger delays — apply alongside animate-fade-up */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-150 { animation-delay: 150ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-600 { animation-delay: 600ms; }
+
+  /* Respect reduced-motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-up,
+    .animate-fade-in {
+      animation: none;
+    }
+  }
+
+  /* ── Card ── */
+  .card {
+    @apply rounded-2xl border border-white/[0.07] bg-white/[0.03] transition-all duration-200;
+  }
+  /* Lift + border brighten on hover */
+  .card-hover {
+    @apply hover:-translate-y-1 hover:border-white/[0.16] hover:bg-white/[0.055]
+           hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)];
+  }
+
+  /* ── Container ── */
+  .container-page {
+    @apply mx-auto max-w-6xl px-6;
+  }
+
+  /* ── Eyebrow label ── */
+  .label {
+    @apply text-[11px] font-semibold tracking-[0.15em] uppercase text-indigo-400;
+  }
+
+  /* ── Gradient headline ── */
+  .gradient-text {
+    @apply bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent;
+  }
+
+  /* ── Primary button — scale + glow on hover ── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600
+           px-5 py-2.5 text-sm font-semibold text-white
+           shadow-[0_0_20px_rgba(99,102,241,0.22)]
+           transition-all duration-150
+           hover:scale-[1.03] hover:bg-indigo-500
+           hover:shadow-[0_0_32px_rgba(99,102,241,0.4)]
+           active:scale-[0.98]
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100;
+  }
+
+  /* ── Secondary button — subtle scale on hover ── */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl
+           border border-white/[0.14] px-5 py-2.5 text-sm font-semibold text-white/90
+           transition-all duration-150
+           hover:scale-[1.03] hover:border-white/[0.28] hover:bg-white/[0.07]
+           active:scale-[0.98];
+  }
+
+  /* ── Ghost link ── */
+  .btn-ghost {
+    @apply text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300;
+  }
+
+  /* ── RTL helper ── */
+  .ms-auto-rtl {
+    margin-inline-start: auto;
   }
 }
