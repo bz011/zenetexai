@@ -36,15 +36,15 @@ export default function ContactForm() {
     setLoading(true);
     setError(null);
     try {
+      const params = new URLSearchParams();
+      params.append("name", form.name);
+      params.append("email", form.email);
+      params.append("company", form.company);
+      params.append("message", form.message);
+
       const res = await fetch(WEBHOOK_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          company: form.company,
-          message: form.message,
-        }),
+        body: params,
       });
       if (!res.ok) throw new Error();
       setSubmitted(true);
