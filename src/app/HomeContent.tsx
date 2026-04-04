@@ -151,7 +151,7 @@ export default function HomeContent() {
         </div>
       </section>
 
-      {/* ── Why ZENETEXAI ───────────────────────────────────────────────── */}
+      {/* ── Why ZENTEXAI ───────────────────────────────────────────────── */}
       <section className="border-t border-white/[0.06] bg-white/[0.015] py-36">
         <div className="container-page">
           <div className="animate-fade-up mb-16 text-center">

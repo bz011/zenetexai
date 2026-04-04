@@ -3,7 +3,7 @@ import "./globals.css";
 import AppShell from "@/components/AppShell";
 
 export const metadata: Metadata = {
-  title: "ZENETEXAI — Premium AI Solutions",
+  title: "ZENTEXAI — Premium AI Solutions",
   description: "AI services, academy, and tools for the next generation.",
 };
 

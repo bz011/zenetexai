@@ -25,7 +25,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="max-w-xs">
             <Link href="/" className="text-[15px] font-bold text-white">
-              ZENETEX<span className="text-indigo-400">AI</span>
+              ZENTEX<span className="text-indigo-400">AI</span>
             </Link>
             <p className="mt-2.5 text-[13px] leading-relaxed text-slate-500">
               {t.footer.tagline}
@@ -49,7 +49,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/[0.06] pt-8 md:flex-row">
           <p className="text-[12px] text-slate-600">
-            &copy; {new Date().getFullYear()} ZENETEXAI. {t.footer.rights}
+            &copy; {new Date().getFullYear()} ZENTEXAI. {t.footer.rights}
           </p>
           <p className="text-[12px] text-slate-600">
             hello@zenetexai.com

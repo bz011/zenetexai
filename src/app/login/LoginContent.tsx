@@ -17,7 +17,7 @@ export default function LoginContent() {
       <div className="relative w-full max-w-sm">
         <div className="mb-8 text-center">
           <Link href="/" className="text-[18px] font-bold text-white">
-            ZENETEX<span className="text-indigo-400">AI</span>
+            ZENTEX<span className="text-indigo-400">AI</span>
           </Link>
           <p className="mt-2 text-[14px] text-slate-500">{lg.tagline}</p>
         </div>

@@ -124,7 +124,7 @@ const en: Translations = {
     badge: "AI Services · Academy · Tools",
     headline1: "Build Smarter.",
     headline2: "Grow Faster with AI.",
-    sub: "ZENETEXAI helps businesses adopt AI through expert consulting, certified training, and purpose-built tools — designed for the MENA market.",
+    sub: "ZENTEXAI helps businesses adopt AI through expert consulting, certified training, and purpose-built tools — designed for the MENA market.",
     cta_primary: "Talk to Our Team",
     cta_secondary: "Explore Services",
     region_note: "Serving businesses across Saudi Arabia and the wider MENA region",
@@ -168,7 +168,7 @@ const en: Translations = {
     ],
     services_link1: "See all services →",
     services_link2: "Request a consultation →",
-    academy_eyebrow: "ZENETEXAI Academy",
+    academy_eyebrow: "ZENTEXAI Academy",
     academy_h2_line1: "Professional Training",
     academy_h2_line2: "Starting with PMP",
     academy_p1: "The Academy opens with our PMP Certification Preparation programme — structured, practical, and designed to get you exam-ready. AI and technical courses follow in the next phase.",
@@ -181,7 +181,7 @@ const en: Translations = {
       { label: "Prompt Engineering in Practice", status: "Coming Soon" },
       { label: "Machine Learning Fundamentals", status: "Coming Soon" },
     ],
-    tools_eyebrow: "ZENETEXAI Tools",
+    tools_eyebrow: "ZENTEXAI Tools",
     tools_h2: "Proprietary AI Tools — In Development",
     tools_sub: "We are building a suite of AI-powered SaaS tools focused on education, construction, and project management. Designed for professionals who need more than generic software.",
     tools: [
@@ -193,7 +193,7 @@ const en: Translations = {
         desc: "AI-assisted project planning for teams — scope definition, task breakdown, and timeline generation." },
     ],
     tools_link: "Learn more about our tools →",
-    why_eyebrow: "Why ZENETEXAI",
+    why_eyebrow: "Why ZENTEXAI",
     why_h2: "What Makes Us Different",
     why_sub: "We are an AI company built for the region — not a global firm with a regional office. That difference shows in how we work.",
     benefits: [
@@ -248,7 +248,7 @@ const en: Translations = {
   // ── Academy ─────────────────────────────────────────────────────────────────
   academy: {
     hero_eyebrow: "Learn & Grow",
-    hero_h1: "ZENETEXAI Academy",
+    hero_h1: "ZENTEXAI Academy",
     hero_sub: "Professional courses built for the AI era. Get certified, stay relevant, and lead with confidence.",
     hero_btn1: "Enroll Now",
     hero_btn2: "Browse Courses",
@@ -303,12 +303,12 @@ const en: Translations = {
   // ── About ────────────────────────────────────────────────────────────────────
   about: {
     hero_eyebrow: "Our Story",
-    hero_h1: "About ZENETEXAI",
+    hero_h1: "About ZENTEXAI",
     hero_sub: "We exist to make premium AI real — not theoretical. For businesses in the MENA region ready to lead.",
     mission_eyebrow: "Mission",
     mission_h2_line1: "AI that actually",
     mission_h2_line2: "delivers results",
-    mission_p1: "ZENETEXAI exists to make premium AI accessible to professionals and businesses across the region. We combine world-class services, education, and tools under one roof — built for those who refuse to settle for average.",
+    mission_p1: "ZENTEXAI exists to make premium AI accessible to professionals and businesses across the region. We combine world-class services, education, and tools under one roof — built for those who refuse to settle for average.",
     mission_p2: "We believe AI isn't just for tech companies. Every sector — construction, education, project management — deserves intelligent tools built to their specific needs.",
     pillars: [
       { label: "AI Services", desc: "Consulting, automation, and custom builds." },
@@ -326,7 +326,7 @@ const en: Translations = {
         desc: "We measure success by the real-world results we deliver — not by outputs, but by outcomes." },
     ],
     team_eyebrow: "The Team",
-    team_h2: "The People Behind ZENETEXAI",
+    team_h2: "The People Behind ZENTEXAI",
     team_p: "A team of AI specialists, educators, and industry experts. Detailed team profiles coming soon.",
     team_btn: "Work With Us",
   },
@@ -335,7 +335,7 @@ const en: Translations = {
   blog: {
     hero_eyebrow: "Insights",
     hero_h1: "Blog",
-    hero_sub: "Thoughts, guides, and insights from the ZENETEXAI team.",
+    hero_sub: "Thoughts, guides, and insights from the ZENTEXAI team.",
     featured_label: "Featured",
     all_label: "All Articles",
     coming_soon: "Coming Soon",
@@ -410,7 +410,7 @@ const ar: Translations = {
     badge: "الخدمات · الأكاديمية · الأدوات",
     headline1: "أعمالك أذكى.",
     headline2: "نموك أسرع مع الذكاء الاصطناعي.",
-    sub: "تساعد ZENETEXAI الشركات على تبني الذكاء الاصطناعي عبر الاستشارات المتخصصة، والتدريب المعتمد، والأدوات المصممة لسوق منطقة الشرق الأوسط.",
+    sub: "تساعد ZENTEXAI الشركات على تبني الذكاء الاصطناعي عبر الاستشارات المتخصصة، والتدريب المعتمد، والأدوات المصممة لسوق منطقة الشرق الأوسط.",
     cta_primary: "تحدث إلى فريقنا",
     cta_secondary: "استكشف الخدمات",
     region_note: "نخدم الشركات في المملكة العربية السعودية ومنطقة الشرق الأوسط وشمال أفريقيا",
@@ -454,7 +454,7 @@ const ar: Translations = {
     ],
     services_link1: "← جميع الخدمات",
     services_link2: "← طلب استشارة",
-    academy_eyebrow: "أكاديمية ZENETEXAI",
+    academy_eyebrow: "أكاديمية ZENTEXAI",
     academy_h2_line1: "تدريب احترافي",
     academy_h2_line2: "يبدأ بـ PMP",
     academy_p1: "تفتح الأكاديمية بتدريب التحضير لشهادة PMP — برنامج منظم وعملي مصمم لإعدادك للاجتياز. تُضاف دورات الذكاء الاصطناعي والتقنية في المرحلة التالية.",
@@ -467,7 +467,7 @@ const ar: Translations = {
       { label: "هندسة المطالبات التطبيقية", status: "قريباً" },
       { label: "أساسيات التعلم الآلي", status: "قريباً" },
     ],
-    tools_eyebrow: "أدوات ZENETEXAI",
+    tools_eyebrow: "أدوات ZENTEXAI",
     tools_h2: "أدوات ذكاء اصطناعي خاصة — قيد التطوير",
     tools_sub: "نبني مجموعة من أدوات SaaS المدعومة بالذكاء الاصطناعي للتعليم والبناء وإدارة المشاريع. مصممة للمحترفين الذين يحتاجون أكثر من برمجيات عامة.",
     tools: [
@@ -479,7 +479,7 @@ const ar: Translations = {
         desc: "تخطيط مشاريع مدعوم بالذكاء الاصطناعي للفرق — تعريف النطاق، تفصيل المهام، وإنشاء الجداول الزمنية." },
     ],
     tools_link: "← اعرف أكثر عن أدواتنا",
-    why_eyebrow: "لماذا ZENETEXAI",
+    why_eyebrow: "لماذا ZENTEXAI",
     why_h2: "ما الذي يميّزنا",
     why_sub: "نحن شركة ذكاء اصطناعي بُنيت للمنطقة — لسنا مكتباً إقليمياً لشركة عالمية. هذا الفرق يظهر في طريقة عملنا.",
     benefits: [
@@ -534,7 +534,7 @@ const ar: Translations = {
   // ── Academy ──────────────────────────────────────────────────────────────────
   academy: {
     hero_eyebrow: "تعلّم وانمُ",
-    hero_h1: "أكاديمية ZENETEXAI",
+    hero_h1: "أكاديمية ZENTEXAI",
     hero_sub: "دورات احترافية مبنية لعصر الذكاء الاصطناعي. احصل على الشهادة، ابقَ في الطليعة، وقُد بثقة.",
     hero_btn1: "سجّل الآن",
     hero_btn2: "استعرض الدورات",
@@ -594,7 +594,7 @@ const ar: Translations = {
     mission_eyebrow: "رسالتنا",
     mission_h2_line1: "ذكاء اصطناعي",
     mission_h2_line2: "يحقق نتائج فعلية",
-    mission_p1: "تأسست ZENETEXAI لجعل الذكاء الاصطناعي المتميز في متناول المهنيين والشركات في المنطقة. نجمع خدمات عالمية المستوى وتعليماً وأدوات تحت سقف واحد — مبنية لمن يرفض القبول بالمتوسط.",
+    mission_p1: "تأسست ZENTEXAI لجعل الذكاء الاصطناعي المتميز في متناول المهنيين والشركات في المنطقة. نجمع خدمات عالمية المستوى وتعليماً وأدوات تحت سقف واحد — مبنية لمن يرفض القبول بالمتوسط.",
     mission_p2: "نؤمن بأن الذكاء الاصطناعي ليس حكراً على شركات التكنولوجيا. كل قطاع — البناء والتعليم وإدارة المشاريع — يستحق أدوات ذكية مصممة لاحتياجاته الفعلية.",
     pillars: [
       { label: "خدمات الذكاء الاصطناعي", desc: "استشارات وأتمتة وبناء مخصص." },
@@ -612,7 +612,7 @@ const ar: Translations = {
         desc: "نقيس نجاحنا بالنتائج الفعلية التي نحققها — لا بالمخرجات، بل بالأثر." },
     ],
     team_eyebrow: "الفريق",
-    team_h2: "من يقف وراء ZENETEXAI",
+    team_h2: "من يقف وراء ZENTEXAI",
     team_p: "فريق من متخصصي الذكاء الاصطناعي والمعلمين وخبراء القطاع. تفاصيل الفريق قادمة قريباً.",
     team_btn: "انضم إلينا",
   },
@@ -621,7 +621,7 @@ const ar: Translations = {
   blog: {
     hero_eyebrow: "رؤى وتحليلات",
     hero_h1: "المدونة",
-    hero_sub: "أفكار وأدلة عملية ورؤى من فريق ZENETEXAI.",
+    hero_sub: "أفكار وأدلة عملية ورؤى من فريق ZENTEXAI.",
     featured_label: "مقالة مميزة",
     all_label: "جميع المقالات",
     coming_soon: "قريباً",

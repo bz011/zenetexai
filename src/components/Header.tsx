@@ -24,7 +24,7 @@ export default function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <span className="text-[15px] font-bold tracking-tight text-white">
-            ZENETEX<span className="text-indigo-400">AI</span>
+            ZENTEX<span className="text-indigo-400">AI</span>
           </span>
         </Link>
 

@@ -7,8 +7,8 @@ const WHATSAPP_NUMBER = "96600000000";
 export default function WhatsAppButton() {
   const { lang, isRTL } = useLang();
   const message = lang === "ar"
-    ? "مرحباً، أودّ معرفة المزيد عن خدمات ZENETEXAI."
-    : "Hello, I'd like to learn more about ZENETEXAI services.";
+    ? "مرحباً، أودّ معرفة المزيد عن خدمات ZENTEXAI."
+    : "Hello, I'd like to learn more about ZENTEXAI services.";
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
   return (
