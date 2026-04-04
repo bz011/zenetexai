@@ -22,20 +22,38 @@ export default function ContactForm() {
   const [form, setForm] = useState<FormData>(empty);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const WEBHOOK_URL =
+    "https://script.google.com/macros/s/AKfycbw_XdWko2zRiJ084YgzxJZq3ftxBZCxuDYpmRdu8WFHdNt3QVIfcjU18vsTQ4CRXuBE/exec";
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
-    console.log("Contact form submission:", form);
-    setTimeout(() => {
-      setLoading(false);
+    setError(null);
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          company: form.company,
+          message: form.message,
+        }),
+      });
+      if (!res.ok) throw new Error();
       setSubmitted(true);
       setForm(empty);
-    }, 900);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (submitted) {
@@ -94,6 +112,12 @@ export default function ContactForm() {
           onChange={handleChange} placeholder={f.message_placeholder}
           className={`${inputCls} resize-none`} />
       </div>
+
+      {error && (
+        <p className="rounded-xl border border-red-500/20 bg-red-500/[0.08] px-4 py-3 text-[13px] text-red-400">
+          {error}
+        </p>
+      )}
 
       <button type="submit" disabled={loading} className="btn-primary w-full py-3 text-[14px]">
         {loading ? f.submitting : f.submit}
