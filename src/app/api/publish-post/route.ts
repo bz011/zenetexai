@@ -46,6 +46,12 @@ export async function POST(req: Request) {
     const result = await pool.query(
       `INSERT INTO website_posts (title, slug, body, meta_title, meta_description)
        VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (slug) DO UPDATE SET
+         title            = EXCLUDED.title,
+         body             = EXCLUDED.body,
+         meta_title       = EXCLUDED.meta_title,
+         meta_description = EXCLUDED.meta_description,
+         published_at     = NOW()
        RETURNING id, slug, created_at`,
       [title, slug, postBody, meta_title, meta_description]
     );
