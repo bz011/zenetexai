@@ -13,6 +13,11 @@ export function getPool(): Pool {
         rejectUnauthorized: false,
       },
     });
+    // Prevent transient pool errors (e.g. Neon admin termination code 57P01)
+    // from throwing unhandled exceptions and crashing the process.
+    pool.on("error", (err: Error & { code?: string }) => {
+      console.error("[db] Pool client error — code:", err.code, "—", err.message);
+    });
   }
   return pool;
 }

@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useLang } from "@/lib/LanguageContext";
+import type { PublishedPost } from "./page";
 
 // Tag → color map keyed by stable ID, not display string
 const tagColors: Record<string, string> = {
@@ -11,7 +13,24 @@ const tagColors: Record<string, string> = {
   skills:   "bg-purple-500/[0.12] text-purple-400",
 };
 
-export default function BlogContent() {
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function excerpt(body: string, maxLen = 120) {
+  const text = body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  return text.length > maxLen ? text.slice(0, maxLen) + "…" : text;
+}
+
+interface Props {
+  publishedPosts: PublishedPost[];
+}
+
+export default function BlogContent({ publishedPosts }: Props) {
   const { t } = useLang();
   const bl = t.blog;
 
@@ -29,6 +48,38 @@ export default function BlogContent() {
 
       <section className="px-6 py-20">
         <div className="container-page">
+
+          {/* Published posts from DB */}
+          <div className="mb-16">
+            <div className="mb-6">
+              <span className="label">Published</span>
+            </div>
+            {publishedPosts.length === 0 ? (
+              <div className="card p-8 text-center">
+                <p className="text-[14px] text-slate-500">No published posts yet.</p>
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {publishedPosts.map((post) => (
+                  <Link
+                    key={post.id}
+                    href={`/blog/${post.slug}`}
+                    className="card card-hover block p-6"
+                  >
+                    <p className="text-[11px] text-slate-500">{formatDate(post.published_at)}</p>
+                    <h3 className="mt-2 text-[15px] font-semibold text-white leading-snug">
+                      {post.title}
+                    </h3>
+                    <p className="mt-2 text-[13px] leading-relaxed text-slate-400">
+                      {excerpt(post.body)}
+                    </p>
+                    <p className="mt-4 text-[12px] font-medium text-indigo-400">Read more →</p>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Featured */}
           <div className="mb-8">
             <span className="label">{bl.featured_label}</span>
