@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { pool } from "@/lib/db";
+import { getPool } from "@/lib/db";
 
 const CREATE_TABLE_SQL = `
   CREATE TABLE IF NOT EXISTS website_posts (
@@ -40,6 +40,7 @@ export async function POST(req: Request) {
   }
 
   try {
+    const pool = getPool();
     await pool.query(CREATE_TABLE_SQL);
 
     const result = await pool.query(
