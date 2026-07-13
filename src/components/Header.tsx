@@ -1,10 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLang } from "@/lib/LanguageContext";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 export default function Header() {
   const { lang, setLang, t } = useLang();
+  const { isAuthenticated, isLoading, logout } = useAuth();
+  const router = useRouter();
+
+  async function handleLogout() {
+    await logout();
+    router.push("/login");
+    router.refresh();
+  }
 
   const navLinks = [
     { href: "/services", label: t.nav.services },
@@ -54,9 +64,20 @@ export default function Header() {
             <span className={lang === "ar" ? "text-white" : "text-slate-500"}>AR</span>
           </button>
 
-          <Link href="/login" className="btn-primary px-4 py-2 text-[13px]">
-            {t.nav.login}
-          </Link>
+          {!isLoading && isAuthenticated ? (
+            <div className="flex items-center gap-2">
+              <Link href="/dashboard" className="btn-primary px-4 py-2 text-[13px]">
+                {t.nav.dashboard}
+              </Link>
+              <button onClick={handleLogout} className="btn-ghost px-3.5 py-2 text-[13px]">
+                {t.nav.logout}
+              </button>
+            </div>
+          ) : (
+            <Link href="/login" className="btn-primary px-4 py-2 text-[13px]">
+              {t.nav.login}
+            </Link>
+          )}
         </div>
       </div>
     </header>

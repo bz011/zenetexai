@@ -1,14 +1,53 @@
 "use client";
 
+import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useLang } from "@/lib/LanguageContext";
+import { login } from "@/features/auth/services/authService";
+import { loginSchema, fieldErrorsFrom } from "@/lib/validators/authValidators";
+import { mapAuthError, mapValidationError } from "@/lib/auth/authErrors";
+import { resolveSafeRedirect } from "@/lib/auth/safeRedirect";
 
 const inputCls =
   "w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-[14px] text-white placeholder-slate-600 outline-none transition-all focus:border-indigo-500/60 focus:bg-white/[0.06] focus:ring-2 focus:ring-indigo-500/15";
 
-export default function LoginContent() {
+function LoginForm() {
   const { t } = useLang();
   const lg = t.login;
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = resolveSafeRedirect(searchParams.get("redirectTo"));
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [formError, setFormError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setFormError(null);
+
+    const result = loginSchema.safeParse({ email, password });
+    if (!result.success) {
+      setFieldErrors(fieldErrorsFrom(result));
+      return;
+    }
+    setFieldErrors({});
+
+    setLoading(true);
+    const res = await login({ email, password });
+    setLoading(false);
+
+    if (!res.success) {
+      setFormError(mapAuthError(res.error, t));
+      return;
+    }
+
+    router.push(redirectTo);
+    router.refresh();
+  }
 
   return (
     <div className="relative flex min-h-screen items-center justify-center px-6 py-24">
@@ -23,32 +62,72 @@ export default function LoginContent() {
         </div>
 
         <div className="card p-7">
-          <div className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
               <label className="mb-1.5 block text-[13px] font-medium text-slate-400">{lg.email}</label>
-              <input type="email" placeholder="you@example.com" className={inputCls} />
+              <input
+                type="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                className={inputCls}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              {fieldErrors.email && (
+                <p className="mt-1.5 text-[12px] text-red-400">
+                  {mapValidationError(fieldErrors.email, t)}
+                </p>
+              )}
             </div>
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-slate-400">{lg.password}</label>
-              <input type="password" placeholder="••••••••" className={inputCls} />
+              <div className="mb-1.5 flex items-center justify-between">
+                <label className="block text-[13px] font-medium text-slate-400">{lg.password}</label>
+                <Link href="/forgot-password" className="text-[12px] text-indigo-400 hover:text-indigo-300 transition-colors">
+                  {lg.forgot_password}
+                </Link>
+              </div>
+              <input
+                type="password"
+                autoComplete="current-password"
+                placeholder="••••••••"
+                className={inputCls}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              {fieldErrors.password && (
+                <p className="mt-1.5 text-[12px] text-red-400">
+                  {mapValidationError(fieldErrors.password, t)}
+                </p>
+              )}
             </div>
-            <button type="button" className="btn-primary w-full py-3 text-[14px]">
-              {lg.btn}
-            </button>
-          </div>
 
-          <div className="mt-6 border-t border-white/[0.06] pt-5 text-center">
-            <p className="text-[12px] text-slate-600">{lg.note}</p>
-          </div>
+            {formError && (
+              <p className="rounded-xl border border-red-500/20 bg-red-500/[0.08] px-4 py-3 text-[13px] text-red-400">
+                {formError}
+              </p>
+            )}
+
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3 text-[14px]">
+              {loading ? lg.signing_in : lg.btn}
+            </button>
+          </form>
         </div>
 
         <p className="mt-5 text-center text-[13px] text-slate-500">
-          {lg.not_member}{" "}
-          <Link href="/contact" className="text-indigo-400 hover:text-indigo-300 transition-colors">
-            {lg.get_in_touch}
+          {lg.no_account}{" "}
+          <Link href="/signup" className="text-indigo-400 hover:text-indigo-300 transition-colors">
+            {lg.create_account}
           </Link>
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginContent() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }

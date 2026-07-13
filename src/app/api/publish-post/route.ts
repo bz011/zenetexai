@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { getPool } from "@/lib/db";
+import { requireApiRole } from "@/lib/auth/requireRole";
+import { publishPostSchema } from "@/lib/validators/blogValidators";
+import { isRateLimited } from "@/lib/rateLimit";
 
 const CREATE_TABLE_SQL = `
   CREATE TABLE IF NOT EXISTS website_posts (
@@ -15,34 +18,38 @@ const CREATE_TABLE_SQL = `
 `;
 
 export async function POST(req: Request) {
-  console.log("[publish-post] Incoming publish request");
+  const auth = await requireApiRole(["admin"]);
+  if (!auth.authorized) {
+    return NextResponse.json(
+      { success: false, error: auth.status === 401 ? "Not authenticated" : "Forbidden" },
+      { status: auth.status }
+    );
+  }
 
-  let body: Record<string, unknown>;
+  if (isRateLimited(`publish-post:${auth.user.id}`, 10, 60_000)) {
+    return NextResponse.json({ success: false, error: "Too many requests, please slow down" }, { status: 429 });
+  }
+
+  let rawBody: unknown;
   try {
-    body = await req.json();
+    rawBody = await req.json();
   } catch {
-    return NextResponse.json(
-      { success: false, error: "Invalid JSON body" },
-      { status: 400 }
-    );
+    return NextResponse.json({ success: false, error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { title, slug, body: postBody, meta_title, meta_description } = body as Record<string, string>;
-
-  if (!title || !slug || !postBody || !meta_title || !meta_description) {
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Missing required fields: title, slug, body, meta_title, meta_description",
-      },
-      { status: 400 }
-    );
+  const parsed = publishPostSchema.safeParse(rawBody);
+  if (!parsed.success) {
+    return NextResponse.json({ success: false, error: "Invalid post data" }, { status: 400 });
   }
+  const { title, slug, body: postBody, meta_title, meta_description } = parsed.data;
+
+  console.log(`[publish-post] Incoming publish request from admin ${auth.user.id}`);
 
   try {
     const pool = getPool();
     await pool.query(CREATE_TABLE_SQL);
 
+    // Fully parameterized - no request value is ever concatenated into SQL text.
     const result = await pool.query(
       `INSERT INTO website_posts (title, slug, body, meta_title, meta_description)
        VALUES ($1, $2, $3, $4, $5)

@@ -1,0 +1,180 @@
+// ============================================================================
+// Shared types for the AI Question Generation pipeline (Sprint 5)
+// ============================================================================
+
+export type SupportedInteractionType =
+  | "standard"
+  | "graphic_based"
+  | "matching"
+  | "drag_and_drop";
+// hotspot is deliberately excluded from SupportedInteractionType - Sprint 5
+// generates hotspot question TEXT/concept but never coordinates (see
+// RawHotspotBrief below); it never reaches the normal per-type generator.
+
+export interface GenerationTargetSlice {
+  domain?: string;
+  task?: string;
+  topic?: string;
+  subtopic?: string;
+  approach?: string;
+  difficulty?: string;
+  interactionType: SupportedInteractionType | "hotspot";
+  answerType: "single" | "multiple_response";
+  count: number;
+}
+
+export interface BatchConfig {
+  certificationCode: string;
+  requestedCount: number;
+  slices: GenerationTargetSlice[];
+  selectedPatternIds?: string[];
+  createdBy: string;
+  dryRun?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// DB row shapes (mirror migration 008 columns)
+// ---------------------------------------------------------------------------
+
+export interface PatternRow {
+  id: string;
+  certification_id: string;
+  eco_version: string | null;
+  domain: string | null;
+  task: string | null;
+  topic: string | null;
+  subtopic: string | null;
+  approach: string | null;
+  difficulty: string | null;
+  cognitive_level: string | null;
+  interaction_type: string;
+  answer_type: string;
+  scenario_structure: string;
+  tested_decision: string;
+  correct_answer_principle: string;
+  distractor_strategies: string[];
+  common_misconception: string | null;
+  required_pmi_mindset: string | null;
+  generation_guidance: string | null;
+  source_question_ids: string[];
+  status: "active" | "archived";
+  times_used: number;
+  questions_generated: number;
+  questions_approved: number;
+  questions_rejected: number;
+  avg_quality_score: number | null;
+  created_by: string | null;
+}
+
+export interface BatchRow {
+  id: string;
+  certification_id: string;
+  requested_count: number;
+  requested_distribution: Record<string, unknown>;
+  llm_provider: string;
+  llm_model: string;
+  status: "draft" | "running" | "partially_completed" | "completed" | "failed" | "cancelled";
+  generated_count: number;
+  passed_count: number;
+  rejected_count: number;
+  approved_count: number;
+  prompt_tokens: number;
+  completion_tokens: number;
+  estimated_cost_usd: number;
+  error_message: string | null;
+  created_by: string;
+  started_at: string | null;
+  completed_at: string | null;
+}
+
+// ---------------------------------------------------------------------------
+// LLM raw output shape - what the generation prompt must produce
+// ---------------------------------------------------------------------------
+
+export interface RawGeneratedOption {
+  option_key: string;
+  option_text_en: string;
+  option_text_ar: string;
+  is_correct: boolean;
+  feedback_en: string;
+  feedback_ar: string;
+}
+
+export interface RawGeneratedMatchingPair {
+  left_text_en: string;
+  left_text_ar: string;
+  right_text_en: string;
+  right_text_ar: string;
+}
+
+export interface RawGeneratedDragDropItem {
+  item_text_en: string;
+  item_text_ar: string;
+  category: string;
+  correct_position: number;
+}
+
+export interface RawHotspotBrief {
+  image_description: string;
+  target_description: string;
+}
+
+export interface RawGeneratedQuestion {
+  question_text_en: string;
+  question_text_ar: string;
+  explanation_en: string;
+  explanation_ar: string;
+  domain: string;
+  task: string;
+  topic: string;
+  subtopic: string;
+  approach: string;
+  difficulty: string;
+  cognitive_level: string;
+  tags: string[];
+  options: RawGeneratedOption[];
+  matching_pairs: RawGeneratedMatchingPair[];
+  drag_and_drop_items: RawGeneratedDragDropItem[];
+  hotspot_brief: RawHotspotBrief | null;
+  image_brief: string | null;
+}
+
+// ---------------------------------------------------------------------------
+// Quality scoring
+// ---------------------------------------------------------------------------
+
+export interface QualityScores {
+  schema_validity: number;
+  pmp_alignment: number;
+  answer_defensibility: number;
+  distractor_quality: number;
+  scenario_originality: number;
+  similarity_safety: number;
+  translation_quality: number;
+  metadata_consistency: number;
+  /** Inverted vs every other component: 0 = unambiguous (good), 100 = highly ambiguous (bad). */
+  ambiguity_risk: number;
+  overall: number;
+  flags: string[];
+  hard_failures: string[];
+  reviewer_recommendations: string[];
+}
+
+export interface SimilarityMatch {
+  comparisonType: "lexical" | "semantic";
+  matchedQuestionId?: string;
+  matchedBatchQuestionId?: string;
+  similarityScore: number;
+  thresholdResult: "hard_reject" | "warning" | "none";
+}
+
+export interface GenerationOutcome {
+  accepted: boolean;
+  questionId?: string;
+  patternId: string;
+  rejectionReason?: string;
+  qualityScores: QualityScores;
+  similarityMatches: SimilarityMatch[];
+  promptTokens: number;
+  completionTokens: number;
+}

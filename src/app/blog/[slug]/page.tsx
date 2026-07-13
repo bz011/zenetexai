@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getPool } from "@/lib/db";
-import MarkdownBody from "./MarkdownBody";
+import MarkdownBody from "@/components/MarkdownBody";
 
 export const dynamic = "force-dynamic";
 

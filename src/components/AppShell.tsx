@@ -2,6 +2,7 @@
 
 import { useEffect, ReactNode } from "react";
 import { LanguageProvider, useLang } from "@/lib/LanguageContext";
+import { AuthProvider } from "@/features/auth/hooks/useAuth";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
@@ -30,7 +31,9 @@ function ShellInner({ children }: { children: ReactNode }) {
 export default function AppShell({ children }: { children: ReactNode }) {
   return (
     <LanguageProvider>
-      <ShellInner>{children}</ShellInner>
+      <AuthProvider>
+        <ShellInner>{children}</ShellInner>
+      </AuthProvider>
     </LanguageProvider>
   );
 }

@@ -19,6 +19,7 @@ export interface Translations {
   nav: {
     home: string; services: string; academy: string; tools: string;
     about: string; blog: string; contact: string; login: string;
+    dashboard: string; logout: string;
   };
   footer: { tagline: string; rights: string; email: string };
   shared: {
@@ -92,11 +93,75 @@ export interface Translations {
   };
   login: {
     tagline: string; email: string; password: string;
-    btn: string; note: string; not_member: string; get_in_touch: string;
+    btn: string; signing_in: string;
+    forgot_password: string; no_account: string; create_account: string;
   };
   contact: {
     hero_eyebrow: string; hero_h1: string; hero_sub: string;
     form_heading: string; details: ContactDetail[]; note: string;
+  };
+  auth: {
+    signup: {
+      tagline: string; first_name: string; last_name: string; email: string;
+      password: string; confirm_password: string; password_hint: string;
+      btn: string; btn_loading: string; have_account: string; sign_in: string;
+    };
+    forgotPassword: {
+      tagline: string; sub: string; email: string; btn: string; btn_loading: string;
+      success_title: string; success_sub: string; back_to_login: string;
+    };
+    resetPassword: {
+      tagline: string; password: string; confirm_password: string;
+      btn: string; btn_loading: string; success_title: string; success_sub: string;
+      go_to_login: string; invalid_link_title: string; invalid_link_sub: string;
+      request_new_link: string;
+    };
+    verifyEmail: {
+      title: string; sub: string; sub_generic: string;
+      resend_btn: string; resend_loading: string; resend_success: string;
+      back_to_login: string;
+    };
+    dashboard: {
+      welcome: string; role_label: string; logout: string;
+      continue_learning: string; continue_cta: string;
+      study_statistics: string; study_streak: string; total_study_time: string; learning_progress: string;
+      days: string; minutes: string;
+      completed_lessons: string; completed_modules: string; quiz_progress: string;
+      my_courses: string; no_courses: string;
+    };
+    admin: {
+      title: string; placeholder_note: string;
+    };
+    validation: {
+      required: string; invalid_email: string; password_too_short: string;
+      password_needs_uppercase: string; password_needs_number: string;
+      passwords_dont_match: string;
+    };
+    errors: {
+      generic: string; invalid_credentials: string; email_not_confirmed: string;
+      email_taken: string; weak_password: string; rate_limited: string;
+      user_not_found: string;
+    };
+  };
+  courses: {
+    dashboard: { eyebrow: string; heading: string; empty: string };
+    detail: { lessons_label: string; empty: string; module_assessment_cta: string };
+    lesson: {
+      back_to_course: string; video_placeholder: string;
+      mark_complete: string; marking: string; completed: string;
+      checkpoint_label: string;
+    };
+    assessment: {
+      submit: string; submitting: string; passed: string; failed: string; generic_error: string;
+      retry: string; continue_learning: string; view_history: string;
+    };
+    notes: { title: string; placeholder: string; save: string; saving: string; saved: string };
+    resources: { title: string };
+    nav: { first_lesson: string; last_lesson: string };
+    history: {
+      title: string; back_to_quiz: string; back_to_history: string; empty: string;
+      your_answer: string; no_answer: string; hotspot_answered: string;
+    };
   };
 }
 
@@ -106,6 +171,7 @@ const en: Translations = {
   nav: {
     home: "Home", services: "Services", academy: "Academy", tools: "Tools",
     about: "About", blog: "Blog", contact: "Contact", login: "Login",
+    dashboard: "Dashboard", logout: "Log out",
   },
   footer: {
     tagline: "AI services, professional training, and intelligent tools — built for the MENA region.",
@@ -365,10 +431,10 @@ const en: Translations = {
   login: {
     tagline: "Sign in to your account",
     email: "Email", password: "Password",
-    btn: "Sign In",
-    note: "Authentication system coming in a future release.",
-    not_member: "Not a member?",
-    get_in_touch: "Get in touch",
+    btn: "Sign In", signing_in: "Signing in...",
+    forgot_password: "Forgot password?",
+    no_account: "Don't have an account?",
+    create_account: "Create one",
   },
 
   // ── Contact ──────────────────────────────────────────────────────────────────
@@ -384,6 +450,131 @@ const en: Translations = {
     ],
     note: "No commitment required. Tell us your challenge and we'll propose a clear path forward — no pressure, no fluff.",
   },
+
+  // ── Auth (Sprint 2) ──────────────────────────────────────────────────────────
+  auth: {
+    signup: {
+      tagline: "Create your account",
+      first_name: "First name", last_name: "Last name",
+      email: "Email", password: "Password", confirm_password: "Confirm password",
+      password_hint: "At least 8 characters, one uppercase letter and one number.",
+      btn: "Create account", btn_loading: "Creating account...",
+      have_account: "Already have an account?", sign_in: "Sign in",
+    },
+    forgotPassword: {
+      tagline: "Reset your password",
+      sub: "Enter your email and we'll send you a link to reset your password.",
+      email: "Email",
+      btn: "Send reset link", btn_loading: "Sending...",
+      success_title: "Check your email",
+      success_sub: "We've sent a password reset link. Follow it to choose a new password.",
+      back_to_login: "Back to login",
+    },
+    resetPassword: {
+      tagline: "Choose a new password",
+      password: "New password", confirm_password: "Confirm new password",
+      btn: "Update password", btn_loading: "Updating...",
+      success_title: "Password updated",
+      success_sub: "Your password has been changed. You can now sign in.",
+      go_to_login: "Go to login",
+      invalid_link_title: "This link is invalid or expired",
+      invalid_link_sub: "Request a new password reset link and try again.",
+      request_new_link: "Request new link",
+    },
+    verifyEmail: {
+      title: "Check your inbox",
+      sub: "We've sent a confirmation link to",
+      sub_generic: "We've sent a confirmation link to your email.",
+      resend_btn: "Resend email", resend_loading: "Sending...",
+      resend_success: "Verification email sent again.",
+      back_to_login: "Back to login",
+    },
+    dashboard: {
+      welcome: "Welcome back", role_label: "Role", logout: "Log out",
+      continue_learning: "Continue Learning", continue_cta: "Resume lesson",
+      study_statistics: "Study Statistics", study_streak: "Study Streak",
+      total_study_time: "Total Study Time", learning_progress: "Learning Progress",
+      days: "days", minutes: "min",
+      completed_lessons: "Completed Lessons", completed_modules: "Completed Modules", quiz_progress: "Quiz Progress",
+      my_courses: "My Courses", no_courses: "No published courses yet. Check back soon.",
+    },
+    admin: {
+      title: "Admin",
+      placeholder_note: "This is a placeholder admin area, visible to admins only. Management tools will be added in future sprints.",
+    },
+    validation: {
+      required: "This field is required.",
+      invalid_email: "Enter a valid email address.",
+      password_too_short: "Password must be at least 8 characters.",
+      password_needs_uppercase: "Password must include an uppercase letter.",
+      password_needs_number: "Password must include a number.",
+      passwords_dont_match: "Passwords don't match.",
+    },
+    errors: {
+      generic: "Something went wrong. Please try again.",
+      invalid_credentials: "Incorrect email or password.",
+      email_not_confirmed: "Please verify your email before signing in.",
+      email_taken: "An account with this email already exists.",
+      weak_password: "Please choose a stronger password.",
+      rate_limited: "Too many attempts. Please wait a moment and try again.",
+      user_not_found: "No account found with this email.",
+    },
+  },
+
+  // ── Courses (Sprint 3) ───────────────────────────────────────────────────────
+  courses: {
+    dashboard: {
+      eyebrow: "Academy",
+      heading: "Your Courses",
+      empty: "No courses are available yet. Check back soon.",
+    },
+    detail: {
+      lessons_label: "lessons completed",
+      empty: "This course doesn't have any published modules yet.",
+      module_assessment_cta: "Take Module Assessment",
+    },
+    lesson: {
+      back_to_course: "Back to course",
+      video_placeholder: "Video coming soon",
+      mark_complete: "Mark as complete",
+      marking: "Saving...",
+      completed: "Completed",
+      checkpoint_label: "Learning Checkpoint",
+    },
+    assessment: {
+      submit: "Submit",
+      submitting: "Submitting...",
+      passed: "You passed!",
+      failed: "Not quite — review the explanations below and try again later.",
+      generic_error: "Something went wrong submitting your answers. Please try again.",
+      retry: "Retry",
+      continue_learning: "Continue Learning",
+      view_history: "View past attempts",
+    },
+    notes: {
+      title: "My Notes",
+      placeholder: "Write a personal note for this lesson...",
+      save: "Save note",
+      saving: "Saving...",
+      saved: "Saved",
+    },
+    resources: {
+      title: "Resources",
+    },
+    nav: {
+      first_lesson: "This is the first lesson",
+      last_lesson: "This is the last lesson",
+    },
+    history: {
+      title: "Quiz History",
+      back_to_quiz: "Back to quiz",
+      back_to_history: "Back to history",
+      empty: "No attempts yet.",
+      your_answer: "Your answer",
+      no_answer: "No answer submitted",
+      hotspot_answered: "You clicked on the image",
+    },
+  },
 };
 
 // ─── Arabic ───────────────────────────────────────────────────────────────────
@@ -392,6 +583,7 @@ const ar: Translations = {
   nav: {
     home: "الرئيسية", services: "الخدمات", academy: "الأكاديمية", tools: "الأدوات",
     about: "من نحن", blog: "المدونة", contact: "تواصل معنا", login: "تسجيل الدخول",
+    dashboard: "لوحة التحكم", logout: "تسجيل الخروج",
   },
   footer: {
     tagline: "خدمات ذكاء اصطناعي، تدريب احترافي، وأدوات متخصصة — مصممة لسوق الشرق الأوسط وشمال أفريقيا.",
@@ -649,13 +841,13 @@ const ar: Translations = {
 
   // ── Login ─────────────────────────────────────────────────────────────────────
   login: {
-    tagline: "تسجيل الدخول إلى حسابك",
+    tagline: "سجّل الدخول إلى حسابك",
     email: "البريد الإلكتروني",
     password: "كلمة المرور",
-    btn: "تسجيل الدخول",
-    note: "نظام المصادقة قادم في إصدار قادم.",
-    not_member: "لست عضواً؟",
-    get_in_touch: "تواصل معنا",
+    btn: "تسجيل الدخول", signing_in: "جارٍ تسجيل الدخول...",
+    forgot_password: "نسيت كلمة المرور؟",
+    no_account: "ليس لديك حساب؟",
+    create_account: "أنشئ حساباً",
   },
 
   // ── Contact ───────────────────────────────────────────────────────────────────
@@ -670,6 +862,131 @@ const ar: Translations = {
       { id: "response", label: "وقت الاستجابة", value: "خلال 24 ساعة", href: null, icon: "◷" },
     ],
     note: "لا يوجد أي إلزام. أخبرنا بتحديك وسنقترح مساراً واضحاً — دون ضغط أو مبالغة.",
+  },
+
+  // ── Auth (Sprint 2) ──────────────────────────────────────────────────────────
+  auth: {
+    signup: {
+      tagline: "أنشئ حسابك",
+      first_name: "الاسم الأول", last_name: "اسم العائلة",
+      email: "البريد الإلكتروني", password: "كلمة المرور", confirm_password: "تأكيد كلمة المرور",
+      password_hint: "8 أحرف على الأقل، مع حرف كبير ورقم واحد.",
+      btn: "إنشاء حساب", btn_loading: "جارٍ إنشاء الحساب...",
+      have_account: "لديك حساب بالفعل؟", sign_in: "تسجيل الدخول",
+    },
+    forgotPassword: {
+      tagline: "إعادة تعيين كلمة المرور",
+      sub: "أدخل بريدك الإلكتروني وسنرسل لك رابطاً لإعادة تعيين كلمة المرور.",
+      email: "البريد الإلكتروني",
+      btn: "إرسال رابط إعادة التعيين", btn_loading: "جارٍ الإرسال...",
+      success_title: "تحقق من بريدك الإلكتروني",
+      success_sub: "أرسلنا رابط إعادة تعيين كلمة المرور. اتبع الرابط لاختيار كلمة مرور جديدة.",
+      back_to_login: "العودة لتسجيل الدخول",
+    },
+    resetPassword: {
+      tagline: "اختر كلمة مرور جديدة",
+      password: "كلمة المرور الجديدة", confirm_password: "تأكيد كلمة المرور الجديدة",
+      btn: "تحديث كلمة المرور", btn_loading: "جارٍ التحديث...",
+      success_title: "تم تحديث كلمة المرور",
+      success_sub: "تم تغيير كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول.",
+      go_to_login: "الذهاب لتسجيل الدخول",
+      invalid_link_title: "هذا الرابط غير صالح أو منتهي الصلاحية",
+      invalid_link_sub: "اطلب رابط إعادة تعيين جديد وحاول مرة أخرى.",
+      request_new_link: "طلب رابط جديد",
+    },
+    verifyEmail: {
+      title: "تحقق من بريدك الوارد",
+      sub: "أرسلنا رابط تأكيد إلى",
+      sub_generic: "أرسلنا رابط تأكيد إلى بريدك الإلكتروني.",
+      resend_btn: "إعادة إرسال البريد", resend_loading: "جارٍ الإرسال...",
+      resend_success: "تم إرسال بريد التحقق مرة أخرى.",
+      back_to_login: "العودة لتسجيل الدخول",
+    },
+    dashboard: {
+      welcome: "مرحباً بعودتك", role_label: "الدور", logout: "تسجيل الخروج",
+      continue_learning: "متابعة التعلم", continue_cta: "استئناف الدرس",
+      study_statistics: "إحصائيات الدراسة", study_streak: "سلسلة أيام الدراسة",
+      total_study_time: "إجمالي وقت الدراسة", learning_progress: "تقدم التعلم",
+      days: "أيام", minutes: "دقيقة",
+      completed_lessons: "الدروس المكتملة", completed_modules: "الوحدات المكتملة", quiz_progress: "تقدم الاختبارات",
+      my_courses: "دوراتي", no_courses: "لا توجد دورات منشورة بعد. تحقق مرة أخرى قريباً.",
+    },
+    admin: {
+      title: "الإدارة",
+      placeholder_note: "هذه صفحة إدارة مبدئية، مخصصة للمشرفين فقط. ستتم إضافة أدوات الإدارة في مراحل قادمة.",
+    },
+    validation: {
+      required: "هذا الحقل مطلوب.",
+      invalid_email: "أدخل بريداً إلكترونياً صالحاً.",
+      password_too_short: "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
+      password_needs_uppercase: "يجب أن تحتوي كلمة المرور على حرف كبير.",
+      password_needs_number: "يجب أن تحتوي كلمة المرور على رقم.",
+      passwords_dont_match: "كلمتا المرور غير متطابقتين.",
+    },
+    errors: {
+      generic: "حدث خطأ ما. حاول مرة أخرى.",
+      invalid_credentials: "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+      email_not_confirmed: "يرجى تأكيد بريدك الإلكتروني قبل تسجيل الدخول.",
+      email_taken: "يوجد حساب مسجل بهذا البريد الإلكتروني بالفعل.",
+      weak_password: "يرجى اختيار كلمة مرور أقوى.",
+      rate_limited: "محاولات كثيرة جداً. يرجى الانتظار قليلاً والمحاولة مرة أخرى.",
+      user_not_found: "لا يوجد حساب مسجل بهذا البريد الإلكتروني.",
+    },
+  },
+
+  // ── Courses (Sprint 3) ───────────────────────────────────────────────────────
+  courses: {
+    dashboard: {
+      eyebrow: "الأكاديمية",
+      heading: "دوراتك",
+      empty: "لا توجد دورات متاحة حالياً. تحقق مرة أخرى قريباً.",
+    },
+    detail: {
+      lessons_label: "درساً مكتملاً",
+      empty: "لا تحتوي هذه الدورة على وحدات منشورة بعد.",
+      module_assessment_cta: "بدء تقييم الوحدة",
+    },
+    lesson: {
+      back_to_course: "العودة إلى الدورة",
+      video_placeholder: "الفيديو قادم قريباً",
+      mark_complete: "وضع علامة مكتمل",
+      marking: "جارٍ الحفظ...",
+      completed: "مكتمل",
+      checkpoint_label: "نقطة تحقق تعليمية",
+    },
+    assessment: {
+      submit: "إرسال",
+      submitting: "جارٍ الإرسال...",
+      passed: "لقد نجحت!",
+      failed: "ليس تماماً — راجع الشروحات أدناه وحاول مرة أخرى لاحقاً.",
+      generic_error: "حدث خطأ أثناء إرسال إجاباتك. حاول مرة أخرى.",
+      retry: "إعادة المحاولة",
+      continue_learning: "متابعة التعلم",
+      view_history: "عرض المحاولات السابقة",
+    },
+    notes: {
+      title: "ملاحظاتي",
+      placeholder: "اكتب ملاحظة شخصية لهذا الدرس...",
+      save: "حفظ الملاحظة",
+      saving: "جارٍ الحفظ...",
+      saved: "تم الحفظ",
+    },
+    resources: {
+      title: "الموارد",
+    },
+    nav: {
+      first_lesson: "هذا هو الدرس الأول",
+      last_lesson: "هذا هو الدرس الأخير",
+    },
+    history: {
+      title: "سجل الاختبارات",
+      back_to_quiz: "العودة إلى الاختبار",
+      back_to_history: "العودة إلى السجل",
+      empty: "لا توجد محاولات بعد.",
+      your_answer: "إجابتك",
+      no_answer: "لم يتم إرسال إجابة",
+      hotspot_answered: "لقد نقرت على الصورة",
+    },
   },
 };
 
