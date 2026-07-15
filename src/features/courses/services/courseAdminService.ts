@@ -109,16 +109,44 @@ export async function createCourse(
 ): Promise<CourseActionResult> {
   const { supabase } = await requireRole([...MANAGE_ROLES]);
 
-  const parsed = courseFormSchema.safeParse(courseInputFromFormData(formData));
+  const input = courseInputFromFormData(formData);
+  const parsed = courseFormSchema.safeParse(input);
   if (!parsed.success) {
     const fieldErrors = parsed.error.flatten().fieldErrors;
-    console.error("[createCourse] validation failed:", fieldErrors);
+    // Safe diagnostics only: field NAMES and NAMES/TYPES, never the actual
+    // submitted values (title/description text isn't sensitive, but there's
+    // no reason to put arbitrary admin-authored content in logs either).
+    console.error("[CREATE_COURSE_ERROR] validation failed", {
+      fieldErrors,
+      submittedFieldNames: Array.from(formData.keys()),
+      parsedValueTypes: Object.fromEntries(Object.entries(input).map(([key, value]) => [key, typeof value])),
+    });
     return { success: false, fieldErrors };
   }
 
-  const { error } = await supabase.from("courses").insert(parsed.data);
-  if (error) {
-    console.error("[createCourse] insert failed:", error.message);
+  try {
+    // Supabase-js resolves .insert() (no throw on a DB-level failure) -
+    // `error` must be checked explicitly; a falsy `error` is the only thing
+    // that means the insert actually succeeded, never assumed from reaching
+    // this line alone.
+    const { error } = await supabase.from("courses").insert(parsed.data);
+    if (error) {
+      console.error("[CREATE_COURSE_ERROR] insert failed", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
+      return { success: false, error: "Failed to create course. Please try again." };
+    }
+  } catch (err) {
+    // Catches anything unexpected (network failure, client construction
+    // issue, etc.) that isn't a normal PostgrestError - still logged with
+    // the same prefix instead of surfacing as an unhandled exception with
+    // no server-side trace of why.
+    console.error("[CREATE_COURSE_ERROR] unexpected exception", {
+      message: err instanceof Error ? err.message : String(err),
+    });
     return { success: false, error: "Failed to create course. Please try again." };
   }
 
