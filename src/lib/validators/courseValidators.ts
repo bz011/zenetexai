@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+/**
+ * Deliberately plain z.number()/z.boolean() - NOT z.coerce.number()/
+ * z.coerce.boolean(). FormData values are explicitly converted to their
+ * real types (checkbox -> boolean, number input -> number) by the
+ * form*InputFromFormData() helpers in courseAdminService.ts BEFORE this
+ * schema ever sees them - see that file for why. Keeping conversion out of
+ * the schema means this schema only ever validates business rules (min
+ * length, regex, min value), and a mismatch between "what type did we
+ * convert to" and "what type does the schema expect" is a type error at
+ * compile time instead of a silent runtime coercion.
+ */
 export const courseFormSchema = z.object({
   slug: z
     .string()
@@ -10,8 +21,8 @@ export const courseFormSchema = z.object({
   title_ar: z.string().trim().optional(),
   description_en: z.string().trim().optional(),
   description_ar: z.string().trim().optional(),
-  order_index: z.coerce.number().int().min(0),
-  is_published: z.coerce.boolean(),
+  order_index: z.number().int().min(0),
+  is_published: z.boolean(),
 });
 
 export const moduleFormSchema = z.object({
@@ -19,8 +30,8 @@ export const moduleFormSchema = z.object({
   title_ar: z.string().trim().optional(),
   description_en: z.string().trim().optional(),
   description_ar: z.string().trim().optional(),
-  order_index: z.coerce.number().int().min(0),
-  is_published: z.coerce.boolean(),
+  order_index: z.number().int().min(0),
+  is_published: z.boolean(),
 });
 
 export const lessonFormSchema = z.object({
@@ -30,9 +41,9 @@ export const lessonFormSchema = z.object({
   content_ar: z.string().trim().optional(),
   video_provider: z.enum(["youtube", "vimeo", "none"]),
   video_url: z.string().trim().optional(),
-  duration_minutes: z.coerce.number().int().min(0).optional(),
-  order_index: z.coerce.number().int().min(0),
-  is_published: z.coerce.boolean(),
+  duration_minutes: z.number().int().min(0).optional(),
+  order_index: z.number().int().min(0),
+  is_published: z.boolean(),
 });
 
 /**
