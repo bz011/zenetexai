@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * One-off migration runner for migrations/005-010. There is no
+ * One-off migration runner for migrations/005-012. There is no
  * schema_migrations tracking table in this project, so "already applied" is
  * determined the same way the migration files themselves already guard
  * against collisions: checking for a signature table/column that only
@@ -8,6 +8,12 @@
  * itself written idempotently (CREATE TABLE IF NOT EXISTS, DROP POLICY IF
  * EXISTS, etc.), but per explicit instruction this script still skips
  * anything already applied rather than re-running it.
+ *
+ * Reads from zenetexai/migrations/ - the in-repo, version-controlled copy
+ * (as of Sprint 7). A duplicate copy previously lived one directory above
+ * the repo root (outside git entirely, since this repo's root is
+ * zenetexai/) - that copy is now stale; treat zenetexai/migrations/ as the
+ * only canonical location for any migration written from here on.
  *
  * Requires DATABASE_URL (a direct Postgres connection string - the
  * Supabase REST API/service-role key cannot execute arbitrary DDL).
@@ -22,7 +28,7 @@ import { Client } from "pg";
 
 loadEnv({ path: path.resolve(__dirname, "../../.env.local") });
 
-const MIGRATIONS_DIR = path.resolve(__dirname, "../../../migrations");
+const MIGRATIONS_DIR = path.resolve(__dirname, "../../migrations");
 
 interface MigrationSpec {
   id: string;
@@ -105,6 +111,22 @@ const MIGRATIONS: MigrationSpec[] = [
       SELECT NOT COALESCE(
         (SELECT has_function_privilege('authenticated', 'import_question_bundle(jsonb)', 'EXECUTE')),
         false
+      ) AS applied
+    `,
+  },
+  {
+    id: "012_practice_mode",
+    file: "012_practice_mode.sql",
+    signatureQuery: `
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'practice_sessions'
+      ) AND EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'practice_session_questions'
+      ) AND EXISTS (
+        SELECT 1 FROM information_schema.routines
+        WHERE routine_schema = 'public' AND routine_name = 'create_practice_session'
       ) AS applied
     `,
   },
@@ -193,6 +215,9 @@ async function main() {
       { label: "lesson_resources / learning_assessment_question_links / student_lesson_notes / learning_progress_pointer tables", query: "SELECT to_regclass('public.lesson_resources') IS NOT NULL AND to_regclass('public.learning_assessment_question_links') IS NOT NULL AND to_regclass('public.student_lesson_notes') IS NOT NULL AND to_regclass('public.learning_progress_pointer') IS NOT NULL AS ok" },
       { label: "student_study_time table", query: "SELECT to_regclass('public.student_study_time') IS NOT NULL AS ok" },
       { label: "increment_study_time() RPC", query: "SELECT EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='increment_study_time') AS ok" },
+      { label: "practice_sessions / practice_session_questions tables", query: "SELECT to_regclass('public.practice_sessions') IS NOT NULL AND to_regclass('public.practice_session_questions') IS NOT NULL AS ok" },
+      { label: "create_practice_session() / select_practice_questions() / count_eligible_practice_questions() RPCs", query: "SELECT EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='create_practice_session') AND EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='select_practice_questions') AND EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='count_eligible_practice_questions') AS ok" },
+      { label: "practice RPCs are executable by authenticated (deliberately, per migration 012)", query: "SELECT has_function_privilege('authenticated', 'create_practice_session(uuid, question_domain, question_approach, question_difficulty, question_interaction_type, question_answer_type, text, int, boolean, int)', 'EXECUTE') AS ok" },
     ];
 
     let allOk = true;
@@ -211,7 +236,7 @@ async function main() {
       FROM pg_class c
       JOIN pg_namespace n ON n.oid = c.relnamespace
       WHERE n.nspname = 'public'
-        AND c.relname IN ('question_answer_key','matching_answer_key','drag_and_drop_answer_key','hotspots','learning_assessment_answer_key','student_lesson_notes','student_study_time')
+        AND c.relname IN ('question_answer_key','matching_answer_key','drag_and_drop_answer_key','hotspots','learning_assessment_answer_key','student_lesson_notes','student_study_time','practice_sessions','practice_session_questions')
     `);
     for (const row of rlsRows as { relname: string; relrowsecurity: boolean }[]) {
       console.log(`  ${row.relrowsecurity ? "✓" : "✗ RLS DISABLED"}  RLS enabled on ${row.relname}`);

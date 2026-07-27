@@ -29,7 +29,13 @@ export async function getQuizQuestions(supabase: SupabaseClient, assessmentId: s
   return getLegacyQuestions(supabase, assessmentId);
 }
 
-async function getBankQuestions(
+/**
+ * Fetches and shapes bank questions (migration 007's 6 interaction types)
+ * for any ordered list of question_ids - shared by the Learning Quiz path
+ * above and by Practice Mode (practiceQuestionService.ts), so there is one
+ * bank-question-fetching implementation, not two.
+ */
+export async function getBankQuestions(
   supabase: SupabaseClient,
   linkRows: { question_id: string; order_index: number }[]
 ): Promise<QuizQuestion[]> {

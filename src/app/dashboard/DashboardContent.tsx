@@ -77,6 +77,21 @@ export default function DashboardContent({ profile, courses, resume, stats }: Pr
           </div>
         )}
 
+        <div className="card mt-6 p-6">
+          <p className="label">PMP Practice Mode</p>
+          <p className="mt-2 text-[13px] leading-relaxed text-slate-400">
+            Practice with questions from the full PMP question bank — filter by domain, approach, difficulty, and question type, timed or untimed.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link href="/pmp/practice" className="btn-primary px-5 py-2.5 text-[13px]">
+              Start Practicing
+            </Link>
+            <Link href="/pmp/practice/history" className="btn-ghost px-5 py-2.5 text-[13px]">
+              Practice History
+            </Link>
+          </div>
+        </div>
+
         <div className="mt-8">
           <p className="label">{d.study_statistics}</p>
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
