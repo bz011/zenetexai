@@ -1,0 +1,2271 @@
+{
+  "batch": {
+    "batchId": "360f1e09-f027-4057-953a-44f9938f1c8d",
+    "sourceFile": "C:\\Users\\PC\\Desktop\\zenetexai project\\PMP_Question_Bank.xlsx",
+    "importedBy": "system",
+    "importedAt": "2026-07-27T12:05:00.854Z"
+  },
+  "validation": {
+    "totalQuestions": 538,
+    "errorCount": 81,
+    "warningCount": 8,
+    "questionsWithErrors": 41,
+    "questionsWithWarnings": 4,
+    "healthScore": 92
+  },
+  "imported": [
+    {
+      "questionId": "Q000001",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000002",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000003",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000004",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000005",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000006",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000007",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000008",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000009",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000010",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000011",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000012",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000013",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000014",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000015",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000016",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000018",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000019",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000020",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000021",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000022",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000023",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000024",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000025",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000026",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000027",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000028",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000029",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000030",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000032",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000033",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000034",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000035",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000036",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000037",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000038",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000039",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000040",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000041",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000042",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000043",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000044",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000045",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000046",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000047",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000048",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000049",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000050",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000051",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000052",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000053",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000054",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000055",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000056",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000057",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000058",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000059",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000060",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000061",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000062",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000063",
+      "interactionType": "drag_and_drop"
+    },
+    {
+      "questionId": "Q000064",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000065",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000066",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000067",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000068",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000069",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000070",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000071",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000072",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000073",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000074",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000075",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000076",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000077",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000078",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000079",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000080",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000081",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000082",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000083",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000084",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000085",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000086",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000087",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000088",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000089",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000090",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000092",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000093",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000094",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000097",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000098",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000101",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000102",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000103",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000104",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000105",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000107",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000108",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000109",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000110",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000111",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000112",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000113",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000114",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000115",
+      "interactionType": "drag_and_drop"
+    },
+    {
+      "questionId": "Q000116",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000117",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000119",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000120",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000121",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000122",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000123",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000124",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000126",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000127",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000128",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000129",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000131",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000132",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000134",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000137",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000138",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000139",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000140",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000141",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000142",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000143",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000144",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000145",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000146",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000148",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000150",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000151",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000152",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000154",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000155",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000159",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000160",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000161",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000162",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000163",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000164",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000165",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000166",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000169",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000170",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000171",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000172",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000173",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000174",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000175",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000176",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000177",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000178",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000179",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000180",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000183",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000184",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000185",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000186",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000187",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000188",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000189",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000190",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000191",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000192",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000193",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000194",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000195",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000196",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000198",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000199",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000200",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000201",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000204",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000205",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000208",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000209",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000210",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000211",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000212",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000213",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000214",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000215",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000217",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000219",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000220",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000221",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000223",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000225",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000226",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000228",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000229",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000230",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000231",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000233",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000235",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000236",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000237",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000238",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000240",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000241",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000242",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000243",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000244",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000245",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000246",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000247",
+      "interactionType": "hotspot"
+    },
+    {
+      "questionId": "Q000248",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000251",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000252",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000254",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000255",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000256",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000257",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000258",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000259",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000261",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000262",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000263",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000264",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000266",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000267",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000268",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000270",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000271",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000272",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000273",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000274",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000275",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000276",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000277",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000278",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000279",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000280",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000281",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000282",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000283",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000284",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000285",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000286",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000287",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000288",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000289",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000290",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000291",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000292",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000293",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000294",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000295",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000296",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000297",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000298",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000299",
+      "interactionType": "drag_and_drop"
+    },
+    {
+      "questionId": "Q000300",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000301",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000302",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000303",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000304",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000305",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000306",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000307",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000308",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000309",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000310",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000311",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000312",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000313",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000314",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000315",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000316",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000317",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000318",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000319",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000320",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000321",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000322",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000323",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000324",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000325",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000326",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000327",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000328",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000329",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000330",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000331",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000332",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000334",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000335",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000336",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000337",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000338",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000339",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000340",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000341",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000342",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000343",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000344",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000345",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000346",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000347",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000348",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000349",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000350",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000351",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000352",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000353",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000354",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000355",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000356",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000357",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000358",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000360",
+      "interactionType": "drag_and_drop"
+    },
+    {
+      "questionId": "Q000361",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000362",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000363",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000364",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000365",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000366",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000367",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000368",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000369",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000370",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000371",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000372",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000373",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000374",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000375",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000376",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000377",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000378",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000379",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000380",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000381",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000382",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000383",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000384",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000385",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000386",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000387",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000388",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000389",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000390",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000391",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000392",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000393",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000394",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000395",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000396",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000397",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000398",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000399",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000400",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000401",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000402",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000403",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000404",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000405",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000406",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000407",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000408",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000409",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000410",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000411",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000412",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000413",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000414",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000415",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000416",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000417",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000418",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000420",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000421",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000423",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000424",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000425",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000426",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000427",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000428",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000429",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000430",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000431",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000432",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000433",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000434",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000435",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000436",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000437",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000438",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000439",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000440",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000441",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000442",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000443",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000444",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000445",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000446",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000447",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000448",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000449",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000450",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000451",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000452",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000453",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000454",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000455",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000456",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000457",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000458",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000459",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000460",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000461",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000462",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000463",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000464",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000465",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000466",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000467",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000468",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000469",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000470",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000471",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000472",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000473",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000474",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000475",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000476",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000477",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000478",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000479",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000480",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000481",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000482",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000483",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000484",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000485",
+      "interactionType": "graphic_based"
+    },
+    {
+      "questionId": "Q000486",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000487",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000488",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000489",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000490",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000491",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000492",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000493",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000494",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000495",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000496",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000497",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000498",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000499",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000500",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000501",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000502",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000503",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000504",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000505",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000506",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000507",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000508",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000509",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000510",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000511",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000512",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000513",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000514",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000515",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000516",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000517",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000518",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000519",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000520",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000521",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000522",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000523",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000524",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000525",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000526",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000527",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000528",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000529",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000530",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000531",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000532",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000533",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000534",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000535",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000536",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000537",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000539",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000540",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000541",
+      "interactionType": "standard"
+    },
+    {
+      "questionId": "Q000542",
+      "interactionType": "standard"
+    }
+  ],
+  "rejected": [
+    {
+      "questionId": "Q000017",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000031",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000091",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000095",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000096",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000099",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000100",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000106",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000118",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000125",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000130",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000133",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000135",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000136",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000147",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000149",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000153",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000156",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000157",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000158",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000167",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000168",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000182",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000197",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000202",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000203",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000206",
+      "rule": "GRAPHIC_MISSING_IMAGE",
+      "severity": "error",
+      "reason": "graphic_based question must have has_image=TRUE and a matching question_images row."
+    },
+    {
+      "questionId": "Q000207",
+      "rule": "GRAPHIC_MISSING_IMAGE",
+      "severity": "error",
+      "reason": "graphic_based question must have has_image=TRUE and a matching question_images row."
+    },
+    {
+      "questionId": "Q000216",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000218",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000222",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000224",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000227",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000232",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000234",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000239",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000249",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000250",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000253",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000260",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000265",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000269",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000359",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    },
+    {
+      "questionId": "Q000422",
+      "rule": "STATUS_NOT_APPROVED",
+      "severity": "error",
+      "reason": "status is \"Needs Review\", not Approved - excluded from production import."
+    }
+  ],
+  "statistics": {
+    "totalQuestions": 538,
+    "importedCount": 494,
+    "rejectedCount": 44,
+    "byInteractionType": {
+      "standard": 470,
+      "graphic_based": 19,
+      "drag_and_drop": 4,
+      "hotspot": 1
+    }
+  }
+}
