@@ -18,16 +18,16 @@ export default function Logo({ variant = "horizontal", className = "" }: LogoPro
   if (HAS_LOGO_ASSETS) {
     const isSquare = variant === "icon" || variant === "primary";
     const src = isSquare ? BRAND_ASSETS.icon : BRAND_ASSETS.logoHorizontal;
-    // Intrinsic sizes match the actual asset aspect ratio (icon ~1:1,
-    // horizontal ~4.86:1) - className below sets the display height and
-    // lets width scale automatically, so callers only ever need to pass a
+    // Intrinsic sizes match the actual asset aspect ratio (icon 1:1,
+    // horizontal 3.5:1) - className below sets the display height and lets
+    // width scale automatically, so callers only ever need to pass a
     // height utility (e.g. "h-9") to resize it consistently.
     return (
       <Image
         src={src}
         alt={BRAND.name}
-        width={isSquare ? 326 : 1637}
-        height={isSquare ? 329 : 337}
+        width={isSquare ? 400 : 1120}
+        height={isSquare ? 400 : 320}
         className={`h-8 w-auto ${className}`}
         priority
       />

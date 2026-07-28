@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+    <defs><linearGradient id="zGrad" x1="66" y1="150" x2="150" y2="50" gradientUnits="userSpaceOnUse">
+         <stop offset="0" stop-color="#06B6D4" />
+         <stop offset="1" stop-color="#2563EB" />
+       </linearGradient></defs>
+    <circle cx="100" cy="100" r="80" fill="none" stroke="#0F172A" stroke-width="10" />
+    <path d="M 66,62 L 134,62 L 66,138 L 134,138" fill="none" stroke="url(#zGrad)"
+      stroke-width="17" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 134,62 L 158,38 L 158,54 Z M 134,62 L 158,38 L 142,38 Z" fill="url(#zGrad)" />
+  </svg>

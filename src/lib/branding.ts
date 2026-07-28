@@ -1,19 +1,25 @@
 /**
  * Centralized branding config — the single place that knows about the
  * company's name, tagline, and asset paths. Approved logo assets (Sprint
- * 7.6.1, the "B2" concept) live under /public/brand/ and src/app/ (the
+ * 7.6.2 - the circular gradient "Z" mark, Manrope wordmark, "Intelligence.
+ * Execution. Impact." tagline) live under /public/brand/ and src/app/ (the
  * latter for Next's file-based favicon/icon/OG conventions). Every logo
  * usage in the app goes through <Logo /> (src/components/brand/Logo.tsx),
  * which reads this config — a future logo refresh means regenerating the
  * files at these same paths, not touching every page.
  *
- * logo-horizontal.png is a DARK-BACKGROUND variant: the approved artwork's
- * wordmark ink is near-black navy, designed for a white background, and is
- * barely legible on this site's dark theme. The brand blue (icon + "AI")
- * is untouched and identical to the approved artwork; only that ink color
- * was swapped for a light tone for contrast - the same practice as any
- * brand's separate light/dark logo exports. logo-horizontal-light.png is
- * the untouched original, kept for any future light-background context.
+ * No vector source file existed for the approved design (it came from a
+ * reference image, not an SVG/AI export) - the SVG/PNG assets here are a
+ * faithful hand-built reconstruction (same mark, same colors, same
+ * Manrope typography, real font rendering via a one-time build script),
+ * not a redraw from memory. See public/brand/*.svg for the full kit
+ * (primary, horizontal, icon, white, black, favicon variants).
+ *
+ * logo-horizontal.png and icon.png are DARK-BACKGROUND-safe renders: the
+ * wordmark ink is a light tone instead of navy, since navy-on-navy is
+ * illegible on this site's dark theme. The brand blue/teal gradient icon
+ * is unchanged either way. logo-transparent.png (in /public/brand/) keeps
+ * the original navy ink, for any future light-background use.
  */
 
 export const BRAND = {
@@ -32,10 +38,22 @@ export const BRAND = {
 export const HAS_LOGO_ASSETS = true;
 
 export const BRAND_ASSETS = {
+  // Rendered PNGs - what <Logo/> actually displays in-app (guaranteed
+  // fidelity regardless of the viewer's installed fonts).
   logoPrimary: "/brand/icon.png",
   logoHorizontal: "/brand/logo-horizontal.png",
-  logoHorizontalLight: "/brand/logo-horizontal-light.png",
+  logoTransparent: "/brand/logo-transparent.png",
   icon: "/brand/icon.png",
   favicon: "/favicon.ico",
   ogImage: "/opengraph-image.png",
+  // Vector source kit - full brand deliverables (print, partners, future
+  // redesign starting point). Not consumed by <Logo/> directly.
+  svg: {
+    primary: "/brand/logo-primary.svg",
+    horizontal: "/brand/logo-horizontal.svg",
+    icon: "/brand/logo-icon.svg",
+    white: "/brand/logo-white.svg",
+    black: "/brand/logo-black.svg",
+    favicon: "/brand/favicon.svg",
+  },
 } as const;

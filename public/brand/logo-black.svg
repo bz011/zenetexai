@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="160" viewBox="0 0 560 160">
+    <g transform="translate(10,10) scale(0.85)">
+    
+    <circle cx="100" cy="100" r="80" fill="none" stroke="#0F172A" stroke-width="10" />
+    <path d="M 66,62 L 134,62 L 66,138 L 134,138" fill="none" stroke="#0F172A"
+      stroke-width="17" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M 134,62 L 158,38 L 158,54 Z M 134,62 L 158,38 L 142,38 Z" fill="#0F172A" />
+  </g>
+    <text x="190" y="95" font-family="Manrope" font-weight="800" font-size="48" letter-spacing="-1">
+    <tspan fill="#0F172A">Zentex</tspan><tspan fill="#0F172A">AI</tspan>
+  </text>
+    <text x="191" y="124" font-family="Manrope" font-weight="600" font-size="16" letter-spacing="0.5" fill="#475569">Intelligence. Execution. Impact.</text>
+  </svg>
