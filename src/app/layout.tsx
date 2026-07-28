@@ -3,8 +3,8 @@ import "./globals.css";
 import AppShell from "@/components/AppShell";
 
 export const metadata: Metadata = {
-  title: "ZENTEXAI — Premium AI Solutions",
-  description: "AI services, academy, and tools for the next generation.",
+  title: "ZENTEXAI Academy — PMP Certification Exam Prep",
+  description: "Prepare for the PMP exam with structured lessons, a full practice question bank, timed exam simulations, and progress tracking.",
 };
 
 export default function RootLayout({

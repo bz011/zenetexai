@@ -78,28 +78,40 @@ export async function submitPracticeSession(
   let unansweredCount = 0;
   const gradedUpdates: { id: string; is_correct: boolean }[] = [];
 
-  for (const row of sessionQuestions) {
-    // A deleted question (question_id null) or a question never answered
-    // is unanswered - never graded as incorrect, matching "unanswered" as
-    // its own distinct outcome per the results breakdown requirement.
-    if (!row.question_id || !row.response) {
+  // Each question's grading is independent (own DB read inside
+  // gradeQuizAnswer), so grading them concurrently rather than one at a
+  // time in a sequential for-loop turns N sequential round-trips into one
+  // batch - this was the primary cause of slow practice-submission latency.
+  const outcomes = await Promise.all(
+    sessionQuestions.map(async (row) => {
+      // A deleted question (question_id null) or a question never answered
+      // is unanswered - never graded as incorrect, matching "unanswered" as
+      // its own distinct outcome per the results breakdown requirement.
+      if (!row.question_id || !row.response) {
+        return { kind: "unanswered" as const };
+      }
+
+      const interactionType = interactionTypeByQuestionId.get(row.question_id);
+      if (!interactionType) {
+        return { kind: "unanswered" as const };
+      }
+
+      const isCorrect = await gradeQuizAnswer(
+        supabaseAdmin,
+        { id: row.question_id, source: "bank", interactionType },
+        row.response
+      );
+      return { kind: "graded" as const, id: row.id, isCorrect };
+    })
+  );
+
+  for (const outcome of outcomes) {
+    if (outcome.kind === "unanswered") {
       unansweredCount += 1;
       continue;
     }
-
-    const interactionType = interactionTypeByQuestionId.get(row.question_id);
-    if (!interactionType) {
-      unansweredCount += 1;
-      continue;
-    }
-
-    const isCorrect = await gradeQuizAnswer(
-      supabaseAdmin,
-      { id: row.question_id, source: "bank", interactionType },
-      row.response
-    );
-    gradedUpdates.push({ id: row.id, is_correct: isCorrect });
-    if (isCorrect) correctCount += 1;
+    gradedUpdates.push({ id: outcome.id, is_correct: outcome.isCorrect });
+    if (outcome.isCorrect) correctCount += 1;
     else incorrectCount += 1;
   }
 

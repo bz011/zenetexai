@@ -99,24 +99,27 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     explanationByQuestionId.set(row.id, { en: row.explanation_en, ar: row.explanation_ar });
   }
 
-  const results: QuizQuestionResult[] = [];
-  let correctCount = 0;
+  // Each question's grading is independent, so grade them concurrently
+  // rather than one at a time - Promise.all preserves the input order
+  // regardless of completion order, so `results` still lines up with
+  // `questions` exactly as the sequential loop did.
+  const results: QuizQuestionResult[] = await Promise.all(
+    questions.map(async (question) => {
+      const answer = relevantAnswers.find((a) => a.questionId === question.id);
+      const isCorrect = answer
+        ? await gradeQuizAnswer(supabaseAdmin, { id: question.id, source: question.source, interactionType: question.interactionType }, answer)
+        : false;
 
-  for (const question of questions) {
-    const answer = relevantAnswers.find((a) => a.questionId === question.id);
-    const isCorrect = answer
-      ? await gradeQuizAnswer(supabaseAdmin, { id: question.id, source: question.source, interactionType: question.interactionType }, answer)
-      : false;
-
-    const explanation = explanationByQuestionId.get(question.id) ?? { en: null, ar: null };
-    results.push({
-      questionId: question.id,
-      isCorrect,
-      explanationEn: explanation.en,
-      explanationAr: explanation.ar,
-    });
-    if (isCorrect) correctCount += 1;
-  }
+      const explanation = explanationByQuestionId.get(question.id) ?? { en: null, ar: null };
+      return {
+        questionId: question.id,
+        isCorrect,
+        explanationEn: explanation.en,
+        explanationAr: explanation.ar,
+      };
+    })
+  );
+  const correctCount = results.filter((r) => r.isCorrect).length;
 
   const totalQuestions = questions.length;
   const score = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;

@@ -218,22 +218,27 @@ export async function getPracticeReviewQuestions(
   const dragDropRows = (dragDropItems ?? []) as DragDropRow[];
   const imageRows = (images ?? []) as ImageRow[];
 
+  // These three answer-key lookups are independent of one another (each
+  // keys off a different item-id set already gathered above), so they run
+  // concurrently rather than as three sequential round-trips.
   const optionIds = optionRows.map((o) => o.id);
-  const { data: answerKeyRows } = optionIds.length
-    ? await supabaseAdmin.from("question_answer_key").select("option_id, is_correct").in("option_id", optionIds)
-    : { data: [] as { option_id: string; is_correct: boolean }[] };
-  const correctByOptionId = new Map(((answerKeyRows ?? []) as { option_id: string; is_correct: boolean }[]).map((a) => [a.option_id, a.is_correct]));
-
   const matchingItemIds = matchingRows.map((m) => m.id);
-  const { data: matchingPairRows } = matchingItemIds.length
-    ? await supabaseAdmin.from("matching_answer_key").select("left_item_id, right_item_id").in("left_item_id", matchingItemIds)
-    : { data: [] as { left_item_id: string; right_item_id: string }[] };
-  const correctRightIdByLeft = new Map(((matchingPairRows ?? []) as { left_item_id: string; right_item_id: string }[]).map((p) => [p.left_item_id, p.right_item_id]));
-
   const dragDropItemIds = dragDropRows.map((d) => d.id);
-  const { data: positionRows } = dragDropItemIds.length
-    ? await supabaseAdmin.from("drag_and_drop_answer_key").select("item_id, correct_position").in("item_id", dragDropItemIds)
-    : { data: [] as { item_id: string; correct_position: number }[] };
+
+  const [{ data: answerKeyRows }, { data: matchingPairRows }, { data: positionRows }] = await Promise.all([
+    optionIds.length
+      ? supabaseAdmin.from("question_answer_key").select("option_id, is_correct").in("option_id", optionIds)
+      : Promise.resolve({ data: [] as { option_id: string; is_correct: boolean }[] }),
+    matchingItemIds.length
+      ? supabaseAdmin.from("matching_answer_key").select("left_item_id, right_item_id").in("left_item_id", matchingItemIds)
+      : Promise.resolve({ data: [] as { left_item_id: string; right_item_id: string }[] }),
+    dragDropItemIds.length
+      ? supabaseAdmin.from("drag_and_drop_answer_key").select("item_id, correct_position").in("item_id", dragDropItemIds)
+      : Promise.resolve({ data: [] as { item_id: string; correct_position: number }[] }),
+  ]);
+
+  const correctByOptionId = new Map(((answerKeyRows ?? []) as { option_id: string; is_correct: boolean }[]).map((a) => [a.option_id, a.is_correct]));
+  const correctRightIdByLeft = new Map(((matchingPairRows ?? []) as { left_item_id: string; right_item_id: string }[]).map((p) => [p.left_item_id, p.right_item_id]));
   const positionByItemId = new Map(((positionRows ?? []) as { item_id: string; correct_position: number }[]).map((p) => [p.item_id, p.correct_position]));
 
   return sessionRows

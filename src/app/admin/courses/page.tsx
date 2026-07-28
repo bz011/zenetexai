@@ -17,8 +17,15 @@ export default async function AdminCoursesPage() {
   return (
     <div className="relative min-h-screen px-6 py-24">
       <div className="container-page relative max-w-3xl">
-        <span className="label">Admin</span>
-        <h1 className="mt-3 text-2xl font-bold text-white">Courses</h1>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <span className="label">Admin</span>
+            <h1 className="mt-3 text-2xl font-bold text-white">Courses</h1>
+          </div>
+          <Link href="/admin/ai-course-builder" className="btn-secondary px-4 py-2 text-[13px]">
+            ✦ AI Course Builder
+          </Link>
+        </div>
 
         <div className="mt-8 space-y-2">
           {(courses ?? []).map((course) => (

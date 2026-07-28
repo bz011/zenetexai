@@ -18,7 +18,7 @@ export default function AcademyContent() {
           <h1 className="mt-3 text-4xl font-bold text-white md:text-5xl lg:text-6xl">{ac.hero_h1}</h1>
           <p className="mx-auto mt-5 max-w-lg text-[16px] leading-relaxed text-slate-400">{ac.hero_sub}</p>
           <div className="mt-8 flex justify-center gap-3">
-            <Link href="/contact" className="btn-primary">{ac.hero_btn1}</Link>
+            <Link href="/enroll" className="btn-primary">{ac.hero_btn1}</Link>
             <Link href="#courses" className="btn-secondary">{ac.hero_btn2}</Link>
           </div>
         </div>
@@ -47,7 +47,7 @@ export default function AcademyContent() {
             <h2 className="mt-2 text-2xl font-bold text-white md:text-3xl">{ac.courses_h2}</h2>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto grid max-w-xl gap-4">
             {ac.courses.map((course) => (
               <div
                 key={course.title}
@@ -72,7 +72,7 @@ export default function AcademyContent() {
                 <div className="mt-5 flex items-center justify-between border-t border-white/[0.06] pt-4">
                   <span className="text-[12px] text-slate-500">{course.duration}</span>
                   {(course.status === s.available || course.status === "Available") && (
-                    <Link href="/contact" className="btn-ghost text-[12px]">{s.enroll}</Link>
+                    <Link href="/enroll" className="btn-ghost text-[12px]">{s.enroll}</Link>
                   )}
                 </div>
               </div>

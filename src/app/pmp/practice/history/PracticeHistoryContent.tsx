@@ -45,7 +45,13 @@ export default function PracticeHistoryContent({ entries, total, page, pageSize 
 
         <div className="mt-8 space-y-2">
           {entries.length === 0 ? (
-            <p className="text-[13px] text-slate-500">No practice sessions yet.</p>
+            <div className="card flex flex-col items-center gap-3 px-6 py-12 text-center">
+              <p className="text-[14px] font-medium text-white">No practice sessions yet</p>
+              <p className="text-[13px] text-slate-500">Start a practice session to see your history and scores here.</p>
+              <Link href="/pmp/practice" className="btn-primary mt-2 px-5 py-2.5 text-[13px]">
+                Start Practicing
+              </Link>
+            </div>
           ) : (
             entries.map((entry) => {
               const filterSummary =

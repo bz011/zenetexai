@@ -130,6 +130,16 @@ const MIGRATIONS: MigrationSpec[] = [
       ) AS applied
     `,
   },
+  {
+    id: "013_enrollments",
+    file: "013_enrollments.sql",
+    signatureQuery: `
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'enrollments'
+      ) AS applied
+    `,
+  },
 ];
 
 async function main() {
@@ -218,6 +228,7 @@ async function main() {
       { label: "practice_sessions / practice_session_questions tables", query: "SELECT to_regclass('public.practice_sessions') IS NOT NULL AND to_regclass('public.practice_session_questions') IS NOT NULL AS ok" },
       { label: "create_practice_session() / select_practice_questions() / count_eligible_practice_questions() RPCs", query: "SELECT EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='create_practice_session') AND EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='select_practice_questions') AND EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='count_eligible_practice_questions') AS ok" },
       { label: "practice RPCs are executable by authenticated (deliberately, per migration 012)", query: "SELECT has_function_privilege('authenticated', 'create_practice_session(uuid, question_domain, question_approach, question_difficulty, question_interaction_type, question_answer_type, text, int, boolean, int)', 'EXECUTE') AS ok" },
+      { label: "enrollments table", query: "SELECT to_regclass('public.enrollments') IS NOT NULL AS ok" },
     ];
 
     let allOk = true;

@@ -17,7 +17,7 @@ interface MockConfig {
 
 function buildSupabaseMock(config: MockConfig) {
   const sessionUpdateCalls: Record<string, unknown>[] = [];
-  const questionUpdateCalls: { table: string; payload: Record<string, unknown> }[] = [];
+  const questionUpdateCalls: { rowId: string; payload: Record<string, unknown> }[] = [];
 
   const from = vi.fn((table: string) => {
     if (table === "practice_sessions") {
@@ -39,8 +39,8 @@ function buildSupabaseMock(config: MockConfig) {
       return {
         select: () => ({ eq: async () => ({ data: config.sessionQuestionRows, error: null }) }),
         update: (payload: Record<string, unknown>) => ({
-          eq: async () => {
-            questionUpdateCalls.push({ table, payload });
+          eq: async (_col: string, rowId: string) => {
+            questionUpdateCalls.push({ rowId, payload });
             return { error: null };
           },
         }),
@@ -54,7 +54,7 @@ function buildSupabaseMock(config: MockConfig) {
 
   return { from, sessionUpdateCalls, questionUpdateCalls } as unknown as { from: typeof from } & {
     sessionUpdateCalls: Record<string, unknown>[];
-    questionUpdateCalls: { table: string; payload: Record<string, unknown> }[];
+    questionUpdateCalls: { rowId: string; payload: Record<string, unknown> }[];
   };
 }
 
@@ -157,6 +157,42 @@ describe("submitPracticeSession", () => {
 
     // 2 correct, 1 incorrect, 1 unanswered out of 4 total -> score 50
     expect(supabase.sessionUpdateCalls[0]).toMatchObject({ correct_count: 2, incorrect_count: 1, unanswered_count: 1, score: 50 });
+  });
+
+  it("grades questions concurrently but still attributes each result to the right question, even when they resolve out of order", async () => {
+    // Q1 is deliberately the slowest to resolve - if the concurrent grading
+    // ever mixed up which outcome belongs to which row (e.g. by writing to
+    // a shared counter by completion order instead of mapping per-row),
+    // this would surface as Q1 being graded with Q2 or Q3's result instead
+    // of its own.
+    const supabase = buildSupabaseMock({
+      sessionRow: { id: "session-1", status: "active", user_id: "user-1" },
+      sessionQuestionRows: [
+        { id: "row-1", question_id: "Q1", response: { questionId: "Q1", source: "bank", selectedOptionIds: ["a"] } },
+        { id: "row-2", question_id: "Q2", response: { questionId: "Q2", source: "bank", selectedOptionIds: ["b"] } },
+        { id: "row-3", question_id: "Q3", response: { questionId: "Q3", source: "bank", selectedOptionIds: ["c"] } },
+      ],
+      questionMetaRows: [
+        { question_id: "Q1", interaction_type: "standard" },
+        { question_id: "Q2", interaction_type: "standard" },
+        { question_id: "Q3", interaction_type: "standard" },
+      ],
+    });
+
+    gradeQuizAnswerMock.mockImplementation(async (_admin: unknown, question: { id: string }) => {
+      const delays: Record<string, number> = { Q1: 15, Q2: 5, Q3: 0 };
+      const results: Record<string, boolean> = { Q1: true, Q2: false, Q3: true };
+      await new Promise((resolve) => setTimeout(resolve, delays[question.id]));
+      return results[question.id];
+    });
+
+    await submitPracticeSession(supabase as never, "session-1", "user-1");
+
+    const isCorrectByRowId = new Map(supabase.questionUpdateCalls.map((c) => [c.rowId, c.payload.is_correct]));
+    expect(isCorrectByRowId.get("row-1")).toBe(true); // Q1
+    expect(isCorrectByRowId.get("row-2")).toBe(false); // Q2
+    expect(isCorrectByRowId.get("row-3")).toBe(true); // Q3
+    expect(supabase.sessionUpdateCalls[0]).toMatchObject({ correct_count: 2, incorrect_count: 1, unanswered_count: 0, score: 67 });
   });
 
   it("marks the session status as 'expired' rather than 'completed' when the timeout triggered submission", async () => {

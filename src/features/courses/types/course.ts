@@ -1,6 +1,55 @@
 export type VideoProvider = "youtube" | "vimeo" | "none";
 export type LearningAssessmentType = "checkpoint" | "module_assessment";
 
+export interface EnrollmentStatus {
+  status: "pending" | "active" | "cancelled";
+  enrolled_at: string;
+}
+
+// ============================================================================
+// AI Course Builder (Sprint 7.5) — admin supplies titles only; the AI fills
+// in description/objectives/duration/slug/ordering. Purely a drafting aid:
+// generateCourseDraft() never touches the database, and saveApprovedCourse()
+// always inserts with is_published forced to false — the AI never publishes,
+// the admin does, through the existing course editor.
+// ============================================================================
+
+export interface CourseBuilderLessonInput {
+  title_en: string;
+}
+
+export interface CourseBuilderModuleInput {
+  title_en: string;
+  lessons: CourseBuilderLessonInput[];
+}
+
+export interface CourseBuilderInput {
+  title_en: string;
+  modules: CourseBuilderModuleInput[];
+}
+
+export interface CourseDraftLesson {
+  title_en: string;
+  description_en: string;
+  learning_objectives_en: string[];
+  duration_minutes: number;
+  order_index: number;
+}
+
+export interface CourseDraftModule {
+  title_en: string;
+  description_en: string;
+  order_index: number;
+  lessons: CourseDraftLesson[];
+}
+
+export interface CourseDraft {
+  title_en: string;
+  slug: string;
+  description_en: string;
+  modules: CourseDraftModule[];
+}
+
 export interface Course {
   id: string;
   slug: string;
