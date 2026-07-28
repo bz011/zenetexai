@@ -1,10 +1,17 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AppShell from "@/components/AppShell";
+import { BRAND } from "@/lib/branding";
+
+const title = `${BRAND.name} — AI Solutions, Consulting & Professional Learning`;
+const description = `${BRAND.tagline} Featuring the PMP Mastery Program.`;
 
 export const metadata: Metadata = {
-  title: "ZENTEXAI Academy — PMP Certification Exam Prep",
-  description: "Prepare for the PMP exam with structured lessons, a full practice question bank, timed exam simulations, and progress tracking.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://zenetexai.com"),
+  title,
+  description,
+  openGraph: { title, description, siteName: BRAND.name, type: "website" },
+  twitter: { card: "summary_large_image", title, description },
 };
 
 export default function RootLayout({

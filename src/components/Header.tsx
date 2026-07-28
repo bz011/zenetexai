@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLang } from "@/lib/LanguageContext";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import Logo from "@/components/brand/Logo";
 
 export default function Header() {
   const { lang, setLang, t } = useLang();
@@ -19,9 +20,8 @@ export default function Header() {
   const navLinks = [
     { href: "/services", label: t.nav.services },
     { href: "/academy", label: t.nav.academy },
-    { href: "/tools", label: t.nav.tools },
+    { href: "/resources", label: t.nav.resources },
     { href: "/about", label: t.nav.about },
-    { href: "/blog", label: t.nav.blog },
     { href: "/contact", label: t.nav.contact },
   ];
 
@@ -33,9 +33,7 @@ export default function Header() {
       <div className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-[15px] font-bold tracking-tight text-white">
-            ZENTEX<span className="text-indigo-400">AI</span>
-          </span>
+          <Logo variant="horizontal" />
         </Link>
 
         {/* Nav */}

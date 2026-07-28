@@ -45,7 +45,7 @@ const PUBLIC_ROUTES = new Set<string>([
   "/about",
   "/services",
   "/academy",
-  "/tools",
+  "/resources",
   "/contact",
   "/enroll",
 ]);

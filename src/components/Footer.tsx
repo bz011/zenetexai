@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useLang } from "@/lib/LanguageContext";
+import Logo from "@/components/brand/Logo";
+import { BRAND } from "@/lib/branding";
 
 export default function Footer() {
   const { t } = useLang();
@@ -9,9 +11,8 @@ export default function Footer() {
   const navLinks = [
     [t.nav.services, "/services"],
     [t.nav.academy, "/academy"],
-    [t.nav.tools, "/tools"],
+    [t.nav.resources, "/resources"],
     [t.nav.about, "/about"],
-    [t.nav.blog, "/blog"],
     [t.nav.contact, "/contact"],
   ];
 
@@ -24,8 +25,8 @@ export default function Footer() {
         <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
           {/* Brand */}
           <div className="max-w-xs">
-            <Link href="/" className="text-[15px] font-bold text-white">
-              ZENTEX<span className="text-indigo-400">AI</span>
+            <Link href="/">
+              <Logo variant="horizontal" />
             </Link>
             <p className="mt-2.5 text-[13px] leading-relaxed text-slate-500">
               {t.footer.tagline}
@@ -49,10 +50,10 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/[0.06] pt-8 md:flex-row">
           <p className="text-[12px] text-slate-600">
-            &copy; {new Date().getFullYear()} ZENTEXAI. {t.footer.rights}
+            &copy; {new Date().getFullYear()} {BRAND.legalName}. {t.footer.rights}
           </p>
           <p className="text-[12px] text-slate-600">
-            hello@zenetexai.com
+            {BRAND.email}
           </p>
         </div>
       </div>

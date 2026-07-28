@@ -22,35 +22,32 @@ export default function AboutContent() {
       {/* Mission */}
       <section className="px-6 py-24">
         <div className="container-page">
-          <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-            <div>
-              <span className="label">{ab.mission_eyebrow}</span>
-              <h2 className="mt-3 text-3xl font-bold text-white md:text-4xl">
-                {ab.mission_h2_line1}
-                <br />
-                <span className="gradient-text">{ab.mission_h2_line2}</span>
-              </h2>
-              <p className="mt-5 text-[15px] leading-relaxed text-slate-400">{ab.mission_p1}</p>
-              <p className="mt-4 text-[15px] leading-relaxed text-slate-400">{ab.mission_p2}</p>
-            </div>
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="label">{ab.mission_eyebrow}</span>
+            <h2 className="mt-3 text-3xl font-bold text-white md:text-4xl">
+              {ab.mission_h2_line1}
+              <br />
+              <span className="gradient-text">{ab.mission_h2_line2}</span>
+            </h2>
+            <p className="mt-5 text-[15px] leading-relaxed text-slate-400">{ab.mission_p1}</p>
+            <p className="mt-4 text-[15px] leading-relaxed text-slate-400">{ab.mission_p2}</p>
+          </div>
+        </div>
+      </section>
 
-            <div className="space-y-3">
-              {ab.pillars.map((p) => (
-                <div key={p.label} className="card flex items-center gap-4 p-5">
-                  <div className="h-2 w-2 shrink-0 rounded-full bg-indigo-500" />
-                  <div>
-                    <div className="text-[14px] font-semibold text-white">{p.label}</div>
-                    <div className="text-[13px] text-slate-400">{p.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
+      {/* Vision */}
+      <section className="border-t border-white/[0.06] bg-white/[0.015] px-6 py-24">
+        <div className="container-page">
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="label">{ab.vision_eyebrow}</span>
+            <h2 className="mt-3 text-2xl font-bold text-white md:text-3xl">{ab.vision_h2}</h2>
+            <p className="mt-5 text-[15px] leading-relaxed text-slate-400">{ab.vision_p}</p>
           </div>
         </div>
       </section>
 
       {/* Values */}
-      <section className="border-t border-white/[0.06] bg-white/[0.015] px-6 py-24">
+      <section className="px-6 py-24">
         <div className="container-page">
           <div className="mb-10 text-center">
             <span className="label">{ab.values_eyebrow}</span>
@@ -68,23 +65,44 @@ export default function AboutContent() {
         </div>
       </section>
 
-      {/* Team */}
+      {/* Founder */}
+      <section className="border-t border-white/[0.06] bg-white/[0.015] px-6 py-24">
+        <div className="container-page">
+          <div className="mb-10 text-center">
+            <span className="label">{ab.founder_eyebrow}</span>
+            <h2 className="mt-3 text-2xl font-bold text-white md:text-3xl">{ab.founder_h2}</h2>
+          </div>
+
+          <div className="mx-auto max-w-2xl">
+            <div className="card p-8 md:p-10">
+              <div className="flex flex-col items-center gap-6 text-center md:flex-row md:items-start md:text-start">
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-2xl font-bold text-white">
+                  {ab.founder.name.charAt(0)}
+                </div>
+                <div>
+                  <h3 className="text-[18px] font-semibold text-white">{ab.founder.name}</h3>
+                  <div className="mt-2 flex flex-wrap justify-center gap-2 md:justify-start">
+                    {ab.founder.titles.map((title) => (
+                      <span key={title} className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2.5 py-1 text-[11px] text-slate-400">
+                        {title}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="mt-4 text-[14px] leading-relaxed text-slate-400">{ab.founder.bio}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
       <section className="border-t border-white/[0.06] px-6 py-24 text-center">
         <div className="container-page">
-          <span className="label">{ab.team_eyebrow}</span>
-          <h2 className="mt-3 text-2xl font-bold text-white md:text-3xl">{ab.team_h2}</h2>
-          <p className="mx-auto mt-4 max-w-md text-[15px] text-slate-400">{ab.team_p}</p>
-          <div className="mx-auto mt-10 grid max-w-xl gap-4 sm:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="card p-5 text-center">
-                <div className="mx-auto mb-3 h-14 w-14 rounded-full bg-white/[0.05]" />
-                <div className="mx-auto h-3 w-24 rounded bg-white/[0.06]" />
-                <div className="mx-auto mt-2 h-2.5 w-16 rounded bg-white/[0.04]" />
-              </div>
-            ))}
-          </div>
-          <div className="mt-10">
-            <Link href="/contact" className="btn-primary">{ab.team_btn}</Link>
+          <span className="label">{ab.cta_h2}</span>
+          <p className="mx-auto mt-4 max-w-md text-[15px] text-slate-400">{ab.cta_p}</p>
+          <div className="mt-8">
+            <Link href="/contact" className="btn-primary">{ab.cta_btn}</Link>
           </div>
         </div>
       </section>

@@ -6,7 +6,6 @@ import { useLang } from "@/lib/LanguageContext";
 export default function ServicesContent() {
   const { t } = useLang();
   const sv = t.services;
-  const s = t.shared;
 
   return (
     <div className="min-h-screen">
@@ -20,23 +19,30 @@ export default function ServicesContent() {
         </div>
       </section>
 
-      {/* Cards */}
+      {/* Categories */}
       <section className="px-6 py-24">
-        <div className="container-page">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {sv.cards.map((card) => (
-              <div key={card.title} className="card card-hover group p-7">
-                <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-indigo-500/20 bg-indigo-500/[0.08] text-lg text-indigo-400">
-                  {card.icon}
+        <div className="container-page space-y-6">
+          {sv.categories.map((cat, i) => (
+            <div key={cat.id} id={cat.id} className="card p-8 md:p-10">
+              <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+                <div className="md:max-w-sm">
+                  <span className="label text-[10px]">{String(i + 1).padStart(2, "0")}</span>
+                  <h2 className="mt-2 text-xl font-semibold text-white md:text-2xl">{cat.title}</h2>
+                  <p className="mt-3 text-[14px] leading-relaxed text-slate-400">{cat.desc}</p>
                 </div>
-                <span className="label text-[10px]">{card.tag}</span>
-                <h3 className="mt-2 text-[16px] font-semibold text-white group-hover:text-indigo-300 transition-colors">
-                  {card.title}
-                </h3>
-                <p className="mt-2.5 text-[13px] leading-relaxed text-slate-400">{card.desc}</p>
+                <div className="flex flex-1 flex-wrap content-start gap-2.5">
+                  {cat.examples.map((ex) => (
+                    <span
+                      key={ex}
+                      className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1.5 text-[13px] text-slate-300"
+                    >
+                      {ex}
+                    </span>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </section>
 

@@ -7,10 +7,11 @@ interface FormData {
   name: string;
   email: string;
   company: string;
+  inquiryType: string;
   message: string;
 }
 
-const empty: FormData = { name: "", email: "", company: "", message: "" };
+const empty: FormData = { name: "", email: "", company: "", inquiryType: "general", message: "" };
 
 const inputCls =
   "w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-[14px] text-white placeholder-slate-600 outline-none transition-all focus:border-indigo-500/60 focus:bg-white/[0.06] focus:ring-2 focus:ring-indigo-500/15";
@@ -27,7 +28,7 @@ export default function ContactForm() {
   const WEBHOOK_URL =
     "https://script.google.com/macros/s/AKfycbw_XdWko2zRiJ084YgzxJZq3ftxBZCxuDYpmRdu8WFHdNt3QVIfcjU18vsTQ4CRXuBE/exec";
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
@@ -40,6 +41,7 @@ export default function ContactForm() {
       params.append("name", form.name);
       params.append("email", form.email);
       params.append("company", form.company);
+      params.append("inquiryType", form.inquiryType);
       params.append("message", form.message);
 
       const res = await fetch(WEBHOOK_URL, {
@@ -102,6 +104,19 @@ export default function ContactForm() {
         </label>
         <input id="company" name="company" type="text" value={form.company}
           onChange={handleChange} placeholder={f.company_placeholder} className={inputCls} />
+      </div>
+
+      <div>
+        <label htmlFor="inquiryType" className="mb-1.5 block text-[13px] font-medium text-slate-400">
+          {f.inquiry_type}
+        </label>
+        <select id="inquiryType" name="inquiryType" value={form.inquiryType} onChange={handleChange} className={inputCls}>
+          {t.contact.inquiry_types.map((option) => (
+            <option key={option.value} value={option.value} className="bg-[#0b1220]">
+              {option.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>

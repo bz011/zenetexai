@@ -3,6 +3,12 @@
 import Link from "next/link";
 import { useLang } from "@/lib/LanguageContext";
 
+const PROGRAM_HREF: Record<string, string> = {
+  "pmp-mastery": "/enroll",
+  "pmp-simulator": "/pmp/practice",
+  "future-programs": "/contact",
+};
+
 export default function AcademyContent() {
   const { t } = useLang();
   const ac = t.academy;
@@ -19,7 +25,7 @@ export default function AcademyContent() {
           <p className="mx-auto mt-5 max-w-lg text-[16px] leading-relaxed text-slate-400">{ac.hero_sub}</p>
           <div className="mt-8 flex justify-center gap-3">
             <Link href="/enroll" className="btn-primary">{ac.hero_btn1}</Link>
-            <Link href="#courses" className="btn-secondary">{ac.hero_btn2}</Link>
+            <Link href="#programs" className="btn-secondary">{ac.hero_btn2}</Link>
           </div>
         </div>
       </section>
@@ -39,44 +45,47 @@ export default function AcademyContent() {
         </div>
       </section>
 
-      {/* Courses */}
-      <section id="courses" className="px-6 py-24">
+      {/* Programs */}
+      <section id="programs" className="px-6 py-24">
         <div className="container-page">
           <div className="mb-10">
-            <span className="label">{ac.courses_eyebrow}</span>
-            <h2 className="mt-2 text-2xl font-bold text-white md:text-3xl">{ac.courses_h2}</h2>
+            <span className="label">{ac.programs_eyebrow}</span>
+            <h2 className="mt-2 text-2xl font-bold text-white md:text-3xl">{ac.programs_h2}</h2>
           </div>
 
-          <div className="mx-auto grid max-w-xl gap-4">
-            {ac.courses.map((course) => (
-              <div
-                key={course.title}
-                className={`card card-hover flex flex-col p-6 ${
-                  course.status !== s.available && course.status !== "Available" ? "opacity-70" : ""
-                }`}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <span className="label text-[10px]">{course.tag}</span>
-                  <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                    course.status === s.available || course.status === "Available"
-                      ? "bg-emerald-500/[0.12] text-emerald-400"
-                      : "bg-white/[0.05] text-slate-500"
-                  }`}>
-                    {course.status}
-                  </span>
-                </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {ac.programs.map((program) => {
+              const isAvailable = program.status === s.available || program.status === "Available";
+              return (
+                <div
+                  key={program.id}
+                  className={`card card-hover flex flex-col p-6 ${isAvailable ? "" : "opacity-70"}`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="label text-[10px]">{program.tag}</span>
+                    <span
+                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                        isAvailable ? "bg-emerald-500/[0.12] text-emerald-400" : "bg-white/[0.05] text-slate-500"
+                      }`}
+                    >
+                      {program.status}
+                    </span>
+                  </div>
 
-                <h3 className="mt-3 text-[15px] font-semibold text-white">{course.title}</h3>
-                <p className="mt-2 flex-1 text-[13px] leading-relaxed text-slate-400">{course.desc}</p>
+                  <h3 className="mt-3 text-[15px] font-semibold text-white">{program.title}</h3>
+                  <p className="mt-2 flex-1 text-[13px] leading-relaxed text-slate-400">{program.desc}</p>
 
-                <div className="mt-5 flex items-center justify-between border-t border-white/[0.06] pt-4">
-                  <span className="text-[12px] text-slate-500">{course.duration}</span>
-                  {(course.status === s.available || course.status === "Available") && (
-                    <Link href="/enroll" className="btn-ghost text-[12px]">{s.enroll}</Link>
-                  )}
+                  <div className="mt-5 flex items-center justify-between border-t border-white/[0.06] pt-4">
+                    <span className="text-[12px] text-slate-500">{program.duration ?? ""}</span>
+                    {isAvailable && (
+                      <Link href={PROGRAM_HREF[program.id] ?? "/contact"} className="btn-ghost text-[12px]">
+                        {s.learn_more}
+                      </Link>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>

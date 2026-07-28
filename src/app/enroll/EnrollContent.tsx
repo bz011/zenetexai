@@ -12,7 +12,7 @@ const COURSE_SLUG = "pmp";
 export default function EnrollContent() {
   const { t } = useLang();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
-  const course = t.academy.courses[0];
+  const program = t.academy.programs.find((p) => p.id === "pmp-mastery")!;
 
   const [enrollment, setEnrollment] = useState<EnrollmentStatus | null>(null);
   const [checkingEnrollment, setCheckingEnrollment] = useState(true);
@@ -54,9 +54,9 @@ export default function EnrollContent() {
   return (
     <div className="relative min-h-screen px-6 py-24">
       <div className="container-page relative max-w-xl">
-        <span className="label">{course.tag}</span>
-        <h1 className="mt-3 text-3xl font-bold text-white">{course.title}</h1>
-        <p className="mt-3 text-[15px] leading-relaxed text-slate-400">{course.desc}</p>
+        <span className="label">{program.tag}</span>
+        <h1 className="mt-3 text-3xl font-bold text-white">{program.title}</h1>
+        <p className="mt-3 text-[15px] leading-relaxed text-slate-400">{program.desc}</p>
 
         <div className="card mt-8 p-6">
           {isLoading ? (
