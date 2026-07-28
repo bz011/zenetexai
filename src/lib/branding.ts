@@ -1,15 +1,19 @@
 /**
  * Centralized branding config — the single place that knows about the
- * company's name, tagline, and asset paths. Approved logo/brand assets are
- * "provided later" (per Sprint 7.6); until then every surface renders a
- * text wordmark derived from BRAND.name so nothing depends on files that
- * don't exist yet.
+ * company's name, tagline, and asset paths. Approved logo assets (Sprint
+ * 7.6.1, the "B2" concept) live under /public/brand/ and src/app/ (the
+ * latter for Next's file-based favicon/icon/OG conventions). Every logo
+ * usage in the app goes through <Logo /> (src/components/brand/Logo.tsx),
+ * which reads this config — a future logo refresh means regenerating the
+ * files at these same paths, not touching every page.
  *
- * To go live with real assets later:
- *   1. Drop the files into /public/brand/ using the exact names below.
- *   2. Flip HAS_LOGO_ASSETS to true.
- * Nothing else in the app needs to change — every logo usage goes through
- * <Logo /> (src/components/brand/Logo.tsx), which reads this config.
+ * logo-horizontal.png is a DARK-BACKGROUND variant: the approved artwork's
+ * wordmark ink is near-black navy, designed for a white background, and is
+ * barely legible on this site's dark theme. The brand blue (icon + "AI")
+ * is untouched and identical to the approved artwork; only that ink color
+ * was swapped for a light tone for contrast - the same practice as any
+ * brand's separate light/dark logo exports. logo-horizontal-light.png is
+ * the untouched original, kept for any future light-background context.
  */
 
 export const BRAND = {
@@ -17,28 +21,21 @@ export const BRAND = {
   legalName: "ZentexAI",
   shortName: "Zentex",
   tagline: "AI Solutions. Project Excellence. Professional Learning.",
-  email: "hello@zenetexai.com",
+  // Not yet live - no mailbox exists at this address yet. Deliberately not
+  // rendered anywhere (Footer, Contact) per Sprint 7.6.1: no personal/Gmail
+  // address should ever be shown publicly. Once info@zentexai.com is a
+  // real, monitored inbox, wire this back into Footer.tsx and
+  // contact.details in translations.ts.
+  email: "info@zentexai.com",
 } as const;
 
-/** Flip to true once real files exist at the paths below. */
-export const HAS_LOGO_ASSETS = false;
+export const HAS_LOGO_ASSETS = true;
 
-/**
- * Expected asset paths under /public/brand/ — referenced by name only so
- * <Logo /> and metadata config never hardcode a path inline. Drop files in
- * with these exact names and nothing else needs to change.
- */
 export const BRAND_ASSETS = {
-  logoPrimary: "/brand/logo-primary.svg",
-  logoHorizontal: "/brand/logo-horizontal.svg",
-  icon: "/brand/icon.svg",
+  logoPrimary: "/brand/icon.png",
+  logoHorizontal: "/brand/logo-horizontal.png",
+  logoHorizontalLight: "/brand/logo-horizontal-light.png",
+  icon: "/brand/icon.png",
   favicon: "/favicon.ico",
-  // No generated OG image today: Next's dynamic ImageResponse (next/og)
-  // crashes on this specific build environment (a @vercel/og bug with
-  // Windows paths containing spaces, e.g. "zenetexai project\..." -
-  // unrelated to app code, unfixable from here). Once a real image exists,
-  // drop a STATIC file at src/app/opengraph-image.png (or .jpg) - Next's
-  // static file convention picks it up automatically without touching
-  // ImageResponse at all, avoiding this bug entirely.
-  ogImage: "/brand/og-image.png",
+  ogImage: "/opengraph-image.png",
 } as const;

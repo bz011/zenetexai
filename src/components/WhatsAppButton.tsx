@@ -2,13 +2,13 @@
 
 import { useLang } from "@/lib/LanguageContext";
 
-const WHATSAPP_NUMBER = "96600000000";
+const WHATSAPP_NUMBER = "971564468444";
 
 export default function WhatsAppButton() {
   const { lang, isRTL } = useLang();
   const message = lang === "ar"
-    ? "مرحباً، أودّ معرفة المزيد عن خدمات ZENTEXAI."
-    : "Hello, I'd like to learn more about ZENTEXAI services.";
+    ? "مرحباً، أودّ معرفة المزيد عن خدمات ZentexAI."
+    : "Hello, I'd like to learn more about ZentexAI services.";
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
   return (

@@ -9,14 +9,29 @@ interface LogoProps {
 
 /**
  * Single source of truth for rendering the ZentexAI mark anywhere in the
- * app. Today this always renders the text wordmark (no approved asset
- * files exist yet) - once HAS_LOGO_ASSETS is flipped on in branding.ts,
- * every call site here starts rendering the real image automatically.
+ * app. Renders the approved logo assets (see branding.ts). The text
+ * wordmark fallback below only activates if HAS_LOGO_ASSETS is ever
+ * flipped back off (e.g. assets temporarily missing) - no call site needs
+ * to change either way.
  */
 export default function Logo({ variant = "horizontal", className = "" }: LogoProps) {
   if (HAS_LOGO_ASSETS) {
-    const src = variant === "icon" ? BRAND_ASSETS.icon : variant === "primary" ? BRAND_ASSETS.logoPrimary : BRAND_ASSETS.logoHorizontal;
-    return <Image src={src} alt={BRAND.name} width={variant === "icon" ? 32 : 140} height={32} className={className} priority />;
+    const isSquare = variant === "icon" || variant === "primary";
+    const src = isSquare ? BRAND_ASSETS.icon : BRAND_ASSETS.logoHorizontal;
+    // Intrinsic sizes match the actual asset aspect ratio (icon ~1:1,
+    // horizontal ~4.86:1) - className below sets the display height and
+    // lets width scale automatically, so callers only ever need to pass a
+    // height utility (e.g. "h-9") to resize it consistently.
+    return (
+      <Image
+        src={src}
+        alt={BRAND.name}
+        width={isSquare ? 326 : 1637}
+        height={isSquare ? 329 : 337}
+        className={`h-8 w-auto ${className}`}
+        priority
+      />
+    );
   }
 
   if (variant === "icon") {

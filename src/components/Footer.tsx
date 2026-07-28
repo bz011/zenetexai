@@ -48,12 +48,12 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/[0.06] pt-8 md:flex-row">
+        {/* No public email shown yet - hidden per Sprint 7.6.1 until an
+            official company address (info@zentexai.com) exists. Re-add a
+            second <p> here with BRAND.email once it does. */}
+        <div className="mt-10 flex items-center justify-center border-t border-white/[0.06] pt-8">
           <p className="text-[12px] text-slate-600">
             &copy; {new Date().getFullYear()} {BRAND.legalName}. {t.footer.rights}
-          </p>
-          <p className="text-[12px] text-slate-600">
-            {BRAND.email}
           </p>
         </div>
       </div>
