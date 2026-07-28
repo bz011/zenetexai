@@ -1,13 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="560" height="160" viewBox="0 0 560 160">
-    <g transform="translate(10,10) scale(0.85)">
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="210" viewBox="0 0 800 210">
+    <g transform="translate(8,14) scale(0.34)">
     
-    <circle cx="100" cy="100" r="80" fill="none" stroke="#0F172A" stroke-width="10" />
-    <path d="M 66,62 L 134,62 L 66,138 L 134,138" fill="none" stroke="#0F172A"
-      stroke-width="17" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M 134,62 L 158,38 L 158,54 Z M 134,62 L 158,38 L 142,38 Z" fill="#0F172A" />
+    <path d="M 444.01,220.79 A 197,197 0 0 1 166.74,433.54" fill="none" stroke="#0F172A" stroke-width="32" stroke-linecap="round" />
+<path d="M 59.71,305.99 A 197,197 0 0 1 317.38,69.88" fill="none" stroke="#0F172A" stroke-width="32" stroke-linecap="round" />
+    <path d="M 168,172 L 300,172" fill="none" stroke="#0F172A" stroke-width="40" stroke-linecap="round" />
+    <path d="M 168,343 L 315,343" fill="none" stroke="#0F172A" stroke-width="40" stroke-linecap="round" />
+    <path d="M 168,343 L 300,172 L 456,55"
+      fill="none" stroke="#0F172A" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" />
+    <polygon points="470.00,35.00 429.73,128.46 370.12,54.49" fill="#0F172A" />
   </g>
-    <text x="190" y="95" font-family="Manrope" font-weight="800" font-size="48" letter-spacing="-1">
-    <tspan fill="#0F172A">Zentex</tspan><tspan fill="#0F172A">AI</tspan>
-  </text>
-    <text x="191" y="124" font-family="Manrope" font-weight="600" font-size="16" letter-spacing="0.5" fill="#475569">Intelligence. Execution. Impact.</text>
+    <text x="204" y="108" font-family="Manrope" font-weight="800" font-size="78" letter-spacing="-1" fill="#0F172A">ZentexAI</text>
+    <text x="206" y="152" font-family="Manrope" font-weight="600" font-size="27" letter-spacing="0.2" fill="#0F172A">Intelligence. Execution. Impact.</text>
   </svg>

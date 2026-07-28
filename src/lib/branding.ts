@@ -39,11 +39,12 @@ export const HAS_LOGO_ASSETS = true;
 
 export const BRAND_ASSETS = {
   // Rendered PNGs - what <Logo/> actually displays in-app (guaranteed
-  // fidelity regardless of the viewer's installed fonts).
-  logoPrimary: "/brand/icon.png",
-  logoHorizontal: "/brand/logo-horizontal.png",
-  logoTransparent: "/brand/logo-transparent.png",
-  icon: "/brand/icon.png",
+  // fidelity regardless of the viewer's installed fonts). All three are
+  // dark-background-safe (light ink) - this site has no light theme today.
+  logoPrimary: "/brand/logo-primary.png", // icon + wordmark + tagline (footer, large placements)
+  logoHorizontal: "/brand/logo-horizontal.png", // icon + wordmark, no tagline (navbar)
+  logoTransparent: "/brand/logo-transparent.png", // original navy ink, for future light-bg use
+  icon: "/brand/icon.png", // simplified glyph alone (compact/mobile)
   favicon: "/favicon.ico",
   ogImage: "/opengraph-image.png",
   // Vector source kit - full brand deliverables (print, partners, future

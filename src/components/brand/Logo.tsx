@@ -2,10 +2,19 @@ import Image from "next/image";
 import { BRAND, BRAND_ASSETS, HAS_LOGO_ASSETS } from "@/lib/branding";
 
 interface LogoProps {
-  /** primary: square/stacked mark for tight spaces. horizontal: wordmark + icon side by side (nav/footer). icon: mark alone (compact/mobile). */
+  /** primary: icon + wordmark + tagline (footer, hero, large placements). horizontal: icon + wordmark only, no tagline (navbar/compact). icon: mark alone (smallest spaces). */
   variant?: "primary" | "horizontal" | "icon";
   className?: string;
 }
+
+// Intrinsic pixel dimensions of each rendered asset - used as the aspect
+// ratio reference for next/image (actual display size is controlled by the
+// height utility in `className`; width scales automatically via w-auto).
+const DIMENSIONS = {
+  primary: { width: 800, height: 210, src: BRAND_ASSETS.logoPrimary },
+  horizontal: { width: 760, height: 170, src: BRAND_ASSETS.logoHorizontal },
+  icon: { width: 512, height: 512, src: BRAND_ASSETS.icon },
+} as const;
 
 /**
  * Single source of truth for rendering the ZentexAI mark anywhere in the
@@ -16,19 +25,15 @@ interface LogoProps {
  */
 export default function Logo({ variant = "horizontal", className = "" }: LogoProps) {
   if (HAS_LOGO_ASSETS) {
-    const isSquare = variant === "icon" || variant === "primary";
-    const src = isSquare ? BRAND_ASSETS.icon : BRAND_ASSETS.logoHorizontal;
-    // Intrinsic sizes match the actual asset aspect ratio (icon 1:1,
-    // horizontal 3.5:1) - className below sets the display height and lets
-    // width scale automatically, so callers only ever need to pass a
-    // height utility (e.g. "h-9") to resize it consistently.
+    const { width, height, src } = DIMENSIONS[variant];
     return (
       <Image
         src={src}
         alt={BRAND.name}
-        width={isSquare ? 400 : 1120}
-        height={isSquare ? 400 : 320}
-        className={`h-8 w-auto ${className}`}
+        width={width}
+        height={height}
+        className={`h-9 w-auto md:h-10 ${className}`}
+        style={{ overflow: "visible" }}
         priority
       />
     );

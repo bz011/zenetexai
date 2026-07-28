@@ -1,13 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
-    <rect x="0" y="0" width="200" height="200" rx="44" fill="#0F172A" />
-    <g transform="translate(0,0)">
-    <defs><linearGradient id="favGrad" x1="66" y1="150" x2="150" y2="50" gradientUnits="userSpaceOnUse">
-         <stop offset="0" stop-color="#06B6D4" />
-         <stop offset="1" stop-color="#2563EB" />
-       </linearGradient></defs>
-    <circle cx="100" cy="100" r="80" fill="none" stroke="#FFFFFF" stroke-width="10" />
-    <path d="M 66,62 L 134,62 L 66,138 L 134,138" fill="none" stroke="url(#favGrad)"
-      stroke-width="17" stroke-linecap="round" stroke-linejoin="round" />
-    <path d="M 134,62 L 158,38 L 158,54 Z M 134,62 L 158,38 L 142,38 Z" fill="url(#favGrad)" />
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+    <rect x="0" y="0" width="512" height="512" rx="112" fill="#0F172A" />
+    
+    <defs><linearGradient id="favGrad" x1="20%" y1="80%" x2="85%" y2="15%">
+      <stop offset="0%" stop-color="#2563EB" /><stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient></defs>
+    <path d="M 440.29,204.01 A 197,197 0 1 1 348.50,84.39" fill="none" stroke="#FFFFFF" stroke-width="46" stroke-linecap="round" />
+    <path d="M 150,360 L 440,88" fill="none" stroke="url(#favGrad)" stroke-width="58" stroke-linecap="round" />
+    <polygon points="460.00,60.00 415.26,200.71 317.90,100.10" fill="url(#favGrad)" />
+  
   </svg>
