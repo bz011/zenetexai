@@ -22,6 +22,23 @@ export interface AdaptedDraft {
   workbook: WorkbookData;
   imageBrief: string | null;
   hotspotBrief: { imageDescription: string; targetDescription: string } | null;
+  // Sprint 8 additions - not part of the workbook CSV row shape, so they
+  // don't go through import_question_bundle. insertDraft.ts writes these
+  // via a follow-up UPDATE after the bundle insert succeeds.
+  factoryMetadata: {
+    knowledgeArea: string | null;
+    processGroup: string | null;
+    primaryTag: string;
+    estimatedTimeSeconds: number;
+    bloomLevel: string;
+    confidence: number;
+    explanationStructured: {
+      key_concept_en: string; key_concept_ar: string;
+      exam_tip_en: string; exam_tip_ar: string;
+      common_trap_en: string; common_trap_ar: string;
+      related_concepts_en: string[]; related_concepts_ar: string[];
+    };
+  };
 }
 
 function boolToStr(value: boolean): string {
@@ -127,5 +144,14 @@ export function adaptDraftToWorkbookRows(
       target.interactionType === "hotspot" && draft.hotspot_brief
         ? { imageDescription: draft.hotspot_brief.image_description, targetDescription: draft.hotspot_brief.target_description }
         : null,
+    factoryMetadata: {
+      knowledgeArea: draft.knowledge_area,
+      processGroup: draft.process_group,
+      primaryTag: draft.primary_tag,
+      estimatedTimeSeconds: draft.estimated_time_seconds,
+      bloomLevel: draft.bloom_level,
+      confidence: draft.confidence,
+      explanationStructured: draft.explanation_extras,
+    },
   };
 }

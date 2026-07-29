@@ -1,22 +1,32 @@
 import type { ValidationIssue } from "../question-bank/types";
-import type { QualityScores, SimilarityMatch } from "./types";
+import type { QualityScores, SimilarityMatch, RawGeneratedOption, RawExplanationExtras } from "./types";
 
 /**
  * Weighted overall score. Documented and code-constant, not a black box -
  * same transparency precedent as the Sprint 3.5 validator's health score.
  * `ambiguity_risk` is the one component where LOWER is better; it
  * contributes via a derived "clarity" term (100 - ambiguity_risk).
+ *
+ * Sprint 8 (Phase 7) adds four dimensions: scenario_realism/grammar_quality
+ * (LLM-scored, folded into the existing critique call - no extra API cost)
+ * and option_balance/explanation_quality (deterministic, code-computed -
+ * same category as schema_validity/scenario_originality below). Existing
+ * weights were reduced proportionally to make room; nothing was removed.
  */
 const WEIGHTS = {
-  schema_validity: 0.18,
-  pmp_alignment: 0.18,
-  answer_defensibility: 0.14,
-  distractor_quality: 0.14,
-  scenario_originality: 0.1,
-  similarity_safety: 0.1,
-  translation_quality: 0.08,
-  metadata_consistency: 0.05,
+  schema_validity: 0.15,
+  pmp_alignment: 0.16,
+  answer_defensibility: 0.13,
+  distractor_quality: 0.12,
+  scenario_originality: 0.08,
+  similarity_safety: 0.08,
+  translation_quality: 0.06,
+  metadata_consistency: 0.04,
   clarity: 0.03,
+  scenario_realism: 0.05,
+  grammar_quality: 0.04,
+  option_balance: 0.03,
+  explanation_quality: 0.03,
 };
 
 /**
@@ -37,6 +47,8 @@ export interface CritiqueResult {
   answer_defensibility: number;
   distractor_quality: number;
   ambiguity_risk: number;
+  scenario_realism: number;
+  grammar_quality: number;
   reasoning: string;
   reviewer_recommendations: string[];
 }
@@ -58,6 +70,66 @@ export interface ComputeQualityScoresInput {
   translationReview: TranslationReviewResult;
   metadataReview: MetadataReviewResult;
   similarityMatches: SimilarityMatch[];
+  /** Standard/graphic_based options only - empty for matching/drag_and_drop (option_balance doesn't apply, scored neutral). */
+  options: RawGeneratedOption[];
+  explanationExtras: RawExplanationExtras;
+}
+
+/**
+ * Penalizes the classic MCQ "tell": a correct answer written conspicuously
+ * longer (or shorter) than the distractors, which lets test-takers guess
+ * without knowing the content. Deterministic, not LLM-scored - this is a
+ * measurable property of the text itself. Scored 100 (neutral) when there
+ * are fewer than 2 options to compare (matching/drag_and_drop).
+ */
+function computeOptionBalance(options: RawGeneratedOption[]): number {
+  if (options.length < 2) return 100;
+
+  const lengths = options.map((o) => o.option_text_en.length);
+  const mean = lengths.reduce((a, b) => a + b, 0) / lengths.length;
+  if (mean === 0) return 100;
+
+  const variance = lengths.reduce((sum, l) => sum + (l - mean) ** 2, 0) / lengths.length;
+  const coefficientOfVariation = Math.sqrt(variance) / mean;
+  // CoV of 0 (identical lengths) -> 100; CoV of 0.6+ (highly uneven) -> 0.
+  const balanceScore = Math.max(0, 100 - coefficientOfVariation * (100 / 0.6));
+
+  const correct = options.find((o) => o.is_correct);
+  const incorrect = options.filter((o) => !o.is_correct);
+  if (!correct || incorrect.length === 0) return Math.round(balanceScore);
+
+  const incorrectMean = incorrect.reduce((sum, o) => sum + o.option_text_en.length, 0) / incorrect.length;
+  const correctDeviationRatio = incorrectMean > 0 ? Math.abs(correct.option_text_en.length - incorrectMean) / incorrectMean : 0;
+  // The correct answer being >50% longer/shorter than the distractor
+  // average is a strong giveaway - penalize independently of overall variance.
+  const correctAnswerPenalty = correctDeviationRatio > 0.5 ? Math.min(40, (correctDeviationRatio - 0.5) * 80) : 0;
+
+  return Math.round(Math.max(0, balanceScore - correctAnswerPenalty));
+}
+
+/**
+ * Deterministic completeness check on the structured teaching content
+ * (Phase 5) - not "is this well-written" (no LLM call needed for that),
+ * just "is every required teaching element actually present and
+ * substantive enough to be useful", since an empty or one-word field
+ * technically satisfies the schema but teaches nothing.
+ */
+function computeExplanationQuality(extras: RawExplanationExtras): number {
+  const minWords = (text: string, n: number) => text.trim().split(/\s+/).filter(Boolean).length >= n;
+
+  const checks = [
+    minWords(extras.key_concept_en, 2),
+    minWords(extras.exam_tip_en, 4),
+    minWords(extras.common_trap_en, 4),
+    extras.related_concepts_en.length >= 2,
+    minWords(extras.key_concept_ar, 2),
+    minWords(extras.exam_tip_ar, 4),
+    minWords(extras.common_trap_ar, 4),
+    extras.related_concepts_ar.length >= 2,
+  ];
+
+  const passed = checks.filter(Boolean).length;
+  return Math.round((passed / checks.length) * 100);
 }
 
 function computeSchemaValidity(issues: ValidationIssue[], interactionType: string): { score: number; hardFailures: string[] } {
@@ -113,6 +185,8 @@ export function computeQualityScores(input: ComputeQualityScoresInput): QualityS
   const schema = computeSchemaValidity(input.validatorIssues, input.interactionType);
   const similarity = computeSimilaritySafety(input.similarityMatches);
   const scenarioOriginality = computeScenarioOriginality(input.similarityMatches);
+  const optionBalance = computeOptionBalance(input.options);
+  const explanationQuality = computeExplanationQuality(input.explanationExtras);
 
   const flags: string[] = [...similarity.flags];
   const hardFailures: string[] = [...schema.hardFailures, ...similarity.hardFailures];
@@ -128,6 +202,10 @@ export function computeQualityScores(input: ComputeQualityScoresInput): QualityS
   if (input.critique.ambiguity_risk > 30) flags.push("ambiguity_risk above 30 - question wording may be unclear");
   if (input.translationReview.translation_quality < 70) flags.push("translation_quality below 70 - review Arabic content");
   if (input.metadataReview.metadata_consistency < 70) flags.push("metadata_consistency below 70 - declared metadata may not match content");
+  if (input.critique.scenario_realism < 60) flags.push("scenario_realism below 60 - scenario may feel contrived");
+  if (input.critique.grammar_quality < 70) flags.push("grammar_quality below 70 - review English prose");
+  if (optionBalance < 60) flags.push("option_balance below 60 - option lengths may telegraph the correct answer");
+  if (explanationQuality < 75) flags.push("explanation_quality below 75 - teaching content (key concept/exam tip/common trap) may be thin");
 
   const clarity = 100 - input.critique.ambiguity_risk;
 
@@ -140,7 +218,11 @@ export function computeQualityScores(input: ComputeQualityScoresInput): QualityS
     similarity.score * WEIGHTS.similarity_safety +
     input.translationReview.translation_quality * WEIGHTS.translation_quality +
     input.metadataReview.metadata_consistency * WEIGHTS.metadata_consistency +
-    clarity * WEIGHTS.clarity;
+    clarity * WEIGHTS.clarity +
+    input.critique.scenario_realism * WEIGHTS.scenario_realism +
+    input.critique.grammar_quality * WEIGHTS.grammar_quality +
+    optionBalance * WEIGHTS.option_balance +
+    explanationQuality * WEIGHTS.explanation_quality;
 
   return {
     schema_validity: schema.score,
@@ -152,6 +234,10 @@ export function computeQualityScores(input: ComputeQualityScoresInput): QualityS
     translation_quality: input.translationReview.translation_quality,
     metadata_consistency: input.metadataReview.metadata_consistency,
     ambiguity_risk: input.critique.ambiguity_risk,
+    scenario_realism: input.critique.scenario_realism,
+    grammar_quality: input.critique.grammar_quality,
+    option_balance: optionBalance,
+    explanation_quality: explanationQuality,
     overall: Math.round(overall * 100) / 100,
     flags,
     hard_failures: hardFailures,

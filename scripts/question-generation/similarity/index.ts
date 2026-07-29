@@ -1,4 +1,4 @@
-import { jaccardSimilarity } from "./lexicalSimilarity";
+import { jaccardSimilarity, optionSetSimilarity, tagSetSimilarity } from "./lexicalSimilarity";
 import { embedAndStore, findNearestApprovedQuestions } from "./semanticSimilarity";
 import type { LLMProvider } from "../llm/types";
 import type { SimilarityMatch } from "../types";
@@ -8,12 +8,21 @@ import type { SimilarityMatch } from "../types";
  * can be audited/tuned - same transparency precedent as the Sprint 3.5
  * validator's health-score formula. Thresholds are heuristic, not a
  * guarantee of originality - human review is the real backstop.
+ *
+ * option_set/tag_set (Sprint 8, Phase 6) use a higher hard-reject bar than
+ * lexical stem-text similarity: two questions can legitimately share a
+ * couple of tags or one plausible-sounding distractor without being
+ * duplicates, so only a near-total overlap should ever hard-reject.
  */
 export const SIMILARITY_THRESHOLDS = {
   lexicalHardReject: 0.5,
   lexicalWarning: 0.3,
   semanticHardReject: 0.92,
   semanticWarning: 0.85,
+  optionSetHardReject: 0.75,
+  optionSetWarning: 0.5,
+  tagSetHardReject: 0.85,
+  tagSetWarning: 0.6,
 };
 
 function classify(score: number, hardReject: number, warning: number): "hard_reject" | "warning" | "none" {
@@ -27,15 +36,40 @@ export interface SimilarityCheckInput {
   draftBatchQuestionId?: string; // set once the generation_batch_questions row exists, for same-batch comparisons
   sourceQuestionIds: string[]; // the pattern's source_question_ids
   sameBatchDraftTexts: { batchQuestionId: string; text: string }[]; // other drafts already generated in this run
+  /** Phase 6 additions - option-set and tag-set duplicate signals, compared against the same source questions as the lexical check. */
+  draftOptionTexts: string[];
+  draftTags: string[];
 }
 
-async function fetchQuestionTexts(questionIds: string[]): Promise<Map<string, string>> {
+interface SourceQuestionData {
+  text: string;
+  optionTexts: string[];
+  tags: string[];
+}
+
+async function fetchSourceQuestionData(questionIds: string[]): Promise<Map<string, SourceQuestionData>> {
   if (questionIds.length === 0) return new Map();
   const { supabaseAdmin } = await import("../../question-bank/supabaseAdminClient");
-  const { data } = await supabaseAdmin.from("questions").select("question_id, question_text_en").in("question_id", questionIds);
-  const map = new Map<string, string>();
-  for (const row of (data ?? []) as { question_id: string; question_text_en: string }[]) {
-    map.set(row.question_id, row.question_text_en);
+
+  const [{ data: questionRows }, { data: optionRows }] = await Promise.all([
+    supabaseAdmin.from("questions").select("question_id, question_text_en, tags").in("question_id", questionIds),
+    supabaseAdmin.from("question_options").select("question_id, option_text_en").in("question_id", questionIds),
+  ]);
+
+  const optionsByQuestion = new Map<string, string[]>();
+  for (const row of (optionRows ?? []) as { question_id: string; option_text_en: string }[]) {
+    const existing = optionsByQuestion.get(row.question_id) ?? [];
+    existing.push(row.option_text_en);
+    optionsByQuestion.set(row.question_id, existing);
+  }
+
+  const map = new Map<string, SourceQuestionData>();
+  for (const row of (questionRows ?? []) as { question_id: string; question_text_en: string; tags: string[] | null }[]) {
+    map.set(row.question_id, {
+      text: row.question_text_en,
+      optionTexts: optionsByQuestion.get(row.question_id) ?? [],
+      tags: row.tags ?? [],
+    });
   }
   return map;
 }
@@ -53,16 +87,38 @@ export async function runSimilarityChecks(
   const matches: SimilarityMatch[] = [];
   let promptTokens = 0;
 
-  // 1. Lexical against source questions (cheap, no API call)
-  const sourceTexts = await fetchQuestionTexts(input.sourceQuestionIds);
-  for (const [questionId, text] of sourceTexts) {
-    const score = jaccardSimilarity(input.draftText, text);
+  // 1. Lexical, option-set, and tag-set against source questions (all
+  // cheap, no API call - Phase 6 added option_set/tag_set alongside the
+  // original lexical stem-text check).
+  const sourceData = await fetchSourceQuestionData(input.sourceQuestionIds);
+  for (const [questionId, source] of sourceData) {
+    const lexicalScore = jaccardSimilarity(input.draftText, source.text);
     matches.push({
       comparisonType: "lexical",
       matchedQuestionId: questionId,
-      similarityScore: score,
-      thresholdResult: classify(score, SIMILARITY_THRESHOLDS.lexicalHardReject, SIMILARITY_THRESHOLDS.lexicalWarning),
+      similarityScore: lexicalScore,
+      thresholdResult: classify(lexicalScore, SIMILARITY_THRESHOLDS.lexicalHardReject, SIMILARITY_THRESHOLDS.lexicalWarning),
     });
+
+    if (input.draftOptionTexts.length > 0 && source.optionTexts.length > 0) {
+      const optionScore = optionSetSimilarity(input.draftOptionTexts, source.optionTexts);
+      matches.push({
+        comparisonType: "option_set",
+        matchedQuestionId: questionId,
+        similarityScore: optionScore,
+        thresholdResult: classify(optionScore, SIMILARITY_THRESHOLDS.optionSetHardReject, SIMILARITY_THRESHOLDS.optionSetWarning),
+      });
+    }
+
+    if (input.draftTags.length > 0 && source.tags.length > 0) {
+      const tagScore = tagSetSimilarity(input.draftTags, source.tags);
+      matches.push({
+        comparisonType: "tag_set",
+        matchedQuestionId: questionId,
+        similarityScore: tagScore,
+        thresholdResult: classify(tagScore, SIMILARITY_THRESHOLDS.tagSetHardReject, SIMILARITY_THRESHOLDS.tagSetWarning),
+      });
+    }
   }
 
   // 2. Lexical against same-batch drafts (cheap, no API call)

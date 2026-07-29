@@ -25,6 +25,12 @@ question. Score it honestly on a 0-100 scale for each dimension:
 - ambiguity_risk: how ambiguous or confusingly worded is the question
   (0 = perfectly clear, 100 = highly ambiguous)? Note this scale is
   INVERTED relative to the others - higher is worse here.
+- scenario_realism: would this scenario plausibly happen to a real project
+  professional, with believable actors/constraints/facts - not generic or
+  contrived filler around the "real" question?
+- grammar_quality: is the English prose itself (question, options,
+  explanation) grammatically correct, professionally worded, and free of
+  awkward phrasing - independent of whether the PMP content is correct?
 
 Be a harsh, skeptical reviewer. Do not inflate scores to be polite.`;
 

@@ -10,17 +10,8 @@ interface FindOrCreatePatternResult {
   completionTokens: number;
 }
 
-/**
- * Reuses an existing active pattern matching this target slice if one
- * exists (amortizing extraction cost across every question generated from
- * it). Otherwise selects 1-3 approved source questions matching the slice
- * and runs pattern extraction to create a new one.
- */
-export async function findOrCreatePattern(
-  certificationId: string,
-  slice: GenerationTargetSlice,
-  createdBy: string
-): Promise<FindOrCreatePatternResult> {
+/** Looks up an existing active pattern for a slice - shared by findOrCreatePattern and the proactive pattern library builder so both agree on what "already covered" means. */
+export async function findExistingPattern(certificationId: string, slice: GenerationTargetSlice): Promise<PatternRow | null> {
   let query = supabaseAdmin
     .from("question_patterns")
     .select("*")
@@ -34,13 +25,15 @@ export async function findOrCreatePattern(
   if (slice.difficulty) query = query.eq("difficulty", slice.difficulty);
 
   const { data: existing } = await query.limit(1).maybeSingle();
+  return (existing as PatternRow | null) ?? null;
+}
 
-  if (existing) {
-    return { pattern: existing as PatternRow, wasCreated: false, promptTokens: 0, completionTokens: 0 };
-  }
-
-  // No reusable pattern - select source questions matching this slice from
-  // the approved bank and extract a new pattern.
+/** Fetches up to `limit` approved source questions matching a slice - shared by findOrCreatePattern and the proactive pattern library builder. */
+export async function fetchSourceQuestionsForSlice(
+  certificationId: string,
+  slice: GenerationTargetSlice,
+  limit = 3
+): Promise<{ question_id: string; question_text_en: string }[]> {
   let sourceQuery = supabaseAdmin
     .from("questions")
     .select("question_id, question_text_en")
@@ -48,16 +41,24 @@ export async function findOrCreatePattern(
     .eq("interaction_type", slice.interactionType)
     .eq("answer_type", slice.answerType)
     .eq("status", "approved")
-    .limit(3);
+    .limit(limit);
 
   if (slice.domain) sourceQuery = sourceQuery.eq("domain", slice.domain);
   if (slice.approach) sourceQuery = sourceQuery.eq("approach", slice.approach);
   if (slice.difficulty) sourceQuery = sourceQuery.eq("difficulty", slice.difficulty);
 
-  const { data: sourceData, error: sourceError } = await sourceQuery;
-  const sourceQuestions = (sourceData ?? []) as { question_id: string; question_text_en: string }[];
+  const { data } = await sourceQuery;
+  return (data ?? []) as { question_id: string; question_text_en: string }[];
+}
 
-  if (sourceError || sourceQuestions.length === 0) {
+/** Runs pattern extraction against a fixed set of source questions and persists the result - shared by findOrCreatePattern and the proactive pattern library builder. */
+export async function extractAndInsertPattern(
+  certificationId: string,
+  slice: GenerationTargetSlice,
+  sourceQuestions: { question_id: string; question_text_en: string }[],
+  createdBy: string
+): Promise<{ pattern: PatternRow; promptTokens: number; completionTokens: number }> {
+  if (sourceQuestions.length === 0) {
     throw new Error(
       `No approved source questions found for slice ${JSON.stringify(slice)} - cannot extract a pattern without at least one example.`
     );
@@ -106,10 +107,31 @@ export async function findOrCreatePattern(
 
   return {
     pattern: inserted as PatternRow,
-    wasCreated: true,
     promptTokens: result.usage.promptTokens,
     completionTokens: result.usage.completionTokens,
   };
+}
+
+/**
+ * Reuses an existing active pattern matching this target slice if one
+ * exists (amortizing extraction cost across every question generated from
+ * it). Otherwise selects 1-3 approved source questions matching the slice
+ * and runs pattern extraction to create a new one.
+ */
+export async function findOrCreatePattern(
+  certificationId: string,
+  slice: GenerationTargetSlice,
+  createdBy: string
+): Promise<FindOrCreatePatternResult> {
+  const existing = await findExistingPattern(certificationId, slice);
+  if (existing) {
+    return { pattern: existing, wasCreated: false, promptTokens: 0, completionTokens: 0 };
+  }
+
+  const sourceQuestions = await fetchSourceQuestionsForSlice(certificationId, slice, 3);
+  const { pattern, promptTokens, completionTokens } = await extractAndInsertPattern(certificationId, slice, sourceQuestions, createdBy);
+
+  return { pattern, wasCreated: true, promptTokens, completionTokens };
 }
 
 export async function incrementPatternUsage(patternId: string): Promise<void> {

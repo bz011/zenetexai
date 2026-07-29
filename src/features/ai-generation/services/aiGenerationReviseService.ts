@@ -10,6 +10,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/requireRole";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { reviseQuestion } from "@scripts/question-generation/reviseQuestion";
 import type { GenerationOutcome } from "@scripts/question-generation/types";
 
@@ -19,11 +20,22 @@ import type { GenerationOutcome } from "@scripts/question-generation/types";
 
 const MANAGE_ROLES = ["admin", "instructor"] as const;
 
+async function logAction(questionId: string, action: "regenerated" | "repair_requested", actor: string, comment: string | null, outcome: GenerationOutcome) {
+  await supabaseAdmin.rpc("log_question_review_action", {
+    p_question_id: questionId,
+    p_action: action,
+    p_actor: actor,
+    p_comment: comment,
+    p_metadata: { accepted: outcome.accepted, rejectionReason: outcome.rejectionReason ?? null, overallScore: outcome.qualityScores.overall },
+  });
+}
+
 export async function regenerateQuestion(questionId: string): Promise<GenerationOutcome | { accepted: false; error: string }> {
-  await requireRole([...MANAGE_ROLES]);
+  const { user } = await requireRole([...MANAGE_ROLES]);
 
   try {
     const outcome = await reviseQuestion(questionId, null);
+    await logAction(questionId, "regenerated", user.email ?? user.id, null, outcome);
     revalidatePath(`/admin/ai-generation/review/${questionId}`);
     return outcome;
   } catch (err) {
@@ -35,7 +47,7 @@ export async function requestQuestionRepair(
   questionId: string,
   reviewerFeedback: string
 ): Promise<GenerationOutcome | { accepted: false; error: string }> {
-  await requireRole([...MANAGE_ROLES]);
+  const { user } = await requireRole([...MANAGE_ROLES]);
 
   if (!reviewerFeedback.trim()) {
     return { accepted: false, error: "Feedback is required for a targeted repair." };
@@ -43,6 +55,7 @@ export async function requestQuestionRepair(
 
   try {
     const outcome = await reviseQuestion(questionId, reviewerFeedback);
+    await logAction(questionId, "repair_requested", user.email ?? user.id, reviewerFeedback, outcome);
     revalidatePath(`/admin/ai-generation/review/${questionId}`);
     return outcome;
   } catch (err) {

@@ -55,6 +55,18 @@ const rawDraft: RawGeneratedQuestion = {
   drag_and_drop_items: [],
   hotspot_brief: null,
   image_brief: null,
+  knowledge_area: "Risk Management",
+  process_group: "Planning",
+  primary_tag: "risk-register",
+  estimated_time_seconds: 90,
+  bloom_level: "Apply",
+  confidence: 85,
+  explanation_extras: {
+    key_concept_en: "Risk register maintenance", key_concept_ar: "صيانة سجل المخاطر",
+    exam_tip_en: "Always update records before escalating.", exam_tip_ar: "قم دائماً بتحديث السجلات قبل التصعيد.",
+    common_trap_en: "Assuming escalation is always the first step.", common_trap_ar: "افتراض أن التصعيد هو دائماً الخطوة الأولى.",
+    related_concepts_en: ["Risk identification", "Issue log"], related_concepts_ar: ["تحديد المخاطر", "سجل المشكلات"],
+  },
 };
 
 describe("adaptDraftToWorkbookRows", () => {

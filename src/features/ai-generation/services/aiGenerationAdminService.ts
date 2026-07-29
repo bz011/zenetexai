@@ -94,12 +94,13 @@ export async function setQuestionReviewStatus(
   newStatus: "approved" | "rejected" | "needs_review",
   reviewerNote?: string
 ): Promise<{ success: boolean; error?: string }> {
-  await requireRole([...MANAGE_ROLES]);
+  const { user } = await requireRole([...MANAGE_ROLES]);
 
   const { data, error } = await supabaseAdmin.rpc("set_question_status", {
     p_question_id: questionId,
     p_new_status: newStatus,
     p_reviewer_note: reviewerNote ?? null,
+    p_actor: user.email ?? user.id,
   });
 
   if (error) return { success: false, error: error.message };
@@ -121,7 +122,8 @@ export async function bulkApproveQuestions(questionIds: string[]): Promise<{
   approved: string[];
   failed: { questionId: string; error: string }[];
 }> {
-  await requireRole([...MANAGE_ROLES]);
+  const { user } = await requireRole([...MANAGE_ROLES]);
+  const actor = user.email ?? user.id;
 
   const approved: string[] = [];
   const failed: { questionId: string; error: string }[] = [];
@@ -131,6 +133,7 @@ export async function bulkApproveQuestions(questionIds: string[]): Promise<{
       p_question_id: questionId,
       p_new_status: "approved",
       p_reviewer_note: "Bulk approved",
+      p_actor: actor,
     });
 
     if (error) {
@@ -147,4 +150,117 @@ export async function bulkApproveQuestions(questionIds: string[]): Promise<{
 
   revalidatePath("/admin/ai-generation/review");
   return { approved, failed };
+}
+
+/** Leave a comment without changing review status - logged like every other reviewer action. */
+export async function commentOnQuestion(questionId: string, comment: string): Promise<{ success: boolean; error?: string }> {
+  const { user } = await requireRole([...MANAGE_ROLES]);
+
+  if (!comment.trim()) return { success: false, error: "Comment cannot be empty." };
+
+  const { data, error } = await supabaseAdmin.rpc("log_question_review_action", {
+    p_question_id: questionId,
+    p_action: "commented",
+    p_actor: user.email ?? user.id,
+    p_comment: comment,
+  });
+
+  if (error) return { success: false, error: error.message };
+  const result = data as { success: boolean; error?: string };
+  if (!result?.success) return { success: false, error: result?.error };
+
+  revalidatePath(`/admin/ai-generation/review/${questionId}`);
+  return { success: true };
+}
+
+export interface QuestionEditInput {
+  question_text_en: string;
+  question_text_ar: string;
+  explanation_en: string;
+  explanation_ar: string;
+  options?: { id: string; option_text_en: string; option_text_ar: string; feedback_en: string; feedback_ar: string }[];
+}
+
+/**
+ * Edit a draft's content before approving. Reuses import_question_bundle
+ * (the ONLY insertion/update path for question content, migration 007) via
+ * buildQuestionPayload - this is NOT a second write path, just a second
+ * caller of the existing one. Snapshots the pre-edit row into
+ * question_versions first (record_question_version RPC), then logs the
+ * edit action - matching every other reviewer action's audit trail.
+ *
+ * Scope: text fields only (question/explanation/option text+feedback).
+ * Does not support editing option correctness, matching/drag-drop/hotspot
+ * content, or metadata classification in this sprint - those still require
+ * re-generation (Regenerate/Request repair) rather than direct editing.
+ */
+export async function editQuestionDraft(questionId: string, edits: QuestionEditInput): Promise<{ success: boolean; error?: string }> {
+  const { user, supabase } = await requireRole([...MANAGE_ROLES]);
+  const actor = user.email ?? user.id;
+
+  const { data: current, error: fetchError } = await supabase
+    .from("questions")
+    .select("*, question_options(*)")
+    .eq("question_id", questionId)
+    .single();
+
+  if (fetchError || !current) {
+    return { success: false, error: "Question not found." };
+  }
+
+  const { error: versionError } = await supabaseAdmin.rpc("record_question_version", {
+    p_question_id: questionId,
+    p_snapshot: current,
+    p_changed_by: actor,
+    p_change_reason: "Pre-edit snapshot",
+  });
+  if (versionError) {
+    return { success: false, error: `Failed to snapshot current version: ${versionError.message}` };
+  }
+
+  const { error: updateError } = await supabaseAdmin
+    .from("questions")
+    .update({
+      question_text_en: edits.question_text_en,
+      question_text_ar: edits.question_text_ar,
+      explanation_en: edits.explanation_en,
+      explanation_ar: edits.explanation_ar,
+    })
+    .eq("question_id", questionId);
+
+  if (updateError) {
+    return { success: false, error: updateError.message };
+  }
+
+  if (edits.options && edits.options.length > 0) {
+    for (const option of edits.options) {
+      const { error: optionError } = await supabaseAdmin
+        .from("question_options")
+        .update({
+          option_text_en: option.option_text_en,
+          option_text_ar: option.option_text_ar,
+          feedback_en: option.feedback_en,
+          feedback_ar: option.feedback_ar,
+        })
+        .eq("id", option.id);
+      if (optionError) {
+        return { success: false, error: `Failed to update option: ${optionError.message}` };
+      }
+    }
+  }
+
+  await supabaseAdmin
+    .from("questions")
+    .update({ version: ((current as { version?: number }).version ?? 1) + 1 })
+    .eq("question_id", questionId);
+
+  await supabaseAdmin.rpc("log_question_review_action", {
+    p_question_id: questionId,
+    p_action: "edited",
+    p_actor: actor,
+    p_comment: "Edited question content before review.",
+  });
+
+  revalidatePath(`/admin/ai-generation/review/${questionId}`);
+  return { success: true };
 }

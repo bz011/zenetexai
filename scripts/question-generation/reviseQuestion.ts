@@ -79,6 +79,23 @@ async function fetchCurrentDraftAsRaw(questionId: string): Promise<{ raw: RawGen
     })),
     hotspot_brief: null,
     image_brief: null,
+    // Pre-Factory rows (or manually-imported questions) won't have these
+    // columns populated - the repair/regenerate prompt still needs a value
+    // for every required field, so fall back to sensible defaults rather
+    // than failing. A repaired/regenerated draft always gets these
+    // re-evaluated by the LLM regardless of what's carried in here.
+    knowledge_area: (q.knowledge_area as string | null) ?? null,
+    process_group: (q.process_group as string | null) ?? null,
+    primary_tag: (q.primary_tag as string | null) ?? (Array.isArray(q.tags) && q.tags[0] ? String(q.tags[0]) : "general"),
+    estimated_time_seconds: (q.estimated_time_seconds as number | null) ?? 90,
+    bloom_level: (q.bloom_level as string | null) ?? "Apply",
+    confidence: (q.ai_confidence as number | null) ?? 70,
+    explanation_extras: (q.explanation_structured as RawGeneratedQuestion["explanation_extras"] | null) ?? {
+      key_concept_en: "", key_concept_ar: "",
+      exam_tip_en: "", exam_tip_ar: "",
+      common_trap_en: "", common_trap_ar: "",
+      related_concepts_en: [], related_concepts_ar: [],
+    },
   };
 
   const slice: GenerationTargetSlice = {
@@ -128,6 +145,8 @@ export async function reviseQuestion(questionId: string, reviewerFeedback: strin
     draftText: draft.question_text_en,
     sourceQuestionIds: pattern.source_question_ids,
     sameBatchDraftTexts: [],
+    draftOptionTexts: draft.options.map((o) => o.option_text_en),
+    draftTags: draft.tags,
   });
 
   const qualityScores = computeQualityScores({
@@ -137,6 +156,8 @@ export async function reviseQuestion(questionId: string, reviewerFeedback: strin
     translationReview: translationResult.data,
     metadataReview: metadataResult.data,
     similarityMatches,
+    options: draft.options,
+    explanationExtras: draft.explanation_extras,
   });
 
   const totalPromptTokens =
@@ -156,7 +177,10 @@ export async function reviseQuestion(questionId: string, reviewerFeedback: strin
     };
   }
 
-  const insertResult = await insertAcceptedDraft(adapted);
+  const insertResult = await insertAcceptedDraft(adapted, {
+    generatedBy: `${provider.name}:${provider.defaultModel}`,
+    qualityScore: qualityScores.overall,
+  });
   if (!insertResult.success) {
     return {
       accepted: false,

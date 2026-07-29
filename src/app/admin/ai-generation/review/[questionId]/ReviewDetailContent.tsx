@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { setQuestionReviewStatus } from "@/features/ai-generation/services/aiGenerationAdminService";
+import {
+  setQuestionReviewStatus,
+  commentOnQuestion,
+  editQuestionDraft,
+  type QuestionEditInput,
+} from "@/features/ai-generation/services/aiGenerationAdminService";
 import { regenerateQuestion, requestQuestionRepair } from "@/features/ai-generation/services/aiGenerationReviseService";
 
 interface QualityScores {
@@ -15,10 +20,24 @@ interface QualityScores {
   translation_quality: number;
   metadata_consistency: number;
   ambiguity_risk: number;
+  scenario_realism?: number;
+  grammar_quality?: number;
+  option_balance?: number;
+  explanation_quality?: number;
   overall: number;
   flags: string[];
   hard_failures: string[];
   reviewer_recommendations: string[];
+}
+
+interface ReviewLogRow {
+  id: string;
+  action: string;
+  actor: string;
+  previous_status: string | null;
+  new_status: string | null;
+  comment: string | null;
+  created_at: string;
 }
 
 interface Props {
@@ -41,6 +60,7 @@ interface Props {
   qualityScores: QualityScores | null;
   pattern: { scenario_structure: string; tested_decision: string; correct_answer_principle: string; source_question_ids: string[] } | null;
   similarityResults: { comparison_type: string; matched_question_id: string | null; similarity_score: number; threshold_result: string }[];
+  reviewLog: ReviewLogRow[];
 }
 
 const SCORE_LABELS: [keyof QualityScores, string][] = [
@@ -53,7 +73,21 @@ const SCORE_LABELS: [keyof QualityScores, string][] = [
   ["translation_quality", "Translation quality"],
   ["metadata_consistency", "Metadata consistency"],
   ["ambiguity_risk", "Ambiguity risk (lower is better)"],
+  ["scenario_realism", "Scenario realism"],
+  ["grammar_quality", "Grammar quality"],
+  ["option_balance", "Option balance"],
+  ["explanation_quality", "Explanation quality"],
 ];
+
+const ACTION_LABELS: Record<string, string> = {
+  approved: "Approved",
+  rejected: "Rejected",
+  needs_review_reset: "Reset to needs review",
+  edited: "Edited",
+  regenerated: "Regenerated",
+  repair_requested: "Repair requested",
+  commented: "Commented",
+};
 
 export default function ReviewDetailContent({
   question,
@@ -66,11 +100,22 @@ export default function ReviewDetailContent({
   qualityScores,
   pattern,
   similarityResults,
+  reviewLog,
 }: Props) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [repairFeedback, setRepairFeedback] = useState("");
+  const [commentText, setCommentText] = useState("");
+
+  const [editing, setEditing] = useState(false);
+  const [editQuestionEn, setEditQuestionEn] = useState(question.question_text_en);
+  const [editQuestionAr, setEditQuestionAr] = useState(question.question_text_ar);
+  const [editExplanationEn, setEditExplanationEn] = useState(question.explanation_en);
+  const [editExplanationAr, setEditExplanationAr] = useState(question.explanation_ar);
+  const [editOptions, setEditOptions] = useState(
+    options.map((o) => ({ id: o.id, option_key: o.option_key, option_text_en: o.option_text_en, option_text_ar: o.option_text_ar, feedback_en: "", feedback_ar: "" }))
+  );
 
   async function handleApprove() {
     setBusy(true);
@@ -110,6 +155,35 @@ export default function ReviewDetailContent({
     router.refresh();
   }
 
+  async function handleComment() {
+    if (!commentText.trim()) {
+      setMessage("Enter a comment before submitting.");
+      return;
+    }
+    setBusy(true);
+    const result = await commentOnQuestion(question.question_id, commentText);
+    setBusy(false);
+    setMessage(result.success ? "Comment added." : `Failed: ${result.error}`);
+    if (result.success) setCommentText("");
+    router.refresh();
+  }
+
+  async function handleSaveEdit() {
+    setBusy(true);
+    const edits: QuestionEditInput = {
+      question_text_en: editQuestionEn,
+      question_text_ar: editQuestionAr,
+      explanation_en: editExplanationEn,
+      explanation_ar: editExplanationAr,
+      options: editOptions.length > 0 ? editOptions.map(({ id, option_text_en, option_text_ar, feedback_en, feedback_ar }) => ({ id, option_text_en, option_text_ar, feedback_en, feedback_ar })) : undefined,
+    };
+    const result = await editQuestionDraft(question.question_id, edits);
+    setBusy(false);
+    setMessage(result.success ? "Saved. Previous version snapshotted." : `Failed: ${result.error}`);
+    if (result.success) setEditing(false);
+    router.refresh();
+  }
+
   return (
     <div className="relative min-h-screen px-6 py-24">
       <div className="container-page relative max-w-5xl">
@@ -125,7 +199,7 @@ export default function ReviewDetailContent({
               <p className="text-xl font-bold text-white">{qualityScores.overall}/100</p>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {SCORE_LABELS.map(([key, label]) => (
+              {SCORE_LABELS.filter(([key]) => qualityScores[key] !== undefined).map(([key, label]) => (
                 <div key={key}>
                   <p className="text-[11px] text-slate-500">{label}</p>
                   <p className="text-[14px] font-semibold text-white">{qualityScores[key] as number}</p>
@@ -150,20 +224,102 @@ export default function ReviewDetailContent({
           </div>
         )}
 
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <div className="card p-5">
-            <p className="label">English</p>
-            <p className="mt-2 text-[14px] text-white">{question.question_text_en}</p>
-            <p className="mt-3 text-[12px] text-slate-500">Explanation</p>
-            <p className="text-[13px] text-slate-400">{question.explanation_en}</p>
+        {!editing ? (
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <div className="card p-5">
+              <p className="label">English</p>
+              <p className="mt-2 text-[14px] text-white">{question.question_text_en}</p>
+              <p className="mt-3 text-[12px] text-slate-500">Explanation</p>
+              <p className="text-[13px] text-slate-400">{question.explanation_en}</p>
+            </div>
+            <div className="card p-5" dir="rtl">
+              <p className="label">العربية</p>
+              <p className="mt-2 text-[14px] text-white">{question.question_text_ar}</p>
+              <p className="mt-3 text-[12px] text-slate-500">الشرح</p>
+              <p className="text-[13px] text-slate-400">{question.explanation_ar}</p>
+            </div>
           </div>
-          <div className="card p-5" dir="rtl">
-            <p className="label">العربية</p>
-            <p className="mt-2 text-[14px] text-white">{question.question_text_ar}</p>
-            <p className="mt-3 text-[12px] text-slate-500">الشرح</p>
-            <p className="text-[13px] text-slate-400">{question.explanation_ar}</p>
+        ) : (
+          <div className="card mt-6 p-5">
+            <p className="label">Edit question text</p>
+            <div className="mt-3 grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-[12px] text-slate-500">Question (English)</label>
+                <textarea value={editQuestionEn} onChange={(e) => setEditQuestionEn(e.target.value)} rows={3} className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-3 py-2 text-[13px] text-white outline-none focus:border-indigo-500/60" />
+                <label className="mb-1 mt-3 block text-[12px] text-slate-500">Explanation (English)</label>
+                <textarea value={editExplanationEn} onChange={(e) => setEditExplanationEn(e.target.value)} rows={3} className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-3 py-2 text-[13px] text-white outline-none focus:border-indigo-500/60" />
+              </div>
+              <div dir="rtl">
+                <label className="mb-1 block text-[12px] text-slate-500">السؤال (عربي)</label>
+                <textarea value={editQuestionAr} onChange={(e) => setEditQuestionAr(e.target.value)} rows={3} className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-3 py-2 text-[13px] text-white outline-none focus:border-indigo-500/60" />
+                <label className="mb-1 mt-3 block text-[12px] text-slate-500">الشرح (عربي)</label>
+                <textarea value={editExplanationAr} onChange={(e) => setEditExplanationAr(e.target.value)} rows={3} className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-3 py-2 text-[13px] text-white outline-none focus:border-indigo-500/60" />
+              </div>
+            </div>
+
+            {editOptions.length > 0 && (
+              <div className="mt-5 space-y-3">
+                <p className="label">Options</p>
+                {editOptions.map((o, i) => (
+                  <div key={o.id} className="rounded-lg border border-white/[0.08] p-3">
+                    <p className="text-[12px] text-slate-500">Option {o.option_key}</p>
+                    <div className="mt-2 grid gap-3 md:grid-cols-2">
+                      <div>
+                        <input
+                          value={o.option_text_en}
+                          onChange={(e) => setEditOptions((prev) => prev.map((p, idx) => (idx === i ? { ...p, option_text_en: e.target.value } : p)))}
+                          placeholder="Option text (English)"
+                          className="w-full rounded-lg border border-white/[0.09] bg-white/[0.04] px-3 py-2 text-[13px] text-white outline-none focus:border-indigo-500/60"
+                        />
+                        <input
+                          value={o.feedback_en}
+                          onChange={(e) => setEditOptions((prev) => prev.map((p, idx) => (idx === i ? { ...p, feedback_en: e.target.value } : p)))}
+                          placeholder="Feedback (English)"
+                          className="mt-2 w-full rounded-lg border border-white/[0.09] bg-white/[0.04] px-3 py-2 text-[12px] text-slate-400 outline-none focus:border-indigo-500/60"
+                        />
+                      </div>
+                      <div dir="rtl">
+                        <input
+                          value={o.option_text_ar}
+                          onChange={(e) => setEditOptions((prev) => prev.map((p, idx) => (idx === i ? { ...p, option_text_ar: e.target.value } : p)))}
+                          placeholder="نص الخيار"
+                          className="w-full rounded-lg border border-white/[0.09] bg-white/[0.04] px-3 py-2 text-[13px] text-white outline-none focus:border-indigo-500/60"
+                        />
+                        <input
+                          value={o.feedback_ar}
+                          onChange={(e) => setEditOptions((prev) => prev.map((p, idx) => (idx === i ? { ...p, feedback_ar: e.target.value } : p)))}
+                          placeholder="الملاحظات"
+                          className="mt-2 w-full rounded-lg border border-white/[0.09] bg-white/[0.04] px-3 py-2 text-[12px] text-slate-400 outline-none focus:border-indigo-500/60"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <p className="mt-4 text-[11px] text-slate-600">
+              This only edits text content (question/explanation/option wording and feedback). Option correctness, matching/drag-and-drop/hotspot content, and metadata classification require Regenerate or Request repair instead.
+            </p>
+
+            <div className="mt-4 flex gap-3">
+              <button onClick={handleSaveEdit} disabled={busy} className="btn-primary px-5 py-2.5 text-[13px]">
+                Save changes
+              </button>
+              <button onClick={() => setEditing(false)} disabled={busy} className="btn-ghost px-5 py-2.5 text-[13px]">
+                Cancel
+              </button>
+            </div>
           </div>
-        </div>
+        )}
+
+        {!editing && (
+          <div className="mt-4">
+            <button onClick={() => setEditing(true)} disabled={busy} className="btn-ghost px-5 py-2.5 text-[13px]">
+              Edit text
+            </button>
+          </div>
+        )}
 
         {options.length > 0 && (
           <div className="card mt-4 p-5">
@@ -256,6 +412,40 @@ export default function ReviewDetailContent({
             </div>
           </div>
         )}
+
+        <div className="card mt-4 p-5">
+          <p className="label">Review history</p>
+          {reviewLog.length === 0 ? (
+            <p className="mt-2 text-[12px] text-slate-600">No reviewer actions logged yet.</p>
+          ) : (
+            <div className="mt-2 space-y-2">
+              {reviewLog.map((entry) => (
+                <div key={entry.id} className="rounded-lg border border-white/[0.08] px-3 py-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[12px] font-semibold text-slate-300">{ACTION_LABELS[entry.action] ?? entry.action}</p>
+                    <p className="text-[11px] text-slate-600">{new Date(entry.created_at).toLocaleString()}</p>
+                  </div>
+                  <p className="mt-0.5 text-[11px] text-slate-500">by {entry.actor}</p>
+                  {entry.comment && <p className="mt-1 text-[12px] text-slate-400">{entry.comment}</p>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="card mt-4 p-5">
+          <label className="mb-1.5 block text-[13px] font-medium text-slate-400">Add a comment</label>
+          <textarea
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            rows={2}
+            placeholder="Leave a note for other reviewers, without changing status."
+            className="w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-2.5 text-[14px] text-white placeholder-slate-600 outline-none focus:border-indigo-500/60"
+          />
+          <button onClick={handleComment} disabled={busy} className="btn-ghost mt-3 px-5 py-2.5 text-[13px]">
+            Add comment
+          </button>
+        </div>
 
         {message && <p className="mt-4 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-[13px] text-slate-300">{message}</p>}
 

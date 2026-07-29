@@ -83,6 +83,32 @@ const HOTSPOT_BRIEF_SCHEMA = {
   required: ["image_description", "target_description"],
 };
 
+/**
+ * Structured teaching content (Sprint 8 Phase 5) - beyond a single flat
+ * explanation string. key_concept/exam_tip/common_trap/related_concepts,
+ * each bilingual. Maps to questions.explanation_structured (migration 014).
+ */
+const EXPLANATION_EXTRAS_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    key_concept_en: { type: "string" },
+    key_concept_ar: { type: "string" },
+    exam_tip_en: { type: "string" },
+    exam_tip_ar: { type: "string" },
+    common_trap_en: { type: "string" },
+    common_trap_ar: { type: "string" },
+    related_concepts_en: { type: "array", items: { type: "string" } },
+    related_concepts_ar: { type: "array", items: { type: "string" } },
+  },
+  required: [
+    "key_concept_en", "key_concept_ar",
+    "exam_tip_en", "exam_tip_ar",
+    "common_trap_en", "common_trap_ar",
+    "related_concepts_en", "related_concepts_ar",
+  ],
+};
+
 export const QUESTION_GENERATION_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -104,6 +130,13 @@ export const QUESTION_GENERATION_SCHEMA = {
     drag_and_drop_items: { type: "array", items: DRAG_DROP_ITEM_SCHEMA },
     hotspot_brief: HOTSPOT_BRIEF_SCHEMA,
     image_brief: { type: ["string", "null"] },
+    knowledge_area: { type: ["string", "null"] },
+    process_group: { type: ["string", "null"] },
+    primary_tag: { type: "string" },
+    estimated_time_seconds: { type: "integer" },
+    bloom_level: { type: "string" },
+    confidence: { type: "number" },
+    explanation_extras: EXPLANATION_EXTRAS_SCHEMA,
   },
   required: [
     "question_text_en",
@@ -123,6 +156,13 @@ export const QUESTION_GENERATION_SCHEMA = {
     "drag_and_drop_items",
     "hotspot_brief",
     "image_brief",
+    "knowledge_area",
+    "process_group",
+    "primary_tag",
+    "estimated_time_seconds",
+    "bloom_level",
+    "confidence",
+    "explanation_extras",
   ],
 } as const;
 
@@ -134,10 +174,15 @@ export const CRITIQUE_SCHEMA = {
     answer_defensibility: { type: "number" },
     distractor_quality: { type: "number" },
     ambiguity_risk: { type: "number" },
+    scenario_realism: { type: "number" },
+    grammar_quality: { type: "number" },
     reasoning: { type: "string" },
     reviewer_recommendations: { type: "array", items: { type: "string" } },
   },
-  required: ["pmp_alignment", "answer_defensibility", "distractor_quality", "ambiguity_risk", "reasoning", "reviewer_recommendations"],
+  required: [
+    "pmp_alignment", "answer_defensibility", "distractor_quality", "ambiguity_risk",
+    "scenario_realism", "grammar_quality", "reasoning", "reviewer_recommendations",
+  ],
 } as const;
 
 export const TRANSLATION_REVIEW_SCHEMA = {

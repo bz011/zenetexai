@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireRole } from "@/lib/auth/requireRole";
+import { getCoverageReport } from "@/features/ai-generation/services/coverageIntelligenceService";
+import { computeAverageQuality, computeTopTags, summarizeReviewerActivity } from "@/features/ai-generation/services/dashboardStatsService";
 
 export const metadata: Metadata = { title: "Admin — AI Question Generation" };
 export const dynamic = "force-dynamic";
@@ -8,15 +10,24 @@ export const dynamic = "force-dynamic";
 export default async function AIGenerationDashboardPage() {
   const { supabase } = await requireRole(["admin", "instructor"], { loginRedirectTo: "/admin/ai-generation" });
 
-  const { data: batches } = await supabase
-    .from("generation_batches")
-    .select("id, status, requested_count, generated_count, passed_count, rejected_count, approved_count, created_by, created_at")
-    .order("created_at", { ascending: false })
-    .limit(10);
+  const [{ data: batches }, { data: aiQuestions }, { data: reviewLog }, coverageReport] = await Promise.all([
+    supabase
+      .from("generation_batches")
+      .select("id, status, requested_count, generated_count, passed_count, rejected_count, approved_count, created_by, created_at")
+      .order("created_at", { ascending: false })
+      .limit(10),
+    supabase.from("questions").select("status, quality_score, tags").eq("source", "AI Generated"),
+    supabase.from("question_review_log").select("actor, action, created_at").order("created_at", { ascending: false }).limit(200),
+    getCoverageReport("PMP"),
+  ]);
 
-  const { data: reviewCounts } = await supabase.from("questions").select("status").eq("source", "AI Generated");
-  const needsReviewCount = ((reviewCounts ?? []) as { status: string }[]).filter((r) => r.status === "needs_review").length;
-  const approvedCount = ((reviewCounts ?? []) as { status: string }[]).filter((r) => r.status === "approved").length;
+  const questionRows = (aiQuestions ?? []) as { status: string; quality_score: number | null; tags: string[] | null }[];
+  const needsReviewCount = questionRows.filter((r) => r.status === "needs_review").length;
+  const approvedCount = questionRows.filter((r) => r.status === "approved").length;
+  const rejectedCount = questionRows.filter((r) => r.status === "rejected").length;
+  const averageQuality = computeAverageQuality(questionRows.map((r) => r.quality_score));
+  const topTags = computeTopTags(questionRows.map((r) => r.tags));
+  const reviewerActivity = summarizeReviewerActivity(((reviewLog ?? []) as { actor: string; action: string }[]));
 
   return (
     <div className="relative min-h-screen px-6 py-24">
@@ -37,8 +48,55 @@ export default async function AIGenerationDashboardPage() {
             <p className="mt-1 text-2xl font-bold text-emerald-400">{approvedCount}</p>
           </div>
           <div className="card p-5">
+            <p className="text-[12px] text-slate-500">Rejected (AI-generated)</p>
+            <p className="mt-1 text-2xl font-bold text-red-400">{rejectedCount}</p>
+          </div>
+          <div className="card p-5">
+            <p className="text-[12px] text-slate-500">Average quality score</p>
+            <p className="mt-1 text-2xl font-bold text-white">{averageQuality !== null ? `${averageQuality}/100` : "-"}</p>
+          </div>
+          <div className="card p-5">
             <p className="text-[12px] text-slate-500">Recent batches</p>
             <p className="mt-1 text-2xl font-bold text-white">{batches?.length ?? 0}</p>
+          </div>
+          <Link href="/admin/ai-generation/coverage" className="card card-hover p-5">
+            <p className="text-[12px] text-slate-500">Coverage gaps</p>
+            <p className={`mt-1 text-2xl font-bold ${coverageReport.recommendations.length > 0 ? "text-amber-400" : "text-emerald-400"}`}>
+              {coverageReport.recommendations.length}
+            </p>
+          </Link>
+        </div>
+
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          <div className="card p-5">
+            <p className="text-[13px] font-semibold text-white">Most common tags</p>
+            {topTags.length === 0 ? (
+              <p className="mt-2 text-[12px] text-slate-600">No tags recorded yet.</p>
+            ) : (
+              <div className="mt-2 space-y-1.5">
+                {topTags.map((t) => (
+                  <div key={t.tag} className="flex items-center justify-between">
+                    <p className="text-[12px] text-slate-300">{t.tag}</p>
+                    <p className="text-[12px] text-slate-500">{t.count}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="card p-5">
+            <p className="text-[13px] font-semibold text-white">Reviewer activity (last 200 actions)</p>
+            {reviewerActivity.length === 0 ? (
+              <p className="mt-2 text-[12px] text-slate-600">No reviewer actions logged yet.</p>
+            ) : (
+              <div className="mt-2 space-y-1.5">
+                {reviewerActivity.map((r) => (
+                  <div key={r.actor} className="flex items-center justify-between">
+                    <p className="text-[12px] text-slate-300">{r.actor}</p>
+                    <p className="text-[12px] text-slate-500">{r.count} action{r.count === 1 ? "" : "s"}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -51,6 +109,9 @@ export default async function AIGenerationDashboardPage() {
           </Link>
           <Link href="/admin/ai-generation/patterns" className="btn-ghost px-5 py-2.5 text-[13px]">
             Pattern library
+          </Link>
+          <Link href="/admin/ai-generation/coverage" className="btn-ghost px-5 py-2.5 text-[13px]">
+            Coverage intelligence
           </Link>
         </div>
 

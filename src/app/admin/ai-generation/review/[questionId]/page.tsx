@@ -28,7 +28,7 @@ export default async function ReviewDetailPage({ params }: Props) {
   const { data: question } = await supabase.from("questions").select("*").eq("question_id", questionId).single();
   if (!question) notFound();
 
-  const [{ data: options }, { data: matchingItems }, { data: dragDropItems }, { data: images }, { data: hotspotRows }, { data: batchQuestion }] =
+  const [{ data: options }, { data: matchingItems }, { data: dragDropItems }, { data: images }, { data: hotspotRows }, { data: batchQuestion }, { data: reviewLog }] =
     await Promise.all([
       supabase.from("question_options").select("*").eq("question_id", questionId).order("display_order"),
       supabase.from("matching_items").select("*").eq("question_id", questionId).order("display_order"),
@@ -36,6 +36,11 @@ export default async function ReviewDetailPage({ params }: Props) {
       supabase.from("question_images").select("*").eq("question_id", questionId),
       supabase.from("hotspots").select("*").eq("question_id", questionId),
       supabase.from("generation_batch_questions").select("id, batch_id, pattern_id, quality_scores").eq("question_id", questionId).maybeSingle(),
+      supabase
+        .from("question_review_log")
+        .select("id, action, actor, previous_status, new_status, comment, created_at")
+        .eq("question_id", questionId)
+        .order("created_at", { ascending: false }),
     ]);
 
   interface OptionRow {
@@ -109,6 +114,7 @@ export default async function ReviewDetailPage({ params }: Props) {
       qualityScores={batchQuestion?.quality_scores ?? null}
       pattern={pattern}
       similarityResults={similarityResults}
+      reviewLog={reviewLog ?? []}
     />
   );
 }

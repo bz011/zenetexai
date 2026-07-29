@@ -1,18 +1,34 @@
 import { describe, it, expect } from "vitest";
 import { computeQualityScores, hasHardFailure, type CritiqueResult, type TranslationReviewResult, type MetadataReviewResult } from "./qualityGate";
 import type { ValidationIssue } from "../question-bank/types";
-import type { SimilarityMatch } from "./types";
+import type { SimilarityMatch, RawGeneratedOption, RawExplanationExtras } from "./types";
 
 const goodCritique: CritiqueResult = {
   pmp_alignment: 90,
   answer_defensibility: 85,
   distractor_quality: 80,
   ambiguity_risk: 10,
+  scenario_realism: 88,
+  grammar_quality: 92,
   reasoning: "Solid",
   reviewer_recommendations: [],
 };
 const goodTranslation: TranslationReviewResult = { translation_quality: 95, issues_found: [] };
 const goodMetadata: MetadataReviewResult = { metadata_consistency: 95, mismatches: [] };
+
+const goodOptions: RawGeneratedOption[] = [
+  { option_key: "A", option_text_en: "Escalate the risk immediately", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+  { option_key: "B", option_text_en: "Update the risk register first", option_text_ar: "", is_correct: true, feedback_en: "", feedback_ar: "" },
+  { option_key: "C", option_text_en: "Ignore the new risk for now", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+  { option_key: "D", option_text_en: "Consult the project sponsor", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+];
+
+const goodExplanationExtras: RawExplanationExtras = {
+  key_concept_en: "Risk register maintenance", key_concept_ar: "صيانة سجل المخاطر",
+  exam_tip_en: "Always update records before escalating anything.", exam_tip_ar: "قم دائماً بتحديث السجلات قبل أي تصعيد.",
+  common_trap_en: "Assuming escalation is always the first correct step.", common_trap_ar: "افتراض أن التصعيد هو دائماً الخطوة الأولى الصحيحة.",
+  related_concepts_en: ["Risk identification", "Issue log"], related_concepts_ar: ["تحديد المخاطر", "سجل المشكلات"],
+};
 
 describe("computeQualityScores", () => {
   it("produces no hard failures for a clean standard-question draft with no validator errors", () => {
@@ -23,6 +39,8 @@ describe("computeQualityScores", () => {
       translationReview: goodTranslation,
       metadataReview: goodMetadata,
       similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
     });
     expect(scores.hard_failures).toEqual([]);
     expect(hasHardFailure(scores)).toBe(false);
@@ -38,6 +56,8 @@ describe("computeQualityScores", () => {
       translationReview: goodTranslation,
       metadataReview: goodMetadata,
       similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
     });
     expect(scores.schema_validity).toBe(100);
     expect(scores.hard_failures).toEqual([]);
@@ -52,6 +72,8 @@ describe("computeQualityScores", () => {
       translationReview: goodTranslation,
       metadataReview: goodMetadata,
       similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
     });
     expect(hasHardFailure(scores)).toBe(true);
   });
@@ -65,6 +87,8 @@ describe("computeQualityScores", () => {
       translationReview: goodTranslation,
       metadataReview: goodMetadata,
       similarityMatches: matches,
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
     });
     expect(scores.similarity_safety).toBe(0);
     expect(hasHardFailure(scores)).toBe(true);
@@ -79,6 +103,8 @@ describe("computeQualityScores", () => {
       translationReview: goodTranslation,
       metadataReview: goodMetadata,
       similarityMatches: matches,
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
     });
     expect(scores.similarity_safety).toBe(70);
     expect(hasHardFailure(scores)).toBe(false);
@@ -93,6 +119,8 @@ describe("computeQualityScores", () => {
       translationReview: goodTranslation,
       metadataReview: goodMetadata,
       similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
     });
     expect(hasHardFailure(scores)).toBe(true);
     expect(scores.hard_failures[0]).toContain("answer_defensibility");
@@ -106,6 +134,8 @@ describe("computeQualityScores", () => {
       translationReview: goodTranslation,
       metadataReview: goodMetadata,
       similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
     });
     const ambiguous = computeQualityScores({
       validatorIssues: [],
@@ -114,6 +144,8 @@ describe("computeQualityScores", () => {
       translationReview: goodTranslation,
       metadataReview: goodMetadata,
       similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
     });
     expect(clear.overall).toBeGreaterThan(ambiguous.overall);
     expect(ambiguous.flags.some((f) => f.includes("ambiguity_risk"))).toBe(true);
@@ -127,6 +159,8 @@ describe("computeQualityScores", () => {
       translationReview: goodTranslation,
       metadataReview: goodMetadata,
       similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
     });
     for (const key of [
       "schema_validity",
@@ -138,6 +172,10 @@ describe("computeQualityScores", () => {
       "translation_quality",
       "metadata_consistency",
       "ambiguity_risk",
+      "scenario_realism",
+      "grammar_quality",
+      "option_balance",
+      "explanation_quality",
       "overall",
     ] as const) {
       expect(typeof scores[key]).toBe("number");
@@ -145,5 +183,83 @@ describe("computeQualityScores", () => {
     expect(Array.isArray(scores.flags)).toBe(true);
     expect(Array.isArray(scores.hard_failures)).toBe(true);
     expect(Array.isArray(scores.reviewer_recommendations)).toBe(true);
+  });
+
+  it("penalizes option_balance when the correct answer is conspicuously longer than the distractors", () => {
+    const unbalancedOptions: RawGeneratedOption[] = [
+      { option_key: "A", option_text_en: "No", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+      { option_key: "B", option_text_en: "Yes", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+      { option_key: "C", option_text_en: "Maybe", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+      {
+        option_key: "D",
+        option_text_en:
+          "Update the risk register immediately, notify the sponsor, convene the change control board, and reassess the entire risk management plan for downstream impacts",
+        option_text_ar: "",
+        is_correct: true,
+        feedback_en: "",
+        feedback_ar: "",
+      },
+    ];
+    const scores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: unbalancedOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(scores.option_balance).toBeLessThan(60);
+    expect(scores.flags.some((f) => f.includes("option_balance"))).toBe(true);
+  });
+
+  it("scores option_balance as neutral (100) when there are fewer than 2 options (matching/drag_and_drop)", () => {
+    const scores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "matching",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: [],
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(scores.option_balance).toBe(100);
+  });
+
+  it("scores explanation_quality low when the structured teaching content is empty", () => {
+    const emptyExtras: RawExplanationExtras = {
+      key_concept_en: "", key_concept_ar: "",
+      exam_tip_en: "", exam_tip_ar: "",
+      common_trap_en: "", common_trap_ar: "",
+      related_concepts_en: [], related_concepts_ar: [],
+    };
+    const scores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: emptyExtras,
+    });
+    expect(scores.explanation_quality).toBe(0);
+    expect(scores.flags.some((f) => f.includes("explanation_quality"))).toBe(true);
+  });
+
+  it("scores explanation_quality high when all structured teaching content is substantive", () => {
+    const scores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(scores.explanation_quality).toBe(100);
   });
 });

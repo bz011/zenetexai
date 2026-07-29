@@ -96,6 +96,8 @@ export async function generateOneQuestion(params: GenerateOneQuestionParams): Pr
     draftText: draft.question_text_en,
     sourceQuestionIds: pattern.source_question_ids,
     sameBatchDraftTexts: params.sameBatchDraftTexts,
+    draftOptionTexts: draft.options.map((o) => o.option_text_en),
+    draftTags: draft.tags,
   });
   totalPromptTokens += similarityPromptTokens;
 
@@ -106,6 +108,8 @@ export async function generateOneQuestion(params: GenerateOneQuestionParams): Pr
     translationReview: translationResult.data,
     metadataReview: metadataResult.data,
     similarityMatches,
+    options: draft.options,
+    explanationExtras: draft.explanation_extras,
   });
 
   await incrementPatternUsage(pattern.id);
@@ -132,7 +136,10 @@ export async function generateOneQuestion(params: GenerateOneQuestionParams): Pr
     };
   }
 
-  const insertResult = await insertAcceptedDraft(adapted);
+  const insertResult = await insertAcceptedDraft(adapted, {
+    generatedBy: `${provider.name}:${provider.defaultModel}`,
+    qualityScore: qualityScores.overall,
+  });
 
   if (!insertResult.success) {
     const batchQuestionId = await recordBatchQuestion({

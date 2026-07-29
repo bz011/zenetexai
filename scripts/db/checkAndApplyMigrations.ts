@@ -140,6 +140,25 @@ const MIGRATIONS: MigrationSpec[] = [
       ) AS applied
     `,
   },
+  {
+    id: "014_ai_question_factory",
+    file: "014_ai_question_factory.sql",
+    signatureQuery: `
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'question_review_log'
+      ) AND EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'question_versions'
+      ) AND EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'questions' AND column_name = 'quality_score'
+      ) AND EXISTS (
+        SELECT 1 FROM information_schema.routines
+        WHERE routine_schema = 'public' AND routine_name = 'record_question_version'
+      ) AS applied
+    `,
+  },
 ];
 
 async function main() {
@@ -229,6 +248,9 @@ async function main() {
       { label: "create_practice_session() / select_practice_questions() / count_eligible_practice_questions() RPCs", query: "SELECT EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='create_practice_session') AND EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='select_practice_questions') AND EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='count_eligible_practice_questions') AS ok" },
       { label: "practice RPCs are executable by authenticated (deliberately, per migration 012)", query: "SELECT has_function_privilege('authenticated', 'create_practice_session(uuid, question_domain, question_approach, question_difficulty, question_interaction_type, question_answer_type, text, int, boolean, int)', 'EXECUTE') AS ok" },
       { label: "enrollments table", query: "SELECT to_regclass('public.enrollments') IS NOT NULL AS ok" },
+      { label: "question_review_log / question_versions tables", query: "SELECT to_regclass('public.question_review_log') IS NOT NULL AND to_regclass('public.question_versions') IS NOT NULL AS ok" },
+      { label: "questions Factory metadata columns (quality_score, ai_confidence, generated_by, version, explanation_structured)", query: "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='quality_score') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='ai_confidence') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='generated_by') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='version') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='explanation_structured') AS ok" },
+      { label: "log_question_review_action() / record_question_version() RPCs", query: "SELECT EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='log_question_review_action') AND EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='record_question_version') AS ok" },
     ];
 
     let allOk = true;
@@ -259,7 +281,7 @@ async function main() {
       JOIN pg_namespace n ON n.oid = p.pronamespace
       CROSS JOIN pg_roles r
       WHERE n.nspname = 'public'
-        AND p.proname IN ('import_question_bundle','set_question_status','store_question_embedding','next_ai_question_id','find_similar_questions','increment_pattern_usage')
+        AND p.proname IN ('import_question_bundle','set_question_status','store_question_embedding','next_ai_question_id','find_similar_questions','increment_pattern_usage','log_question_review_action','record_question_version')
         AND r.rolname IN ('anon','authenticated')
     `);
     const unexpectedGrants = (grantRows as { proname: string; rolname: string; can_execute: boolean }[]).filter((r) => r.can_execute);

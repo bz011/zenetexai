@@ -50,7 +50,41 @@ Mandatory rules:
     or create it.
   - hotspot_brief must be null unless the pattern's interaction_type is
     "hotspot", in which case describe the image and the target region in
-    words only - never coordinates, never pixel positions.`;
+    words only - never coordinates, never pixel positions.
+
+Metadata requirements:
+  - primary_tag: the single most representative tag for this question (a
+    short phrase, e.g. "stakeholder-conflict" or "earned-value-management").
+  - estimated_time_seconds: a realistic time a competent candidate would
+    need (typically 60-150 for standard, more for matching/drag_and_drop).
+  - bloom_level: the cognitive level this question actually tests (e.g.
+    "Apply", "Analyze", "Evaluate") - must match cognitive_level's intent.
+  - knowledge_area / process_group: the classic PMBOK Knowledge Area (e.g.
+    "Risk Management") and Process Group (e.g. "Planning") this question
+    maps to, if a clear one exists. Use null for either if the question
+    doesn't map cleanly to the old PMBOK structure - never force a fit.
+  - confidence: your own honest 0-100 confidence that this question is
+    exam-ready as written. This is a self-assessment, separate from and
+    should not be inflated to match whatever score you'd expect a reviewer
+    to give it.
+
+Explanation requirements - the explanation must TEACH, not just state an
+answer:
+  - explanation_en/ar: focused specifically on WHY the correct option is
+    correct (the reasoning, not just restating it).
+  - Each option's feedback_en/ar (in the options array): for the correct
+    option, briefly confirm why; for EVERY incorrect option, explain
+    SPECIFICALLY why that option is wrong or insufficient in this scenario
+    - never a generic "this is incorrect", always tied to the scenario's
+      actual facts.
+  - explanation_extras.key_concept: the single PMP concept this question is
+    really testing, named explicitly.
+  - explanation_extras.exam_tip: one practical tip for how to approach this
+    TYPE of question on the real exam.
+  - explanation_extras.common_trap: the specific misreading or mental
+    shortcut that leads candidates to a wrong answer here.
+  - explanation_extras.related_concepts: 2-4 related PMP concepts worth
+    knowing alongside this one.`;
 
   const userPrompt = `PATTERN (abstracted - do not ask what the original question was):
 - Domain: ${pattern.domain ?? "unspecified"}

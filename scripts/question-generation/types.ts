@@ -119,6 +119,25 @@ export interface RawHotspotBrief {
   target_description: string;
 }
 
+/**
+ * Structured teaching content beyond "why the correct answer is correct"
+ * (explanation_en/ar below) and "why each wrong option is wrong" (each
+ * option's own feedback_en/ar) - see questions.explanation_structured
+ * (migration 014). Every field is bilingual and required (never optional -
+ * a question without an exam tip or a named key concept isn't teaching
+ * enough to ship).
+ */
+export interface RawExplanationExtras {
+  key_concept_en: string;
+  key_concept_ar: string;
+  exam_tip_en: string;
+  exam_tip_ar: string;
+  common_trap_en: string;
+  common_trap_ar: string;
+  related_concepts_en: string[];
+  related_concepts_ar: string[];
+}
+
 export interface RawGeneratedQuestion {
   question_text_en: string;
   question_text_ar: string;
@@ -137,6 +156,15 @@ export interface RawGeneratedQuestion {
   drag_and_drop_items: RawGeneratedDragDropItem[];
   hotspot_brief: RawHotspotBrief | null;
   image_brief: string | null;
+  // Phase 4/5 additions (Sprint 8) - richer metadata + structured teaching content.
+  knowledge_area: string | null;
+  process_group: string | null;
+  primary_tag: string;
+  estimated_time_seconds: number;
+  bloom_level: string;
+  /** Self-reported model confidence (0-100) - distinct from the independently computed quality_score. */
+  confidence: number;
+  explanation_extras: RawExplanationExtras;
 }
 
 // ---------------------------------------------------------------------------
@@ -154,6 +182,14 @@ export interface QualityScores {
   metadata_consistency: number;
   /** Inverted vs every other component: 0 = unambiguous (good), 100 = highly ambiguous (bad). */
   ambiguity_risk: number;
+  /** LLM-scored (Sprint 8): would this scenario plausibly happen to a real practitioner? */
+  scenario_realism: number;
+  /** LLM-scored (Sprint 8): is the English prose itself grammatically clean? */
+  grammar_quality: number;
+  /** Deterministic (Sprint 8): option-length balance - penalizes a correct answer that's conspicuously longer/shorter than distractors. */
+  option_balance: number;
+  /** Deterministic (Sprint 8): completeness of the structured teaching content (key concept/exam tip/common trap/related concepts). */
+  explanation_quality: number;
   overall: number;
   flags: string[];
   hard_failures: string[];
@@ -161,7 +197,7 @@ export interface QualityScores {
 }
 
 export interface SimilarityMatch {
-  comparisonType: "lexical" | "semantic";
+  comparisonType: "lexical" | "semantic" | "option_set" | "tag_set";
   matchedQuestionId?: string;
   matchedBatchQuestionId?: string;
   similarityScore: number;
