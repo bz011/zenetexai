@@ -26,7 +26,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="max-w-xs">
             <Link href="/">
-              <Logo variant="primary" className="h-10" />
+              <Logo variant="primary" />
             </Link>
             <p className="mt-3.5 text-[13px] leading-relaxed text-slate-500">
               {t.footer.tagline}

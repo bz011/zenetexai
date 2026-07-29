@@ -1,25 +1,23 @@
 /**
  * Centralized branding config — the single place that knows about the
- * company's name, tagline, and asset paths. Approved logo assets (Sprint
- * 7.6.2 - the circular gradient "Z" mark, Manrope wordmark, "Intelligence.
- * Execution. Impact." tagline) live under /public/brand/ and src/app/ (the
- * latter for Next's file-based favicon/icon/OG conventions). Every logo
- * usage in the app goes through <Logo /> (src/components/brand/Logo.tsx),
- * which reads this config — a future logo refresh means regenerating the
- * files at these same paths, not touching every page.
+ * company's name, tagline, and (as of Sprint 7.6.4) the static brand-kit
+ * asset paths.
  *
- * No vector source file existed for the approved design (it came from a
- * reference image, not an SVG/AI export) - the SVG/PNG assets here are a
- * faithful hand-built reconstruction (same mark, same colors, same
- * Manrope typography, real font rendering via a one-time build script),
- * not a redraw from memory. See public/brand/*.svg for the full kit
- * (primary, horizontal, icon, white, black, favicon variants).
+ * <Logo/> (src/components/brand/Logo.tsx) no longer reads BRAND_ASSETS for
+ * its own in-app rendering — it renders the icon as inline SVG
+ * (src/components/brand/LogoIcon.tsx, exact approved geometry hardcoded)
+ * plus real HTML text set in Manrope (src/lib/fonts.ts, self-hosted via
+ * next/font). That switch is what makes the arrow's shimmer animation
+ * possible at all: a flat PNG can't animate one internal element while
+ * the rest stays static, and inline SVG stays crisp at any size/DPI.
  *
- * logo-horizontal.png and icon.png are DARK-BACKGROUND-safe renders: the
- * wordmark ink is a light tone instead of navy, since navy-on-navy is
- * illegible on this site's dark theme. The brand blue/teal gradient icon
- * is unchanged either way. logo-transparent.png (in /public/brand/) keeps
- * the original navy ink, for any future light-background use.
+ * BRAND_ASSETS below still matters for: the favicon (src/app/favicon.ico),
+ * the app icon (src/app/icon.png), the Open Graph image
+ * (src/app/opengraph-image.png), and the standalone brand-kit files in
+ * /public/brand/ (print, partners, anything outside this Next app). Those
+ * are still static exports of the same approved mark, regenerated from
+ * the same geometry as LogoIcon.tsx - see /public/brand/preview.html for
+ * a visual reference sheet of the full kit.
  */
 
 export const BRAND = {
@@ -35,12 +33,10 @@ export const BRAND = {
   email: "info@zentexai.com",
 } as const;
 
-export const HAS_LOGO_ASSETS = true;
-
 export const BRAND_ASSETS = {
-  // Rendered PNGs - what <Logo/> actually displays in-app (guaranteed
-  // fidelity regardless of the viewer's installed fonts). All three are
-  // dark-background-safe (light ink) - this site has no light theme today.
+  // Static brand-kit renders - NOT what <Logo/> renders in-app (see file
+  // header). Kept in sync with LogoIcon.tsx's geometry for anything that
+  // needs a plain image file: favicon, app icon, OG image, print/partners.
   logoPrimary: "/brand/logo-primary.png", // icon + wordmark + tagline (footer, large placements)
   logoHorizontal: "/brand/logo-horizontal.png", // icon + wordmark, no tagline (navbar)
   logoTransparent: "/brand/logo-transparent.png", // original navy ink, for future light-bg use

@@ -14,6 +14,15 @@
   to   { opacity: 1; }
 }
 
+@keyframes zentex-logo-shimmer-sweep {
+  0%   { transform: translateX(0);      opacity: 0; }
+  3%   { opacity: 0; }
+  8%   { opacity: 0.9; }
+  27%  { transform: translateX(700px);  opacity: 0.9; }
+  32%  { opacity: 0; }
+  100% { transform: translateX(700px); opacity: 0; }
+}
+
 /* ─── Base ───────────────────────────────────────────────────────────────── */
 
 @layer base {
@@ -78,6 +87,18 @@
     .animate-fade-up,
     .animate-fade-in {
       animation: none;
+    }
+  }
+
+  /* ── Logo shimmer ──
+     Opt-in only: the animation rule exists solely inside the
+     no-preference branch, so prefers-reduced-motion users never receive
+     it at all (no override needed - GPU-friendly transform/opacity only,
+     duration ~1.75s, repeats every 7s). */
+  @media (prefers-reduced-motion: no-preference) {
+    .zentex-logo-shimmer {
+      animation: zentex-logo-shimmer-sweep 7s ease-in-out infinite;
+      will-change: transform, opacity;
     }
   }
 
