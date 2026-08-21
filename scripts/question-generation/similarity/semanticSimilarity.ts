@@ -13,14 +13,28 @@ export async function embedAndStore(
   text: string
 ): Promise<{ promptTokens: number }> {
   const result = await provider.generateEmbedding(text);
-  const { error } = await supabaseAdmin.rpc("store_question_embedding", {
+  const { data, error } = await supabaseAdmin.rpc("store_question_embedding", {
     p_question_id: questionId,
     p_provider: provider.name,
     p_model: result.model,
-    p_embedding: JSON.stringify(result.embedding),
+    // Pass the raw number[] - NOT JSON.stringify(result.embedding). The RPC
+    // client already JSON-encodes the whole params object once; stringifying
+    // the array here first double-encodes it, so Postgres receives a JSONB
+    // STRING containing array-looking text (jsonb_typeof = 'string') instead
+    // of a genuine JSONB array - jsonb_array_elements_text() then fails with
+    // "cannot extract elements from a scalar". Confirmed empirically: this
+    // silently zeroed out question_embeddings entirely (0 rows for 494
+    // approved questions) since the function's EXCEPTION WHEN OTHERS handler
+    // returns {success:false} in the response BODY rather than a transport-
+    // level error, and this call site never checked that body.
+    p_embedding: result.embedding,
   });
   if (error) {
     throw new Error(`Failed to store embedding for ${questionId}: ${error.message}`);
+  }
+  const body = data as { success: boolean; error?: string } | null;
+  if (!body?.success) {
+    throw new Error(`Failed to store embedding for ${questionId}: ${body?.error ?? "unknown error"}`);
   }
   return { promptTokens: result.usage.promptTokens };
 }
@@ -35,7 +49,8 @@ export async function findNearestApprovedQuestions(
   const result = await provider.generateEmbedding(text);
 
   const { data, error } = await supabaseAdmin.rpc("find_similar_questions", {
-    p_embedding: JSON.stringify(result.embedding),
+    // Raw number[], not JSON.stringify(...) - see embedAndStore's comment above.
+    p_embedding: result.embedding,
     p_match_count: matchCount,
     p_exclude_question_id: excludeQuestionId ?? null,
   });

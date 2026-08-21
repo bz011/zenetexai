@@ -33,10 +33,10 @@ export async function fetchSourceQuestionsForSlice(
   certificationId: string,
   slice: GenerationTargetSlice,
   limit = 3
-): Promise<{ question_id: string; question_text_en: string }[]> {
+): Promise<{ question_id: string; question_text_en: string; eco_version: string | null }[]> {
   let sourceQuery = supabaseAdmin
     .from("questions")
-    .select("question_id, question_text_en")
+    .select("question_id, question_text_en, eco_version")
     .eq("certification_id", certificationId)
     .eq("interaction_type", slice.interactionType)
     .eq("answer_type", slice.answerType)
@@ -48,14 +48,14 @@ export async function fetchSourceQuestionsForSlice(
   if (slice.difficulty) sourceQuery = sourceQuery.eq("difficulty", slice.difficulty);
 
   const { data } = await sourceQuery;
-  return (data ?? []) as { question_id: string; question_text_en: string }[];
+  return (data ?? []) as { question_id: string; question_text_en: string; eco_version: string | null }[];
 }
 
 /** Runs pattern extraction against a fixed set of source questions and persists the result - shared by findOrCreatePattern and the proactive pattern library builder. */
 export async function extractAndInsertPattern(
   certificationId: string,
   slice: GenerationTargetSlice,
-  sourceQuestions: { question_id: string; question_text_en: string }[],
+  sourceQuestions: { question_id: string; question_text_en: string; eco_version: string | null }[],
   createdBy: string
 ): Promise<{ pattern: PatternRow; promptTokens: number; completionTokens: number }> {
   if (sourceQuestions.length === 0) {
@@ -76,10 +76,23 @@ export async function extractAndInsertPattern(
     generation_guidance: string | null;
   }>({ ...prompt, model: provider.defaultModel });
 
+  // Inherited from the source questions actually used, not hardcoded - if
+  // this certification ever has questions spanning more than one ECO
+  // version, the pattern correctly reflects the version its own sources
+  // came from rather than guessing a single global value. Previously this
+  // was never set at all (bug: every pattern got eco_version = NULL, which
+  // draftAdapter.ts then defaulted to "" - an empty string ALWAYS fails the
+  // question-bank validator's MISSING_REQUIRED_METADATA check, so every
+  // generated question was guaranteed to hard-fail quality scoring
+  // regardless of content quality. Confirmed empirically via a controlled
+  // test batch after fixing the other pipeline bugs.
+  const ecoVersion = sourceQuestions.find((q) => q.eco_version)?.eco_version ?? null;
+
   const { data: inserted, error: insertError } = await supabaseAdmin
     .from("question_patterns")
     .insert({
       certification_id: certificationId,
+      eco_version: ecoVersion,
       domain: slice.domain ?? null,
       task: slice.task ?? null,
       topic: slice.topic ?? null,
