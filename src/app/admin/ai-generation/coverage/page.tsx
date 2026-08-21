@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireRole } from "@/lib/auth/requireRole";
-import { getCoverageReport, type DimensionBreakdown } from "@/features/ai-generation/services/coverageIntelligenceService";
+import {
+  getCoverageReport,
+  INTERACTION_TYPE_MIN_SHARE_PCT,
+  type DimensionBreakdown,
+} from "@/features/ai-generation/services/coverageIntelligenceService";
 
 export const metadata: Metadata = { title: "Admin — Coverage Intelligence" };
 export const dynamic = "force-dynamic";
+
+type BatchParamName = "domain" | "approach" | "difficulty" | "interaction_type";
 
 function gapBadgeClass(gap: DimensionBreakdown["gap"]): string {
   if (gap === "under") return "bg-amber-500/[0.12] text-amber-400";
@@ -12,7 +18,17 @@ function gapBadgeClass(gap: DimensionBreakdown["gap"]): string {
   return "bg-white/[0.07] text-slate-400";
 }
 
-function DimensionTable({ title, rows }: { title: string; rows: DimensionBreakdown[] }) {
+function DimensionTable({
+  title,
+  rows,
+  paramName,
+  offerBatch,
+}: {
+  title: string;
+  rows: DimensionBreakdown[];
+  paramName: BatchParamName;
+  offerBatch: (row: DimensionBreakdown) => boolean;
+}) {
   return (
     <div className="card mt-4 p-5">
       <p className="label">{title}</p>
@@ -25,6 +41,14 @@ function DimensionTable({ title, rows }: { title: string; rows: DimensionBreakdo
                 {r.count} question{r.count === 1 ? "" : "s"} · {r.actualPct}%{r.targetPct !== null ? ` (target ${r.targetPct}%)` : ""}
               </p>
               <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${gapBadgeClass(r.gap)}`}>{r.gap}</span>
+              {offerBatch(r) && r.value !== "Unspecified" && (
+                <Link
+                  href={`/admin/ai-generation/batches/new?${paramName}=${encodeURIComponent(r.value)}`}
+                  className="text-[11px] font-medium text-indigo-400 hover:text-indigo-300"
+                >
+                  Create batch →
+                </Link>
+              )}
             </div>
           </div>
         ))}
@@ -63,10 +87,20 @@ export default async function CoverageIntelligencePage() {
           )}
         </div>
 
-        <DimensionTable title="Domain (PMI ECO target)" rows={report.domain} />
-        <DimensionTable title="Approach (approximate target)" rows={report.approach} />
-        <DimensionTable title="Difficulty (internal authoring target)" rows={report.difficulty} />
-        <DimensionTable title="Interaction type (no fixed target - flags thin/zero coverage)" rows={report.interactionType} />
+        <DimensionTable title="Domain (PMI ECO target)" rows={report.domain} paramName="domain" offerBatch={(r) => r.gap === "under"} />
+        <DimensionTable title="Approach (approximate target)" rows={report.approach} paramName="approach" offerBatch={(r) => r.gap === "under"} />
+        <DimensionTable
+          title="Difficulty (internal authoring target)"
+          rows={report.difficulty}
+          paramName="difficulty"
+          offerBatch={(r) => r.gap === "under"}
+        />
+        <DimensionTable
+          title="Interaction type (no fixed target - flags thin/zero coverage)"
+          rows={report.interactionType}
+          paramName="interaction_type"
+          offerBatch={(r) => r.actualPct < INTERACTION_TYPE_MIN_SHARE_PCT}
+        />
       </div>
     </div>
   );

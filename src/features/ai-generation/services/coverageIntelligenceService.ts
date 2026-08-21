@@ -44,7 +44,7 @@ export interface CoverageReport {
 }
 
 const TOLERANCE_PCT = 5;
-const INTERACTION_TYPE_MIN_SHARE_PCT = 5;
+export const INTERACTION_TYPE_MIN_SHARE_PCT = 5;
 
 /** Official PMI ECO domain weighting. */
 const DOMAIN_TARGETS: Record<string, number> = {

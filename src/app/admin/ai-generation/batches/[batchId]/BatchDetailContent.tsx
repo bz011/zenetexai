@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { cancelGenerationBatch } from "@/features/ai-generation/services/aiGenerationAdminService";
+import { runGenerationBatchNow } from "@/features/ai-generation/services/aiGenerationBatchRunService";
+import { MAX_UI_RUN_COUNT } from "@/features/ai-generation/services/aiGenerationBatchRunConstants";
 
 interface BatchQuestionRow {
   id: string;
@@ -31,12 +34,25 @@ interface BatchRow {
 }
 
 export default function BatchDetailContent({ batch, batchQuestions }: { batch: BatchRow; batchQuestions: BatchQuestionRow[] }) {
+  const router = useRouter();
   const [cancelling, setCancelling] = useState(false);
+  const [running, setRunning] = useState(false);
+  const [runMessage, setRunMessage] = useState<string | null>(null);
 
   async function handleCancel() {
     setCancelling(true);
     await cancelGenerationBatch(batch.id);
     setCancelling(false);
+    router.refresh();
+  }
+
+  async function handleRunNow() {
+    setRunning(true);
+    setRunMessage("Generating - this calls the LLM for each question in the batch and can take a while, please wait...");
+    const result = await runGenerationBatchNow(batch.id);
+    setRunning(false);
+    setRunMessage(result.success ? null : `Failed: ${result.error}`);
+    router.refresh();
   }
 
   return (
@@ -77,10 +93,33 @@ export default function BatchDetailContent({ batch, batchQuestions }: { batch: B
           {batch.error_message && <p className="mt-2 text-red-400">Error: {batch.error_message}</p>}
         </div>
 
-        {(batch.status === "draft" || batch.status === "running") && (
-          <button onClick={handleCancel} disabled={cancelling} className="btn-ghost mt-4 px-5 py-2.5 text-[13px]">
-            {cancelling ? "Cancelling..." : "Cancel batch"}
-          </button>
+        {runMessage && (
+          <p className="mt-4 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3 text-[13px] text-slate-300">{runMessage}</p>
+        )}
+
+        <div className="mt-4 flex flex-wrap gap-3">
+          {batch.status === "draft" && (
+            <button
+              onClick={handleRunNow}
+              disabled={running || cancelling || batch.requested_count > MAX_UI_RUN_COUNT}
+              className="btn-primary px-5 py-2.5 text-[13px]"
+            >
+              {running ? "Generating..." : "Generate now"}
+            </button>
+          )}
+          {(batch.status === "draft" || batch.status === "running") && (
+            <button onClick={handleCancel} disabled={cancelling || running} className="btn-ghost px-5 py-2.5 text-[13px]">
+              {cancelling ? "Cancelling..." : "Cancel batch"}
+            </button>
+          )}
+        </div>
+
+        {batch.status === "draft" && batch.requested_count > MAX_UI_RUN_COUNT && (
+          <p className="mt-2 text-[12px] text-slate-600">
+            This batch requests {batch.requested_count} questions, above the {MAX_UI_RUN_COUNT}-question limit for running from this page
+            (larger batches risk a serverless timeout mid-run). Run it via:{" "}
+            <code className="text-slate-400">npm run generate:questions -- --batch-id {batch.id}</code>
+          </p>
         )}
 
         <h2 className="mt-8 text-[15px] font-semibold text-white">Results ({batchQuestions.length})</h2>

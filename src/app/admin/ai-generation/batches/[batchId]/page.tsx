@@ -11,6 +11,13 @@ interface Props {
 export const metadata: Metadata = { title: "Admin — Batch Detail" };
 export const dynamic = "force-dynamic";
 
+// Applies to this page's runGenerationBatchNow Server Action too, which can
+// run for as long as it takes to generate up to MAX_UI_RUN_COUNT questions
+// (a handful of sequential/parallel LLM calls each). 300s matches the
+// documented ceiling used elsewhere in this pipeline (review/[questionId]/
+// page.tsx) - every Vercel plan supports at least this much.
+export const maxDuration = 300;
+
 export default async function BatchDetailPage({ params }: Props) {
   const { batchId } = await params;
   const { supabase } = await requireRole(["admin", "instructor"], { loginRedirectTo: `/admin/ai-generation/batches/${batchId}` });

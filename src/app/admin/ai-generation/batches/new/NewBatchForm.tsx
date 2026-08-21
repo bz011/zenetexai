@@ -7,7 +7,14 @@ import { createGenerationBatch } from "@/features/ai-generation/services/aiGener
 const inputCls =
   "w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-2.5 text-[14px] text-white placeholder-slate-600 outline-none transition-all focus:border-indigo-500/60 focus:bg-white/[0.06] focus:ring-2 focus:ring-indigo-500/15";
 
-export default function NewBatchForm() {
+interface Props {
+  initialDomain?: string;
+  initialApproach?: string;
+  initialDifficulty?: string;
+  initialInteractionType?: string;
+}
+
+export default function NewBatchForm({ initialDomain, initialApproach, initialDifficulty, initialInteractionType }: Props) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -29,10 +36,16 @@ export default function NewBatchForm() {
     <form action={handleSubmit} className="card mt-6 space-y-4 p-6">
       <input type="hidden" name="certification_code" value="PMP" />
 
+      {(initialDomain || initialApproach || initialDifficulty || initialInteractionType) && (
+        <p className="rounded-xl border border-indigo-500/20 bg-indigo-500/[0.08] px-4 py-3 text-[12px] text-indigo-300">
+          Pre-filled from a Coverage Intelligence recommendation - adjust anything below before creating the batch.
+        </p>
+      )}
+
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
           <label className="mb-1.5 block text-[13px] font-medium text-slate-400">Interaction type</label>
-          <select name="interaction_type" defaultValue="standard" className={inputCls}>
+          <select name="interaction_type" defaultValue={initialInteractionType ?? "standard"} className={inputCls}>
             <option value="standard">standard</option>
             <option value="graphic_based">graphic_based</option>
             <option value="matching">matching</option>
@@ -49,7 +62,7 @@ export default function NewBatchForm() {
         </div>
         <div>
           <label className="mb-1.5 block text-[13px] font-medium text-slate-400">Domain</label>
-          <select name="domain" defaultValue="" className={inputCls}>
+          <select name="domain" defaultValue={initialDomain ?? ""} className={inputCls}>
             <option value="">Any</option>
             <option value="People">People</option>
             <option value="Process">Process</option>
@@ -58,7 +71,7 @@ export default function NewBatchForm() {
         </div>
         <div>
           <label className="mb-1.5 block text-[13px] font-medium text-slate-400">Approach</label>
-          <select name="approach" defaultValue="" className={inputCls}>
+          <select name="approach" defaultValue={initialApproach ?? ""} className={inputCls}>
             <option value="">Any</option>
             <option value="Predictive">Predictive</option>
             <option value="Agile">Agile</option>
@@ -68,7 +81,7 @@ export default function NewBatchForm() {
         </div>
         <div>
           <label className="mb-1.5 block text-[13px] font-medium text-slate-400">Difficulty</label>
-          <select name="difficulty" defaultValue="" className={inputCls}>
+          <select name="difficulty" defaultValue={initialDifficulty ?? ""} className={inputCls}>
             <option value="">Any</option>
             <option value="Easy">Easy</option>
             <option value="Moderate">Moderate</option>

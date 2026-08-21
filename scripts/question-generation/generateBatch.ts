@@ -135,7 +135,7 @@ async function runWithConcurrencyLimit<T>(tasks: (() => Promise<T>)[], limit: nu
   return results;
 }
 
-async function runBatch(batchId: string): Promise<void> {
+export async function runBatch(batchId: string): Promise<void> {
   const { data: batchData, error: batchError } = await supabaseAdmin.from("generation_batches").select("*").eq("id", batchId).single();
   if (batchError || !batchData) {
     throw new Error(`Batch not found: ${batchId}`);
