@@ -204,11 +204,30 @@ export interface SimilarityMatch {
   thresholdResult: "hard_reject" | "warning" | "none";
 }
 
+/**
+ * Where a failed attempt died, for audit logging (Sprint 8.1 incident
+ * follow-up - see generation_batch_questions.failure_stage, migration 015).
+ * `null` on an accepted outcome. Every branch of generateOneQuestion that
+ * can fail is tagged with exactly one of these - nothing should ever throw
+ * out of generateOneQuestion uncategorized (the "unexpected_error" case
+ * exists as a last-resort catch-all, not a normal outcome).
+ */
+export type PipelineFailureStage =
+  | "pattern_extraction"
+  | "question_generation"
+  | "critique_review"
+  | "similarity_check"
+  | "quality_gate"
+  | "database_insertion"
+  | "unexpected_error";
+
 export interface GenerationOutcome {
   accepted: boolean;
   questionId?: string;
-  patternId: string;
+  /** null when the attempt failed before a pattern was ever resolved (e.g. pattern_extraction itself failed). */
+  patternId: string | null;
   rejectionReason?: string;
+  failureStage?: PipelineFailureStage;
   qualityScores: QualityScores;
   similarityMatches: SimilarityMatch[];
   promptTokens: number;

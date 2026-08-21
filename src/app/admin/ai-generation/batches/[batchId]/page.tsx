@@ -27,7 +27,7 @@ export default async function BatchDetailPage({ params }: Props) {
 
   const { data: batchQuestions } = await supabase
     .from("generation_batch_questions")
-    .select("id, question_id, accepted, rejection_reason, quality_scores, created_at")
+    .select("id, question_id, accepted, rejection_reason, failure_stage, quality_scores, prompt_tokens, completion_tokens, created_at")
     .eq("batch_id", batchId)
     .order("created_at", { ascending: true });
 

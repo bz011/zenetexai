@@ -157,6 +157,11 @@ export async function runBatch(batchId: string): Promise<void> {
   let completionTokens = 0;
   let hadFailure = false;
   const sameBatchDraftTexts: { batchQuestionId: string; text: string }[] = [];
+  // Every distinct rejection/failure reason seen this run, deduplicated -
+  // rolled into generation_batches.error_message at the end so a batch
+  // summary is diagnosable WITHOUT having to open every attempt individually
+  // (per-attempt detail still lives on generation_batch_questions.failure_stage/rejection_reason).
+  const failureReasons = new Set<string>();
 
   console.log(`Batch ${batchId}: ${slices.reduce((sum, s) => sum + s.count, 0)} questions across ${slices.length} slice(s)${isDryRun ? " [DRY RUN]" : ""}`);
 
@@ -194,14 +199,46 @@ export async function runBatch(batchId: string): Promise<void> {
           console.log(`  ACCEPTED ${outcome.questionId} (overall score ${outcome.qualityScores.overall})`);
         } else {
           rejectedCount++;
-          console.log(`  REJECTED: ${outcome.rejectionReason}`);
+          // A quality_gate rejection is the system working as designed (it
+          // tried, scored honestly, and correctly declined to insert a weak
+          // draft) - that alone should not flip the batch to "failed".
+          // Every OTHER failure stage means the system couldn't even
+          // attempt/complete generation (no source questions, LLM error,
+          // DB error) - that's a genuine failure the status must reflect,
+          // not just a quiet rejection count.
+          hadFailure = hadFailure || outcome.failureStage !== "quality_gate";
+          console.log(`  REJECTED [${outcome.failureStage ?? "quality_gate"}]: ${outcome.rejectionReason}`);
+          if (outcome.rejectionReason) failureReasons.add(`[${outcome.failureStage ?? "quality_gate"}] ${outcome.rejectionReason}`);
         }
       } catch (err) {
-        // One failed generation must never stop the batch.
+        // generateOneQuestion is designed to never throw for an expected
+        // failure mode (see its own header comment) - reaching this catch
+        // means something genuinely unexpected happened (e.g. the
+        // recordBatchQuestion insert itself failing). Still record a row so
+        // this doesn't regress to the exact silent-swallow bug being fixed
+        // here - best-effort, since if Supabase itself is unreachable this
+        // insert will fail too, and that must not crash the whole batch.
         hadFailure = true;
         rejectedCount++;
         generatedCount++;
-        console.error(`  FAILED: ${(err as Error).message}`);
+        const message = (err as Error).message;
+        console.error(`  FAILED [unexpected_error]: ${message}`);
+        failureReasons.add(`[unexpected_error] ${message}`);
+        try {
+          await supabaseAdmin.from("generation_batch_questions").insert({
+            batch_id: batchId,
+            question_id: null,
+            pattern_id: null,
+            accepted: false,
+            rejection_reason: `[unexpected_error] ${message}`,
+            failure_stage: "unexpected_error",
+            quality_scores: null,
+            prompt_tokens: 0,
+            completion_tokens: 0,
+          });
+        } catch {
+          // Already logged to console above - don't let a logging failure mask the original error.
+        }
       }
     });
 
@@ -229,14 +266,20 @@ export async function runBatch(batchId: string): Promise<void> {
     passedCount,
   });
 
+  // Capped join, not the full set - error_message is a batch-level rollup
+  // for an at-a-glance summary; the complete, unabridged per-attempt reason
+  // always lives on each generation_batch_questions.rejection_reason row.
+  const errorMessage = failureReasons.size > 0 ? [...failureReasons].slice(0, 10).join(" | ").slice(0, 2000) : null;
+
   await supabaseAdmin
     .from("generation_batches")
-    .update({ status: finalStatus, completed_at: new Date().toISOString() })
+    .update({ status: finalStatus, completed_at: new Date().toISOString(), error_message: errorMessage })
     .eq("id", batchId);
 
   console.log(`\n=== Batch ${batchId} ${finalStatus} ===`);
   console.log(`Generated: ${generatedCount} | Passed: ${passedCount} | Rejected: ${rejectedCount}`);
   console.log(`Tokens: ${promptTokens} prompt / ${completionTokens} completion`);
+  if (errorMessage) console.log(`Error summary: ${errorMessage}`);
 }
 
 async function main() {

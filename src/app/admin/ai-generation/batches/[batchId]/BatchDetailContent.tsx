@@ -6,13 +6,17 @@ import { useRouter } from "next/navigation";
 import { cancelGenerationBatch } from "@/features/ai-generation/services/aiGenerationAdminService";
 import { runGenerationBatchNow } from "@/features/ai-generation/services/aiGenerationBatchRunService";
 import { MAX_UI_RUN_COUNT } from "@/features/ai-generation/services/aiGenerationBatchRunConstants";
+import { summarizeAttempts, FAILURE_STAGE_LABELS, type FailureStage } from "@/features/ai-generation/services/batchAttemptsSummary";
 
 interface BatchQuestionRow {
   id: string;
   question_id: string | null;
   accepted: boolean;
   rejection_reason: string | null;
+  failure_stage: FailureStage | null;
   quality_scores: { overall?: number } | null;
+  prompt_tokens: number | null;
+  completion_tokens: number | null;
   created_at: string;
 }
 
@@ -38,6 +42,7 @@ export default function BatchDetailContent({ batch, batchQuestions }: { batch: B
   const [cancelling, setCancelling] = useState(false);
   const [running, setRunning] = useState(false);
   const [runMessage, setRunMessage] = useState<string | null>(null);
+  const summary = summarizeAttempts(batchQuestions);
 
   async function handleCancel() {
     setCancelling(true);
@@ -66,21 +71,36 @@ export default function BatchDetailContent({ batch, batchQuestions }: { batch: B
           <span className="rounded-full bg-white/[0.07] px-3 py-1 text-[12px] font-semibold text-slate-300">{batch.status}</span>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <p className="mt-6 text-[11px] uppercase tracking-wide text-slate-600">
+          Requested {batch.requested_count} · "Generated" alone never means "succeeded" - see the breakdown below.
+        </p>
+        <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="card p-4">
-            <p className="text-[11px] text-slate-500">Generated</p>
-            <p className="text-lg font-bold text-white">{batch.generated_count}/{batch.requested_count}</p>
+            <p className="text-[11px] text-slate-500">Attempts</p>
+            <p className="text-lg font-bold text-white">{summary.attempts}</p>
           </div>
           <div className="card p-4">
-            <p className="text-[11px] text-slate-500">Passed</p>
-            <p className="text-lg font-bold text-emerald-400">{batch.passed_count}</p>
+            <p className="text-[11px] text-slate-500">LLM responses</p>
+            <p className="text-lg font-bold text-white">{summary.llmResponses}</p>
           </div>
           <div className="card p-4">
-            <p className="text-[11px] text-slate-500">Rejected</p>
-            <p className="text-lg font-bold text-red-400">{batch.rejected_count}</p>
+            <p className="text-[11px] text-slate-500">Valid drafts</p>
+            <p className="text-lg font-bold text-white">{summary.validDrafts}</p>
           </div>
           <div className="card p-4">
-            <p className="text-[11px] text-slate-500">Approved</p>
+            <p className="text-[11px] text-slate-500">Quality rejected</p>
+            <p className="text-lg font-bold text-amber-400">{summary.qualityRejected}</p>
+          </div>
+          <div className="card p-4">
+            <p className="text-[11px] text-slate-500">Pipeline errors</p>
+            <p className="text-lg font-bold text-red-400">{summary.pipelineErrors}</p>
+          </div>
+          <div className="card p-4">
+            <p className="text-[11px] text-slate-500">Saved to review queue</p>
+            <p className="text-lg font-bold text-emerald-400">{summary.savedToReviewQueue}</p>
+          </div>
+          <div className="card p-4">
+            <p className="text-[11px] text-slate-500">Approved (post-review)</p>
             <p className="text-lg font-bold text-white">{batch.approved_count}</p>
           </div>
         </div>
@@ -90,7 +110,7 @@ export default function BatchDetailContent({ batch, batchQuestions }: { batch: B
           <p>Tokens: {batch.prompt_tokens} prompt + {batch.completion_tokens} completion</p>
           <p>Estimated cost: ${Number(batch.estimated_cost_usd).toFixed(4)}</p>
           <p>Created by: {batch.created_by}</p>
-          {batch.error_message && <p className="mt-2 text-red-400">Error: {batch.error_message}</p>}
+          {batch.error_message && <p className="mt-2 text-red-400">Error summary: {batch.error_message}</p>}
         </div>
 
         {runMessage && (
@@ -122,7 +142,7 @@ export default function BatchDetailContent({ batch, batchQuestions }: { batch: B
           </p>
         )}
 
-        <h2 className="mt-8 text-[15px] font-semibold text-white">Results ({batchQuestions.length})</h2>
+        <h2 className="mt-8 text-[15px] font-semibold text-white">Attempts ({batchQuestions.length})</h2>
         <div className="mt-4 space-y-2">
           {batchQuestions.map((bq) => (
             <div key={bq.id} className="card flex items-center justify-between px-5 py-3">
@@ -132,9 +152,19 @@ export default function BatchDetailContent({ batch, batchQuestions }: { batch: B
                     {bq.question_id}
                   </Link>
                 ) : (
-                  <p className="text-[13px] font-medium text-slate-400">Rejected pre-insert</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-[13px] font-medium text-slate-400">Rejected pre-insert</p>
+                    {bq.failure_stage && (
+                      <span className="rounded-full bg-white/[0.07] px-2 py-0.5 text-[11px] font-semibold text-slate-400">
+                        {FAILURE_STAGE_LABELS[bq.failure_stage]}
+                      </span>
+                    )}
+                  </div>
                 )}
                 {bq.rejection_reason && <p className="mt-1 text-[12px] text-red-400">{bq.rejection_reason}</p>}
+                <p className="mt-1 text-[11px] text-slate-600">
+                  Tokens: {bq.prompt_tokens ?? 0} prompt / {bq.completion_tokens ?? 0} completion
+                </p>
               </div>
               {bq.quality_scores?.overall !== undefined && (
                 <span className="text-[13px] font-semibold text-white">{bq.quality_scores.overall}/100</span>

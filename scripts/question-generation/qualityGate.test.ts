@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { computeQualityScores, hasHardFailure, type CritiqueResult, type TranslationReviewResult, type MetadataReviewResult } from "./qualityGate";
+import {
+  computeQualityScores,
+  hasHardFailure,
+  pipelineFailureQualityScores,
+  type CritiqueResult,
+  type TranslationReviewResult,
+  type MetadataReviewResult,
+} from "./qualityGate";
 import type { ValidationIssue } from "../question-bank/types";
 import type { SimilarityMatch, RawGeneratedOption, RawExplanationExtras } from "./types";
 
@@ -261,5 +268,26 @@ describe("computeQualityScores", () => {
       explanationExtras: goodExplanationExtras,
     });
     expect(scores.explanation_quality).toBe(100);
+  });
+});
+
+describe("pipelineFailureQualityScores", () => {
+  it("returns a sentinel with every numeric dimension at 0 and the real reason in hard_failures", () => {
+    const scores = pipelineFailureQualityScores("[pattern_extraction] No approved source questions found for slice");
+    expect(scores.overall).toBe(0);
+    expect(scores.schema_validity).toBe(0);
+    expect(scores.pmp_alignment).toBe(0);
+    expect(scores.hard_failures).toEqual(["[pattern_extraction] No approved source questions found for slice"]);
+  });
+
+  it("always reports a hard failure, so hasHardFailure never misses a pipeline-failure sentinel", () => {
+    const scores = pipelineFailureQualityScores("[question_generation] some error");
+    expect(hasHardFailure(scores)).toBe(true);
+  });
+
+  it("produces no flags or reviewer recommendations - nothing was actually scored", () => {
+    const scores = pipelineFailureQualityScores("[similarity_check] embedding call failed");
+    expect(scores.flags).toEqual([]);
+    expect(scores.reviewer_recommendations).toEqual([]);
   });
 });

@@ -8,10 +8,18 @@ import { buildTranslationReviewPrompt } from "./prompts/translationReview_v1";
 import { buildMetadataConsistencyPrompt } from "./prompts/metadataConsistencyReview_v1";
 import { adaptDraftToWorkbookRows } from "./draftAdapter";
 import { runSimilarityChecks, embedAndStore } from "./similarity";
-import { computeQualityScores, hasHardFailure, type CritiqueResult, type TranslationReviewResult, type MetadataReviewResult } from "./qualityGate";
+import {
+  computeQualityScores,
+  hasHardFailure,
+  pipelineFailureQualityScores,
+  type CritiqueResult,
+  type TranslationReviewResult,
+  type MetadataReviewResult,
+} from "./qualityGate";
 import { allocateQuestionId } from "./questionIdAllocator";
 import { insertAcceptedDraft } from "./insertDraft";
-import type { GenerationTargetSlice, RawGeneratedQuestion, GenerationOutcome } from "./types";
+import type { StructuredGenerationResult } from "./llm";
+import type { GenerationTargetSlice, RawGeneratedQuestion, GenerationOutcome, PipelineFailureStage } from "./types";
 
 export interface GenerateOneQuestionParams {
   certificationId: string;
@@ -26,10 +34,13 @@ export interface GenerateOneQuestionParams {
 async function recordBatchQuestion(params: {
   batchId: string;
   questionId: string | null;
-  patternId: string;
+  patternId: string | null;
   accepted: boolean;
   rejectionReason?: string;
+  failureStage?: PipelineFailureStage;
   qualityScores?: unknown;
+  promptTokens: number;
+  completionTokens: number;
 }): Promise<string> {
   const { data, error } = await supabaseAdmin
     .from("generation_batch_questions")
@@ -39,7 +50,10 @@ async function recordBatchQuestion(params: {
       pattern_id: params.patternId,
       accepted: params.accepted,
       rejection_reason: params.rejectionReason ?? null,
+      failure_stage: params.failureStage ?? null,
       quality_scores: params.qualityScores ?? null,
+      prompt_tokens: params.promptTokens,
+      completion_tokens: params.completionTokens,
     })
     .select("id")
     .single();
@@ -51,55 +65,137 @@ async function recordBatchQuestion(params: {
 }
 
 /**
+ * Records a pipeline-stage failure and returns the matching GenerationOutcome.
+ * Used for every stage that can fail BEFORE a draft/quality score exists
+ * (pattern extraction, generation, critique/translation/metadata review,
+ * similarity checks) - these used to simply throw out of generateOneQuestion
+ * uncaught, which runBatch's per-task catch only console.error'd (never
+ * persisted), leaving zero trace of WHY 5/5 attempts failed. See migration
+ * 015's header comment for the incident this fixes.
+ */
+async function recordPipelineFailure(
+  batchId: string,
+  patternId: string | null,
+  stage: PipelineFailureStage,
+  err: unknown,
+  promptTokens: number,
+  completionTokens: number
+): Promise<GenerationOutcome> {
+  const message = err instanceof Error ? err.message : String(err);
+  const rejectionReason = `[${stage}] ${message}`;
+
+  await recordBatchQuestion({
+    batchId,
+    questionId: null,
+    patternId,
+    accepted: false,
+    rejectionReason,
+    failureStage: stage,
+    qualityScores: null,
+    promptTokens,
+    completionTokens,
+  });
+
+  return {
+    accepted: false,
+    patternId,
+    rejectionReason,
+    failureStage: stage,
+    qualityScores: pipelineFailureQualityScores(rejectionReason),
+    similarityMatches: [],
+    promptTokens,
+    completionTokens,
+  };
+}
+
+/**
  * Generates, validates, scores, and (if it passes) inserts ONE question.
- * Never throws for a business-logic rejection (hard validation failure,
- * low quality score, similarity breach) - those are normal, expected
- * outcomes recorded in the result. Only genuinely unexpected errors
- * (provider outage, malformed JSON the parser can't recover from) throw,
- * and the caller (generateBatch.ts) is responsible for catching those per
- * question so one failure never stops the batch.
+ * Never throws for ANY expected failure mode - hard validation failure, low
+ * quality score, similarity breach, OR a pipeline stage itself failing
+ * (pattern extraction finding no source questions, the LLM call erroring,
+ * etc.). Every one of those is a normal, expected outcome recorded via
+ * recordBatchQuestion/recordPipelineFailure and returned in the result, so
+ * generation_batch_questions always has exactly one row per attempt and the
+ * UI can show precisely why. Only a genuinely unexpected error (e.g.
+ * recordBatchQuestion's own insert failing) can still throw, and the caller
+ * (generateBatch.ts) is responsible for catching that per question so one
+ * failure never stops the batch.
  */
 export async function generateOneQuestion(params: GenerateOneQuestionParams): Promise<GenerationOutcome> {
   let totalPromptTokens = 0;
   let totalCompletionTokens = 0;
 
-  const provider = getLLMProvider();
+  let provider: ReturnType<typeof getLLMProvider>;
+  try {
+    provider = getLLMProvider();
+  } catch (err) {
+    // Misconfiguration (missing API key, unknown LLM_PROVIDER) - genuinely
+    // unexpected relative to normal per-question pipeline stages, not a
+    // pattern/generation/quality outcome, but still must be recorded rather
+    // than thrown uncaught (this was the pre-fix failure mode).
+    return recordPipelineFailure(params.batchId, null, "unexpected_error", err, 0, 0);
+  }
 
-  const { pattern, promptTokens: extractionPromptTokens, completionTokens: extractionCompletionTokens } =
-    await findOrCreatePattern(params.certificationId, params.slice, params.createdBy);
-  totalPromptTokens += extractionPromptTokens;
-  totalCompletionTokens += extractionCompletionTokens;
+  let patternId: string | null = null;
+  let pattern: Awaited<ReturnType<typeof findOrCreatePattern>>["pattern"];
+  try {
+    const patternResult = await findOrCreatePattern(params.certificationId, params.slice, params.createdBy);
+    pattern = patternResult.pattern;
+    patternId = pattern.id;
+    totalPromptTokens += patternResult.promptTokens;
+    totalCompletionTokens += patternResult.completionTokens;
+  } catch (err) {
+    return recordPipelineFailure(params.batchId, null, "pattern_extraction", err, totalPromptTokens, totalCompletionTokens);
+  }
 
-  const generationPrompt = buildQuestionGenerationPrompt(pattern, params.slice, params.styleExampleTexts);
-  const generationResult = await provider.generateStructured<RawGeneratedQuestion>({
-    ...generationPrompt,
-    model: provider.defaultModel,
-  });
-  totalPromptTokens += generationResult.usage.promptTokens;
-  totalCompletionTokens += generationResult.usage.completionTokens;
-  const draft = generationResult.data;
+  let draft: RawGeneratedQuestion;
+  try {
+    const generationPrompt = buildQuestionGenerationPrompt(pattern, params.slice, params.styleExampleTexts);
+    const generationResult = await provider.generateStructured<RawGeneratedQuestion>({
+      ...generationPrompt,
+      model: provider.defaultModel,
+    });
+    totalPromptTokens += generationResult.usage.promptTokens;
+    totalCompletionTokens += generationResult.usage.completionTokens;
+    draft = generationResult.data;
+  } catch (err) {
+    return recordPipelineFailure(params.batchId, patternId, "question_generation", err, totalPromptTokens, totalCompletionTokens);
+  }
 
   const questionId = await allocateQuestionId();
   const adapted = adaptDraftToWorkbookRows(draft, questionId, pattern, params.slice, params.certificationCode);
 
   const validation = validateWorkbookData(adapted.workbook);
 
-  const [critiqueResult, translationResult, metadataResult] = await Promise.all([
-    provider.generateStructured<CritiqueResult>({ ...buildCritiquePrompt(draft), model: provider.defaultModel }),
-    provider.generateStructured<TranslationReviewResult>({ ...buildTranslationReviewPrompt(draft), model: provider.defaultModel }),
-    provider.generateStructured<MetadataReviewResult>({ ...buildMetadataConsistencyPrompt(draft, params.slice), model: provider.defaultModel }),
-  ]);
-  totalPromptTokens += critiqueResult.usage.promptTokens + translationResult.usage.promptTokens + metadataResult.usage.promptTokens;
-  totalCompletionTokens += critiqueResult.usage.completionTokens + translationResult.usage.completionTokens + metadataResult.usage.completionTokens;
+  let critiqueResult: StructuredGenerationResult<CritiqueResult>;
+  let translationResult: StructuredGenerationResult<TranslationReviewResult>;
+  let metadataResult: StructuredGenerationResult<MetadataReviewResult>;
+  try {
+    [critiqueResult, translationResult, metadataResult] = await Promise.all([
+      provider.generateStructured<CritiqueResult>({ ...buildCritiquePrompt(draft), model: provider.defaultModel }),
+      provider.generateStructured<TranslationReviewResult>({ ...buildTranslationReviewPrompt(draft), model: provider.defaultModel }),
+      provider.generateStructured<MetadataReviewResult>({ ...buildMetadataConsistencyPrompt(draft, params.slice), model: provider.defaultModel }),
+    ]);
+    totalPromptTokens += critiqueResult.usage.promptTokens + translationResult.usage.promptTokens + metadataResult.usage.promptTokens;
+    totalCompletionTokens += critiqueResult.usage.completionTokens + translationResult.usage.completionTokens + metadataResult.usage.completionTokens;
+  } catch (err) {
+    return recordPipelineFailure(params.batchId, patternId, "critique_review", err, totalPromptTokens, totalCompletionTokens);
+  }
 
-  const { matches: similarityMatches, promptTokens: similarityPromptTokens } = await runSimilarityChecks(provider, {
-    draftText: draft.question_text_en,
-    sourceQuestionIds: pattern.source_question_ids,
-    sameBatchDraftTexts: params.sameBatchDraftTexts,
-    draftOptionTexts: draft.options.map((o) => o.option_text_en),
-    draftTags: draft.tags,
-  });
-  totalPromptTokens += similarityPromptTokens;
+  let similarityMatches: Awaited<ReturnType<typeof runSimilarityChecks>>["matches"];
+  try {
+    const similarityResult = await runSimilarityChecks(provider, {
+      draftText: draft.question_text_en,
+      sourceQuestionIds: pattern.source_question_ids,
+      sameBatchDraftTexts: params.sameBatchDraftTexts,
+      draftOptionTexts: draft.options.map((o) => o.option_text_en),
+      draftTags: draft.tags,
+    });
+    similarityMatches = similarityResult.matches;
+    totalPromptTokens += similarityResult.promptTokens;
+  } catch (err) {
+    return recordPipelineFailure(params.batchId, patternId, "similarity_check", err, totalPromptTokens, totalCompletionTokens);
+  }
 
   const qualityScores = computeQualityScores({
     validatorIssues: validation.issues,
@@ -118,17 +214,21 @@ export async function generateOneQuestion(params: GenerateOneQuestionParams): Pr
     const batchQuestionId = await recordBatchQuestion({
       batchId: params.batchId,
       questionId: null,
-      patternId: pattern.id,
+      patternId,
       accepted: false,
       rejectionReason: qualityScores.hard_failures.join("; "),
+      failureStage: "quality_gate",
       qualityScores,
+      promptTokens: totalPromptTokens,
+      completionTokens: totalCompletionTokens,
     });
     await persistSimilarityResults(batchQuestionId, similarityMatches);
 
     return {
       accepted: false,
-      patternId: pattern.id,
+      patternId,
       rejectionReason: qualityScores.hard_failures.join("; "),
+      failureStage: "quality_gate",
       qualityScores,
       similarityMatches,
       promptTokens: totalPromptTokens,
@@ -145,17 +245,21 @@ export async function generateOneQuestion(params: GenerateOneQuestionParams): Pr
     const batchQuestionId = await recordBatchQuestion({
       batchId: params.batchId,
       questionId: null,
-      patternId: pattern.id,
+      patternId,
       accepted: false,
       rejectionReason: `Database insertion failed: ${insertResult.error}`,
+      failureStage: "database_insertion",
       qualityScores,
+      promptTokens: totalPromptTokens,
+      completionTokens: totalCompletionTokens,
     });
     await persistSimilarityResults(batchQuestionId, similarityMatches);
 
     return {
       accepted: false,
-      patternId: pattern.id,
+      patternId,
       rejectionReason: `Database insertion failed: ${insertResult.error}`,
+      failureStage: "database_insertion",
       qualityScores,
       similarityMatches,
       promptTokens: totalPromptTokens,
@@ -176,16 +280,18 @@ export async function generateOneQuestion(params: GenerateOneQuestionParams): Pr
   const batchQuestionId = await recordBatchQuestion({
     batchId: params.batchId,
     questionId,
-    patternId: pattern.id,
+    patternId,
     accepted: true,
     qualityScores,
+    promptTokens: totalPromptTokens,
+    completionTokens: totalCompletionTokens,
   });
   await persistSimilarityResults(batchQuestionId, similarityMatches);
 
   return {
     accepted: true,
     questionId,
-    patternId: pattern.id,
+    patternId,
     qualityScores,
     similarityMatches,
     promptTokens: totalPromptTokens,

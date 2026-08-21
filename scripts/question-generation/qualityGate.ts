@@ -253,3 +253,34 @@ export function computeQualityScores(input: ComputeQualityScoresInput): QualityS
 export function hasHardFailure(scores: QualityScores): boolean {
   return scores.hard_failures.length > 0;
 }
+
+/**
+ * Sentinel used when an attempt failed BEFORE quality scoring ever ran
+ * (pattern extraction, generation, critique, or similarity checks all
+ * throwing before a draft exists to score) - see PipelineFailureStage.
+ * Every numeric field is 0 and hard_failures carries the real reason, so
+ * this can never be mistaken for a real (if poor) score: nothing computed
+ * these zeros from actual content, they mean "not scored, pipeline failed
+ * first."
+ */
+export function pipelineFailureQualityScores(reason: string): QualityScores {
+  return {
+    schema_validity: 0,
+    pmp_alignment: 0,
+    answer_defensibility: 0,
+    distractor_quality: 0,
+    scenario_originality: 0,
+    similarity_safety: 0,
+    translation_quality: 0,
+    metadata_consistency: 0,
+    ambiguity_risk: 0,
+    scenario_realism: 0,
+    grammar_quality: 0,
+    option_balance: 0,
+    explanation_quality: 0,
+    overall: 0,
+    flags: [],
+    hard_failures: [reason],
+    reviewer_recommendations: [],
+  };
+}

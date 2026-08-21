@@ -159,6 +159,19 @@ const MIGRATIONS: MigrationSpec[] = [
       ) AS applied
     `,
   },
+  {
+    id: "015_generation_failure_audit",
+    file: "015_generation_failure_audit.sql",
+    signatureQuery: `
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'generation_batch_questions' AND column_name = 'failure_stage'
+      ) AND EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'generation_batch_questions' AND column_name = 'prompt_tokens'
+      ) AS applied
+    `,
+  },
 ];
 
 async function main() {
@@ -251,6 +264,7 @@ async function main() {
       { label: "question_review_log / question_versions tables", query: "SELECT to_regclass('public.question_review_log') IS NOT NULL AND to_regclass('public.question_versions') IS NOT NULL AS ok" },
       { label: "questions Factory metadata columns (quality_score, ai_confidence, generated_by, version, explanation_structured)", query: "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='quality_score') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='ai_confidence') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='generated_by') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='version') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='explanation_structured') AS ok" },
       { label: "log_question_review_action() / record_question_version() RPCs", query: "SELECT EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='log_question_review_action') AND EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='record_question_version') AS ok" },
+      { label: "generation_batch_questions failure audit columns (failure_stage, prompt_tokens, completion_tokens)", query: "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='generation_batch_questions' AND column_name='failure_stage') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='generation_batch_questions' AND column_name='prompt_tokens') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='generation_batch_questions' AND column_name='completion_tokens') AS ok" },
     ];
 
     let allOk = true;
