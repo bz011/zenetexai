@@ -46,7 +46,7 @@ export default function DashboardContent({ profile, courses, resume, stats }: Pr
   }
 
   return (
-    <div className="relative min-h-screen px-6 py-24">
+    <div className="academy-shell relative min-h-screen px-6 py-24">
       <div className="pointer-events-none absolute left-1/2 top-0 h-[350px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/[0.08] blur-[100px]" />
 
       <div className="container-page relative max-w-4xl">

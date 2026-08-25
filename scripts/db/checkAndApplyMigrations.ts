@@ -172,6 +172,22 @@ const MIGRATIONS: MigrationSpec[] = [
       ) AS applied
     `,
   },
+  {
+    id: "016_mock_exam",
+    file: "016_mock_exam.sql",
+    signatureQuery: `
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'mock_exam_attempts'
+      ) AND EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'mock_exam_attempt_questions'
+      ) AND EXISTS (
+        SELECT 1 FROM information_schema.routines
+        WHERE routine_schema = 'public' AND routine_name = 'create_mock_exam_attempt'
+      ) AS applied
+    `,
+  },
 ];
 
 async function main() {
@@ -265,6 +281,8 @@ async function main() {
       { label: "questions Factory metadata columns (quality_score, ai_confidence, generated_by, version, explanation_structured)", query: "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='quality_score') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='ai_confidence') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='generated_by') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='version') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='explanation_structured') AS ok" },
       { label: "log_question_review_action() / record_question_version() RPCs", query: "SELECT EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='log_question_review_action') AND EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='record_question_version') AS ok" },
       { label: "generation_batch_questions failure audit columns (failure_stage, prompt_tokens, completion_tokens)", query: "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='generation_batch_questions' AND column_name='failure_stage') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='generation_batch_questions' AND column_name='prompt_tokens') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='generation_batch_questions' AND column_name='completion_tokens') AS ok" },
+      { label: "mock_exam_attempts / mock_exam_attempt_questions tables", query: "SELECT to_regclass('public.mock_exam_attempts') IS NOT NULL AND to_regclass('public.mock_exam_attempt_questions') IS NOT NULL AS ok" },
+      { label: "create_mock_exam_attempt() RPC", query: "SELECT EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='create_mock_exam_attempt') AS ok" },
     ];
 
     let allOk = true;
@@ -283,7 +301,7 @@ async function main() {
       FROM pg_class c
       JOIN pg_namespace n ON n.oid = c.relnamespace
       WHERE n.nspname = 'public'
-        AND c.relname IN ('question_answer_key','matching_answer_key','drag_and_drop_answer_key','hotspots','learning_assessment_answer_key','student_lesson_notes','student_study_time','practice_sessions','practice_session_questions')
+        AND c.relname IN ('question_answer_key','matching_answer_key','drag_and_drop_answer_key','hotspots','learning_assessment_answer_key','student_lesson_notes','student_study_time','practice_sessions','practice_session_questions','mock_exam_attempts','mock_exam_attempt_questions')
     `);
     for (const row of rlsRows as { relname: string; relrowsecurity: boolean }[]) {
       console.log(`  ${row.relrowsecurity ? "✓" : "✗ RLS DISABLED"}  RLS enabled on ${row.relname}`);

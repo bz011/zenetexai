@@ -173,7 +173,7 @@ export default function PracticeRunner({ sessionId, initialData }: Props) {
   const progressPct = questions.length > 0 ? Math.round(((currentIndex + 1) / questions.length) * 100) : 0;
 
   return (
-    <div className="relative min-h-screen px-6 py-24" dir={lang === "ar" ? "rtl" : "ltr"}>
+    <div className="academy-shell relative min-h-screen px-6 py-24" dir={lang === "ar" ? "rtl" : "ltr"}>
       <div className="container-page relative max-w-5xl">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>

@@ -157,4 +157,100 @@
   .ms-auto-rtl {
     margin-inline-start: auto;
   }
+
+  /* ── Academy Light ──
+     Scoped re-theme for the authenticated student experience (dashboard,
+     courses, Practice Mode, Mock Exam) - white surfaces, dark navy/slate
+     text, restrained blue accents. The public marketing site and admin
+     pages keep the dark brand identity untouched; Header/Footer stay dark
+     everywhere (including on Academy pages) per the approved design
+     decision - this scope only ever wraps page CONTENT, never AppShell.
+     Overrides the same semantic classes (.card/.label/.btn-*) and the
+     concrete raw-utility color classes actually used by the pages this
+     scope wraps, rather than inventing a parallel class vocabulary - so
+     existing components render correctly in light mode with zero changes
+     to their own markup. */
+  .academy-shell {
+    background-color: #ffffff;
+    color: #0f172a;
+  }
+  .academy-shell [class*="blur-["] {
+    opacity: 0.35;
+  }
+
+  .academy-shell .text-white { color: #0f172a; }
+  .academy-shell .text-slate-300 { color: #334155; }
+  .academy-shell .text-slate-400 { color: #475569; }
+  .academy-shell .text-slate-500 { color: #64748b; }
+  .academy-shell .text-slate-600 { color: #64748b; }
+  .academy-shell .text-indigo-400 { color: #4f46e5; }
+  .academy-shell .text-emerald-400 { color: #059669; }
+  .academy-shell .text-red-400 { color: #dc2626; }
+  .academy-shell .text-amber-400 { color: #d97706; }
+
+  .academy-shell .bg-white\/\[0\.015\],
+  .academy-shell .bg-white\/\[0\.02\],
+  .academy-shell .bg-white\/\[0\.03\],
+  .academy-shell .bg-white\/\[0\.04\],
+  .academy-shell .bg-white\/\[0\.05\] { background-color: #f8fafc; }
+  .academy-shell .bg-white\/\[0\.06\],
+  .academy-shell .bg-white\/\[0\.07\],
+  .academy-shell .bg-white\/\[0\.08\] { background-color: #f1f5f9; }
+  .academy-shell .bg-white\/\[0\.09\],
+  .academy-shell .bg-white\/\[0\.1\],
+  .academy-shell .bg-white\/\[0\.12\] { background-color: #e8edf3; }
+  .academy-shell .bg-white\/\[0\.15\],
+  .academy-shell .bg-white\/\[0\.18\],
+  .academy-shell .bg-white\/\[0\.2\] { background-color: #e2e8f0; }
+
+  .academy-shell .hover\:bg-white\/\[0\.03\]:hover,
+  .academy-shell .hover\:bg-white\/\[0\.04\]:hover,
+  .academy-shell .hover\:bg-white\/\[0\.055\]:hover { background-color: #f1f5f9; }
+  .academy-shell .hover\:bg-white\/\[0\.06\]:hover,
+  .academy-shell .hover\:bg-white\/\[0\.07\]:hover,
+  .academy-shell .hover\:bg-white\/\[0\.1\]:hover { background-color: #e8edf3; }
+
+  .academy-shell .border-white\/\[0\.06\],
+  .academy-shell .border-white\/\[0\.07\],
+  .academy-shell .border-white\/\[0\.08\] { border-color: #e2e8f0; }
+  .academy-shell .border-white\/\[0\.09\],
+  .academy-shell .border-white\/\[0\.14\] { border-color: #cbd5e1; }
+  .academy-shell .hover\:border-white\/\[0\.16\]:hover,
+  .academy-shell .hover\:border-white\/\[0\.28\]:hover { border-color: #94a3b8; }
+
+  .academy-shell .card {
+    background-color: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+  .academy-shell .card-hover:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  }
+  .academy-shell .label {
+    color: #4f46e5;
+  }
+  .academy-shell .btn-primary {
+    background-color: #4f46e5;
+    box-shadow: none;
+  }
+  .academy-shell .btn-primary:hover {
+    background-color: #4338ca;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.22);
+  }
+  .academy-shell .btn-secondary {
+    border-color: #cbd5e1;
+    color: #0f172a;
+  }
+  .academy-shell .btn-secondary:hover {
+    border-color: #94a3b8;
+    background-color: #f8fafc;
+  }
+  .academy-shell .btn-ghost {
+    color: #4f46e5;
+  }
+  .academy-shell .btn-ghost:hover {
+    color: #4338ca;
+  }
 }

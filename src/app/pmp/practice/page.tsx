@@ -9,7 +9,7 @@ export default async function PracticeConfigPage() {
   await requireUser({ loginRedirectTo: "/pmp/practice" });
 
   return (
-    <div className="relative min-h-screen px-6 py-24">
+    <div className="academy-shell relative min-h-screen px-6 py-24">
       <div className="container-page relative max-w-2xl">
         <span className="label">PMP</span>
         <h1 className="mt-3 text-2xl font-bold text-white">Practice Mode</h1>
