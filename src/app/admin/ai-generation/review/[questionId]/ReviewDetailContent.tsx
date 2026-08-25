@@ -24,6 +24,9 @@ interface QualityScores {
   grammar_quality?: number;
   option_balance?: number;
   explanation_quality?: number;
+  answer_obviousness?: number;
+  pmi_decision_depth?: number;
+  option_parallelism?: number;
   overall: number;
   flags: string[];
   hard_failures: string[];
@@ -77,6 +80,9 @@ const SCORE_LABELS: [keyof QualityScores, string][] = [
   ["grammar_quality", "Grammar quality"],
   ["option_balance", "Option balance"],
   ["explanation_quality", "Explanation quality"],
+  ["answer_obviousness", "Answer obviousness (lower is better)"],
+  ["pmi_decision_depth", "PMI decision depth"],
+  ["option_parallelism", "Option parallelism"],
 ];
 
 const ACTION_LABELS: Record<string, string> = {

@@ -22,7 +22,20 @@ alternative attempt from the same underlying pattern). Follow the same
 rules as original generation: materially different scenario from the
 pattern's source, one defensible correct answer, realistic distractors,
 no ambiguity, complete professional Arabic localization, and never invent
-hotspot coordinates.`;
+hotspot coordinates.
+
+Distractors must each represent a SPECIFIC common PMP mistake (acting
+before assessing, escalating too early, unilateral decisions, ignoring
+stakeholder collaboration, confusing risk responses, treating symptoms
+instead of root cause, reactive instead of proactive) - never obviously
+passive, irrelevant, or eliminable by common sense alone. The correct
+answer must NOT be identifiable by being longer, combining multiple actions
+while distractors name only one, or sounding more professional than the
+distractors - all options must be comparable in length, specificity, and
+structure. In regulated domains (pharmaceutical, banking, healthcare,
+government, etc.), the correct answer must respect real-world constraints
+(qualification, regulatory, quality, procurement) that would materially
+affect the decision.`;
 
   const userPrompt = `PATTERN this question is based on:
 - Scenario structure: ${pattern.scenario_structure}

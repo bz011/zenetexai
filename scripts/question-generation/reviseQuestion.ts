@@ -21,7 +21,7 @@ import { computeQualityScores, hasHardFailure, type CritiqueResult, type Transla
 import { insertAcceptedDraft } from "./insertDraft";
 import type { RawGeneratedQuestion, PatternRow, GenerationOutcome, GenerationTargetSlice } from "./types";
 
-async function fetchCurrentDraftAsRaw(questionId: string): Promise<{ raw: RawGeneratedQuestion; slice: GenerationTargetSlice; patternId: string | null; certificationCode: string }> {
+export async function fetchCurrentDraftAsRaw(questionId: string): Promise<{ raw: RawGeneratedQuestion; slice: GenerationTargetSlice; patternId: string | null; certificationCode: string }> {
   const { data: question } = await supabaseAdmin.from("questions").select("*, certifications(code)").eq("question_id", questionId).single();
   if (!question) throw new Error(`Question not found: ${questionId}`);
 

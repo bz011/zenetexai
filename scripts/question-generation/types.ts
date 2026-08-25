@@ -190,6 +190,17 @@ export interface QualityScores {
   option_balance: number;
   /** Deterministic (Sprint 8): completeness of the structured teaching content (key concept/exam tip/common trap/related concepts). */
   explanation_quality: number;
+  /**
+   * LLM-scored (Sprint 8.2, post-AIQ000003 calibration incident). Inverted
+   * like ambiguity_risk: 0 = the correct answer blends in with the
+   * distractors, 100 = it obviously stands out (length, tone, or combining
+   * multiple actions while distractors name only one).
+   */
+  answer_obviousness: number;
+  /** LLM-scored (Sprint 8.2): does answering correctly require genuine PMI-style judgment (e.g. Assess->Analyze->Collaborate->Act), or is it solvable with common sense alone? Higher = more genuine PMI reasoning required. */
+  pmi_decision_depth: number;
+  /** Deterministic (Sprint 8.2): word-count parity across options plus a check that the correct answer doesn't stitch together more actions (and/or conjunctions) than the distractors - a structural complement to option_balance's character-length check. */
+  option_parallelism: number;
   overall: number;
   flags: string[];
   hard_failures: string[];

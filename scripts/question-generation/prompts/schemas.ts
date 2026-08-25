@@ -176,12 +176,15 @@ export const CRITIQUE_SCHEMA = {
     ambiguity_risk: { type: "number" },
     scenario_realism: { type: "number" },
     grammar_quality: { type: "number" },
+    answer_obviousness: { type: "number" },
+    pmi_decision_depth: { type: "number" },
     reasoning: { type: "string" },
     reviewer_recommendations: { type: "array", items: { type: "string" } },
   },
   required: [
     "pmp_alignment", "answer_defensibility", "distractor_quality", "ambiguity_risk",
-    "scenario_realism", "grammar_quality", "reasoning", "reviewer_recommendations",
+    "scenario_realism", "grammar_quality", "answer_obviousness", "pmi_decision_depth",
+    "reasoning", "reviewer_recommendations",
   ],
 } as const;
 

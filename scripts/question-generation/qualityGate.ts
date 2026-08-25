@@ -4,29 +4,53 @@ import type { QualityScores, SimilarityMatch, RawGeneratedOption, RawExplanation
 /**
  * Weighted overall score. Documented and code-constant, not a black box -
  * same transparency precedent as the Sprint 3.5 validator's health score.
- * `ambiguity_risk` is the one component where LOWER is better; it
- * contributes via a derived "clarity" term (100 - ambiguity_risk).
+ * `ambiguity_risk` and `answer_obviousness` are the two components where
+ * LOWER is better; they contribute via derived "clarity"/"answer_subtlety"
+ * terms (100 - the raw score).
  *
- * Sprint 8 (Phase 7) adds four dimensions: scenario_realism/grammar_quality
- * (LLM-scored, folded into the existing critique call - no extra API cost)
- * and option_balance/explanation_quality (deterministic, code-computed -
- * same category as schema_validity/scenario_originality below). Existing
- * weights were reduced proportionally to make room; nothing was removed.
+ * Sprint 8.2 rebalance (post-AIQ000003 calibration incident - see
+ * qualityGate.test.ts's "assessment-critical dimensions" describe block for
+ * the regression tests this incident produced): AIQ000003 scored 88.56/100
+ * despite human review finding the distractors too weak and the correct
+ * answer too obvious - the pipeline never explicitly measured either of
+ * those things, and the 13-dimension weighting let strong grammar/
+ * translation/metadata/formatting scores paper over weak assessment
+ * quality. Two new LLM-scored dimensions were added (answer_obviousness,
+ * pmi_decision_depth, folded into the existing critique call - no extra API
+ * cost) and one new deterministic dimension (option_parallelism). Weight
+ * was reallocated FROM secondary/formatting dimensions (schema_validity,
+ * translation_quality, metadata_consistency, clarity, grammar_quality,
+ * scenario_originality, similarity_safety, option_balance,
+ * explanation_quality) TO the five "assessment-critical" dimensions this
+ * incident showed matter most: pmp_alignment, answer_defensibility,
+ * distractor_quality, answer_obviousness, pmi_decision_depth. Those five
+ * alone now carry 61% of the total weight (up from pmp_alignment +
+ * answer_defensibility + distractor_quality = 41% before), and are also the
+ * ones subject to CRITICAL_GATE_FLOOR below - a serious weakness in any one
+ * of them hard-rejects the draft regardless of how high the weighted
+ * average would otherwise land.
  */
 const WEIGHTS = {
-  schema_validity: 0.15,
+  // Assessment-critical (61% combined) - also gated individually, see CRITICAL_GATE_FLOOR.
   pmp_alignment: 0.16,
   answer_defensibility: 0.13,
-  distractor_quality: 0.12,
-  scenario_originality: 0.08,
-  similarity_safety: 0.08,
-  translation_quality: 0.06,
-  metadata_consistency: 0.04,
-  clarity: 0.03,
-  scenario_realism: 0.05,
-  grammar_quality: 0.04,
-  option_balance: 0.03,
-  explanation_quality: 0.03,
+  distractor_quality: 0.14,
+  answer_obviousness: 0.1,
+  pmi_decision_depth: 0.08,
+  // Supporting dimensions (39% combined) - real signal, but excellence here
+  // must never compensate for a critical-dimension weakness (enforced by
+  // the gate, not just the weighting).
+  schema_validity: 0.08,
+  scenario_realism: 0.06,
+  scenario_originality: 0.05,
+  similarity_safety: 0.05,
+  translation_quality: 0.03,
+  metadata_consistency: 0.03,
+  grammar_quality: 0.02,
+  option_balance: 0.02,
+  option_parallelism: 0.02,
+  explanation_quality: 0.02,
+  clarity: 0.01,
 };
 
 /**
@@ -40,7 +64,16 @@ const WEIGHTS = {
  */
 const EXPECTED_INCOMPLETE_CODES = new Set(["GRAPHIC_MISSING_IMAGE", "HOTSPOT_MISSING_RECORD"]);
 
+/** Applies to every direct (higher-is-better) assessment-critical dimension: pmp_alignment, answer_defensibility, distractor_quality, pmi_decision_depth. */
 const HARD_FAIL_SCORE_FLOOR = 40;
+/**
+ * answer_obviousness is inverted (higher is worse), so its gate is the
+ * mirror of HARD_FAIL_SCORE_FLOOR rather than an independently-chosen
+ * number: failing "below 40" on a direct scale is equivalent to failing
+ * "above 60" on an inverted one (100 - 40 = 60). One constant, two readings,
+ * so the two thresholds can never drift apart from each other by accident.
+ */
+const HARD_FAIL_OBVIOUSNESS_CEILING = 100 - HARD_FAIL_SCORE_FLOOR;
 
 export interface CritiqueResult {
   pmp_alignment: number;
@@ -49,6 +82,10 @@ export interface CritiqueResult {
   ambiguity_risk: number;
   scenario_realism: number;
   grammar_quality: number;
+  /** Inverted like ambiguity_risk: 0 = correct answer blends in, 100 = it obviously stands out. */
+  answer_obviousness: number;
+  /** Higher = answering correctly requires genuine PMI-style judgment, not common sense alone. */
+  pmi_decision_depth: number;
   reasoning: string;
   reviewer_recommendations: string[];
 }
@@ -70,7 +107,7 @@ export interface ComputeQualityScoresInput {
   translationReview: TranslationReviewResult;
   metadataReview: MetadataReviewResult;
   similarityMatches: SimilarityMatch[];
-  /** Standard/graphic_based options only - empty for matching/drag_and_drop (option_balance doesn't apply, scored neutral). */
+  /** Standard/graphic_based options only - empty for matching/drag_and_drop (option_balance/option_parallelism don't apply, scored neutral). */
   options: RawGeneratedOption[];
   explanationExtras: RawExplanationExtras;
 }
@@ -105,6 +142,46 @@ function computeOptionBalance(options: RawGeneratedOption[]): number {
   const correctAnswerPenalty = correctDeviationRatio > 0.5 ? Math.min(40, (correctDeviationRatio - 0.5) * 80) : 0;
 
   return Math.round(Math.max(0, balanceScore - correctAnswerPenalty));
+}
+
+/** Coordinating conjunctions joining separate actions/clauses - a correct answer built from "do X and also do Y" while every distractor names one action is a classic MCQ tell (this is exactly what happened in AIQ000003: "negotiate...and explore alternative suppliers"). */
+function countActionConjunctions(text: string): number {
+  return (text.match(/\b(and|or)\b/gi) ?? []).length;
+}
+
+/**
+ * Structural complement to computeOptionBalance: where option_balance
+ * measures raw character-length symmetry, option_parallelism measures (a)
+ * word-count parity - a coarser, jargon-resistant proxy for comparable
+ * specificity/depth - and (b) whether the correct answer combines
+ * meaningfully more actions (via "and"/"or") than the distractors average,
+ * independent of how long the resulting text happens to be. Scored 100
+ * (neutral) when there are fewer than 2 options to compare.
+ */
+function computeOptionParallelism(options: RawGeneratedOption[]): number {
+  if (options.length < 2) return 100;
+
+  const wordCounts = options.map((o) => o.option_text_en.trim().split(/\s+/).filter(Boolean).length);
+  const meanWords = wordCounts.reduce((a, b) => a + b, 0) / wordCounts.length;
+  let wordScore = 100;
+  if (meanWords > 0) {
+    const variance = wordCounts.reduce((sum, w) => sum + (w - meanWords) ** 2, 0) / wordCounts.length;
+    const coefficientOfVariation = Math.sqrt(variance) / meanWords;
+    wordScore = Math.max(0, 100 - coefficientOfVariation * (100 / 0.6));
+  }
+
+  const correct = options.find((o) => o.is_correct);
+  const incorrect = options.filter((o) => !o.is_correct);
+  let conjunctionScore = 100;
+  if (correct && incorrect.length > 0) {
+    const correctConjunctions = countActionConjunctions(correct.option_text_en);
+    const incorrectMeanConjunctions = incorrect.reduce((sum, o) => sum + countActionConjunctions(o.option_text_en), 0) / incorrect.length;
+    if (correctConjunctions > incorrectMeanConjunctions + 1) {
+      conjunctionScore = Math.max(0, 100 - (correctConjunctions - incorrectMeanConjunctions) * 30);
+    }
+  }
+
+  return Math.round(wordScore * 0.6 + conjunctionScore * 0.4);
 }
 
 /**
@@ -186,43 +263,66 @@ export function computeQualityScores(input: ComputeQualityScoresInput): QualityS
   const similarity = computeSimilaritySafety(input.similarityMatches);
   const scenarioOriginality = computeScenarioOriginality(input.similarityMatches);
   const optionBalance = computeOptionBalance(input.options);
+  const optionParallelism = computeOptionParallelism(input.options);
   const explanationQuality = computeExplanationQuality(input.explanationExtras);
 
   const flags: string[] = [...similarity.flags];
   const hardFailures: string[] = [...schema.hardFailures, ...similarity.hardFailures];
 
+  // Critical gate: these five dimensions are what separates a genuinely
+  // exam-worthy question from one that merely LOOKS polished (good grammar/
+  // translation/metadata cannot compensate for a weak assessment - see
+  // WEIGHTS' header comment for the incident this codifies). Any one of
+  // them failing its floor is an independent hard failure, not just a
+  // weighted-average drag.
   if (input.critique.answer_defensibility < HARD_FAIL_SCORE_FLOOR) {
     hardFailures.push(`answer_defensibility (${input.critique.answer_defensibility}) below minimum threshold (${HARD_FAIL_SCORE_FLOOR})`);
   }
   if (input.critique.pmp_alignment < HARD_FAIL_SCORE_FLOOR) {
     hardFailures.push(`pmp_alignment (${input.critique.pmp_alignment}) below minimum threshold (${HARD_FAIL_SCORE_FLOOR})`);
   }
+  if (input.critique.distractor_quality < HARD_FAIL_SCORE_FLOOR) {
+    hardFailures.push(`distractor_quality (${input.critique.distractor_quality}) below minimum threshold (${HARD_FAIL_SCORE_FLOOR}) - distractors are too weak/implausible`);
+  }
+  if (input.critique.pmi_decision_depth < HARD_FAIL_SCORE_FLOOR) {
+    hardFailures.push(`pmi_decision_depth (${input.critique.pmi_decision_depth}) below minimum threshold (${HARD_FAIL_SCORE_FLOOR}) - answerable with common sense, not PMI-specific reasoning`);
+  }
+  if (input.critique.answer_obviousness > HARD_FAIL_OBVIOUSNESS_CEILING) {
+    hardFailures.push(`answer_obviousness (${input.critique.answer_obviousness}) above maximum threshold (${HARD_FAIL_OBVIOUSNESS_CEILING}) - correct answer stands out without requiring PMP knowledge`);
+  }
 
   if (input.critique.distractor_quality < 70) flags.push("distractor_quality below 70 - review distractors closely");
   if (input.critique.ambiguity_risk > 30) flags.push("ambiguity_risk above 30 - question wording may be unclear");
   if (input.translationReview.translation_quality < 70) flags.push("translation_quality below 70 - review Arabic content");
   if (input.metadataReview.metadata_consistency < 70) flags.push("metadata_consistency below 70 - declared metadata may not match content");
-  if (input.critique.scenario_realism < 60) flags.push("scenario_realism below 60 - scenario may feel contrived");
+  if (input.critique.scenario_realism < 60) flags.push("scenario_realism below 60 - scenario or its constraints may feel contrived/unrealistic");
   if (input.critique.grammar_quality < 70) flags.push("grammar_quality below 70 - review English prose");
   if (optionBalance < 60) flags.push("option_balance below 60 - option lengths may telegraph the correct answer");
+  if (optionParallelism < 60) flags.push("option_parallelism below 60 - options differ in structure/specificity in a way that may telegraph the correct answer");
   if (explanationQuality < 75) flags.push("explanation_quality below 75 - teaching content (key concept/exam tip/common trap) may be thin");
+  if (input.critique.answer_obviousness > 45) flags.push("answer_obviousness above 45 - correct answer may stand out for non-PMP reasons");
+  if (input.critique.pmi_decision_depth < 70) flags.push("pmi_decision_depth below 70 - question may not require genuine PMI-style reasoning");
 
   const clarity = 100 - input.critique.ambiguity_risk;
+  const answerSubtlety = 100 - input.critique.answer_obviousness;
 
   const overall =
-    schema.score * WEIGHTS.schema_validity +
     input.critique.pmp_alignment * WEIGHTS.pmp_alignment +
     input.critique.answer_defensibility * WEIGHTS.answer_defensibility +
     input.critique.distractor_quality * WEIGHTS.distractor_quality +
+    answerSubtlety * WEIGHTS.answer_obviousness +
+    input.critique.pmi_decision_depth * WEIGHTS.pmi_decision_depth +
+    schema.score * WEIGHTS.schema_validity +
+    input.critique.scenario_realism * WEIGHTS.scenario_realism +
     scenarioOriginality * WEIGHTS.scenario_originality +
     similarity.score * WEIGHTS.similarity_safety +
     input.translationReview.translation_quality * WEIGHTS.translation_quality +
     input.metadataReview.metadata_consistency * WEIGHTS.metadata_consistency +
-    clarity * WEIGHTS.clarity +
-    input.critique.scenario_realism * WEIGHTS.scenario_realism +
     input.critique.grammar_quality * WEIGHTS.grammar_quality +
     optionBalance * WEIGHTS.option_balance +
-    explanationQuality * WEIGHTS.explanation_quality;
+    optionParallelism * WEIGHTS.option_parallelism +
+    explanationQuality * WEIGHTS.explanation_quality +
+    clarity * WEIGHTS.clarity;
 
   return {
     schema_validity: schema.score,
@@ -238,6 +338,9 @@ export function computeQualityScores(input: ComputeQualityScoresInput): QualityS
     grammar_quality: input.critique.grammar_quality,
     option_balance: optionBalance,
     explanation_quality: explanationQuality,
+    answer_obviousness: input.critique.answer_obviousness,
+    pmi_decision_depth: input.critique.pmi_decision_depth,
+    option_parallelism: optionParallelism,
     overall: Math.round(overall * 100) / 100,
     flags,
     hard_failures: hardFailures,
@@ -278,6 +381,9 @@ export function pipelineFailureQualityScores(reason: string): QualityScores {
     grammar_quality: 0,
     option_balance: 0,
     explanation_quality: 0,
+    answer_obviousness: 0,
+    pmi_decision_depth: 0,
+    option_parallelism: 0,
     overall: 0,
     flags: [],
     hard_failures: [reason],

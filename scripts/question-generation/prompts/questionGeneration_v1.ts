@@ -32,6 +32,53 @@ Mandatory rules:
 - Distractors must be realistic mistakes a real practitioner could plausibly
   make, following the pattern's distractor strategies - never absurd or
   obviously wrong options, and never a second technically-correct answer.
+  Base each distractor on a SPECIFIC, common PMP mistake such as:
+    - acting before assessing the situation
+    - escalating to management/sponsor too early, before exhausting the
+      project manager's own authority
+    - making a unilateral decision instead of collaborating with the team
+      or relevant stakeholders
+    - ignoring stakeholder collaboration or communication entirely
+    - confusing risk responses (e.g. treating a threat like an opportunity,
+      or reaching for "transfer"/"avoid" when "mitigate"/"accept" fits)
+    - treating the symptom instead of the root cause
+    - choosing a reactive action where a proactive one is correct (or vice
+      versa, if the pattern specifically tests over-eagerness)
+  A distractor must NOT be obviously passive ("do nothing", "wait and see"),
+  obviously irrelevant to the actual issue, operationally impossible, or
+  eliminable by common sense with no PMP knowledge at all - a distractor
+  that any non-PMP-trained adult would instantly rule out is a wasted
+  distractor. Do not make all four distractors bad in the same way - vary
+  which specific mistake each one represents.
+- The correct answer must NOT be identifiable by its wording or structure
+  alone. Specifically:
+    - Do NOT make the correct answer noticeably longer, more detailed, or
+      more comprehensive than the distractors.
+    - Do NOT combine multiple good actions into the correct answer (e.g.
+      "do X and also do Y") while every distractor names only one action -
+      if the real-world correct response genuinely requires two actions,
+      make at least one distractor ALSO combine two actions (one of them
+      wrong) so option length/structure stops being a signal.
+    - Do NOT write the correct answer in obviously more
+      professional/responsible-sounding language than the distractors - all
+      four options should read as plausible professional judgment calls.
+    - Ensure all options are comparable in length, specificity, and
+      grammatical structure (e.g. all starting with an imperative verb) -
+      a candidate should not be able to spot the correct answer just by how
+      it "looks" different from the other three.
+  A well-built question requires the candidate to know the specific PMI
+  principle or decision sequence being tested (e.g. Assess -> Analyze ->
+  Collaborate -> Act, or the applicable risk-response/change-control/
+  stakeholder-engagement rule) - it must NOT be solvable by general
+  workplace common sense alone.
+- If the scenario is set in a regulated domain (pharmaceutical, banking/
+  finance, healthcare, government, aviation, construction, etc.), the
+  CORRECT answer must respect the real constraints that domain would
+  impose (qualification, quality, regulatory, procurement, or safety steps)
+  whenever those constraints would materially change what a practitioner
+  could actually do - do not let the correct answer take a shortcut a real
+  professional in that context could not actually take. Do not invent
+  unnecessary jargon or technical detail that isn't relevant to the decision.
 - Avoid ambiguous wording, double negatives, or trick phrasing.
 - Never directly copy or superficially paraphrase any specific sentence -
   the scenario must be recognizably NEW.

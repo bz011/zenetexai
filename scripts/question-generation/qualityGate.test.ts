@@ -17,6 +17,8 @@ const goodCritique: CritiqueResult = {
   ambiguity_risk: 10,
   scenario_realism: 88,
   grammar_quality: 92,
+  answer_obviousness: 15,
+  pmi_decision_depth: 85,
   reasoning: "Solid",
   reviewer_recommendations: [],
 };
@@ -183,6 +185,9 @@ describe("computeQualityScores", () => {
       "grammar_quality",
       "option_balance",
       "explanation_quality",
+      "answer_obviousness",
+      "pmi_decision_depth",
+      "option_parallelism",
       "overall",
     ] as const) {
       expect(typeof scores[key]).toBe("number");
@@ -268,6 +273,212 @@ describe("computeQualityScores", () => {
       explanationExtras: goodExplanationExtras,
     });
     expect(scores.explanation_quality).toBe(100);
+  });
+});
+
+describe("assessment-critical dimensions (Sprint 8.2 - AIQ000003 calibration incident)", () => {
+  // AIQ000003 scored 88.56/100 despite human review finding the distractors
+  // too weak and the correct answer too obvious - the pipeline never
+  // measured either. These tests reproduce both failure modes and confirm
+  // the rebalanced weights + critical gate now catch them.
+
+  it("1. hard-fails a question with one strong correct answer and three obviously weak distractors (low distractor_quality)", () => {
+    const scores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: { ...goodCritique, distractor_quality: 30 },
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(hasHardFailure(scores)).toBe(true);
+    expect(scores.hard_failures.some((f) => f.includes("distractor_quality"))).toBe(true);
+  });
+
+  it("2. penalizes option_parallelism when the correct answer combines multiple actions ('X and Y') while every distractor names only one action", () => {
+    // Mirrors AIQ000003's actual pattern: "Negotiate with the supplier to
+    // resume production and explore alternative suppliers." vs single-action distractors.
+    const aiq000003StyleOptions: RawGeneratedOption[] = [
+      { option_key: "A", option_text_en: "Escalate the issue to the project sponsor.", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+      {
+        option_key: "B",
+        option_text_en: "Negotiate with the supplier to resume production and explore alternative suppliers.",
+        option_text_ar: "",
+        is_correct: true,
+        feedback_en: "",
+        feedback_ar: "",
+      },
+      { option_key: "C", option_text_en: "Wait for the strike to end.", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+      { option_key: "D", option_text_en: "Cancel the affected work package.", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+    ];
+    const scores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: aiq000003StyleOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(scores.option_parallelism).toBeLessThan(70);
+  });
+
+  it("3. scores four plausible, parallel (comparable length/structure, single-action) options better than the combined-action case", () => {
+    const parallelOptions: RawGeneratedOption[] = [
+      { option_key: "A", option_text_en: "Escalate the supply disruption to the project sponsor.", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+      { option_key: "B", option_text_en: "Negotiate revised delivery terms with the current supplier.", option_text_ar: "", is_correct: true, feedback_en: "", feedback_ar: "" },
+      { option_key: "C", option_text_en: "Postpone the affected work package until supply resumes.", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+      { option_key: "D", option_text_en: "Reassign the procurement task to another team member.", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+    ];
+    const combinedActionOptions: RawGeneratedOption[] = [
+      { option_key: "A", option_text_en: "Escalate the issue to the project sponsor.", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+      {
+        option_key: "B",
+        option_text_en: "Negotiate with the supplier to resume production and explore alternative suppliers.",
+        option_text_ar: "",
+        is_correct: true,
+        feedback_en: "",
+        feedback_ar: "",
+      },
+      { option_key: "C", option_text_en: "Wait for the strike to end.", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+      { option_key: "D", option_text_en: "Cancel the affected work package.", option_text_ar: "", is_correct: false, feedback_en: "", feedback_ar: "" },
+    ];
+
+    const parallelScores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: parallelOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    const combinedActionScores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: combinedActionOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+
+    expect(parallelScores.option_parallelism).toBeGreaterThan(combinedActionScores.option_parallelism);
+    expect(parallelScores.option_parallelism).toBeGreaterThanOrEqual(90);
+  });
+
+  it("4. good grammar/translation/metadata cannot compensate for poor assessment quality (weak distractors + obvious answer + shallow reasoning)", () => {
+    const weakAssessmentButPolished = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: {
+        ...goodCritique,
+        grammar_quality: 98,
+        distractor_quality: 35,
+        answer_obviousness: 80,
+        pmi_decision_depth: 25,
+      },
+      translationReview: { translation_quality: 99, issues_found: [] },
+      metadataReview: { metadata_consistency: 99, mismatches: [] },
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    const genuinelyGood = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+
+    // The weighted "overall" is diagnostic only once hard_failures is
+    // non-empty (generatePipeline.ts gates on hasHardFailure, not on the
+    // number) - so the real claim under test is that excellent secondary
+    // dimensions (grammar/translation/metadata, all ~98-99) cannot rescue
+    // hasHardFailure=true, and still leave the score meaningfully below a
+    // genuinely good draft, not that "overall" collapses to some arbitrary
+    // absolute floor.
+    expect(hasHardFailure(weakAssessmentButPolished)).toBe(true);
+    expect(weakAssessmentButPolished.overall).toBeLessThan(genuinelyGood.overall);
+    expect(genuinelyGood.overall - weakAssessmentButPolished.overall).toBeGreaterThan(10);
+  });
+
+  it("5. a question requiring genuine PMI reasoning (high pmi_decision_depth) scores better than an otherwise-identical common-sense-only question", () => {
+    const commonSenseOnly = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: { ...goodCritique, pmi_decision_depth: 25 },
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    const genuinePmiReasoning = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: { ...goodCritique, pmi_decision_depth: 90 },
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+
+    expect(genuinePmiReasoning.overall).toBeGreaterThan(commonSenseOnly.overall);
+  });
+
+  it("hard-fails when answer_obviousness exceeds its ceiling (correct answer stands out without requiring PMP knowledge)", () => {
+    const scores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: { ...goodCritique, answer_obviousness: 75 },
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(hasHardFailure(scores)).toBe(true);
+    expect(scores.hard_failures.some((f) => f.includes("answer_obviousness"))).toBe(true);
+  });
+
+  it("hard-fails when pmi_decision_depth drops below the floor (answerable with common sense alone)", () => {
+    const scores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: { ...goodCritique, pmi_decision_depth: 20 },
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(hasHardFailure(scores)).toBe(true);
+    expect(scores.hard_failures.some((f) => f.includes("pmi_decision_depth"))).toBe(true);
+  });
+
+  it("scores option_parallelism as neutral (100) when there are fewer than 2 options (matching/drag_and_drop)", () => {
+    const scores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "matching",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: [],
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(scores.option_parallelism).toBe(100);
   });
 });
 
