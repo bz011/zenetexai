@@ -37,7 +37,47 @@ interface BatchRow {
   error_message: string | null;
 }
 
-export default function BatchDetailContent({ batch, batchQuestions }: { batch: BatchRow; batchQuestions: BatchQuestionRow[] }) {
+interface BatchDiversityReport {
+  totalAttempts: number;
+  uniqueSourcePatterns: number;
+  patternReuseRate: number;
+  uniqueSourceClusters: number;
+  domainDistribution: Record<string, number>;
+  approachDistribution: Record<string, number>;
+  difficultyDistribution: Record<string, number>;
+  testedDecisionDistribution: Record<string, number>;
+  scenarioArchetypeDistribution: Record<string, number>;
+  maxIntraBatchSemanticSimilarity: number | null;
+  avgIntraBatchSemanticSimilarity: number | null;
+  patternCollapseDetected: boolean;
+  patternCollapseReasons: string[];
+}
+
+function DistributionList({ title, distribution }: { title: string; distribution: Record<string, number> }) {
+  const entries = Object.entries(distribution).sort((a, b) => b[1] - a[1]);
+  return (
+    <div>
+      <p className="text-[11px] text-slate-500">{title}</p>
+      <div className="mt-1 space-y-0.5">
+        {entries.map(([key, count]) => (
+          <p key={key} className="text-[12px] text-slate-300">
+            {key}: <span className="text-slate-500">{count}</span>
+          </p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function BatchDetailContent({
+  batch,
+  batchQuestions,
+  diversityReport,
+}: {
+  batch: BatchRow;
+  batchQuestions: BatchQuestionRow[];
+  diversityReport: BatchDiversityReport;
+}) {
   const router = useRouter();
   const [cancelling, setCancelling] = useState(false);
   const [running, setRunning] = useState(false);
@@ -111,6 +151,69 @@ export default function BatchDetailContent({ batch, batchQuestions }: { batch: B
           <p>Estimated cost: ${Number(batch.estimated_cost_usd).toFixed(4)}</p>
           <p>Created by: {batch.created_by}</p>
           {batch.error_message && <p className="mt-2 text-red-400">Error summary: {batch.error_message}</p>}
+        </div>
+
+        <div className={`card mt-4 p-5 ${diversityReport.patternCollapseDetected ? "border-red-500/40" : ""}`}>
+          <div className="flex items-center justify-between">
+            <p className="text-[13px] font-semibold text-white">Diversity report</p>
+            {diversityReport.patternCollapseDetected ? (
+              <span className="rounded-full bg-red-500/[0.12] px-2.5 py-0.5 text-[11px] font-semibold text-red-400">Pattern collapse detected</span>
+            ) : (
+              <span className="rounded-full bg-emerald-500/[0.12] px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">No collapse detected</span>
+            )}
+          </div>
+
+          {diversityReport.patternCollapseReasons.length > 0 && (
+            <div className="mt-2 space-y-1">
+              {diversityReport.patternCollapseReasons.map((reason, i) => (
+                <p key={i} className="text-[12px] text-red-400">⚠ {reason}</p>
+              ))}
+            </div>
+          )}
+
+          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div>
+              <p className="text-[11px] text-slate-500">Unique source patterns</p>
+              <p className="text-[14px] font-semibold text-white">
+                {diversityReport.uniqueSourcePatterns} / {diversityReport.totalAttempts}
+              </p>
+            </div>
+            <div>
+              <p className="text-[11px] text-slate-500">Pattern reuse rate</p>
+              <p className="text-[14px] font-semibold text-white">{Math.round(diversityReport.patternReuseRate * 100)}%</p>
+            </div>
+            <div>
+              <p className="text-[11px] text-slate-500">Unique source clusters</p>
+              <p className="text-[14px] font-semibold text-white">{diversityReport.uniqueSourceClusters}</p>
+            </div>
+            <div>
+              <p className="text-[11px] text-slate-500">Max / avg intra-batch semantic similarity</p>
+              <p className="text-[14px] font-semibold text-white">
+                {diversityReport.maxIntraBatchSemanticSimilarity !== null
+                  ? `${(diversityReport.maxIntraBatchSemanticSimilarity * 100).toFixed(1)}% / ${((diversityReport.avgIntraBatchSemanticSimilarity ?? 0) * 100).toFixed(1)}%`
+                  : "n/a"}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <DistributionList title="Domain distribution" distribution={diversityReport.domainDistribution} />
+            <DistributionList title="Approach distribution" distribution={diversityReport.approachDistribution} />
+            <DistributionList title="Difficulty distribution" distribution={diversityReport.difficultyDistribution} />
+            <DistributionList title="Tested-decision distribution" distribution={diversityReport.testedDecisionDistribution} />
+          </div>
+          <div className="mt-4">
+            <p className="text-[11px] text-slate-500">Scenario-archetype distribution (by distinct pattern scenario structure)</p>
+            <div className="mt-1 space-y-1">
+              {Object.entries(diversityReport.scenarioArchetypeDistribution)
+                .sort((a, b) => b[1] - a[1])
+                .map(([structure, count]) => (
+                  <p key={structure} className="text-[12px] text-slate-400">
+                    ({count}x) {structure}
+                  </p>
+                ))}
+            </div>
+          </div>
         </div>
 
         {runMessage && (

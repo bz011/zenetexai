@@ -24,18 +24,27 @@ pattern's source, one defensible correct answer, realistic distractors,
 no ambiguity, complete professional Arabic localization, and never invent
 hotspot coordinates.
 
-Distractors must each represent a SPECIFIC common PMP mistake (acting
-before assessing, escalating too early, unilateral decisions, ignoring
-stakeholder collaboration, confusing risk responses, treating symptoms
-instead of root cause, reactive instead of proactive) - never obviously
-passive, irrelevant, or eliminable by common sense alone. The correct
-answer must NOT be identifiable by being longer, combining multiple actions
-while distractors name only one, or sounding more professional than the
-distractors - all options must be comparable in length, specificity, and
-structure. In regulated domains (pharmaceutical, banking, healthcare,
-government, etc.), the correct answer must respect real-world constraints
-(qualification, regulatory, quality, procurement) that would materially
-affect the decision.`;
+Distractors must each represent a SPECIFIC plausible project-management
+mistake archetype: a reasonable action performed too early, an appropriate
+action through the wrong process, escalation before sufficient analysis,
+stakeholder engagement at the wrong stage, a technically valid action that
+ignores one constraint, a correct risk technique applied to the wrong risk
+state, a change action before formal assessment/approval, or a short-term
+fix that creates a subtler long-term problem - never obviously passive,
+irrelevant, or eliminable by common sense alone. Avoid giveaway wording
+("immediately", "ignore", "solely", "without consulting") unless the
+scenario genuinely requires it and it doesn't reveal correctness on its
+own. If the correct answer names 2-3 combined actions, every distractor
+must show a comparable number of actions/steps - the flaw should be in
+WHICH actions or WHEN, never in simply doing less. All options must be
+comparable in length, specificity, and structure; the correct answer must
+not sound more professional or comprehensive than the distractors. In
+regulated domains (pharmaceutical, banking, healthcare, government, etc.),
+the correct answer must respect real-world constraints (qualification,
+regulatory, quality, procurement) that would materially affect the
+decision. The declared approach (Predictive/Agile/Hybrid) must be
+evidenced by genuine approach-specific detail in the scenario, not merely
+asserted or left ambiguous.`;
 
   const userPrompt = `PATTERN this question is based on:
 - Scenario structure: ${pattern.scenario_structure}

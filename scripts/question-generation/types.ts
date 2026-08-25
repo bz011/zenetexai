@@ -176,6 +176,15 @@ export interface QualityScores {
   pmp_alignment: number;
   answer_defensibility: number;
   distractor_quality: number;
+  /**
+   * Direction is explicit and load-bearing (Sprint 8.3 - clarified after
+   * the pilot pattern-collapse incident raised genuine confusion about
+   * this): HIGHER = MORE ORIGINAL. 100 = dissimilar from everything checked
+   * against the bank/other AI-generated questions; 0 = identical to
+   * something. A LOW score (e.g. 19-26) means this question closely
+   * resembles an existing one and should be treated as a red flag, not
+   * reassuring. See qualityGate.ts's computeScenarioOriginality.
+   */
   scenario_originality: number;
   similarity_safety: number;
   translation_quality: number;

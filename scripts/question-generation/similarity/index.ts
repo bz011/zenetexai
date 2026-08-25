@@ -19,6 +19,21 @@ export const SIMILARITY_THRESHOLDS = {
   lexicalWarning: 0.3,
   semanticHardReject: 0.92,
   semanticWarning: 0.85,
+  /**
+   * Sprint 8.3 addition (pilot pattern-collapse incident): the pilot's
+   * AIQ000015 measured 81.1%/80.8%/80.0% semantic similarity against three
+   * different questions - all below semanticWarning, so all classified
+   * "none" and completely ignored, leaving similarity_safety at 100. This
+   * value reuses the EXISTING optionSetHardReject number (0.75) rather than
+   * picking a new one - the two aren't conceptually identical, but both
+   * already mark "no longer a coincidental overlap" in this file, so
+   * reusing it keeps the threshold grounded in an already-reviewed number
+   * instead of an arbitrary new one. Below this: no signal at all (still
+   * "none"). Between this and semanticWarning: a graduated penalty in
+   * qualityGate.ts's computeSimilaritySafety, continuous with the warning
+   * tier's own score (no cliff at the boundary) - see that function.
+   */
+  semanticElevated: 0.75,
   optionSetHardReject: 0.75,
   optionSetWarning: 0.5,
   tagSetHardReject: 0.85,
@@ -83,7 +98,7 @@ async function fetchSourceQuestionData(questionIds: string[]): Promise<Map<strin
 export async function runSimilarityChecks(
   provider: LLMProvider,
   input: SimilarityCheckInput
-): Promise<{ matches: SimilarityMatch[]; promptTokens: number }> {
+): Promise<{ matches: SimilarityMatch[]; promptTokens: number; semanticComparisonHadCandidates: boolean }> {
   const matches: SimilarityMatch[] = [];
   let promptTokens = 0;
 
@@ -132,7 +147,15 @@ export async function runSimilarityChecks(
     });
   }
 
-  // 3. Semantic against nearest approved-bank neighbors (one embedding call)
+  // 3. Semantic against nearest approved-bank neighbors (one embedding call).
+  // find_similar_questions is a top-K nearest-neighbor query, not a
+  // threshold filter (see migration 008) - it returns up to 5 rows
+  // regardless of how similar they are, EXCEPT when question_embeddings
+  // has fewer than 5 rows to compare against (including zero). That means
+  // semanticMatches.length === 0 unambiguously means "no embedded content
+  // existed to compare against yet", not "checked and found nothing
+  // similar" - the two must not look the same to a reviewer (see
+  // computeQualityScores' semanticComparisonHadCandidates flag).
   const { matches: semanticMatches, promptTokens: embedTokens } = await findNearestApprovedQuestions(
     provider,
     input.draftText,
@@ -148,7 +171,7 @@ export async function runSimilarityChecks(
     });
   }
 
-  return { matches, promptTokens };
+  return { matches, promptTokens, semanticComparisonHadCandidates: semanticMatches.length > 0 };
 }
 
 export { embedAndStore };

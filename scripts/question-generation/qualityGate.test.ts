@@ -482,6 +482,208 @@ describe("assessment-critical dimensions (Sprint 8.2 - AIQ000003 calibration inc
   });
 });
 
+describe("diversity dimensions (Sprint 8.3 - pilot pattern-collapse incident)", () => {
+  // AIQ000015 measured 81.1%/80.8%/80.0% semantic similarity against three
+  // different questions, all below the 0.85 warning bar (classified
+  // "none"), leaving similarity_safety at 100 and scenario_originality
+  // (19-26) barely denting an ~84 overall. These tests reproduce that shape
+  // and confirm the graduated scoring + reweighting now catches it.
+
+  function semanticMatch(score: number, matchedQuestionId: string, thresholdResult: SimilarityMatch["thresholdResult"] = "none"): SimilarityMatch {
+    return { comparisonType: "semantic", matchedQuestionId, similarityScore: score, thresholdResult };
+  }
+
+  it("6. high semantic similarity (elevated zone, below the warning bar) reduces similarity_safety instead of leaving it at 100", () => {
+    const clean = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    const elevatedSimilarity = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [semanticMatch(0.811, "AIQ000010")],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(elevatedSimilarity.similarity_safety).toBeLessThan(100);
+    expect(elevatedSimilarity.similarity_safety).toBeLessThan(clean.similarity_safety);
+    expect(elevatedSimilarity.flags.some((f) => f.includes("elevated range"))).toBe(true);
+  });
+
+  it("does not auto-declare ~80% semantic similarity a duplicate - no hard failure from the elevated zone alone", () => {
+    const scores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [semanticMatch(0.8, "AIQ000003")],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(hasHardFailure(scores)).toBe(false);
+  });
+
+  it("reproduces AIQ000015 exactly: three separate ~80% semantic matches apply an additional multi-match penalty beyond any single match", () => {
+    const singleMatch = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [semanticMatch(0.811, "AIQ000010")],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    const threeMatches = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [semanticMatch(0.811, "AIQ000010"), semanticMatch(0.8076, "AIQ000013"), semanticMatch(0.8005, "AIQ000003")],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(threeMatches.similarity_safety).toBeLessThan(singleMatch.similarity_safety);
+    expect(threeMatches.flags.some((f) => f.includes("simultaneously elevated"))).toBe(true);
+  });
+
+  it("7. missing semantic comparison (no embedded candidates existed yet) cannot silently produce similarity_safety=100 with no signal at all", () => {
+    const noCandidates = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+      semanticComparisonHadCandidates: false,
+    });
+    expect(noCandidates.similarity_safety).toBe(100); // the number is still honest (nothing similar WAS found)...
+    expect(noCandidates.flags.some((f) => f.includes("had no existing embedded questions"))).toBe(true); // ...but it's never silent
+  });
+
+  it("checked-and-clean (candidates existed, none were similar) does NOT raise the same flag as never-checked", () => {
+    const checkedClean = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [semanticMatch(0.1, "AIQ000001")],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+      semanticComparisonHadCandidates: true,
+    });
+    expect(checkedClean.flags.some((f) => f.includes("had no existing embedded questions"))).toBe(false);
+  });
+
+  it("scenario_originality direction is higher=more original, matching AIQ000015's real numbers (originality ~19 from a ~0.81 max similarity)", () => {
+    const scores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [semanticMatch(0.811, "AIQ000010")],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(scores.scenario_originality).toBeCloseTo(19, 0);
+  });
+
+  it("8. low scenario_originality cannot silently coexist with an excellent overall score without a strong warning flag", () => {
+    const scores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [semanticMatch(0.81, "AIQ000010")],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(scores.scenario_originality).toBeLessThan(25);
+    expect(scores.flags.some((f) => f.includes("scenario_originality critically low"))).toBe(true);
+  });
+
+  it("low scenario_originality alone (no similarity warning/hard-reject) still measurably reduces overall given its increased weight", () => {
+    const original = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    const nearDuplicate = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [semanticMatch(0.81, "AIQ000010")],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(original.overall - nearDuplicate.overall).toBeGreaterThan(3);
+  });
+
+  it("9. Predictive (or any) metadata requires evidence - metadata_consistency below the shared hard-fail floor rejects the draft", () => {
+    const scores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: { metadata_consistency: 25, mismatches: ["approach: no Predictive-specific evidence in the scenario"] },
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(hasHardFailure(scores)).toBe(true);
+    expect(scores.hard_failures.some((f) => f.includes("metadata_consistency"))).toBe(true);
+  });
+
+  it("a moderate metadata_consistency dip (e.g. 60, the pilot's actual observed range) does not hard-fail but is flagged and materially reduces overall", () => {
+    const scores = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: { metadata_consistency: 60, mismatches: ["approach"] },
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    const genuinelyGood = computeQualityScores({
+      validatorIssues: [],
+      interactionType: "standard",
+      critique: goodCritique,
+      translationReview: goodTranslation,
+      metadataReview: goodMetadata,
+      similarityMatches: [],
+      options: goodOptions,
+      explanationExtras: goodExplanationExtras,
+    });
+    expect(hasHardFailure(scores)).toBe(false);
+    expect(scores.flags.some((f) => f.includes("metadata_consistency below 70"))).toBe(true);
+    expect(scores.overall).toBeLessThan(genuinelyGood.overall);
+  });
+});
+
 describe("pipelineFailureQualityScores", () => {
   it("returns a sentinel with every numeric dimension at 0 and the real reason in hard_failures", () => {
     const scores = pipelineFailureQualityScores("[pattern_extraction] No approved source questions found for slice");

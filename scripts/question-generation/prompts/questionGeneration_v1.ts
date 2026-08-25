@@ -32,40 +32,67 @@ Mandatory rules:
 - Distractors must be realistic mistakes a real practitioner could plausibly
   make, following the pattern's distractor strategies - never absurd or
   obviously wrong options, and never a second technically-correct answer.
-  Base each distractor on a SPECIFIC, common PMP mistake such as:
-    - acting before assessing the situation
-    - escalating to management/sponsor too early, before exhausting the
-      project manager's own authority
-    - making a unilateral decision instead of collaborating with the team
-      or relevant stakeholders
-    - ignoring stakeholder collaboration or communication entirely
-    - confusing risk responses (e.g. treating a threat like an opportunity,
-      or reaching for "transfer"/"avoid" when "mitigate"/"accept" fits)
-    - treating the symptom instead of the root cause
-    - choosing a reactive action where a proactive one is correct (or vice
-      versa, if the pattern specifically tests over-eagerness)
-  A distractor must NOT be obviously passive ("do nothing", "wait and see"),
-  obviously irrelevant to the actual issue, operationally impossible, or
-  eliminable by common sense with no PMP knowledge at all - a distractor
-  that any non-PMP-trained adult would instantly rule out is a wasted
-  distractor. Do not make all four distractors bad in the same way - vary
-  which specific mistake each one represents.
+  A distractor should represent a PLAUSIBLE project-management mistake, not
+  obviously irresponsible behavior. Base each distractor on a SPECIFIC
+  archetype such as:
+    - a reasonable action performed too early (before the situation has
+      actually been assessed)
+    - an appropriate action carried out through the wrong process (e.g. the
+      right idea, executed outside formal change control/procurement/risk
+      procedure)
+    - escalation before sufficient analysis - jumping to the sponsor/
+      management before the PM has actually investigated
+    - stakeholder engagement at the wrong stage (too early to have anything
+      useful to discuss, or too late to actually influence the decision)
+    - a technically valid action that ignores one important constraint
+      (budget, schedule, regulatory, quality, or contractual)
+    - a correct risk technique applied to the wrong risk state (e.g. a
+      mitigation response used on a risk that has already occurred and
+      needs a contingency response instead)
+    - a change-related action taken before formal assessment/approval
+      (skipping the change control process rather than following it)
+    - a short-term optimization that resolves the immediate symptom but
+      creates a subtler, worse long-term problem
+  A distractor that any non-PMP-trained adult would instantly rule out with
+  no PMP knowledge at all is a wasted distractor - do not make all four
+  distractors bad in the same obvious way; vary which specific archetype
+  each one represents, and make sure each one requires genuine PMI
+  knowledge to correctly rule out, not just common sense.
+  AVOID GIVEAWAY WORDING that reveals a distractor is wrong without
+  requiring any PMP knowledge - words/phrases like "immediately", "ignore",
+  "solely", "without consulting", "focus solely", or similar absolutist/
+  irresponsible-sounding language should NOT appear unless the scenario
+  genuinely requires that exact word AND it does not, by itself, reveal
+  which option is correct. A distractor should read as a plausible
+  professional judgment call that happens to be wrong for a specific PMI-
+  methodology reason - not as something a careless or lazy person would say.
 - The correct answer must NOT be identifiable by its wording or structure
   alone. Specifically:
     - Do NOT make the correct answer noticeably longer, more detailed, or
       more comprehensive than the distractors.
-    - Do NOT combine multiple good actions into the correct answer (e.g.
-      "do X and also do Y") while every distractor names only one action -
-      if the real-world correct response genuinely requires two actions,
-      make at least one distractor ALSO combine two actions (one of them
-      wrong) so option length/structure stops being a signal.
+    - ENFORCE OPTION PARALLELISM DURING WRITING, not just as an afterthought:
+      count how many distinct actions/steps the correct answer names. If it
+      contains 2-3 combined actions (e.g. "review the regulations, conduct
+      an impact analysis, and adjust the project plan"), EVERY distractor
+      must ALSO contain a comparable number of actions/steps and comparable
+      decision depth - never let the correct answer be the only option that
+      "does more". A distractor with 2-3 actions is easy to write: take the
+      same number of steps as the correct answer, but make one of them the
+      wrong process, the wrong timing, or the wrong target (see the
+      distractor archetypes above) - the flaw should be in WHICH actions or
+      WHEN, not in doing fewer of them.
     - Do NOT write the correct answer in obviously more
       professional/responsible-sounding language than the distractors - all
       four options should read as plausible professional judgment calls.
-    - Ensure all options are comparable in length, specificity, and
-      grammatical structure (e.g. all starting with an imperative verb) -
-      a candidate should not be able to spot the correct answer just by how
-      it "looks" different from the other three.
+    - Ensure all four options are comparable in length (within roughly 20%
+      of each other), specificity, and grammatical structure (e.g. all
+      starting with an imperative verb, all naming a similar number of
+      concrete steps) - a candidate should not be able to spot the correct
+      answer just by how it "looks" different from the other three. Before
+      finalizing, mentally compare all four options side by side and ask:
+      "could someone with zero PMP knowledge eliminate 3 of these just by
+      how they're written?" If yes, rewrite the distractors to match the
+      correct answer's length and structure.
   A well-built question requires the candidate to know the specific PMI
   principle or decision sequence being tested (e.g. Assess -> Analyze ->
   Collaborate -> Act, or the applicable risk-response/change-control/
@@ -79,6 +106,22 @@ Mandatory rules:
   could actually do - do not let the correct answer take a shortcut a real
   professional in that context could not actually take. Do not invent
   unnecessary jargon or technical detail that isn't relevant to the decision.
+- The declared "approach" (below, under TARGET) must be EVIDENCED by the
+  scenario, not just asserted. A generic project-management scenario with
+  no development-approach-specific detail is NOT "Predictive" by default -
+  it is ambiguous, and ambiguous scenarios must not be labeled Predictive,
+  Agile, or Hybrid at all without real evidence:
+    - Predictive: include genuine plan-driven signals where relevant to the
+      decision - a defined baseline/scope freeze, sequential phases, formal
+      change control, a schedule/WBS the team is working against.
+    - Agile: include genuine iterative signals - sprints/iterations, a
+      backlog, a self-organizing/cross-functional team, a retrospective or
+      daily stand-up, incremental delivery.
+    - Hybrid: include elements of both, explicitly.
+  If the pattern's tested decision doesn't naturally require any approach-
+  specific detail, that is a sign this question should not be forced into
+  one - follow the target approach given below, but the scenario text
+  itself must contain the evidence, not merely avoid contradicting it.
 - Avoid ambiguous wording, double negatives, or trick phrasing.
 - Never directly copy or superficially paraphrase any specific sentence -
   the scenario must be recognizably NEW.

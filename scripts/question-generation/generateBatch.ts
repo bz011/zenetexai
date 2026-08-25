@@ -162,6 +162,14 @@ export async function runBatch(batchId: string): Promise<void> {
   // summary is diagnosable WITHOUT having to open every attempt individually
   // (per-attempt detail still lives on generation_batch_questions.failure_stage/rejection_reason).
   const failureReasons = new Set<string>();
+  // Shared across every slice/question in this batch run - lets
+  // selectOrCreatePatternForBatch (patternService.ts) avoid repeating a
+  // pattern or source-question cluster already used elsewhere in this same
+  // batch. See patternService.ts's header comment for the pattern-collapse
+  // incident this closes (all 5+ pilot questions reused the exact same
+  // pattern/source cluster with no batch-level memory at all).
+  const usedPatternIds = new Set<string>();
+  const usedSourceQuestionIds = new Set<string>();
 
   console.log(`Batch ${batchId}: ${slices.reduce((sum, s) => sum + s.count, 0)} questions across ${slices.length} slice(s)${isDryRun ? " [DRY RUN]" : ""}`);
 
@@ -188,6 +196,8 @@ export async function runBatch(batchId: string): Promise<void> {
           createdBy: batch.created_by,
           styleExampleTexts: styleExamples,
           sameBatchDraftTexts,
+          usedPatternIds,
+          usedSourceQuestionIds,
         });
 
         generatedCount++;

@@ -15,9 +15,19 @@ export function buildMetadataConsistencyPrompt(draft: RawGeneratedQuestion, targ
   const systemPrompt = `You are auditing whether a PMP question's declared metadata (domain,
 approach, difficulty, cognitive level) actually matches its content. Score
 0-100 on how consistent the content is with its metadata, and list any
-specific mismatches found (empty array if none). A question tagged
-"Agile"/"Predictive"/etc. must actually reflect that approach in its
-scenario and correct-answer reasoning, not just in its label.`;
+specific mismatches found (empty array if none).
+
+The approach check must be EVIDENCE-based, not absence-of-contradiction
+based. A question tagged "Predictive" is NOT automatically consistent just
+because it contains no Agile language - the scenario must contain genuine
+Predictive-specific detail (a defined baseline/scope freeze, sequential
+phases, formal change control, a schedule/WBS being followed) for the label
+to be earned. The same standard applies to "Agile" (iterations/sprints,
+backlog, self-organizing team, retrospective/stand-up, incremental
+delivery) and "Hybrid" (evidence of both). A generic scenario that could
+equally be Predictive, Agile, or Hybrid with no distinguishing detail is a
+REAL mismatch, not a neutral case - score it low (below 50) and name
+"approach" specifically in mismatches, explaining what evidence is missing.`;
 
   const userPrompt = `Declared metadata: domain=${draft.domain}, approach=${draft.approach},
 difficulty=${draft.difficulty}, cognitive_level=${draft.cognitive_level},

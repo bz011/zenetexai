@@ -71,7 +71,7 @@ const SCORE_LABELS: [keyof QualityScores, string][] = [
   ["pmp_alignment", "PMP alignment"],
   ["answer_defensibility", "Answer defensibility"],
   ["distractor_quality", "Distractor quality"],
-  ["scenario_originality", "Scenario originality"],
+  ["scenario_originality", "Scenario originality (higher = more original)"],
   ["similarity_safety", "Similarity safety"],
   ["translation_quality", "Translation quality"],
   ["metadata_consistency", "Metadata consistency"],

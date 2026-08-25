@@ -1,7 +1,7 @@
 import { supabaseAdmin } from "../question-bank/supabaseAdminClient";
 import { validateWorkbookData } from "../question-bank/validate";
 import { getLLMProvider } from "./llm";
-import { findOrCreatePattern, incrementPatternUsage } from "./patternService";
+import { selectOrCreatePatternForBatch, incrementPatternUsage } from "./patternService";
 import { buildQuestionGenerationPrompt } from "./prompts/questionGeneration_v1";
 import { buildCritiquePrompt } from "./prompts/questionCritique_v1";
 import { buildTranslationReviewPrompt } from "./prompts/translationReview_v1";
@@ -29,6 +29,15 @@ export interface GenerateOneQuestionParams {
   createdBy: string;
   styleExampleTexts: string[];
   sameBatchDraftTexts: { batchQuestionId: string; text: string }[];
+  /**
+   * Shared, mutable across every question in the batch (same precedent as
+   * sameBatchDraftTexts above) - selectOrCreatePatternForBatch reads these
+   * to avoid repeating a pattern/source-cluster already used elsewhere in
+   * this batch. See patternService.ts's header comment for the pattern-
+   * collapse incident this closes.
+   */
+  usedPatternIds: Set<string>;
+  usedSourceQuestionIds: Set<string>;
 }
 
 async function recordBatchQuestion(params: {
@@ -137,13 +146,25 @@ export async function generateOneQuestion(params: GenerateOneQuestionParams): Pr
   }
 
   let patternId: string | null = null;
-  let pattern: Awaited<ReturnType<typeof findOrCreatePattern>>["pattern"];
+  let pattern: Awaited<ReturnType<typeof selectOrCreatePatternForBatch>>["pattern"];
   try {
-    const patternResult = await findOrCreatePattern(params.certificationId, params.slice, params.createdBy);
+    const patternResult = await selectOrCreatePatternForBatch(
+      params.certificationId,
+      params.slice,
+      params.usedPatternIds,
+      params.usedSourceQuestionIds,
+      params.createdBy
+    );
     pattern = patternResult.pattern;
     patternId = pattern.id;
     totalPromptTokens += patternResult.promptTokens;
     totalCompletionTokens += patternResult.completionTokens;
+    // Recorded immediately (synchronously, before any further await) so a
+    // concurrent task selecting at nearly the same time sees this choice -
+    // best-effort under the batch runner's concurrency limit, same
+    // characteristic as sameBatchDraftTexts' existing race tolerance.
+    params.usedPatternIds.add(pattern.id);
+    for (const sourceId of pattern.source_question_ids) params.usedSourceQuestionIds.add(sourceId);
   } catch (err) {
     return recordPipelineFailure(params.batchId, null, "pattern_extraction", err, totalPromptTokens, totalCompletionTokens);
   }
@@ -183,6 +204,7 @@ export async function generateOneQuestion(params: GenerateOneQuestionParams): Pr
   }
 
   let similarityMatches: Awaited<ReturnType<typeof runSimilarityChecks>>["matches"];
+  let semanticComparisonHadCandidates: boolean;
   try {
     const similarityResult = await runSimilarityChecks(provider, {
       draftText: draft.question_text_en,
@@ -192,6 +214,7 @@ export async function generateOneQuestion(params: GenerateOneQuestionParams): Pr
       draftTags: draft.tags,
     });
     similarityMatches = similarityResult.matches;
+    semanticComparisonHadCandidates = similarityResult.semanticComparisonHadCandidates;
     totalPromptTokens += similarityResult.promptTokens;
   } catch (err) {
     return recordPipelineFailure(params.batchId, patternId, "similarity_check", err, totalPromptTokens, totalCompletionTokens);
@@ -206,6 +229,7 @@ export async function generateOneQuestion(params: GenerateOneQuestionParams): Pr
     similarityMatches,
     options: draft.options,
     explanationExtras: draft.explanation_extras,
+    semanticComparisonHadCandidates,
   });
 
   await incrementPatternUsage(pattern.id);

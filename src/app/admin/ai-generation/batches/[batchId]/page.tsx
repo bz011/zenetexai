@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireRole } from "@/lib/auth/requireRole";
+import { getBatchDiversityReport } from "@/features/ai-generation/services/batchDiversityService";
 import BatchDetailContent from "./BatchDetailContent";
 
 interface Props {
@@ -31,5 +32,7 @@ export default async function BatchDetailPage({ params }: Props) {
     .eq("batch_id", batchId)
     .order("created_at", { ascending: true });
 
-  return <BatchDetailContent batch={batch} batchQuestions={batchQuestions ?? []} />;
+  const diversityReport = await getBatchDiversityReport(batchId);
+
+  return <BatchDetailContent batch={batch} batchQuestions={batchQuestions ?? []} diversityReport={diversityReport} />;
 }

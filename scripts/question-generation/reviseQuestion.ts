@@ -141,7 +141,7 @@ export async function reviseQuestion(questionId: string, reviewerFeedback: strin
     provider.generateStructured<MetadataReviewResult>({ ...buildMetadataConsistencyPrompt(draft, slice), model: provider.defaultModel }),
   ]);
 
-  const { matches: similarityMatches } = await runSimilarityChecks(provider, {
+  const { matches: similarityMatches, semanticComparisonHadCandidates } = await runSimilarityChecks(provider, {
     draftText: draft.question_text_en,
     sourceQuestionIds: pattern.source_question_ids,
     sameBatchDraftTexts: [],
@@ -158,6 +158,7 @@ export async function reviseQuestion(questionId: string, reviewerFeedback: strin
     similarityMatches,
     options: draft.options,
     explanationExtras: draft.explanation_extras,
+    semanticComparisonHadCandidates,
   });
 
   const totalPromptTokens =

@@ -1,4 +1,5 @@
 import type { ValidationIssue } from "../question-bank/types";
+import { SIMILARITY_THRESHOLDS } from "./similarity";
 import type { QualityScores, SimilarityMatch, RawGeneratedOption, RawExplanationExtras } from "./types";
 
 /**
@@ -18,38 +19,52 @@ import type { QualityScores, SimilarityMatch, RawGeneratedOption, RawExplanation
  * quality. Two new LLM-scored dimensions were added (answer_obviousness,
  * pmi_decision_depth, folded into the existing critique call - no extra API
  * cost) and one new deterministic dimension (option_parallelism). Weight
- * was reallocated FROM secondary/formatting dimensions (schema_validity,
- * translation_quality, metadata_consistency, clarity, grammar_quality,
- * scenario_originality, similarity_safety, option_balance,
- * explanation_quality) TO the five "assessment-critical" dimensions this
- * incident showed matter most: pmp_alignment, answer_defensibility,
- * distractor_quality, answer_obviousness, pmi_decision_depth. Those five
- * alone now carry 61% of the total weight (up from pmp_alignment +
- * answer_defensibility + distractor_quality = 41% before), and are also the
- * ones subject to CRITICAL_GATE_FLOOR below - a serious weakness in any one
- * of them hard-rejects the draft regardless of how high the weighted
- * average would otherwise land.
+ * was reallocated FROM secondary/formatting dimensions TO the five
+ * "assessment-critical" dimensions this incident showed matter most:
+ * pmp_alignment, answer_defensibility, distractor_quality,
+ * answer_obviousness, pmi_decision_depth - 61% of total weight combined,
+ * also gated individually (see HARD_FAIL_SCORE_FLOOR below).
+ *
+ * Sprint 8.3 rebalance (pilot pattern-collapse incident - see
+ * patternService.ts's header comment for the root cause): the 5-question
+ * pilot batch reused the exact same source pattern/questions for every
+ * generation, and AIQ000015 measured 80-81% semantic similarity against
+ * three separate questions while similarity_safety stayed 100 and
+ * scenario_originality (19-26) barely moved an ~84 overall. Diversity
+ * dimensions (scenario_originality, similarity_safety) were promoted from
+ * 5% each to 8% each - now "diversity-critical" alongside the existing
+ * assessment-critical group, 77% combined - reallocated from
+ * schema_validity/scenario_realism/translation_quality/grammar_quality/
+ * option_balance/explanation_quality. metadata_consistency was also raised
+ * (3% -> 5%) and added to the hard-fail gate (see computeQualityScores) -
+ * several pilot questions were labeled "Predictive" with metadata_
+ * consistency scores of 60-75 despite the critique's OWN reasoning noting
+ * no Predictive-specific evidence in the scenario; the detection already
+ * worked, the weight/gate to make it matter didn't.
  */
 const WEIGHTS = {
-  // Assessment-critical (61% combined) - also gated individually, see CRITICAL_GATE_FLOOR.
+  // Assessment-critical (61% combined) - also gated individually, see HARD_FAIL_SCORE_FLOOR.
   pmp_alignment: 0.16,
   answer_defensibility: 0.13,
   distractor_quality: 0.14,
   answer_obviousness: 0.1,
   pmi_decision_depth: 0.08,
-  // Supporting dimensions (39% combined) - real signal, but excellence here
+  // Diversity-critical (16% combined) - both also gated: similarity_safety
+  // via existing hard-reject thresholds, scenario_originality via a strong
+  // flag (not a hard fail - see item 5/6 distinction in computeQualityScores).
+  scenario_originality: 0.08,
+  similarity_safety: 0.08,
+  // Supporting dimensions (23% combined) - real signal, but excellence here
   // must never compensate for a critical-dimension weakness (enforced by
   // the gate, not just the weighting).
-  schema_validity: 0.08,
-  scenario_realism: 0.06,
-  scenario_originality: 0.05,
-  similarity_safety: 0.05,
-  translation_quality: 0.03,
-  metadata_consistency: 0.03,
-  grammar_quality: 0.02,
-  option_balance: 0.02,
+  schema_validity: 0.05,
+  metadata_consistency: 0.05,
+  scenario_realism: 0.05,
+  translation_quality: 0.02,
+  grammar_quality: 0.01,
+  option_balance: 0.01,
   option_parallelism: 0.02,
-  explanation_quality: 0.02,
+  explanation_quality: 0.01,
   clarity: 0.01,
 };
 
@@ -110,6 +125,15 @@ export interface ComputeQualityScoresInput {
   /** Standard/graphic_based options only - empty for matching/drag_and_drop (option_balance/option_parallelism don't apply, scored neutral). */
   options: RawGeneratedOption[];
   explanationExtras: RawExplanationExtras;
+  /**
+   * False when the semantic similarity check had ZERO existing embedded
+   * questions to compare against (a cold-start state, not "checked, found
+   * nothing similar") - see runSimilarityChecks' comment in similarity/
+   * index.ts. Defaults to true for callers that don't track this (pipeline-
+   * failure sentinels, tests) - only generatePipeline.ts/reviseQuestion.ts
+   * set it from the real check.
+   */
+  semanticComparisonHadCandidates?: boolean;
 }
 
 /**
@@ -226,6 +250,27 @@ function computeSchemaValidity(issues: ValidationIssue[], interactionType: strin
   };
 }
 
+/** "Several" simultaneously-elevated-or-higher semantic matches is itself a signal beyond any single match's own value - out of the 5 nearest neighbors findNearestApprovedQuestions checks, 3+ elevated is a majority-ish pattern, not a coincidence. */
+const SEMANTIC_MULTI_MATCH_COUNT = 3;
+const SEMANTIC_MULTI_MATCH_PENALTY = 15;
+
+/**
+ * Sprint 8.3 fix (pilot pattern-collapse incident): previously, any
+ * similarity match below its type's `warning` threshold contributed
+ * NOTHING (thresholdResult="none" was fully ignored) - a step function with
+ * a cliff at the warning bar. AIQ000015's 80-81% semantic matches all fell
+ * just under semanticWarning (0.85) and this function returned a perfect
+ * 100, exactly as the pilot report described. This adds a graduated zone
+ * between SIMILARITY_THRESHOLDS.semanticElevated (0.75) and semanticWarning
+ * (0.85) for semantic matches specifically - continuous with the warning
+ * tier's own score at the boundary (no cliff) - plus an extra penalty when
+ * SEVERAL matches are simultaneously elevated, since three independent 80%
+ * matches (as AIQ000015 showed, against three different questions) is a
+ * stronger diversity signal than any one of them alone. Lexical/option_set/
+ * tag_set matches are unaffected - each already has its own thresholds
+ * tuned for its own signal type; this graduation is semantic-specific
+ * because that was the exact gap the pilot exposed.
+ */
 function computeSimilaritySafety(matches: SimilarityMatch[]): { score: number; hardFailures: string[]; flags: string[] } {
   const hardRejects = matches.filter((m) => m.thresholdResult === "hard_reject");
   const warnings = matches.filter((m) => m.thresholdResult === "warning");
@@ -243,16 +288,54 @@ function computeSimilaritySafety(matches: SimilarityMatch[]): { score: number; h
     };
   }
 
-  const score = warnings.length > 0 ? 70 : 100;
+  let score = warnings.length > 0 ? 70 : 100;
   const flags = warnings.map(
     (m) =>
       `${m.comparisonType} similarity ${(m.similarityScore * 100).toFixed(1)}% against ${
         m.matchedQuestionId ?? m.matchedBatchQuestionId
       } is in the warning range - review closely`
   );
+
+  const elevatedSemantic = matches.filter(
+    (m) => m.comparisonType === "semantic" && m.thresholdResult === "none" && m.similarityScore >= SIMILARITY_THRESHOLDS.semanticElevated
+  );
+  if (elevatedSemantic.length > 0) {
+    const maxElevated = Math.max(...elevatedSemantic.map((m) => m.similarityScore));
+    const zoneWidth = SIMILARITY_THRESHOLDS.semanticWarning - SIMILARITY_THRESHOLDS.semanticElevated;
+    const graduatedScore = 100 - ((maxElevated - SIMILARITY_THRESHOLDS.semanticElevated) / zoneWidth) * 30;
+    score = Math.min(score, Math.round(graduatedScore));
+    flags.push(
+      `semantic similarity ${(maxElevated * 100).toFixed(1)}% is in the elevated range (below the ${Math.round(
+        SIMILARITY_THRESHOLDS.semanticWarning * 100
+      )}% warning bar but still meaningfully high) - review for pattern reuse`
+    );
+  }
+
+  const strongSemanticMatchCount = elevatedSemantic.length + warnings.filter((m) => m.comparisonType === "semantic").length;
+  if (strongSemanticMatchCount >= SEMANTIC_MULTI_MATCH_COUNT) {
+    score = Math.max(0, score - SEMANTIC_MULTI_MATCH_PENALTY);
+    flags.push(
+      `${strongSemanticMatchCount} semantic matches are simultaneously elevated or higher - possible pattern reuse across the bank, not just one coincidental match`
+    );
+  }
+
   return { score, hardFailures: [], flags };
 }
 
+/**
+ * Higher = MORE original (0 = identical to something in the bank, 100 =
+ * dissimilar from everything checked). Computed as (1 - maxSimilarity) *
+ * 100 across every comparison performed - this was already the correct
+ * direction (verified against real data: AIQ000015's originality=19 exactly
+ * matches its own maxSimilarity of ~0.81), the pilot incident's real gap
+ * was that this dimension's WEIGHT was too small for a 19 to matter (see
+ * WEIGHTS' header comment) and there was no explicit floor/flag - both
+ * fixed below (see computeQualityScores' ORIGINALITY_FLAG_FLOOR check).
+ * Industry/noun substitution alone does not change the semantic embedding
+ * meaningfully, so it does NOT inflate this score - the AIQ000015 pilot
+ * cluster (pharmaceutical/software/actor/server/regulation variants of the
+ * same decision pattern) is exactly the case this correctly scored low.
+ */
 function computeScenarioOriginality(matches: SimilarityMatch[]): number {
   const maxSimilarity = matches.reduce((max, m) => Math.max(max, m.similarityScore), 0);
   return Math.round((1 - maxSimilarity) * 100);
@@ -290,6 +373,16 @@ export function computeQualityScores(input: ComputeQualityScoresInput): QualityS
   if (input.critique.answer_obviousness > HARD_FAIL_OBVIOUSNESS_CEILING) {
     hardFailures.push(`answer_obviousness (${input.critique.answer_obviousness}) above maximum threshold (${HARD_FAIL_OBVIOUSNESS_CEILING}) - correct answer stands out without requiring PMP knowledge`);
   }
+  // Sprint 8.3: metadata_consistency joins the critical gate at the SAME
+  // shared floor as the others (not a new number) - several pilot questions
+  // were labeled "Predictive" with metadata_consistency scores of 60-75
+  // despite the critique's own reasoning noting no Predictive-specific
+  // evidence; the strengthened metadata-review prompt (see
+  // metadataConsistencyReview_v1.ts) now scores genuinely-ungrounded
+  // approach claims well below 40, making this a real gate going forward.
+  if (input.metadataReview.metadata_consistency < HARD_FAIL_SCORE_FLOOR) {
+    hardFailures.push(`metadata_consistency (${input.metadataReview.metadata_consistency}) below minimum threshold (${HARD_FAIL_SCORE_FLOOR}) - declared metadata (e.g. approach) is not evidenced by the content`);
+  }
 
   if (input.critique.distractor_quality < 70) flags.push("distractor_quality below 70 - review distractors closely");
   if (input.critique.ambiguity_risk > 30) flags.push("ambiguity_risk above 30 - question wording may be unclear");
@@ -302,6 +395,24 @@ export function computeQualityScores(input: ComputeQualityScoresInput): QualityS
   if (explanationQuality < 75) flags.push("explanation_quality below 75 - teaching content (key concept/exam tip/common trap) may be thin");
   if (input.critique.answer_obviousness > 45) flags.push("answer_obviousness above 45 - correct answer may stand out for non-PMP reasons");
   if (input.critique.pmi_decision_depth < 70) flags.push("pmi_decision_depth below 70 - question may not require genuine PMI-style reasoning");
+  // Sprint 8.3: a STRONG flag (not a hard fail - item 5 explicitly said not
+  // to auto-declare ~80% semantic similarity a duplicate) when originality
+  // is low enough that the underlying max similarity is at or above
+  // semanticElevated (0.75) - the same threshold driving computeSimilarity
+  // Safety's graduated zone, so the two dimensions never disagree about
+  // where "meaningfully similar" starts. Deliberately worded as urgent -
+  // this is exactly the AIQ000015 pattern (originality 19-26, overall ~84).
+  const originalityFlagFloor = Math.round((1 - SIMILARITY_THRESHOLDS.semanticElevated) * 100);
+  if (scenarioOriginality < originalityFlagFloor) {
+    flags.push(
+      `scenario_originality critically low (${scenarioOriginality}, below ${originalityFlagFloor}) - this question closely resembles an existing one in meaning, not just wording; industry/noun substitution alone is not sufficient originality - review for pattern reuse before approving`
+    );
+  }
+  if (input.semanticComparisonHadCandidates === false) {
+    flags.push(
+      "semantic similarity comparison had no existing embedded questions to compare against yet - scenario_originality/similarity_safety are not yet verified for this question, not confirmed clean"
+    );
+  }
 
   const clarity = 100 - input.critique.ambiguity_risk;
   const answerSubtlety = 100 - input.critique.answer_obviousness;
