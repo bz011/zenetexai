@@ -2,7 +2,7 @@
  * AuthProvider / useAuth
  *
  * Single source of truth for the current session + profile. Mounted once at
- * the root (see AppShell), so components consuming useAuth() share one
+ * the root (see Providers.tsx), so components consuming useAuth() share one
  * fetch instead of each re-querying the profiles table independently.
  */
 

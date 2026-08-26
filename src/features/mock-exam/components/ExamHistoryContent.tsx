@@ -40,7 +40,7 @@ export default function ExamHistoryContent({ entries, total, page, pageSize }: P
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   return (
-    <div className="academy-shell relative min-h-screen px-6 py-24">
+    <div className="relative min-h-screen px-6 py-24">
       <div className="container-page relative max-w-3xl">
         <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-indigo-600">PMP</span>
         <h1 className="mt-3 text-2xl font-bold text-slate-900">Mock Exam History</h1>

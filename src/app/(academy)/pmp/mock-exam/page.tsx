@@ -11,7 +11,7 @@ export default async function MockExamStartPage() {
   const activeAttemptId = await findActiveMockExamAttemptId();
 
   return (
-    <div className="academy-shell relative min-h-screen px-6 py-24">
+    <div className="relative min-h-screen px-6 py-24">
       <div className="container-page relative max-w-2xl">
         <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-indigo-600">PMP</span>
         <h1 className="mt-3 text-2xl font-bold text-slate-900">Mock Exam</h1>

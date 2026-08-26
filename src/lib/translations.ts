@@ -22,6 +22,9 @@ export interface Translations {
     about: string; contact: string; login: string;
     dashboard: string; logout: string;
   };
+  academyNav: {
+    brand: string; courses: string; practice: string; mockExam: string; enroll: string;
+  };
   footer: { tagline: string; rights: string };
   shared: {
     available: string; coming_soon: string; in_development: string;
@@ -170,6 +173,9 @@ const en: Translations = {
     home: "Home", services: "Services", academy: "Academy", resources: "Resources",
     about: "About", contact: "Contact", login: "Login",
     dashboard: "Dashboard", logout: "Log out",
+  },
+  academyNav: {
+    brand: "ZentexAI Academy", courses: "Courses", practice: "Practice", mockExam: "Mock Exam", enroll: "Enroll",
   },
   footer: {
     tagline: "AI solutions, project management consulting, and professional learning — for the MENA region.",
@@ -554,6 +560,9 @@ const ar: Translations = {
     home: "الرئيسية", services: "الخدمات", academy: "الأكاديمية", resources: "الموارد",
     about: "من نحن", contact: "تواصل معنا", login: "تسجيل الدخول",
     dashboard: "لوحة التحكم", logout: "تسجيل الخروج",
+  },
+  academyNav: {
+    brand: "أكاديمية زينتكس AI", courses: "الدورات", practice: "التدريب", mockExam: "الامتحان التجريبي", enroll: "سجّل الآن",
   },
   footer: {
     tagline: "حلول ذكاء اصطناعي، استشارات إدارة مشاريع، وتعليم احترافي — لمنطقة الشرق الأوسط وشمال أفريقيا.",

@@ -32,7 +32,7 @@ export default function ExamStartPanel({ activeAttemptId }: Props) {
   }
 
   return (
-    <div className="academy-shell rounded-2xl border border-slate-200 bg-white p-6">
+    <div className="rounded-2xl border border-slate-200 bg-white p-6">
       <div className="grid gap-3 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">Questions</p>

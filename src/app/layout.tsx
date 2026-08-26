@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import AppShell from "@/components/AppShell";
+import Providers from "@/components/Providers";
 import { BRAND } from "@/lib/branding";
 
 const title = `${BRAND.name} — AI Solutions, Consulting & Professional Learning`;
@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" dir="ltr">
       <body style={{ backgroundColor: "var(--bg)" }} className="text-slate-200 antialiased">
-        <AppShell>{children}</AppShell>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

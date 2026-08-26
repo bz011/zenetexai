@@ -38,7 +38,7 @@ export default function PracticeHistoryContent({ entries, total, page, pageSize 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   return (
-    <div className="academy-shell relative min-h-screen px-6 py-24">
+    <div className="relative min-h-screen px-6 py-24">
       <div className="container-page relative max-w-3xl">
         <span className="label">PMP</span>
         <h1 className="mt-3 text-2xl font-bold text-white">Practice History</h1>

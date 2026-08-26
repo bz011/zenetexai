@@ -4,8 +4,10 @@
  * Distraction-free, CBT-style Mock Exam runner. White background, restrained
  * controls, high-contrast question number/timer/flag/navigation states -
  * deliberately NOT a copy of any proctoring vendor's branding or layout,
- * just a plain, professional testing surface. AppShell suppresses the
- * marketing Header/Footer/WhatsApp button on this route (see AppShell.tsx).
+ * just a plain, professional testing surface. AcademyShell (the "Exam
+ * Shell" exception) suppresses the Academy header/footer and there is no
+ * corporate chrome or WhatsApp button on this route tree at all (see
+ * AcademyShell.tsx and (corporate)/layout.tsx).
  *
  * Mirrors PracticeRunner.tsx's autosave/timer/navigation patterns exactly,
  * extended for the break state machine (BreakScreen overlay + section

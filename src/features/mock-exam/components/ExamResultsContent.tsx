@@ -64,7 +64,7 @@ export default function ExamResultsContent({ attemptId, summary, reviewQuestions
   const { attempt } = summary;
 
   return (
-    <div className="academy-shell relative min-h-screen px-6 py-24">
+    <div className="relative min-h-screen px-6 py-24">
       <div className="container-page relative max-w-4xl">
         <Link href="/pmp/mock-exam/history" className="text-[13px] text-slate-500 hover:text-slate-700 transition-colors">
           ← Mock Exam history
