@@ -306,38 +306,52 @@ function shuffleArray<T>(items: T[], rng: () => number): T[] {
 
 /**
  * Picks `count` questions from `candidates` for one draw, preferring (in
- * order): not previously seen by this student (item 17 - "prefer unseen
- * approved questions... do not permanently block reuse if doing so would
- * make the blueprint impossible" - unseen is a strong preference here, not
- * a hard filter, so reuse degrades gracefully exactly as required), then
- * questions whose interaction_type still has remaining exam-wide budget
- * (item 5's "best-effort" interaction-type mix - placing a rare type
- * wherever it naturally falls, before the budget for it runs out).
+ * priority order - Sprint 9.1 item 7):
+ *   1. never seen by this student before, across ANY past attempt
+ *      (including retakes - a retake genuinely re-exposes the student to
+ *      those questions).
+ *   2. seen before, but NOT part of the student's immediately previous
+ *      INDEPENDENTLY-GENERATED attempt, least-seen-first (ties among
+ *      equally-seen candidates broken by shuffle).
+ *   3. part of the immediately previous independently-generated attempt -
+ *      last resort only, since capping this overlap at <=40 across the
+ *      whole exam is a product requirement (see examAttemptService.ts,
+ *      which computes the actual resulting overlap count for reporting -
+ *      this function does not need to know the numeric cap itself, since
+ *      naturally exhausting tiers 1-2 first before ever touching tier 3
+ *      already minimizes overlap as much as each draw's own candidate pool
+ *      allows).
+ * Within each tier, questions whose interaction_type still has remaining
+ * exam-wide budget are preferred (item 5's "best-effort" interaction-type
+ * mix), spent one unit at a time as items are actually selected (never
+ * precomputed against a static snapshot - that would let a single draw
+ * claim more of a budget-limited type than remains).
  */
 export function pickQuestionsForDraw(
   candidates: InventoryQuestionRow[],
   count: number,
-  seenQuestionIds: ReadonlySet<string>,
+  seenCounts: ReadonlyMap<string, number>,
   interactionTypeBudget: Record<PmpInteractionType, number>,
+  previousAttemptQuestionIds: ReadonlySet<string>,
   rng: () => number = Math.random
 ): { picked: InventoryQuestionRow[]; remainingBudget: Record<PmpInteractionType, number> } {
   const budget = { ...interactionTypeBudget };
   const shuffled = shuffleArray(candidates, rng);
-  const unseen = shuffled.filter((q) => !seenQuestionIds.has(q.questionId));
-  const seen = shuffled.filter((q) => seenQuestionIds.has(q.questionId));
+
+  const neverSeen = shuffled.filter((q) => (seenCounts.get(q.questionId) ?? 0) === 0);
+  const seenNotPrevious = shuffled
+    .filter((q) => (seenCounts.get(q.questionId) ?? 0) > 0 && !previousAttemptQuestionIds.has(q.questionId))
+    .sort((a, b) => (seenCounts.get(a.questionId) ?? 0) - (seenCounts.get(b.questionId) ?? 0));
+  const seenInPreviousAttempt = shuffled.filter((q) => previousAttemptQuestionIds.has(q.questionId));
 
   const picked: InventoryQuestionRow[] = [];
 
-  // Two passes (unseen first, then seen - item 17's unseen preference
-  // dominates). Within each pass: greedily spend interaction-type budget
-  // one unit at a time as items are actually selected (never precomputed
-  // against a static snapshot - that would let a single draw claim more of
-  // a budget-limited type than remains, e.g. two hotspot candidates tying
-  // for "top score" when the exam-wide hotspot budget is only 1), then fill
-  // remaining slots from standard-type candidates before ever falling back
-  // to a type whose budget is already exhausted, so scarce rare-type
-  // inventory isn't spent as plain filler when an ordinary question would
-  // do just as well.
+  // Three passes, tier priority as documented above. Within each pass:
+  // greedily spend interaction-type budget one unit at a time as items are
+  // actually selected, then fill remaining slots from standard-type
+  // candidates before ever falling back to a type whose budget is already
+  // exhausted, so scarce rare-type inventory isn't spent as plain filler
+  // when an ordinary question would do just as well.
   function fillFrom(group: InventoryQuestionRow[]): void {
     const exhaustedRareType: InventoryQuestionRow[] = [];
     const standardType: InventoryQuestionRow[] = [];
@@ -362,8 +376,9 @@ export function pickQuestionsForDraw(
     }
   }
 
-  fillFrom(unseen);
-  fillFrom(seen);
+  fillFrom(neverSeen);
+  fillFrom(seenNotPrevious);
+  fillFrom(seenInPreviousAttempt);
 
   return { picked, remainingBudget: budget };
 }
@@ -388,7 +403,8 @@ export function selectQuestionsForDraws(
   rows: InventoryQuestionRow[],
   draws: CellDraw[],
   interactionTypeBudget: Record<PmpInteractionType, number>,
-  seenQuestionIds: ReadonlySet<string>,
+  seenCounts: ReadonlyMap<string, number>,
+  previousAttemptQuestionIds: ReadonlySet<string>,
   rng: () => number = Math.random
 ): SelectedExamQuestion[] {
   const byCell = groupQuestionsByCell(rows);
@@ -398,7 +414,7 @@ export function selectQuestionsForDraws(
 
   for (const draw of draws) {
     const pool = (byCell.get(draw.sourceKey) ?? []).filter((q) => !consumed.has(q.questionId));
-    const { picked, remainingBudget } = pickQuestionsForDraw(pool, draw.count, seenQuestionIds, budget, rng);
+    const { picked, remainingBudget } = pickQuestionsForDraw(pool, draw.count, seenCounts, budget, previousAttemptQuestionIds, rng);
     budget = remainingBudget;
     for (const q of picked) {
       consumed.add(q.questionId);

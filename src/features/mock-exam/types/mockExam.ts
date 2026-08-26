@@ -1,5 +1,4 @@
 import type { QuizQuestion, QuizSubmitAnswer } from "@/features/courses/types/course";
-import type { PmpDomain, PmpApproach, PmpDifficulty } from "@/features/mock-exam/config/examBlueprint";
 
 export type MockExamAttemptStatus = "active" | "on_break" | "completed" | "expired" | "abandoned";
 
@@ -21,6 +20,10 @@ export interface MockExamAttempt {
   unansweredCount: number;
   startedAt: string;
   completedAt: string | null;
+  /** Sprint 9.1 item 7A - set only for a Retake Same Exam attempt. */
+  retakeOfAttemptId: string | null;
+  /** Denormalized top-most ancestor - equals this attempt's own id when it is NOT a retake. */
+  rootAttemptId: string | null;
 }
 
 export interface MockExamAttemptQuestionState {
@@ -68,39 +71,6 @@ export interface MockExamResultsSummary {
   flaggedCount: number;
 }
 
-export type MockExamReviewFilter = "all" | "incorrect" | "unanswered" | "correct" | "flagged";
-
-export interface MockExamReviewOption {
-  id: string;
-  textEn: string;
-  textAr: string | null;
-  isCorrect: boolean;
-}
-
-export interface MockExamReviewQuestion {
-  questionId: string | null;
-  sequenceNumber: number;
-  questionTextEn: string;
-  questionTextAr: string | null;
-  interactionType: string;
-  answerType: string;
-  domain: PmpDomain | null;
-  approach: PmpApproach | null;
-  difficulty: PmpDifficulty | null;
-  options: MockExamReviewOption[];
-  matchingLeft: { id: string; textEn: string; textAr: string | null }[];
-  matchingRight: { id: string; textEn: string; textAr: string | null }[];
-  matchingCorrectRightIdByLeft: Record<string, string>;
-  dragDropItems: { id: string; textEn: string; textAr: string | null; category: string | null; correctPosition: number | null }[];
-  images: { imagePath: string; altEn: string | null; altAr: string | null }[];
-  explanationEn: string | null;
-  explanationAr: string | null;
-  response: QuizSubmitAnswer | null;
-  isCorrect: boolean | null;
-  isFlagged: boolean;
-  timeSpentSeconds: number;
-}
-
 export interface MockExamHistoryEntry {
   id: string;
   status: MockExamAttemptStatus;
@@ -110,4 +80,17 @@ export interface MockExamHistoryEntry {
   startedAt: string;
   completedAt: string | null;
   durationSeconds: number;
+  retakeOfAttemptId: string | null;
+  rootAttemptId: string | null;
+}
+
+/** Sprint 9.1 item 7A - a simple before/after comparison shown after a same-exam retake, deliberately not longitudinal analytics. */
+export interface MockExamRetakeComparison {
+  previousScore: number | null;
+  currentScore: number | null;
+  previousCorrectCount: number;
+  currentCorrectCount: number;
+  previousTotalTimeSpentSeconds: number;
+  currentTotalTimeSpentSeconds: number;
+  byDomain: { label: string; previousCorrect: number; currentCorrect: number; total: number }[];
 }

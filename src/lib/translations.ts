@@ -25,6 +25,44 @@ export interface Translations {
   academyNav: {
     brand: string; courses: string; practice: string; mockExam: string; enroll: string;
   };
+  assessment: {
+    langToggle: string;
+    runner: {
+      section: string; question: string; of: string;
+      flagged: string; flagForReview: string;
+      previous: string; next: string; finishSection: string;
+      submitExam: string; submitPractice: string; submitting: string;
+      submitConfirmTitle: string; submitConfirmBody: string; keepGoing: string; submitAnyway: string;
+      saveWarning: string; noQuestionAvailable: string;
+    };
+    navigator: {
+      questions: string; sectionQuestions: string; answered: string; unanswered: string; flagged: string; sealedNote: string;
+    };
+    breakScreen: {
+      scheduledBreak: string; clockPaused: string; resumeNow: string; resuming: string;
+    };
+    sectionComplete: {
+      sectionComplete: string; takeBreakOrContinue: string; continueToSection: string;
+      breakBody: string; continueBody: string; startBreak: string; continueWithoutBreak: string; pleaseWait: string;
+    };
+    results: {
+      score: string; correct: string; incorrect: string; unanswered: string; timeExpired: string;
+      timeSpent: string; avgPerQuestion: string; flaggedCount: string;
+      byDomain: string; byApproach: string; byDifficulty: string; byQuestionType: string; byTopic: string;
+      noPmiPassingScore: string;
+      newMockExam: string; newPractice: string; retakeSameExam: string; startNewExam: string; viewHistory: string; backToResults: string;
+    };
+    review: {
+      all: string; incorrect: string; correct: string; unanswered: string; flagged: string;
+      noQuestionsMatch: string; selectQuestion: string;
+      yourAnswer: string; correctAnswer: string; explanation: string; keyConcept: string; examTip: string; commonTrap: string;
+      whyWrong: string; previousQuestion: string; nextQuestion: string; backToGrid: string; loading: string;
+    };
+    history: {
+      title: string; attempt: string; retake: string; noAttemptsYet: string; startPrompt: string;
+      resume: string; results: string; comparePerformance: string; previousScore: string; currentScore: string;
+    };
+  };
   footer: { tagline: string; rights: string };
   shared: {
     available: string; coming_soon: string; in_development: string;
@@ -176,6 +214,49 @@ const en: Translations = {
   },
   academyNav: {
     brand: "ZentexAI Academy", courses: "Courses", practice: "Practice", mockExam: "Mock Exam", enroll: "Enroll",
+  },
+  assessment: {
+    langToggle: "Switch language",
+    runner: {
+      section: "Section", question: "Question", of: "of",
+      flagged: "Flagged for review", flagForReview: "Flag for review",
+      previous: "Previous", next: "Next", finishSection: "Finish Section",
+      submitExam: "Submit Exam", submitPractice: "Submit Practice", submitting: "Submitting...",
+      submitConfirmTitle: "Submit with unanswered questions?", submitConfirmBody: "You have {count} unanswered question(s). Unanswered questions count as incorrect.",
+      keepGoing: "Keep going", submitAnyway: "Submit anyway",
+      saveWarning: "Your last answer may not have saved - check your connection.", noQuestionAvailable: "This question is no longer available. Use the navigator to continue with another question.",
+    },
+    navigator: {
+      questions: "Questions", sectionQuestions: "Section {n} Questions", answered: "Answered", unanswered: "Unanswered", flagged: "Flagged",
+      sealedNote: "Completed sections are sealed and cannot be reviewed again.",
+    },
+    breakScreen: {
+      scheduledBreak: "Scheduled Break {n}", clockPaused: "Your exam clock is paused. Time not used on this break is returned to your exam. The exam resumes automatically when the break ends.",
+      resumeNow: "Resume Exam Now", resuming: "Resuming...",
+    },
+    sectionComplete: {
+      sectionComplete: "Section {n} Complete", takeBreakOrContinue: "Take a break, or continue", continueToSection: "Continue to Section {n}",
+      breakBody: "You've reached a scheduled break point. Once you choose, Section {n} is sealed and cannot be reviewed again.",
+      continueBody: "Section {n} is now sealed and cannot be reviewed again. Section {next} begins next.",
+      startBreak: "Start {n}-Minute Break", continueWithoutBreak: "Continue Without Break to Section {n}", pleaseWait: "Please wait...",
+    },
+    results: {
+      score: "Score", correct: "correct", incorrect: "incorrect", unanswered: "unanswered", timeExpired: "time expired",
+      timeSpent: "Time spent", avgPerQuestion: "Avg. per question", flaggedCount: "Flagged",
+      byDomain: "By Domain", byApproach: "By Approach", byDifficulty: "By Difficulty", byQuestionType: "By Question Type", byTopic: "By Topic",
+      noPmiPassingScore: "PMI does not publish a numeric passing score for the real PMP exam - this percentage is provided for self-assessment only.",
+      newMockExam: "New Mock Exam", newPractice: "New Practice Session", retakeSameExam: "Retake Same Exam", startNewExam: "Start New Exam", viewHistory: "View History", backToResults: "Back to Results",
+    },
+    review: {
+      all: "All", incorrect: "Incorrect", correct: "Correct", unanswered: "Unanswered", flagged: "Flagged",
+      noQuestionsMatch: "No questions match this filter.", selectQuestion: "Select a question to review it in detail.",
+      yourAnswer: "Your Answer", correctAnswer: "Correct Answer", explanation: "Explanation", keyConcept: "Key Concept", examTip: "Exam Tip", commonTrap: "Common Trap",
+      whyWrong: "Why this is wrong", previousQuestion: "← Previous", nextQuestion: "Next →", backToGrid: "← Back to list", loading: "Loading...",
+    },
+    history: {
+      title: "History", attempt: "Attempt", retake: "Retake", noAttemptsYet: "No attempts yet", startPrompt: "Start one to see your history and scores here.",
+      resume: "Resume", results: "Results", comparePerformance: "Performance Comparison", previousScore: "Previous score", currentScore: "Current score",
+    },
   },
   footer: {
     tagline: "AI solutions, project management consulting, and professional learning — for the MENA region.",
@@ -564,6 +645,49 @@ const ar: Translations = {
   academyNav: {
     brand: "أكاديمية زينتكس AI", courses: "الدورات", practice: "التدريب", mockExam: "الامتحان التجريبي", enroll: "سجّل الآن",
   },
+  assessment: {
+    langToggle: "تغيير اللغة",
+    runner: {
+      section: "القسم", question: "السؤال", of: "من",
+      flagged: "مُعلَّم للمراجعة", flagForReview: "علّم للمراجعة",
+      previous: "السابق", next: "التالي", finishSection: "إنهاء القسم",
+      submitExam: "تسليم الامتحان", submitPractice: "تسليم التدريب", submitting: "جارٍ التسليم...",
+      submitConfirmTitle: "هل تريد التسليم مع وجود أسئلة غير مجابة؟", submitConfirmBody: "لديك {count} سؤال غير مجاب. تُحتسب الأسئلة غير المجابة كإجابات خاطئة.",
+      keepGoing: "متابعة", submitAnyway: "تسليم على أي حال",
+      saveWarning: "قد لا تكون إجابتك الأخيرة قد حُفظت - تحقق من اتصالك.", noQuestionAvailable: "هذا السؤال لم يعد متاحًا. استخدم لوحة التنقل للمتابعة بسؤال آخر.",
+    },
+    navigator: {
+      questions: "الأسئلة", sectionQuestions: "أسئلة القسم {n}", answered: "مجاب عنها", unanswered: "غير مجابة", flagged: "مُعلَّمة",
+      sealedNote: "الأقسام المكتملة مغلقة ولا يمكن مراجعتها مرة أخرى.",
+    },
+    breakScreen: {
+      scheduledBreak: "استراحة مجدولة {n}", clockPaused: "ساعة الامتحان متوقفة مؤقتًا. الوقت غير المستخدم من هذه الاستراحة يُعاد إلى امتحانك. يستأنف الامتحان تلقائيًا عند انتهاء الاستراحة.",
+      resumeNow: "استئناف الامتحان الآن", resuming: "جارٍ الاستئناف...",
+    },
+    sectionComplete: {
+      sectionComplete: "اكتمل القسم {n}", takeBreakOrContinue: "خذ استراحة أو تابع", continueToSection: "المتابعة إلى القسم {n}",
+      breakBody: "لقد وصلت إلى نقطة استراحة مجدولة. بمجرد اختيارك، يُغلق القسم {n} ولا يمكن مراجعته مرة أخرى.",
+      continueBody: "القسم {n} مغلق الآن ولا يمكن مراجعته مرة أخرى. يبدأ القسم {next} بعد ذلك.",
+      startBreak: "بدء استراحة {n} دقائق", continueWithoutBreak: "المتابعة بدون استراحة إلى القسم {n}", pleaseWait: "يرجى الانتظار...",
+    },
+    results: {
+      score: "النتيجة", correct: "صحيحة", incorrect: "خاطئة", unanswered: "غير مجابة", timeExpired: "انتهى الوقت",
+      timeSpent: "الوقت المستغرق", avgPerQuestion: "متوسط الوقت لكل سؤال", flaggedCount: "المُعلَّمة",
+      byDomain: "حسب المجال", byApproach: "حسب المنهجية", byDifficulty: "حسب الصعوبة", byQuestionType: "حسب نوع السؤال", byTopic: "حسب الموضوع",
+      noPmiPassingScore: "لا ينشر معهد إدارة المشاريع (PMI) درجة نجاح رقمية لامتحان PMP الحقيقي - هذه النسبة مخصصة للتقييم الذاتي فقط.",
+      newMockExam: "امتحان تجريبي جديد", newPractice: "جلسة تدريب جديدة", retakeSameExam: "إعادة نفس الامتحان", startNewExam: "بدء امتحان جديد", viewHistory: "عرض السجل", backToResults: "العودة إلى النتائج",
+    },
+    review: {
+      all: "الكل", incorrect: "خاطئة", correct: "صحيحة", unanswered: "غير مجابة", flagged: "مُعلَّمة",
+      noQuestionsMatch: "لا توجد أسئلة مطابقة لهذا الفلتر.", selectQuestion: "اختر سؤالاً لمراجعته بالتفصيل.",
+      yourAnswer: "إجابتك", correctAnswer: "الإجابة الصحيحة", explanation: "الشرح", keyConcept: "المفهوم الأساسي", examTip: "نصيحة للامتحان", commonTrap: "خطأ شائع",
+      whyWrong: "لماذا هذه إجابة خاطئة", previousQuestion: "← السابق", nextQuestion: "التالي →", backToGrid: "← العودة إلى القائمة", loading: "جارٍ التحميل...",
+    },
+    history: {
+      title: "السجل", attempt: "محاولة", retake: "إعادة", noAttemptsYet: "لا توجد محاولات بعد", startPrompt: "ابدأ محاولة لترى سجلك ونتائجك هنا.",
+      resume: "استئناف", results: "النتائج", comparePerformance: "مقارنة الأداء", previousScore: "النتيجة السابقة", currentScore: "النتيجة الحالية",
+    },
+  },
   footer: {
     tagline: "حلول ذكاء اصطناعي، استشارات إدارة مشاريع، وتعليم احترافي — لمنطقة الشرق الأوسط وشمال أفريقيا.",
     rights: "جميع الحقوق محفوظة.",
@@ -945,3 +1069,8 @@ const ar: Translations = {
 
 const translations: Record<Lang, Translations> = { en, ar };
 export default translations;
+
+/** Interpolates {placeholder} tokens in a translation string, e.g. tf(t.assessment.sectionComplete.sectionComplete, { n: 1 }) -> "Section 1 Complete". */
+export function tf(template: string, vars: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (match, key: string) => (key in vars ? String(vars[key]) : match));
+}

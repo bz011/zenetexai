@@ -261,3 +261,10 @@ export async function submitSession(sessionId: string): Promise<{ success: boole
   const result = await submitPracticeSession(supabase, sessionId, user.id, reason);
   return { success: result.success, error: result.error };
 }
+
+/** Client-callable wrapper for practiceResultsService.ts's lazy single-question detail fetch (item 9) - AssessmentResultsView calls this directly from the browser when a student opens the review panel for one question. */
+export async function getPracticeReviewQuestionDetail(sessionId: string, questionId: string) {
+  const { supabase, user } = await requireUser();
+  const { getPracticeReviewQuestionDetail: fetchDetail } = await import("@/features/practice/services/practiceResultsService");
+  return fetchDetail(supabase, sessionId, user.id, questionId);
+}

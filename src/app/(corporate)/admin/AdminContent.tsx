@@ -20,9 +20,14 @@ export default function AdminContent({ firstName }: { firstName: string | null }
           <p className="mt-6 rounded-xl border border-white/[0.06] bg-white/[0.03] px-4 py-3 text-[13px] leading-relaxed text-slate-400">
             {a.placeholder_note}
           </p>
-          <Link href="/admin/courses" className="btn-primary mt-6 inline-flex px-5 py-2.5 text-[13px]">
-            Manage Courses
-          </Link>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/admin/courses" className="btn-primary inline-flex px-5 py-2.5 text-[13px]">
+              Manage Courses
+            </Link>
+            <Link href="/admin/content-diagnostics" className="btn-secondary inline-flex px-5 py-2.5 text-[13px]">
+              Content Diagnostics
+            </Link>
+          </div>
         </div>
       </div>
     </div>

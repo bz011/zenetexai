@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLang } from "@/lib/LanguageContext";
+import { tf } from "@/lib/translations";
 
 interface Props {
   breakNumber: number;
@@ -23,6 +25,8 @@ function formatTime(totalSeconds: number): string {
  * letting this local timer run down to 0 and auto-resuming.
  */
 export default function BreakScreen({ breakNumber, initialRemainingSeconds, onResume, resuming }: Props) {
+  const { t } = useLang();
+  const b = t.assessment.breakScreen;
   const [remaining, setRemaining] = useState(initialRemainingSeconds);
 
   useEffect(() => {
@@ -47,17 +51,15 @@ export default function BreakScreen({ breakNumber, initialRemainingSeconds, onRe
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white px-6">
       <div className="max-w-sm text-center">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-indigo-600">Scheduled Break {breakNumber}</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-indigo-600">{tf(b.scheduledBreak, { n: breakNumber })}</p>
         <p className="mt-4 text-5xl font-bold tabular-nums text-slate-900">{formatTime(remaining)}</p>
-        <p className="mt-3 text-[13px] leading-relaxed text-slate-500">
-          Your exam clock is paused. Time not used on this break is returned to your exam. The exam resumes automatically when the break ends.
-        </p>
+        <p className="mt-3 text-[13px] leading-relaxed text-slate-500">{b.clockPaused}</p>
         <button
           onClick={onResume}
           disabled={resuming}
           className="mt-6 inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
         >
-          {resuming ? "Resuming..." : "Resume Exam Now"}
+          {resuming ? b.resuming : b.resumeNow}
         </button>
       </div>
     </div>

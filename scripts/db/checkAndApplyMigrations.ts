@@ -188,6 +188,29 @@ const MIGRATIONS: MigrationSpec[] = [
       ) AS applied
     `,
   },
+  {
+    id: "017_question_image_validation",
+    file: "017_question_image_validation.sql",
+    signatureQuery: `
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'questions' AND column_name = 'image_verified_broken'
+      ) AS applied
+    `,
+  },
+  {
+    id: "018_mock_exam_retakes",
+    file: "018_mock_exam_retakes.sql",
+    signatureQuery: `
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'mock_exam_attempts' AND column_name = 'retake_of_attempt_id'
+      ) AND EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'mock_exam_attempts' AND column_name = 'root_attempt_id'
+      ) AS applied
+    `,
+  },
 ];
 
 async function main() {
@@ -283,6 +306,9 @@ async function main() {
       { label: "generation_batch_questions failure audit columns (failure_stage, prompt_tokens, completion_tokens)", query: "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='generation_batch_questions' AND column_name='failure_stage') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='generation_batch_questions' AND column_name='prompt_tokens') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='generation_batch_questions' AND column_name='completion_tokens') AS ok" },
       { label: "mock_exam_attempts / mock_exam_attempt_questions tables", query: "SELECT to_regclass('public.mock_exam_attempts') IS NOT NULL AND to_regclass('public.mock_exam_attempt_questions') IS NOT NULL AS ok" },
       { label: "create_mock_exam_attempt() RPC", query: "SELECT EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='create_mock_exam_attempt') AS ok" },
+      { label: "questions.image_verified_broken column", query: "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='image_verified_broken') AS ok" },
+      { label: "mock_exam_attempts retake columns (retake_of_attempt_id, root_attempt_id)", query: "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='mock_exam_attempts' AND column_name='retake_of_attempt_id') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='mock_exam_attempts' AND column_name='root_attempt_id') AS ok" },
+      { label: "create_mock_exam_attempt() accepts a retake source (7-arg overload only, no stale 6-arg duplicate)", query: "SELECT has_function_privilege('authenticated', 'create_mock_exam_attempt(uuid, text, jsonb, text[], int[], int, uuid)', 'EXECUTE') AND NOT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE n.nspname = 'public' AND p.proname = 'create_mock_exam_attempt' AND pg_get_function_identity_arguments(p.oid) = 'uuid, text, jsonb, text[], integer[], integer') AS ok" },
     ];
 
     let allOk = true;

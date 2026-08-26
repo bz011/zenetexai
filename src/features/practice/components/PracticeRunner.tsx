@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLang } from "@/lib/LanguageContext";
+import { tf } from "@/lib/translations";
+import AssessmentLangToggle from "@/components/assessment/AssessmentLangToggle";
 import StandardQuestion from "@/features/courses/components/quiz/StandardQuestion";
 import MatchingQuestion from "@/features/courses/components/quiz/MatchingQuestion";
 import DragDropQuestion from "@/features/courses/components/quiz/DragDropQuestion";
@@ -48,7 +50,8 @@ function formatTime(totalSeconds: number): string {
 
 export default function PracticeRunner({ sessionId, initialData }: Props) {
   const router = useRouter();
-  const { lang } = useLang();
+  const { t, lang } = useLang();
+  const rn = t.assessment.runner;
 
   const { session, questions, questionStates } = initialData;
 
@@ -178,35 +181,36 @@ export default function PracticeRunner({ sessionId, initialData }: Props) {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="label">
-              Question {currentIndex + 1} of {questions.length}
+              {rn.question} {currentIndex + 1} {rn.of} {questions.length}
             </p>
             <div className="mt-2 h-1.5 w-48 overflow-hidden rounded-full bg-white/[0.06]">
               <div className="h-full rounded-full bg-indigo-500" style={{ width: `${progressPct}%` }} />
             </div>
           </div>
-          {remainingSeconds !== null && (
-            <div
-              className={`rounded-xl border px-4 py-2 text-[14px] font-semibold ${
-                remainingSeconds < 60 ? "border-red-500/30 bg-red-500/[0.08] text-red-400" : "border-white/[0.08] bg-white/[0.03] text-white"
-              }`}
-            >
-              ⏱ {formatTime(remainingSeconds)}
-            </div>
-          )}
+          <div className="flex items-center gap-3">
+            <AssessmentLangToggle />
+            {remainingSeconds !== null && (
+              <div
+                className={`rounded-xl border px-4 py-2 text-[14px] font-semibold ${
+                  remainingSeconds < 60 ? "border-red-500/30 bg-red-500/[0.08] text-red-400" : "border-white/[0.08] bg-white/[0.03] text-white"
+                }`}
+              >
+                ⏱ {formatTime(remainingSeconds)}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_260px]">
           <div className="card p-7">
             {saveWarning && (
               <p className="mb-4 rounded-xl border border-amber-500/20 bg-amber-500/[0.08] px-4 py-2 text-[12px] text-amber-400">
-                Your last answer may not have saved - check your connection.
+                {rn.saveWarning}
               </p>
             )}
 
             {!currentQuestion ? (
-              <p className="text-[14px] text-slate-500">
-                This question is no longer available. Use the navigator to continue with another question.
-              </p>
+              <p className="text-[14px] text-slate-500">{rn.noQuestionAvailable}</p>
             ) : (
               <>
                 <div className="flex items-start justify-between gap-4">
@@ -219,7 +223,7 @@ export default function PracticeRunner({ sessionId, initialData }: Props) {
                       flags[currentQuestion.id] ? "bg-amber-500/[0.15] text-amber-400" : "bg-white/[0.06] text-slate-400 hover:bg-white/[0.1]"
                     }`}
                   >
-                    {flags[currentQuestion.id] ? "★ Flagged" : "☆ Flag"}
+                    {flags[currentQuestion.id] ? `★ ${rn.flagged}` : `☆ ${rn.flagForReview}`}
                   </button>
                 </div>
 
@@ -242,15 +246,15 @@ export default function PracticeRunner({ sessionId, initialData }: Props) {
 
             <div className="mt-8 flex items-center justify-between border-t border-white/[0.06] pt-6">
               <button onClick={() => goToIndex(currentIndex - 1)} disabled={currentIndex === 0} className="btn-ghost px-5 py-2.5 text-[13px] disabled:opacity-30">
-                ← Previous
+                ← {rn.previous}
               </button>
               {currentIndex === questions.length - 1 ? (
                 <button onClick={attemptSubmit} disabled={submitting} className="btn-primary px-6 py-2.5 text-[13px] disabled:opacity-50">
-                  {submitting ? "Submitting..." : "Submit Practice"}
+                  {submitting ? rn.submitting : rn.submitPractice}
                 </button>
               ) : (
                 <button onClick={() => goToIndex(currentIndex + 1)} className="btn-primary px-5 py-2.5 text-[13px]">
-                  Next →
+                  {rn.next} →
                 </button>
               )}
             </div>
@@ -265,7 +269,7 @@ export default function PracticeRunner({ sessionId, initialData }: Props) {
               onJump={goToIndex}
             />
             <button onClick={attemptSubmit} disabled={submitting} className="btn-ghost w-full py-2.5 text-[13px] disabled:opacity-50">
-              {submitting ? "Submitting..." : "Submit Practice"}
+              {submitting ? rn.submitting : rn.submitPractice}
             </button>
           </div>
         </div>
@@ -274,13 +278,11 @@ export default function PracticeRunner({ sessionId, initialData }: Props) {
       {showSubmitConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-6">
           <div className="card max-w-sm p-6">
-            <p className="text-[15px] font-semibold text-white">Submit with unanswered questions?</p>
-            <p className="mt-2 text-[13px] text-slate-400">
-              You have {unansweredCount} unanswered question{unansweredCount === 1 ? "" : "s"}. Unanswered questions count as incorrect.
-            </p>
+            <p className="text-[15px] font-semibold text-white">{rn.submitConfirmTitle}</p>
+            <p className="mt-2 text-[13px] text-slate-400">{tf(rn.submitConfirmBody, { count: unansweredCount })}</p>
             <div className="mt-5 flex gap-3">
               <button onClick={() => setShowSubmitConfirm(false)} className="btn-ghost flex-1 py-2.5 text-[13px]">
-                Keep going
+                {rn.keepGoing}
               </button>
               <button
                 onClick={() => {
@@ -289,7 +291,7 @@ export default function PracticeRunner({ sessionId, initialData }: Props) {
                 }}
                 className="btn-primary flex-1 py-2.5 text-[13px]"
               >
-                Submit anyway
+                {rn.submitAnyway}
               </button>
             </div>
           </div>

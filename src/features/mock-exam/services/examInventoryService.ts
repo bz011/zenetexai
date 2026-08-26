@@ -37,7 +37,8 @@ export async function fetchApprovedQuestionInventory(
     .select("question_id, domain, approach, difficulty, interaction_type, answer_type")
     .eq("certification_id", certificationId)
     .eq("status", "approved")
-    .is("deleted_at", null);
+    .is("deleted_at", null)
+    .eq("image_verified_broken", false);
 
   const allRows = (data ?? []) as QuestionInventoryRow[];
   const complete = allRows.filter((r) => r.domain && r.approach && r.difficulty);
@@ -76,23 +77,54 @@ export function tallyAnswerTypeCounts(rows: InventoryQuestionRow[]): Record<PmpA
   return counts;
 }
 
-/**
- * Question IDs this student has already seen across ANY past Mock Exam
- * attempt (any status - even an abandoned/expired attempt still means the
- * student was shown that question). Feeds pickQuestionsForDraw's unseen
- * preference (item 17) - a strong preference, not a hard filter, so reuse
- * degrades gracefully when the blueprint genuinely can't avoid it.
- */
-export async function fetchSeenQuestionIds(supabase: SupabaseClient, userId: string): Promise<Set<string>> {
-  const { data: attempts } = await supabase.from("mock_exam_attempts").select("id").eq("user_id", userId);
-  const attemptIds = ((attempts ?? []) as { id: string }[]).map((a) => a.id);
-  if (attemptIds.length === 0) return new Set();
+export interface QuestionHistoryForUser {
+  /** How many times this student has been shown each question, across EVERY past attempt including retakes - a retake genuinely re-exposes those questions, so it counts here (Sprint 9.1 item 7). Feeds pickQuestionsForDraw's never-seen/least-seen tiers. */
+  seenCounts: Map<string, number>;
+  /** The question set of the student's most recent INDEPENDENTLY-GENERATED attempt (retake_of_attempt_id IS NULL) - retakes of that exam are deliberately excluded from this set, so a retake chain never distorts the <=40-overlap comparison (item 7A: "Exam B's overlap calculation should compare against the most recent independently generated exam set, not against each retake"). Empty on a student's first exam. */
+  previousAttemptQuestionIds: Set<string>;
+  /** The attempt id previousAttemptQuestionIds came from, for reporting - null if there is no prior independently-generated attempt. */
+  previousAttemptId: string | null;
+}
 
-  const { data: questions } = await supabase
+/**
+ * Full per-student question-exposure history for the blueprint engine's
+ * reuse-avoidance and overlap-cap policy (Sprint 9.1 item 7). Scoped
+ * entirely by userId - RLS additionally backstops this at the query level
+ * (a user can only ever read their own mock_exam_attempts rows), so User
+ * A's history can never leak into User B's selection.
+ */
+export async function fetchQuestionHistoryForUser(supabase: SupabaseClient, userId: string): Promise<QuestionHistoryForUser> {
+  const { data: attempts } = await supabase
+    .from("mock_exam_attempts")
+    .select("id, retake_of_attempt_id, started_at")
+    .eq("user_id", userId)
+    .order("started_at", { ascending: false });
+
+  type AttemptRow = { id: string; retake_of_attempt_id: string | null; started_at: string };
+  const attemptRows = (attempts ?? []) as AttemptRow[];
+  if (attemptRows.length === 0) {
+    return { seenCounts: new Map(), previousAttemptQuestionIds: new Set(), previousAttemptId: null };
+  }
+
+  const attemptIds = attemptRows.map((a) => a.id);
+  const { data: questionRows } = await supabase
     .from("mock_exam_attempt_questions")
-    .select("question_id")
+    .select("attempt_id, question_id")
     .in("attempt_id", attemptIds)
     .not("question_id", "is", null);
 
-  return new Set(((questions ?? []) as { question_id: string }[]).map((q) => q.question_id));
+  type QuestionRow = { attempt_id: string; question_id: string };
+  const rows = (questionRows ?? []) as QuestionRow[];
+
+  const seenCounts = new Map<string, number>();
+  for (const row of rows) {
+    seenCounts.set(row.question_id, (seenCounts.get(row.question_id) ?? 0) + 1);
+  }
+
+  const mostRecentIndependent = attemptRows.find((a) => a.retake_of_attempt_id === null) ?? null;
+  const previousAttemptQuestionIds = mostRecentIndependent
+    ? new Set(rows.filter((r) => r.attempt_id === mostRecentIndependent.id).map((r) => r.question_id))
+    : new Set<string>();
+
+  return { seenCounts, previousAttemptQuestionIds, previousAttemptId: mostRecentIndependent?.id ?? null };
 }

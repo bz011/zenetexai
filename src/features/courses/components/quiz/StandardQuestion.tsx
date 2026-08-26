@@ -2,6 +2,7 @@
 
 import { useLang } from "@/lib/LanguageContext";
 import type { QuizQuestion, QuizSubmitAnswer } from "@/features/courses/types/course";
+import { getQuestionImagePublicUrl } from "@/lib/supabase/imageUrls";
 
 interface Props {
   question: QuizQuestion;
@@ -26,15 +27,28 @@ export default function StandardQuestion({ question, value, onChange }: Props) {
     }
   }
 
+  // graphic_based questions are structurally supposed to have an image -
+  // selection-time exclusion (see examInventoryService.ts /
+  // count_eligible_practice_questions) is the real defense, but if one ever
+  // slips through anyway (e.g. a question edited after an attempt already
+  // started), show an explicit notice rather than silently rendering as if
+  // nothing were missing.
+  const missingRequiredImage = question.interactionType === "graphic_based" && question.images.length === 0;
+
   return (
     <div>
+      {missingRequiredImage && (
+        <div className="mb-3 rounded-xl border border-amber-500/30 bg-amber-500/[0.08] px-4 py-3 text-[13px] text-amber-300">
+          This question references a graphic that is not currently available. It has been reported for content repair - please answer based on the text, or flag it for review.
+        </div>
+      )}
       {question.images.length > 0 && (
         <div className="mb-3 space-y-2">
           {question.images.map((img, i) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               key={i}
-              src={img.imagePath}
+              src={getQuestionImagePublicUrl(img.imagePath)}
               alt={(lang === "ar" && img.altAr) || img.altEn || ""}
               className="max-h-80 w-full rounded-xl border border-white/[0.08] object-contain"
             />

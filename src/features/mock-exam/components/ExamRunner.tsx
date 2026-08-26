@@ -17,22 +17,26 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLang } from "@/lib/LanguageContext";
+import { tf } from "@/lib/translations";
+import AssessmentLangToggle from "@/components/assessment/AssessmentLangToggle";
 import StandardQuestion from "@/features/courses/components/quiz/StandardQuestion";
 import MatchingQuestion from "@/features/courses/components/quiz/MatchingQuestion";
 import DragDropQuestion from "@/features/courses/components/quiz/DragDropQuestion";
 import HotspotQuestion from "@/features/courses/components/quiz/HotspotQuestion";
 import ExamNavigator from "@/features/mock-exam/components/ExamNavigator";
 import BreakScreen from "@/features/mock-exam/components/BreakScreen";
+import SectionCompleteScreen from "@/features/mock-exam/components/SectionCompleteScreen";
 import {
   saveExamAnswer,
   saveExamCurrentIndex,
   toggleExamFlag,
   recordExamTimeSpent,
   startExamBreak,
+  advanceToNextSection,
   endExamBreak,
   submitMockExam,
 } from "@/features/mock-exam/services/examAttemptService";
-import { getEligibleBreak, sectionJustCompleted } from "@/features/mock-exam/services/examTimerUtils";
+import { getEligibleBreak } from "@/features/mock-exam/services/examTimerUtils";
 import { getBlueprintByVersion, getActiveBlueprint } from "@/features/mock-exam/config/examBlueprint";
 import type { QuizQuestion, QuizSubmitAnswer } from "@/features/courses/types/course";
 import type { MockExamRunnerData } from "@/features/mock-exam/types/mockExam";
@@ -68,7 +72,8 @@ function formatTime(totalSeconds: number): string {
 
 export default function ExamRunner({ attemptId, initialData }: Props) {
   const router = useRouter();
-  const { lang } = useLang();
+  const { t, lang } = useLang();
+  const rn = t.assessment.runner;
 
   const { attempt, questions, questionStates } = initialData;
   const blueprint = getBlueprintByVersion(attempt.blueprintVersion) ?? getActiveBlueprint();
@@ -98,9 +103,22 @@ export default function ExamRunner({ attemptId, initialData }: Props) {
       : null
   );
   const [breaksTaken, setBreaksTaken] = useState<number[]>(attempt.breaksTaken);
-  const [sectionsLocked, setSectionsLocked] = useState<number[]>(attempt.sectionsLocked);
-  const [startingBreak, setStartingBreak] = useState(false);
+  // Only the setter is used - goToIndex's own section-boundary check
+  // already makes navigating into a locked section impossible without
+  // needing to read sectionsLocked directly (see its comment below); this
+  // state exists purely to keep the client's copy in sync with the server
+  // for potential future consumers.
+  const [, setSectionsLocked] = useState<number[]>(attempt.sectionsLocked);
   const [resumingFromBreak, setResumingFromBreak] = useState(false);
+
+  // Section-boundary gate (Sprint 9.1 items 3+4): set SYNCHRONOUSLY the
+  // instant the student finishes a section's last question, before any
+  // network call - this is what makes it impossible for the next
+  // section's question to ever render underneath during the transition.
+  const [sectionTransition, setSectionTransition] = useState<{ completedSection: number; nextSection: number; breakEligible: boolean; breakNumber: number | null } | null>(
+    null
+  );
+  const [transitionSubmitting, setTransitionSubmitting] = useState(false);
 
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -162,9 +180,15 @@ export default function ExamRunner({ attemptId, initialData }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onBreak]);
 
+  // Prev/Next and the navigator only ever construct indexes within the
+  // CURRENT section (item 4) - a locked/completed section's questions and
+  // any not-yet-reached future section's questions are never offered as a
+  // destination, so this single bounds check is both necessary and
+  // sufficient (no separate sectionsLocked check needed here - the server
+  // still enforces it independently in saveExamAnswer as a backstop).
   function goToIndex(nextIndex: number) {
     if (nextIndex < 0 || nextIndex >= questions.length || nextIndex === currentIndex) return;
-    if (sectionsLocked.includes(sectionNumbers[nextIndex])) return;
+    if (sectionNumbers[nextIndex] !== currentSection) return;
     flushTimeSpent(currentQuestionId);
     setCurrentIndex(nextIndex);
     void saveExamCurrentIndex(attemptId, nextIndex);
@@ -192,18 +216,45 @@ export default function ExamRunner({ attemptId, initialData }: Props) {
     void toggleExamFlag(attemptId, currentQuestionId, next);
   }
 
-  async function handleStartBreak(breakNumber: number) {
-    setStartingBreak(true);
+  // Triggered by "Finish Section" on the last question of a section -
+  // SYNCHRONOUSLY replaces exam content with SectionCompleteScreen before
+  // any network call happens (item 3's "immediately replace exam content
+  // with a full break-transition state... never render the next section
+  // question behind/below it").
+  function handleFinishSection() {
+    const nextIndex = currentIndex + 1;
+    const nextSection = sectionNumbers[nextIndex];
     flushTimeSpent(currentQuestionId);
+    const eligibility = getEligibleBreak(nextIndex, breaksTaken, blueprint);
+    setSectionTransition({ completedSection: currentSection, nextSection, breakEligible: eligibility.eligible, breakNumber: eligibility.breakNumber });
+  }
+
+  async function handleConfirmStartBreak() {
+    if (!sectionTransition || transitionSubmitting) return;
+    setTransitionSubmitting(true);
     const result = await startExamBreak(attemptId);
-    if (result.success) {
-      const justCompleted = sectionJustCompleted(currentIndex, blueprint);
-      if (justCompleted !== null) setSectionsLocked((prev) => (prev.includes(justCompleted) ? prev : [...prev, justCompleted]));
-      setBreaksTaken((prev) => [...prev, breakNumber]);
-      setBreakInfo({ breakNumber, remainingSeconds: blueprint.breaks[breakNumber - 1]?.durationSeconds ?? 0 });
+    if (result.success && result.nextIndex !== undefined) {
+      const { completedSection, breakNumber } = sectionTransition;
+      setSectionsLocked((prev) => (prev.includes(completedSection) ? prev : [...prev, completedSection]));
+      setBreaksTaken((prev) => [...prev, breakNumber as number]);
+      setCurrentIndex(result.nextIndex);
+      setBreakInfo({ breakNumber: breakNumber as number, remainingSeconds: blueprint.breaks[(breakNumber as number) - 1]?.durationSeconds ?? 0 });
       setOnBreak(true);
+      setSectionTransition(null);
     }
-    setStartingBreak(false);
+    setTransitionSubmitting(false);
+  }
+
+  async function handleConfirmContinue() {
+    if (!sectionTransition || transitionSubmitting) return;
+    setTransitionSubmitting(true);
+    const result = await advanceToNextSection(attemptId);
+    if (result.success && result.nextIndex !== undefined) {
+      setSectionsLocked((prev) => (prev.includes(sectionTransition.completedSection) ? prev : [...prev, sectionTransition.completedSection]));
+      setCurrentIndex(result.nextIndex);
+      setSectionTransition(null);
+    }
+    setTransitionSubmitting(false);
   }
 
   async function handleResumeFromBreak() {
@@ -227,8 +278,26 @@ export default function ExamRunner({ attemptId, initialData }: Props) {
     }
   }
 
-  const eligibleBreak = onBreak ? { eligible: false, breakNumber: null } : getEligibleBreak(currentIndex, breaksTaken, blueprint);
   const progressPct = questions.length > 0 ? Math.round(((currentIndex + 1) / questions.length) * 100) : 0;
+  const isVeryLastQuestion = currentIndex === questions.length - 1;
+  const isLastQuestionOfSection = !isVeryLastQuestion && sectionNumbers[currentIndex + 1] !== currentSection;
+  const sectionQuestionIndexes = sectionNumbers.reduce<number[]>((acc, s, i) => (s === currentSection ? [...acc, i] : acc), []);
+
+  // Section-boundary gate takes priority over everything else - rendered
+  // the instant handleFinishSection sets it, with zero network wait.
+  if (sectionTransition) {
+    return (
+      <SectionCompleteScreen
+        completedSection={sectionTransition.completedSection}
+        nextSection={sectionTransition.nextSection}
+        breakEligible={sectionTransition.breakEligible}
+        breakMinutes={sectionTransition.breakNumber !== null ? Math.round((blueprint.breaks[sectionTransition.breakNumber - 1]?.durationSeconds ?? 0) / 60) : 0}
+        submitting={transitionSubmitting}
+        onStartBreak={handleConfirmStartBreak}
+        onContinue={handleConfirmContinue}
+      />
+    );
+  }
 
   if (onBreak && breakInfo) {
     return <BreakScreen breakNumber={breakInfo.breakNumber} initialRemainingSeconds={breakInfo.remainingSeconds} onResume={handleResumeFromBreak} resuming={resumingFromBreak} />;
@@ -240,46 +309,36 @@ export default function ExamRunner({ attemptId, initialData }: Props) {
         <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white px-5 py-3">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-slate-500">
-              Section {currentSection} · Question {currentIndex + 1} of {questions.length}
+              {rn.section} {currentSection} · {rn.question} {currentIndex + 1} {rn.of} {questions.length}
             </p>
             <div className="mt-1.5 h-1.5 w-48 overflow-hidden rounded-full bg-slate-100">
               <div className="h-full rounded-full bg-indigo-600" style={{ width: `${progressPct}%` }} />
             </div>
           </div>
-          {remainingSeconds !== null && (
-            <div
-              className={`rounded-lg border px-4 py-2 text-[14px] font-semibold tabular-nums ${
-                remainingSeconds < 300 ? "border-red-200 bg-red-50 text-red-700" : "border-slate-200 bg-slate-50 text-slate-900"
-              }`}
-            >
-              {formatTime(remainingSeconds)}
-            </div>
-          )}
-        </div>
-
-        {eligibleBreak.eligible && eligibleBreak.breakNumber !== null && (
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-indigo-200 bg-indigo-50 px-5 py-3">
-            <p className="text-[13px] text-indigo-800">You&apos;ve reached a scheduled break point. You may take your break now or continue.</p>
-            <button
-              onClick={() => handleStartBreak(eligibleBreak.breakNumber as number)}
-              disabled={startingBreak}
-              className="rounded-lg bg-indigo-600 px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
-            >
-              {startingBreak ? "Starting..." : "Start Break"}
-            </button>
+          <div className="flex items-center gap-3">
+            <AssessmentLangToggle />
+            {remainingSeconds !== null && (
+              <div
+                className={`rounded-lg border px-4 py-2 text-[14px] font-semibold tabular-nums ${
+                  remainingSeconds < 300 ? "border-red-200 bg-red-50 text-red-700" : "border-slate-200 bg-slate-50 text-slate-900"
+                }`}
+              >
+                {formatTime(remainingSeconds)}
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_280px]">
           <div className="rounded-xl border border-slate-200 bg-white p-6">
             {saveWarning && (
               <p className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-[12px] text-amber-800">
-                Your last answer may not have saved - check your connection.
+                {rn.saveWarning}
               </p>
             )}
 
             {!currentQuestion ? (
-              <p className="text-[14px] text-slate-500">This question is no longer available. Use the navigator to continue with another question.</p>
+              <p className="text-[14px] text-slate-500">{rn.noQuestionAvailable}</p>
             ) : (
               <>
                 <div className="flex items-start justify-between gap-4">
@@ -292,7 +351,7 @@ export default function ExamRunner({ attemptId, initialData }: Props) {
                       flags[currentQuestion.id] ? "border-amber-300 bg-amber-50 text-amber-700" : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
                     }`}
                   >
-                    {flags[currentQuestion.id] ? "⚑ Flagged for review" : "☆ Flag for review"}
+                    {flags[currentQuestion.id] ? `⚑ ${rn.flagged}` : `☆ ${rn.flagForReview}`}
                   </button>
                 </div>
 
@@ -316,25 +375,32 @@ export default function ExamRunner({ attemptId, initialData }: Props) {
             <div className="mt-8 flex items-center justify-between border-t border-slate-200 pt-6">
               <button
                 onClick={() => goToIndex(currentIndex - 1)}
-                disabled={currentIndex === 0}
+                disabled={currentIndex === sectionQuestionIndexes[0]}
                 className="rounded-lg border border-slate-200 px-5 py-2.5 text-[13px] font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-30"
               >
-                ← Previous
+                ← {rn.previous}
               </button>
-              {currentIndex === questions.length - 1 ? (
+              {isVeryLastQuestion ? (
                 <button
                   onClick={attemptSubmit}
                   disabled={submitting}
                   className="rounded-lg bg-indigo-600 px-6 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
                 >
-                  {submitting ? "Submitting..." : "Submit Exam"}
+                  {submitting ? rn.submitting : rn.submitExam}
+                </button>
+              ) : isLastQuestionOfSection ? (
+                <button
+                  onClick={handleFinishSection}
+                  className="rounded-lg bg-indigo-600 px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-indigo-700"
+                >
+                  {rn.finishSection} {currentSection} →
                 </button>
               ) : (
                 <button
                   onClick={() => goToIndex(currentIndex + 1)}
                   className="rounded-lg bg-indigo-600 px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-indigo-700"
                 >
-                  Next →
+                  {rn.next} →
                 </button>
               )}
             </div>
@@ -342,12 +408,11 @@ export default function ExamRunner({ attemptId, initialData }: Props) {
 
           <div className="space-y-4">
             <ExamNavigator
-              total={questions.length}
+              sectionNumber={currentSection}
+              sectionQuestionIndexes={sectionQuestionIndexes}
               currentIndex={currentIndex}
               answeredIndexes={answeredIndexes}
               flaggedIndexes={flaggedIndexes}
-              sectionNumbers={sectionNumbers}
-              sectionsLocked={sectionsLocked}
               onJump={goToIndex}
             />
             <button
@@ -355,7 +420,7 @@ export default function ExamRunner({ attemptId, initialData }: Props) {
               disabled={submitting}
               className="w-full rounded-lg border border-slate-200 py-2.5 text-[13px] font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
             >
-              {submitting ? "Submitting..." : "Submit Exam"}
+              {submitting ? rn.submitting : rn.submitExam}
             </button>
           </div>
         </div>
@@ -364,16 +429,14 @@ export default function ExamRunner({ attemptId, initialData }: Props) {
       {showSubmitConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-6">
           <div className="max-w-sm rounded-xl border border-slate-200 bg-white p-6">
-            <p className="text-[15px] font-semibold text-slate-900">Submit with unanswered questions?</p>
-            <p className="mt-2 text-[13px] text-slate-500">
-              You have {unansweredCount} unanswered question{unansweredCount === 1 ? "" : "s"}. Unanswered questions count as incorrect.
-            </p>
+            <p className="text-[15px] font-semibold text-slate-900">{rn.submitConfirmTitle}</p>
+            <p className="mt-2 text-[13px] text-slate-500">{tf(rn.submitConfirmBody, { count: unansweredCount })}</p>
             <div className="mt-5 flex gap-3">
               <button
                 onClick={() => setShowSubmitConfirm(false)}
                 className="flex-1 rounded-lg border border-slate-200 py-2.5 text-[13px] font-medium text-slate-700 hover:bg-slate-50"
               >
-                Keep going
+                {rn.keepGoing}
               </button>
               <button
                 onClick={() => {
@@ -382,7 +445,7 @@ export default function ExamRunner({ attemptId, initialData }: Props) {
                 }}
                 className="flex-1 rounded-lg bg-indigo-600 py-2.5 text-[13px] font-semibold text-white hover:bg-indigo-700"
               >
-                Submit anyway
+                {rn.submitAnyway}
               </button>
             </div>
           </div>

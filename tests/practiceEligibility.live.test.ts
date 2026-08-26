@@ -52,14 +52,14 @@ describe.skipIf(!hasDatabaseUrl)("Practice question eligibility (live Supabase)"
     expect(rows[0].eligible_count).toBeGreaterThan(0);
   });
 
-  it("count_eligible_practice_questions matches a manual query restricted to status = 'approved'", async () => {
+  it("count_eligible_practice_questions matches a manual query restricted to status = 'approved' and excluding image_verified_broken (Sprint 9.1 item 2)", async () => {
     const { rows: rpcRows } = await client.query(
       `SELECT count_eligible_practice_questions($1, NULL, NULL, NULL, NULL, NULL, 'en') AS eligible_count`,
       [pmpCertificationId]
     );
     const { rows: manualRows } = await client.query(
       `SELECT COUNT(*)::int AS manual_count FROM questions
-       WHERE certification_id = $1 AND status = 'approved'::question_status AND deleted_at IS NULL`,
+       WHERE certification_id = $1 AND status = 'approved'::question_status AND deleted_at IS NULL AND image_verified_broken = FALSE`,
       [pmpCertificationId]
     );
     expect(rpcRows[0].eligible_count).toBe(manualRows[0].manual_count);

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { QuizQuestion, QuizSubmitAnswer } from "@/features/courses/types/course";
+import { getQuestionImagePublicUrl } from "@/lib/supabase/imageUrls";
 
 interface Props {
   question: QuizQuestion;
@@ -43,7 +44,7 @@ export default function HotspotQuestion({ question, value, onChange }: Props) {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={imgRef}
-        src={image.imagePath}
+        src={getQuestionImagePublicUrl(image.imagePath)}
         alt={image.altEn ?? ""}
         onClick={handleClick}
         className="max-h-96 cursor-crosshair rounded-xl border border-white/[0.08]"

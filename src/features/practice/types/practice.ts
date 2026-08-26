@@ -90,33 +90,6 @@ export interface PracticeResultsSummary {
   flaggedCount: number;
 }
 
-export type ReviewFilter = "all" | "incorrect" | "unanswered" | "correct" | "flagged";
-
-export interface PracticeReviewQuestion {
-  questionId: string | null;
-  sequenceNumber: number;
-  questionTextEn: string;
-  questionTextAr: string | null;
-  interactionType: QuestionInteractionTypeValue;
-  answerType: QuestionAnswerTypeValue;
-  domain: string | null;
-  approach: string | null;
-  difficulty: string | null;
-  source: string | null;
-  options: (QuizOption & { isCorrect: boolean })[];
-  matchingLeft: QuizMatchingItem[];
-  matchingRight: QuizMatchingItem[];
-  matchingCorrectRightIdByLeft: Record<string, string>;
-  dragDropItems: (QuizDragDropItem & { correctPosition: number | null })[];
-  images: QuizImage[];
-  explanationEn: string | null;
-  explanationAr: string | null;
-  response: QuizSubmitAnswer | null;
-  isCorrect: boolean | null;
-  isFlagged: boolean;
-  timeSpentSeconds: number;
-}
-
 export interface PracticeHistoryEntry {
   id: string;
   status: PracticeSessionStatus;

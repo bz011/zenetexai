@@ -200,44 +200,59 @@ function row(overrides: Partial<InventoryQuestionRow> = {}): InventoryQuestionRo
   };
 }
 
+const EMPTY_BUDGET = { standard: 0, graphic_based: 0, drag_and_drop: 0, hotspot: 0, matching: 0 };
+const NO_PREVIOUS = new Set<string>();
+
 describe("pickQuestionsForDraw", () => {
-  it("prefers unseen questions over previously-seen ones", () => {
+  it("prefers never-seen questions over previously-seen ones", () => {
     const candidates = [row({ questionId: "seen-1" }), row({ questionId: "unseen-1" })];
-    const { picked } = pickQuestionsForDraw(candidates, 1, new Set(["seen-1"]), { standard: 0, graphic_based: 0, drag_and_drop: 0, hotspot: 0, matching: 0 });
+    const { picked } = pickQuestionsForDraw(candidates, 1, new Map([["seen-1", 3]]), EMPTY_BUDGET, NO_PREVIOUS);
     expect(picked[0].questionId).toBe("unseen-1");
   });
 
-  it("degrades gracefully to reusing seen questions when there is no unseen alternative", () => {
-    const candidates = [row({ questionId: "seen-1" }), row({ questionId: "seen-2" })];
-    const { picked } = pickQuestionsForDraw(candidates, 2, new Set(["seen-1", "seen-2"]), {
-      standard: 0,
-      graphic_based: 0,
-      drag_and_drop: 0,
-      hotspot: 0,
-      matching: 0,
-    });
+  it("among seen questions, prefers the least-seen one", () => {
+    const candidates = [row({ questionId: "seen-a" }), row({ questionId: "seen-b" }), row({ questionId: "seen-c" })];
+    const seenCounts = new Map([
+      ["seen-a", 5],
+      ["seen-b", 1],
+      ["seen-c", 3],
+    ]);
+    const { picked } = pickQuestionsForDraw(candidates, 1, seenCounts, EMPTY_BUDGET, NO_PREVIOUS);
+    expect(picked[0].questionId).toBe("seen-b");
+  });
+
+  it("deprioritizes questions from the immediately previous attempt below other seen questions", () => {
+    const candidates = [row({ questionId: "in-previous" }), row({ questionId: "seen-elsewhere" })];
+    const seenCounts = new Map([
+      ["in-previous", 1],
+      ["seen-elsewhere", 1],
+    ]);
+    const { picked } = pickQuestionsForDraw(candidates, 1, seenCounts, EMPTY_BUDGET, new Set(["in-previous"]));
+    expect(picked[0].questionId).toBe("seen-elsewhere");
+  });
+
+  it("degrades gracefully to reusing previous-attempt questions when there is no other alternative", () => {
+    const candidates = [row({ questionId: "in-previous-1" }), row({ questionId: "in-previous-2" })];
+    const seenCounts = new Map([
+      ["in-previous-1", 1],
+      ["in-previous-2", 1],
+    ]);
+    const { picked } = pickQuestionsForDraw(candidates, 2, seenCounts, EMPTY_BUDGET, new Set(["in-previous-1", "in-previous-2"]));
     expect(picked).toHaveLength(2);
   });
 
   it("prefers a question whose interaction type still has open budget", () => {
     const candidates = [row({ questionId: "std", interactionType: "standard" }), row({ questionId: "hot", interactionType: "hotspot" })];
-    const { picked, remainingBudget } = pickQuestionsForDraw(candidates, 1, new Set(), {
-      standard: 100,
-      graphic_based: 0,
-      drag_and_drop: 0,
-      hotspot: 1,
-      matching: 0,
-    });
+    const { picked, remainingBudget } = pickQuestionsForDraw(candidates, 1, new Map(), { ...EMPTY_BUDGET, standard: 100, hotspot: 1 }, NO_PREVIOUS);
     expect(picked[0].questionId).toBe("hot");
     expect(remainingBudget.hotspot).toBe(0);
   });
 
   it("is deterministic given the same injected rng", () => {
     const candidates = Array.from({ length: 5 }, (_, i) => row({ questionId: `q${i}` }));
-    const budget = { standard: 0, graphic_based: 0, drag_and_drop: 0, hotspot: 0, matching: 0 };
     const fixedRng = () => 0.42;
-    const a = pickQuestionsForDraw(candidates, 3, new Set(), budget, fixedRng);
-    const b = pickQuestionsForDraw(candidates, 3, new Set(), budget, fixedRng);
+    const a = pickQuestionsForDraw(candidates, 3, new Map(), EMPTY_BUDGET, NO_PREVIOUS, fixedRng);
+    const b = pickQuestionsForDraw(candidates, 3, new Map(), EMPTY_BUDGET, NO_PREVIOUS, fixedRng);
     expect(a.picked.map((q) => q.questionId)).toEqual(b.picked.map((q) => q.questionId));
   });
 });
@@ -258,8 +273,7 @@ describe("selectQuestionsForDraws", () => {
       { targetKey: "target-1", sourceKey: cellKey("People", "Predictive", "Moderate"), count: 2 },
       { targetKey: "target-2", sourceKey: cellKey("People", "Predictive", "Moderate"), count: 1 },
     ];
-    const budget = { standard: 0, graphic_based: 0, drag_and_drop: 0, hotspot: 0, matching: 0 };
-    const selected = selectQuestionsForDraws(rows, draws, budget, new Set());
+    const selected = selectQuestionsForDraws(rows, draws, EMPTY_BUDGET, new Map(), NO_PREVIOUS);
 
     expect(selected).toHaveLength(3);
     expect(new Set(selected.map((s) => s.questionId)).size).toBe(3);
@@ -281,8 +295,8 @@ describe("selectQuestionsForDraws", () => {
       { targetKey: "target-1", sourceKey: cellKey("People", "Predictive", "Moderate"), count: 2 },
       { targetKey: "target-2", sourceKey: cellKey("People", "Predictive", "Moderate"), count: 2 },
     ];
-    const budget = { standard: 0, graphic_based: 0, drag_and_drop: 0, hotspot: 1, matching: 0 };
-    const selected = selectQuestionsForDraws(rows, draws, budget, new Set());
+    const budget = { ...EMPTY_BUDGET, hotspot: 1 };
+    const selected = selectQuestionsForDraws(rows, draws, budget, new Map(), NO_PREVIOUS);
 
     // Only 1 hotspot question should be picked across BOTH draws combined,
     // even though each draw individually could have picked one.
@@ -294,10 +308,39 @@ describe("selectQuestionsForDraws", () => {
     // Target cell wanted Predictive/Moderate, but this draw's sourceKey
     // proves it was actually resolved from a Mixed/Easy fallback.
     const draws: CellDraw[] = [{ targetKey: cellKey("People", "Predictive", "Moderate"), sourceKey: cellKey("People", "Mixed", "Easy"), count: 1 }];
-    const budget = { standard: 0, graphic_based: 0, drag_and_drop: 0, hotspot: 0, matching: 0 };
-    const selected = selectQuestionsForDraws(rows, draws, budget, new Set());
+    const selected = selectQuestionsForDraws(rows, draws, EMPTY_BUDGET, new Map(), NO_PREVIOUS);
 
     expect(selected[0].approach).toBe("Mixed");
     expect(selected[0].difficulty).toBe("Easy");
+  });
+
+  it("keeps overlap with the immediately previous attempt at 0 when plenty of never-seen inventory exists (Sprint 9.1 item 7)", () => {
+    // 10 previous-attempt questions available in this cell, but 20 fresh
+    // never-seen ones too - a real exam-sized bank would never need to
+    // touch the previous-attempt pool at all in this situation.
+    const previousIds = Array.from({ length: 10 }, (_, i) => `prev-${i}`);
+    const rows = [
+      ...previousIds.map((id) => row({ questionId: id })),
+      ...Array.from({ length: 20 }, (_, i) => row({ questionId: `fresh-${i}` })),
+    ];
+    const seenCounts = new Map(previousIds.map((id) => [id, 1]));
+    const draws: CellDraw[] = [{ targetKey: "t1", sourceKey: cellKey("People", "Predictive", "Moderate"), count: 15 }];
+    const selected = selectQuestionsForDraws(rows, draws, EMPTY_BUDGET, seenCounts, new Set(previousIds));
+
+    const overlap = selected.filter((s) => previousIds.includes(s.questionId)).length;
+    expect(overlap).toBe(0);
+  });
+
+  it("falls back to previous-attempt questions (controlled, reported) when inventory is too thin to avoid them", () => {
+    // Only 5 candidates exist at all, all 5 are from the previous attempt -
+    // the draw needs 5, so overlap is unavoidably forced to the full 5.
+    const previousIds = ["prev-1", "prev-2", "prev-3", "prev-4", "prev-5"];
+    const rows = previousIds.map((id) => row({ questionId: id }));
+    const seenCounts = new Map(previousIds.map((id) => [id, 1]));
+    const draws: CellDraw[] = [{ targetKey: "t1", sourceKey: cellKey("People", "Predictive", "Moderate"), count: 5 }];
+    const selected = selectQuestionsForDraws(rows, draws, EMPTY_BUDGET, seenCounts, new Set(previousIds));
+
+    expect(selected).toHaveLength(5);
+    expect(selected.filter((s) => previousIds.includes(s.questionId))).toHaveLength(5);
   });
 });
