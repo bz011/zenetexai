@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 /**
- * Generic, content-agnostic image-completeness verification (Sprint 9.1).
- * NOT a one-off patch for specific question_ids - this evaluates every
- * graphic_based question the same way and persists the result:
+ * Generic, content-agnostic image-completeness verification (Sprint 9.1,
+ * scope-corrected in Sprint 9.2 to also cover hotspot - a hotspot question
+ * needs its background image exactly as much as a graphic_based one does;
+ * the original version only checked graphic_based and silently left
+ * Q000247 (hotspot) unverified). NOT a one-off patch for specific
+ * question_ids - this evaluates every image-dependent question the same
+ * way and persists the result:
  *
  *   1. Zero question_images rows (or every row has a blank image_path) ->
  *      broken. No network call needed - this alone was true for every
@@ -53,10 +57,10 @@ async function main() {
   const { data: questions } = await supabaseAdmin
     .from("questions")
     .select("question_id, image_verified_broken")
-    .eq("interaction_type", "graphic_based");
+    .in("interaction_type", ["graphic_based", "hotspot"]);
 
   const questionRows = (questions ?? []) as QuestionRow[];
-  console.log(`Checking ${questionRows.length} graphic_based question(s)...`);
+  console.log(`Checking ${questionRows.length} graphic_based/hotspot question(s)...`);
 
   if (questionRows.length === 0) {
     console.log("Nothing to verify.");
