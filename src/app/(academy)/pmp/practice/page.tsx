@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth/requireRole";
+import { hasCapability } from "@/features/commerce/services/entitlementService";
+import LockedAccess from "@/components/academy/LockedAccess";
 import PracticeConfigForm from "@/features/practice/components/PracticeConfigForm";
 
 export const metadata: Metadata = { title: "Practice Mode — ZENTEXAI" };
 export const dynamic = "force-dynamic";
 
 export default async function PracticeConfigPage() {
-  await requireUser({ loginRedirectTo: "/pmp/practice" });
+  const { supabase, user } = await requireUser({ loginRedirectTo: "/pmp/practice" });
+
+  const entitled = await hasCapability(supabase, user.id, "practice:pmp");
+  if (!entitled) {
+    return <LockedAccess variant="simulator" ctaHref="/courses/pmp-exam-simulator" />;
+  }
 
   return (
     <div className="relative min-h-screen px-6 py-24">

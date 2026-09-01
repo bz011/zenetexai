@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/requireRole";
+import { hasCapability } from "@/features/commerce/services/entitlementService";
+import LockedAccess from "@/components/academy/LockedAccess";
 import { getPracticeSession } from "@/features/practice/services/practiceSessionService";
 import PracticeRunner from "@/features/practice/components/PracticeRunner";
 
@@ -13,7 +15,12 @@ export const dynamic = "force-dynamic";
 
 export default async function PracticeSessionPage({ params }: Props) {
   const { sessionId } = await params;
-  await requireUser({ loginRedirectTo: `/pmp/practice/${sessionId}` });
+  const { supabase, user } = await requireUser({ loginRedirectTo: `/pmp/practice/${sessionId}` });
+
+  const entitled = await hasCapability(supabase, user.id, "practice:pmp");
+  if (!entitled) {
+    return <LockedAccess variant="simulator" ctaHref="/courses/pmp-exam-simulator" />;
+  }
 
   const data = await getPracticeSession(sessionId);
   if (!data) notFound();

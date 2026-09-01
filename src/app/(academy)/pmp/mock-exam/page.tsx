@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { requireUser } from "@/lib/auth/requireRole";
+import { hasCapability } from "@/features/commerce/services/entitlementService";
+import LockedAccess from "@/components/academy/LockedAccess";
 import { findActiveMockExamAttemptId } from "@/features/mock-exam/services/examAttemptService";
 import ExamStartPanel from "@/features/mock-exam/components/ExamStartPanel";
 
@@ -7,7 +9,13 @@ export const metadata: Metadata = { title: "PMP Mock Exam — ZENTEXAI" };
 export const dynamic = "force-dynamic";
 
 export default async function MockExamStartPage() {
-  await requireUser({ loginRedirectTo: "/pmp/mock-exam" });
+  const { supabase, user } = await requireUser({ loginRedirectTo: "/pmp/mock-exam" });
+
+  const entitled = await hasCapability(supabase, user.id, "mock_exam:pmp");
+  if (!entitled) {
+    return <LockedAccess variant="simulator" ctaHref="/courses/pmp-exam-simulator" />;
+  }
+
   const activeAttemptId = await findActiveMockExamAttemptId();
 
   return (

@@ -53,7 +53,19 @@ const PUBLIC_ROUTES = new Set<string>([
 // Prefixes for public routes that have dynamic sub-paths, or that must
 // remain reachable without a session by definition (the auth callback is
 // what *creates* the session; API routes authorize themselves internally).
-const PUBLIC_PREFIXES = ["/blog", "/auth", "/api"];
+//
+// "/courses" (Sprint 10): the Academy storefront and product pages must be
+// browsable without an account - see the product rule in the Sprint 10
+// spec ("browsing must not require authentication; auth only when identity
+// is actually required, e.g. purchasing or opening owned lesson content").
+// This does not weaken lesson/assessment access: those pages under
+// /courses/*/lessons/* and /courses/*/assessments/* still call requireUser()
+// themselves (see those page.tsx files) to redirect an unauthenticated
+// visitor to /login while preserving the exact destination, and then check
+// the caller's entitlement before rendering real content - this line only
+// removes the *earlier, blunter* middleware-level redirect that used to
+// fire before a visitor could even see the catalog or a product page.
+const PUBLIC_PREFIXES = ["/blog", "/auth", "/api", "/courses"];
 
 function isPublicRoute(pathname: string): boolean {
   if (PUBLIC_ROUTES.has(pathname)) return true;

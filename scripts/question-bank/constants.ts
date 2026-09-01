@@ -5,13 +5,28 @@
  * value is intentional.
  */
 
+/**
+ * Always required regardless of workbook content. "matching_pairs" is
+ * deliberately NOT here - it's conditionally required (see
+ * workbookRules.ts) only when the workbook actually contains a
+ * `matching`-type question. A workbook with zero matching questions has no
+ * reason to carry an otherwise-empty sheet, and requiring it unconditionally
+ * previously aborted the ENTIRE import (every question, not just matching
+ * ones) the moment a workbook omitted it - confirmed against the canonical
+ * "PMP_Question_Bank copy.xlsx", which has zero matching questions and no
+ * matching_pairs sheet at all.
+ */
 export const REQUIRED_SHEETS = [
   "questions",
   "question_options",
-  "matching_pairs",
   "hotspots",
   "drag_and_drop",
   "question_images",
+] as const;
+
+/** Required only if at least one question has this interaction_type. */
+export const CONDITIONALLY_REQUIRED_SHEETS = [
+  { sheet: "matching_pairs", requiredForInteractionType: "matching" },
 ] as const;
 
 export const VALID_DOMAINS = ["People", "Process", "Business Environment"];

@@ -211,6 +211,35 @@ const MIGRATIONS: MigrationSpec[] = [
       ) AS applied
     `,
   },
+  {
+    id: "019_academy_commerce",
+    file: "019_academy_commerce.sql",
+    signatureQuery: `
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'entitlements'
+      ) AND EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'products'
+      ) AND EXISTS (
+        SELECT 1 FROM information_schema.routines
+        WHERE routine_schema = 'public' AND routine_name = 'grant_free_enrollment'
+      ) AS applied
+    `,
+  },
+  {
+    id: "020_simulator_entitlement_gate",
+    file: "020_simulator_entitlement_gate.sql",
+    signatureQuery: `
+      SELECT EXISTS (
+        SELECT 1 FROM information_schema.routines
+        WHERE routine_schema = 'public' AND routine_name = 'create_practice_session_gated'
+      ) AND EXISTS (
+        SELECT 1 FROM information_schema.routines
+        WHERE routine_schema = 'public' AND routine_name = 'create_mock_exam_attempt_gated'
+      ) AND NOT has_function_privilege('authenticated', 'create_practice_session(uuid, question_domain, question_approach, question_difficulty, question_interaction_type, question_answer_type, text, int, boolean, int)', 'EXECUTE') AS applied
+    `,
+  },
 ];
 
 async function main() {
@@ -298,7 +327,7 @@ async function main() {
       { label: "increment_study_time() RPC", query: "SELECT EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='increment_study_time') AS ok" },
       { label: "practice_sessions / practice_session_questions tables", query: "SELECT to_regclass('public.practice_sessions') IS NOT NULL AND to_regclass('public.practice_session_questions') IS NOT NULL AS ok" },
       { label: "create_practice_session() / select_practice_questions() / count_eligible_practice_questions() RPCs", query: "SELECT EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='create_practice_session') AND EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='select_practice_questions') AND EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='count_eligible_practice_questions') AS ok" },
-      { label: "practice RPCs are executable by authenticated (deliberately, per migration 012)", query: "SELECT has_function_privilege('authenticated', 'create_practice_session(uuid, question_domain, question_approach, question_difficulty, question_interaction_type, question_answer_type, text, int, boolean, int)', 'EXECUTE') AS ok" },
+      { label: "select_practice_questions() / count_eligible_practice_questions() remain executable by authenticated (per migration 012)", query: "SELECT has_function_privilege('authenticated', 'select_practice_questions(uuid, question_domain, question_approach, question_difficulty, question_interaction_type, question_answer_type, text, int)', 'EXECUTE') AND has_function_privilege('authenticated', 'count_eligible_practice_questions(uuid, question_domain, question_approach, question_difficulty, question_interaction_type, question_answer_type, text)', 'EXECUTE') AS ok" },
       { label: "enrollments table", query: "SELECT to_regclass('public.enrollments') IS NOT NULL AS ok" },
       { label: "question_review_log / question_versions tables", query: "SELECT to_regclass('public.question_review_log') IS NOT NULL AND to_regclass('public.question_versions') IS NOT NULL AS ok" },
       { label: "questions Factory metadata columns (quality_score, ai_confidence, generated_by, version, explanation_structured)", query: "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='quality_score') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='ai_confidence') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='generated_by') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='version') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='explanation_structured') AS ok" },
@@ -308,7 +337,9 @@ async function main() {
       { label: "create_mock_exam_attempt() RPC", query: "SELECT EXISTS (SELECT 1 FROM information_schema.routines WHERE routine_schema='public' AND routine_name='create_mock_exam_attempt') AS ok" },
       { label: "questions.image_verified_broken column", query: "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='questions' AND column_name='image_verified_broken') AS ok" },
       { label: "mock_exam_attempts retake columns (retake_of_attempt_id, root_attempt_id)", query: "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='mock_exam_attempts' AND column_name='retake_of_attempt_id') AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='mock_exam_attempts' AND column_name='root_attempt_id') AS ok" },
-      { label: "create_mock_exam_attempt() accepts a retake source (7-arg overload only, no stale 6-arg duplicate)", query: "SELECT has_function_privilege('authenticated', 'create_mock_exam_attempt(uuid, text, jsonb, text[], int[], int, uuid)', 'EXECUTE') AND NOT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE n.nspname = 'public' AND p.proname = 'create_mock_exam_attempt' AND pg_get_function_identity_arguments(p.oid) = 'uuid, text, jsonb, text[], integer[], integer') AS ok" },
+      { label: "create_mock_exam_attempt() has a 7-arg overload only (no stale 6-arg duplicate)", query: "SELECT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE n.nspname = 'public' AND p.proname = 'create_mock_exam_attempt' AND p.pronargs = 7) AND NOT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE n.nspname = 'public' AND p.proname = 'create_mock_exam_attempt' AND p.pronargs = 6) AS ok" },
+      { label: "create_practice_session()/create_mock_exam_attempt() are NO LONGER directly executable by authenticated (migration 020 - Simulator is now entitlement-gated via the *_gated wrappers)", query: "SELECT NOT has_function_privilege('authenticated', 'create_practice_session(uuid, question_domain, question_approach, question_difficulty, question_interaction_type, question_answer_type, text, int, boolean, int)', 'EXECUTE') AND NOT has_function_privilege('authenticated', 'create_mock_exam_attempt(uuid, text, jsonb, text[], int[], int, uuid)', 'EXECUTE') AS ok" },
+      { label: "create_practice_session_gated() / create_mock_exam_attempt_gated() are executable by authenticated (migration 020)", query: "SELECT has_function_privilege('authenticated', 'create_practice_session_gated(uuid, question_domain, question_approach, question_difficulty, question_interaction_type, question_answer_type, text, int, boolean, int)', 'EXECUTE') AND has_function_privilege('authenticated', 'create_mock_exam_attempt_gated(uuid, text, jsonb, text[], int[], int, uuid)', 'EXECUTE') AS ok" },
     ];
 
     let allOk = true;

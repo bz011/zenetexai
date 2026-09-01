@@ -162,7 +162,9 @@ export async function createMockExamAttempt(): Promise<CreateMockExamAttemptResu
     previousAttemptOverlapTarget: PREVIOUS_ATTEMPT_OVERLAP_TARGET,
   };
 
-  const { data, error } = await supabase.rpc("create_mock_exam_attempt", {
+  // Gated wrapper (migration 020) - verifies the 'mock_exam:pmp' entitlement
+  // server-side before delegating to create_mock_exam_attempt() unchanged.
+  const { data, error } = await supabase.rpc("create_mock_exam_attempt_gated", {
     p_certification_id: certificationId,
     p_blueprint_version: blueprint.version,
     p_blueprint_snapshot: blueprintSnapshot,
@@ -177,6 +179,9 @@ export async function createMockExamAttempt(): Promise<CreateMockExamAttemptResu
 
   const result = data as { success: boolean; attempt_id?: string; error?: string };
   if (!result?.success) {
+    if (result?.error === "capability_required") {
+      return { success: false, error: "PMP Exam Simulator access is required to start the Mock Exam." };
+    }
     return { success: false, error: result?.error ?? "Failed to create Mock Exam attempt" };
   }
 
@@ -234,7 +239,7 @@ export async function retakeMockExamAttempt(originalAttemptId: string): Promise<
   const questionIds = rows.map((r) => r.question_id as string);
   const sectionNumbers = rows.map((r) => r.section_number);
 
-  const { data, error } = await supabase.rpc("create_mock_exam_attempt", {
+  const { data, error } = await supabase.rpc("create_mock_exam_attempt_gated", {
     p_certification_id: originalRow.certification_id,
     p_blueprint_version: originalRow.blueprint_version,
     p_blueprint_snapshot: originalRow.blueprint_snapshot,
@@ -249,6 +254,9 @@ export async function retakeMockExamAttempt(originalAttemptId: string): Promise<
   }
   const result = data as { success: boolean; attempt_id?: string; error?: string };
   if (!result?.success) {
+    if (result?.error === "capability_required") {
+      return { success: false, error: "PMP Exam Simulator access is required to retake the Mock Exam." };
+    }
     return { success: false, error: result?.error ?? "Failed to create retake attempt" };
   }
 

@@ -202,6 +202,29 @@ export interface Translations {
       your_answer: string; no_answer: string; hotspot_answered: string;
     };
   };
+  commerce: {
+    storefront: { eyebrow: string; heading: string; sub: string; empty: string };
+    card: {
+      view_details: string; enroll_free: string; enrolling: string; continue_learning: string;
+      owned_badge: string; opening_soon: string; access_duration: string; free_badge: string;
+    };
+    product: {
+      overview_heading: string; curriculum_heading: string; curriculum_empty: string;
+      included_heading: string; pricing_heading: string; regular_price_label: string;
+      promo_ends_label: string; capability_course: string; capability_practice: string;
+      capability_mock_exam: string; not_found: string;
+      login_prompt: string; login_cta: string; signup_cta: string;
+    };
+    locked: {
+      course_title: string; course_body: string; course_cta: string;
+      simulator_title: string; simulator_body: string; simulator_cta: string;
+    };
+    errors: { generic: string };
+    dashboard: {
+      owned_heading: string; empty: string; browse_courses: string; expires_label: string;
+      open_course: string; open_practice: string; open_mock_exam: string;
+    };
+  };
 }
 
 // ─── English ──────────────────────────────────────────────────────────────────
@@ -630,6 +653,60 @@ const en: Translations = {
       your_answer: "Your answer",
       no_answer: "No answer submitted",
       hotspot_answered: "You clicked on the image",
+    },
+  },
+
+  // ── Academy Commerce (Sprint 10) ────────────────────────────────────────────
+  commerce: {
+    storefront: {
+      eyebrow: "Academy",
+      heading: "Courses & Programs",
+      sub: "Browse the PMP Mastery Program, PMP Exam Simulator, and Complete Package — no account required to look around.",
+      empty: "No programs are available yet. Check back soon.",
+    },
+    card: {
+      view_details: "View Details",
+      enroll_free: "Enroll for Free",
+      enrolling: "Enrolling...",
+      continue_learning: "Continue Learning",
+      owned_badge: "Owned",
+      opening_soon: "Online enrollment opening soon",
+      access_duration: "{n} months access",
+      free_badge: "FREE",
+    },
+    product: {
+      overview_heading: "Overview",
+      curriculum_heading: "Curriculum",
+      curriculum_empty: "The curriculum is being finalized and will be published here soon.",
+      included_heading: "What's Included",
+      pricing_heading: "Pricing",
+      regular_price_label: "Regular price",
+      promo_ends_label: "Offer ends",
+      capability_course: "PMP Mastery Program course access",
+      capability_practice: "PMP Practice Mode",
+      capability_mock_exam: "PMP Mock Exam",
+      not_found: "This program isn't available.",
+      login_prompt: "Log in or create an account to continue.",
+      login_cta: "Log In",
+      signup_cta: "Sign Up",
+    },
+    locked: {
+      course_title: "Course Access Required",
+      course_body: "This lesson is part of the PMP Mastery Program. Enroll to unlock the full course.",
+      course_cta: "View PMP Mastery Program",
+      simulator_title: "Simulator Access Required",
+      simulator_body: "PMP Practice and Mock Exam are part of the PMP Exam Simulator. Enroll to unlock full access.",
+      simulator_cta: "View PMP Exam Simulator",
+    },
+    errors: { generic: "Something went wrong. Please try again." },
+    dashboard: {
+      owned_heading: "My Learning",
+      empty: "You don't own any programs yet.",
+      browse_courses: "Browse Courses",
+      expires_label: "Access until",
+      open_course: "Continue Course",
+      open_practice: "Start Practicing",
+      open_mock_exam: "Start Mock Exam",
     },
   },
 };
@@ -1061,6 +1138,60 @@ const ar: Translations = {
       your_answer: "إجابتك",
       no_answer: "لم يتم إرسال إجابة",
       hotspot_answered: "لقد نقرت على الصورة",
+    },
+  },
+
+  // ── تجارة الأكاديمية (Sprint 10) ────────────────────────────────────────────
+  commerce: {
+    storefront: {
+      eyebrow: "الأكاديمية",
+      heading: "الدورات والبرامج",
+      sub: "تصفح برنامج احتراف PMP، ومحاكي اختبار PMP، والباقة الكاملة — دون الحاجة لإنشاء حساب للتصفح.",
+      empty: "لا توجد برامج متاحة حالياً. تحقق مرة أخرى قريباً.",
+    },
+    card: {
+      view_details: "عرض التفاصيل",
+      enroll_free: "التسجيل مجاناً",
+      enrolling: "جارٍ التسجيل...",
+      continue_learning: "متابعة التعلم",
+      owned_badge: "مملوك",
+      opening_soon: "سيتاح التسجيل الإلكتروني قريبًا",
+      access_duration: "وصول لمدة {n} شهراً",
+      free_badge: "مجاناً",
+    },
+    product: {
+      overview_heading: "نظرة عامة",
+      curriculum_heading: "المنهج",
+      curriculum_empty: "يجري حالياً إعداد المنهج الدراسي وسيتم نشره هنا قريباً.",
+      included_heading: "ما الذي يشمله",
+      pricing_heading: "السعر",
+      regular_price_label: "السعر العادي",
+      promo_ends_label: "ينتهي العرض في",
+      capability_course: "الوصول إلى دورة برنامج احتراف PMP",
+      capability_practice: "وضع تدريب PMP",
+      capability_mock_exam: "اختبار PMP التجريبي",
+      not_found: "هذا البرنامج غير متاح.",
+      login_prompt: "سجّل الدخول أو أنشئ حساباً للمتابعة.",
+      login_cta: "تسجيل الدخول",
+      signup_cta: "إنشاء حساب",
+    },
+    locked: {
+      course_title: "الوصول إلى الدورة مطلوب",
+      course_body: "هذا الدرس جزء من برنامج احتراف PMP. سجّل للحصول على وصول كامل للدورة.",
+      course_cta: "عرض برنامج احتراف PMP",
+      simulator_title: "الوصول إلى المحاكي مطلوب",
+      simulator_body: "وضع التدريب والاختبار التجريبي لـ PMP جزء من محاكي اختبار PMP. سجّل للحصول على وصول كامل.",
+      simulator_cta: "عرض محاكي اختبار PMP",
+    },
+    errors: { generic: "حدث خطأ ما. حاول مرة أخرى." },
+    dashboard: {
+      owned_heading: "تعلّمي",
+      empty: "لا تملك أي برامج بعد.",
+      browse_courses: "تصفح الدورات",
+      expires_label: "الوصول حتى",
+      open_course: "متابعة الدورة",
+      open_practice: "ابدأ التدريب",
+      open_mock_exam: "ابدأ الاختبار التجريبي",
     },
   },
 };

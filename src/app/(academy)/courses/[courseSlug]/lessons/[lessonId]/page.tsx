@@ -11,6 +11,8 @@ import {
 import { getQuizQuestions } from "@/features/courses/services/quizService";
 import { getLessonNote } from "@/features/courses/services/noteService";
 import { recordLessonView } from "@/features/courses/services/progressService";
+import { hasCapability } from "@/features/commerce/services/entitlementService";
+import LockedAccess from "@/components/academy/LockedAccess";
 import LessonDetailContent from "./LessonDetailContent";
 
 interface Props {
@@ -28,6 +30,16 @@ export default async function LessonDetailPage({ params }: Props) {
 
   const lesson = await getLessonById(supabase, lessonId);
   if (!lesson) notFound();
+
+  // Entitlement gate: the caller is authenticated, but that alone no longer
+  // implies course access (Sprint 10) - a valid, unexpired "course:<slug>"
+  // entitlement is required. Only the lesson's title reaches the locked
+  // branch below; content_en/content_ar/video/checkpoint are never fetched
+  // further and never reach the client.
+  const entitled = await hasCapability(supabase, user.id, `course:${courseSlug}`);
+  if (!entitled) {
+    return <LockedAccess variant="course" ctaHref="/courses/pmp-mastery-program" />;
+  }
 
   const [checkpoint, completed, navLessons, resources, note] = await Promise.all([
     getLessonCheckpoint(supabase, lessonId),

@@ -103,7 +103,7 @@ export default function HomeContent({ latestPosts }: Props) {
               <p className="mt-5 text-[15px] leading-relaxed text-slate-400">{h.featured_p1}</p>
               <p className="mt-3.5 text-[15px] leading-relaxed text-slate-400">{h.featured_p2}</p>
               <div className="mt-9 flex gap-3">
-                <Link href="/enroll" className="btn-primary">{h.featured_btn1}</Link>
+                <Link href="/courses" className="btn-primary">{h.featured_btn1}</Link>
                 <Link href="/academy" className="btn-secondary">{h.featured_btn2}</Link>
               </div>
             </div>

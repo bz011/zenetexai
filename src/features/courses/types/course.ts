@@ -1,11 +1,6 @@
 export type VideoProvider = "youtube" | "vimeo" | "none";
 export type LearningAssessmentType = "checkpoint" | "module_assessment";
 
-export interface EnrollmentStatus {
-  status: "pending" | "active" | "cancelled";
-  enrolled_at: string;
-}
-
 // ============================================================================
 // AI Course Builder (Sprint 7.5) — admin supplies titles only; the AI fills
 // in description/objectives/duration/slug/ordering. Purely a drafting aid:

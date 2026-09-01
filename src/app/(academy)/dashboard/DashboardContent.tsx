@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLang } from "@/lib/LanguageContext";
 import { logout as logoutRequest } from "@/features/auth/services/authService";
-import type { Course, ContinueLearningInfo, DashboardStats } from "@/features/courses/types/course";
+import type { ContinueLearningInfo, DashboardStats } from "@/features/courses/types/course";
+import type { OwnedLearningResource } from "@/features/commerce/services/entitlementService";
 
 interface DashboardProfile {
   firstName: string | null;
@@ -16,7 +17,7 @@ interface DashboardProfile {
 
 interface Props {
   profile: DashboardProfile;
-  courses: Course[];
+  owned: OwnedLearningResource[];
   resume: ContinueLearningInfo | null;
   stats: DashboardStats;
 }
@@ -30,9 +31,10 @@ function StatCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-export default function DashboardContent({ profile, courses, resume, stats }: Props) {
+export default function DashboardContent({ profile, owned, resume, stats }: Props) {
   const { t, lang } = useLang();
   const d = t.auth.dashboard;
+  const c = t.commerce.dashboard;
   const router = useRouter();
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -77,21 +79,6 @@ export default function DashboardContent({ profile, courses, resume, stats }: Pr
           </div>
         )}
 
-        <div className="card mt-6 p-6">
-          <p className="label">PMP Practice Mode</p>
-          <p className="mt-2 text-[13px] leading-relaxed text-slate-400">
-            Practice with questions from the full PMP question bank — filter by domain, approach, difficulty, and question type, timed or untimed.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <Link href="/pmp/practice" className="btn-primary px-5 py-2.5 text-[13px]">
-              Start Practicing
-            </Link>
-            <Link href="/pmp/practice/history" className="btn-ghost px-5 py-2.5 text-[13px]">
-              Practice History
-            </Link>
-          </div>
-        </div>
-
         <div className="mt-8">
           <p className="label">{d.study_statistics}</p>
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -110,18 +97,49 @@ export default function DashboardContent({ profile, courses, resume, stats }: Pr
         </div>
 
         <div className="mt-8">
-          <p className="label">{d.my_courses}</p>
-          {courses.length === 0 ? (
-            <p className="mt-3 text-[13px] text-slate-500">{d.no_courses}</p>
+          <div className="flex items-center justify-between">
+            <p className="label">{c.owned_heading}</p>
+            <Link href="/courses" className="text-[12px] text-indigo-400 hover:text-indigo-300">
+              {c.browse_courses}
+            </Link>
+          </div>
+          {owned.length === 0 ? (
+            <p className="mt-3 text-[13px] text-slate-500">{c.empty}</p>
           ) : (
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              {courses.map((course) => (
-                <Link key={course.id} href={`/courses/${course.slug}`} className="card p-5 transition-colors hover:bg-white/[0.04]">
-                  <p className="text-[14px] font-medium text-white">
-                    {lang === "ar" && course.title_ar ? course.title_ar : course.title_en}
-                  </p>
-                </Link>
-              ))}
+              {owned.map((resource) => {
+                const title = lang === "ar" && resource.titleAr ? resource.titleAr : resource.titleEn;
+                const hasCourse = resource.capabilities.includes("course:pmp");
+                const hasPractice = resource.capabilities.includes("practice:pmp");
+                const hasMockExam = resource.capabilities.includes("mock_exam:pmp");
+                return (
+                  <div key={resource.productId} className="card p-5">
+                    <p className="text-[14px] font-medium text-white">{title}</p>
+                    {resource.expiresAt && (
+                      <p className="mt-1 text-[12px] text-slate-500">
+                        {c.expires_label}: {new Date(resource.expiresAt).toLocaleDateString(lang === "ar" ? "ar" : "en-US")}
+                      </p>
+                    )}
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {hasCourse && (
+                        <Link href={`/courses/${resource.productSlug}`} className="btn-primary px-4 py-2 text-[12px]">
+                          {c.open_course}
+                        </Link>
+                      )}
+                      {hasPractice && (
+                        <Link href="/pmp/practice" className="btn-ghost px-4 py-2 text-[12px]">
+                          {c.open_practice}
+                        </Link>
+                      )}
+                      {hasMockExam && (
+                        <Link href="/pmp/mock-exam" className="btn-ghost px-4 py-2 text-[12px]">
+                          {c.open_mock_exam}
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

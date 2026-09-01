@@ -226,3 +226,63 @@ export async function getAssessmentById(
 // quizService.getQuizQuestions(), which reads BOTH legacy
 // learning_assessment_questions and bank-linked questions (migration 007)
 // through one unified shape. See quizService.ts.
+
+export interface PublicCurriculumLesson {
+  id: string;
+  titleEn: string;
+  titleAr: string | null;
+}
+
+export interface PublicCurriculumModule {
+  id: string;
+  titleEn: string;
+  titleAr: string | null;
+  lessons: PublicCurriculumLesson[];
+}
+
+/**
+ * Titles-only curriculum outline for a PUBLIC product page (Sprint 10) -
+ * never content/video, and never a module that has zero published lessons.
+ * Returns [] whenever there is nothing genuinely publishable yet, so a
+ * placeholder-only course (e.g. a module named as a draft, with no lessons
+ * authored) never surfaces on the public storefront - the caller renders
+ * an honest "curriculum coming soon" state instead.
+ */
+export async function getPublicCurriculumOutline(supabase: SupabaseClient, courseSlug: string): Promise<PublicCurriculumModule[]> {
+  const { data: course } = await supabase.from("courses").select("id").eq("slug", courseSlug).eq("is_published", true).maybeSingle();
+  if (!course) return [];
+
+  const { data: modules } = await supabase
+    .from("modules")
+    .select("id, title_en, title_ar, order_index")
+    .eq("course_id", (course as { id: string }).id)
+    .eq("is_published", true)
+    .order("order_index", { ascending: true });
+
+  const moduleList = (modules ?? []) as { id: string; title_en: string; title_ar: string | null }[];
+  if (moduleList.length === 0) return [];
+
+  const { data: lessons } = await supabase
+    .from("lessons")
+    .select("id, module_id, title_en, title_ar, order_index")
+    .in(
+      "module_id",
+      moduleList.map((m) => m.id)
+    )
+    .eq("is_published", true)
+    .order("order_index", { ascending: true });
+
+  const lessonList = (lessons ?? []) as { id: string; module_id: string; title_en: string; title_ar: string | null }[];
+  if (lessonList.length === 0) return [];
+
+  return moduleList
+    .map((m) => ({
+      id: m.id,
+      titleEn: m.title_en,
+      titleAr: m.title_ar,
+      lessons: lessonList
+        .filter((l) => l.module_id === m.id)
+        .map((l) => ({ id: l.id, titleEn: l.title_en, titleAr: l.title_ar })),
+    }))
+    .filter((m) => m.lessons.length > 0);
+}

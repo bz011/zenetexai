@@ -241,7 +241,7 @@ describe("retakeMockExamAttempt security and fidelity", () => {
 
     const result = await retakeMockExamAttempt("original-1");
     expect(result.success).toBe(true);
-    expect(supabase.rpcCalls[0].name).toBe("create_mock_exam_attempt");
+    expect(supabase.rpcCalls[0].name).toBe("create_mock_exam_attempt_gated");
     expect(supabase.rpcCalls[0].args.p_question_ids).toEqual(["Q1", "Q2", "Q3"]);
     expect(supabase.rpcCalls[0].args.p_section_numbers).toEqual([1, 1, 1]);
     expect(supabase.rpcCalls[0].args.p_retake_of_attempt_id).toBe("original-1");

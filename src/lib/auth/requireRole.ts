@@ -27,6 +27,20 @@ interface GuardOptions {
   onDeniedRedirectTo?: string;
 }
 
+/**
+ * Non-redirecting equivalent of requireUser() for genuinely public pages
+ * (Sprint 10 storefront/product pages) that render differently for a
+ * logged-out visitor vs. a logged-in one, but must never force a login.
+ */
+export async function getOptionalUser() {
+  const supabase = createSupabaseServer();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return { supabase, user };
+}
+
 /** Requires a logged-in user. Does not fetch or check the profile/role. */
 export async function requireUser(options: GuardOptions = {}) {
   const supabase = createSupabaseServer();

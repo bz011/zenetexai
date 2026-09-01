@@ -40,7 +40,9 @@ export async function createPracticeSession(config: PracticeConfig): Promise<Cre
 
   const durationSeconds = resolveDurationSeconds(config);
 
-  const { data, error } = await supabase.rpc("create_practice_session", {
+  // Gated wrapper (migration 020) - verifies the 'practice:pmp' entitlement
+  // server-side before delegating to create_practice_session() unchanged.
+  const { data, error } = await supabase.rpc("create_practice_session_gated", {
     p_certification_id: certificationId,
     p_domain: config.domain,
     p_approach: config.approach,
@@ -64,7 +66,9 @@ export async function createPracticeSession(config: PracticeConfig): Promise<Cre
       error:
         result?.error === "not_enough_eligible_questions"
           ? `Only ${result.available ?? 0} question(s) match these filters.`
-          : result?.error ?? "Failed to create practice session",
+          : result?.error === "capability_required"
+            ? "PMP Exam Simulator access is required to start Practice Mode."
+            : result?.error ?? "Failed to create practice session",
     };
   }
 

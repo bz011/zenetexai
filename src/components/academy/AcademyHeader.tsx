@@ -74,7 +74,7 @@ export default function AcademyHeader() {
               <Link href="/login" className="px-3.5 py-2 text-[13px] font-medium text-indigo-600 transition-colors hover:text-indigo-700">
                 {t.nav.login}
               </Link>
-              <Link href="/enroll" className="rounded-lg bg-indigo-600 px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-indigo-700">
+              <Link href="/courses" className="rounded-lg bg-indigo-600 px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-indigo-700">
                 {t.academyNav.enroll}
               </Link>
             </div>

@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useLang } from "@/lib/LanguageContext";
 
 const PROGRAM_HREF: Record<string, string> = {
-  "pmp-mastery": "/enroll",
-  "pmp-simulator": "/pmp/practice",
+  "pmp-mastery": "/courses/pmp-mastery-program",
+  "pmp-simulator": "/courses/pmp-exam-simulator",
   "future-programs": "/contact",
 };
 
@@ -24,7 +24,7 @@ export default function AcademyContent() {
           <h1 className="mt-3 text-4xl font-bold text-white md:text-5xl lg:text-6xl">{ac.hero_h1}</h1>
           <p className="mx-auto mt-5 max-w-lg text-[16px] leading-relaxed text-slate-400">{ac.hero_sub}</p>
           <div className="mt-8 flex justify-center gap-3">
-            <Link href="/enroll" className="btn-primary">{ac.hero_btn1}</Link>
+            <Link href="/courses" className="btn-primary">{ac.hero_btn1}</Link>
             <Link href="#programs" className="btn-secondary">{ac.hero_btn2}</Link>
           </div>
         </div>
