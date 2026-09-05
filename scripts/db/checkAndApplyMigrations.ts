@@ -240,6 +240,17 @@ const MIGRATIONS: MigrationSpec[] = [
       ) AND NOT has_function_privilege('authenticated', 'create_practice_session(uuid, question_domain, question_approach, question_difficulty, question_interaction_type, question_answer_type, text, int, boolean, int)', 'EXECUTE') AS applied
     `,
   },
+  {
+    id: "021_bunny_video_provider",
+    file: "021_bunny_video_provider.sql",
+    signatureQuery: `
+      SELECT EXISTS (
+        SELECT 1 FROM pg_enum e
+        JOIN pg_type t ON t.oid = e.enumtypid
+        WHERE t.typname = 'video_provider' AND e.enumlabel = 'bunny'
+      ) AS applied
+    `,
+  },
 ];
 
 async function main() {

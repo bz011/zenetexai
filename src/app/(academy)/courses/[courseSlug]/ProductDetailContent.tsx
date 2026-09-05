@@ -110,6 +110,9 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
               {price ? (
                 isFreeNow ? (
                   <div className="mt-2">
+                    <span className="mb-2 inline-block rounded-full bg-amber-500/[0.15] px-2.5 py-0.5 text-[11px] font-semibold text-amber-400">
+                      {c.launch_offer_badge}
+                    </span>
                     {price.regularAmountMinorUnits !== null && (
                       <p className="text-[13px] text-slate-500 line-through">
                         {p.regular_price_label}: {formatMoney(price.regularAmountMinorUnits, price.currency)}

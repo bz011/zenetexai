@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { VideoProvider } from "@/features/courses/types/course";
+import { resolveBunnyEmbedUrl } from "@/features/courses/utils/bunnyVideo";
 
 interface Props {
   provider: VideoProvider;
@@ -28,6 +29,20 @@ function withJsApiEnabled(provider: VideoProvider, url: string): string {
   }
 }
 
+/** Resolves what actually goes in the iframe `src` for the given provider.
+ * Bunny needs its own resolution step (bare GUID + library ID -> full
+ * embed URL); youtube/vimeo just get their jsapi query param appended, as
+ * before. Returns null when a provider needs config that isn't present
+ * (e.g. a bare Bunny GUID with no library ID configured) - the caller
+ * treats that exactly like "no video" rather than rendering a broken
+ * iframe pointed at an incomplete URL. */
+function resolveEmbedSrc(provider: VideoProvider, url: string): string | null {
+  if (provider === "bunny") {
+    return resolveBunnyEmbedUrl(url, process.env.NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID);
+  }
+  return withJsApiEnabled(provider, url);
+}
+
 /**
  * Detects real play state via each provider's postMessage API (works
  * cross-origin, unlike DOM events which never bubble out of an iframe) and
@@ -36,13 +51,26 @@ function withJsApiEnabled(provider: VideoProvider, url: string): string {
  * than throwing - passive video time would then only count via whatever
  * mouse/keyboard activity the student also happens to generate, matching
  * pre-existing behavior, not a regression.
+ *
+ * Bunny is intentionally NOT wired into the youtube/vimeo postMessage
+ * parsing above - its player's postMessage event shape hasn't been
+ * verified against a real embed yet, and guessing it wrong would silently
+ * under-count study time with no visible error. Bunny gets a coarser but
+ * honest proxy instead: one ping when the iframe finishes loading, then a
+ * ping every PLAYING_PING_MS for as long as the lesson page stays mounted
+ * (i.e. the tab is open on this lesson) - this can overcount slightly
+ * compared to true play/pause tracking, but never silently drops to zero.
+ * Swap in real play/pause detection once Bunny's actual embed postMessage
+ * events are confirmed.
  */
 export default function VideoEmbed({ provider, url, placeholderLabel, onActivity }: Props) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const pingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const embedSrc = provider !== "none" && url ? resolveEmbedSrc(provider, url) : null;
+
   useEffect(() => {
-    if (provider === "none" || !url || !onActivity) return;
+    if (!embedSrc || !onActivity) return;
 
     function startPinging() {
       if (pingIntervalRef.current) return;
@@ -54,6 +82,15 @@ export default function VideoEmbed({ provider, url, placeholderLabel, onActivity
         clearInterval(pingIntervalRef.current);
         pingIntervalRef.current = null;
       }
+    }
+
+    if (provider === "bunny") {
+      const iframe = iframeRef.current;
+      iframe?.addEventListener("load", startPinging);
+      return () => {
+        iframe?.removeEventListener("load", startPinging);
+        stopPinging();
+      };
     }
 
     function handleMessage(event: MessageEvent) {
@@ -98,9 +135,9 @@ export default function VideoEmbed({ provider, url, placeholderLabel, onActivity
       window.removeEventListener("message", handleMessage);
       stopPinging();
     };
-  }, [provider, url, onActivity]);
+  }, [provider, embedSrc, onActivity]);
 
-  if (provider === "none" || !url) {
+  if (!embedSrc) {
     return (
       <div className="flex aspect-video w-full items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.03]">
         <p className="text-[13px] text-slate-500">{placeholderLabel}</p>
@@ -112,7 +149,7 @@ export default function VideoEmbed({ provider, url, placeholderLabel, onActivity
     <div className="aspect-video w-full overflow-hidden rounded-xl border border-white/[0.06] bg-black">
       <iframe
         ref={iframeRef}
-        src={withJsApiEnabled(provider, url)}
+        src={embedSrc}
         title="Lesson video"
         className="h-full w-full"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

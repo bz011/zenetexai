@@ -14,6 +14,7 @@ export const promoPriceSchema = z
     amount_minor_units: z.number().int().min(0, "must be 0 or more"),
     valid_from: z.string().min(1, "required"),
     valid_until: z.string().min(1, "required"),
+    access_duration_days: z.number().int().min(1).optional(),
     is_active: z.boolean(),
   })
   .refine((v) => new Date(v.valid_until).getTime() > new Date(v.valid_from).getTime(), {

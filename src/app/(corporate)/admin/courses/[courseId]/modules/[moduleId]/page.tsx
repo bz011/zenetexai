@@ -108,11 +108,16 @@ export default async function AdminModuleEditPage({ params }: Props) {
               <option value="none">No video</option>
               <option value="youtube">YouTube</option>
               <option value="vimeo">Vimeo</option>
+              <option value="bunny">Bunny Stream</option>
             </select>
-            <input name="video_url" placeholder="Video embed URL" className={inputCls} />
+            <input name="video_url" placeholder="Video embed URL (or Bunny video GUID)" className={inputCls} />
             <input name="duration_minutes" type="number" placeholder="Duration (min)" className={inputCls} />
             <input name="order_index" type="number" defaultValue={0} className={inputCls} />
           </div>
+          <p className="text-[11px] text-slate-500">
+            Bunny Stream: paste either the full embed URL from Bunny&apos;s dashboard, or just the video GUID
+            (requires <code>NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID</code> to be configured).
+          </p>
           <textarea name="content_en" placeholder="Content (English, markdown)" rows={3} className={inputCls} />
           <label className="flex items-center gap-2 text-[13px] text-slate-400">
             <input type="checkbox" name="is_published" className="accent-indigo-500" />

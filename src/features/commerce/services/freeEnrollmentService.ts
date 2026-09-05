@@ -14,6 +14,7 @@
  */
 
 import { revalidatePath } from "next/cache";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireUser } from "@/lib/auth/requireRole";
 
 export interface FreeEnrollmentResult {
@@ -21,6 +22,12 @@ export interface FreeEnrollmentResult {
   alreadyEnrolled?: boolean;
   expiresAt?: string | null;
   error?: string;
+  /** Where to send the student right after enrolling - the first published
+   * lesson of the course this product grants, when one exists. Falls back
+   * to the product page itself (courseSlug is only ever set on the client
+   * to whatever page it's already viewing, so a null here just means
+   * "stay put and re-render as owned"). */
+  redirectTo?: string | null;
 }
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -48,5 +55,55 @@ export async function enrollFreeInProduct(productSlug: string): Promise<FreeEnro
   revalidatePath("/dashboard");
   revalidatePath(`/courses/${productSlug}`);
 
-  return { success: true, alreadyEnrolled: result.already_enrolled ?? false, expiresAt: result.expires_at ?? null };
+  const redirectTo = await findFirstLessonUrl(supabase, productSlug);
+
+  return { success: true, alreadyEnrolled: result.already_enrolled ?? false, expiresAt: result.expires_at ?? null, redirectTo };
+}
+
+/**
+ * Best-effort only - if anything here comes back empty (no course
+ * capability, no published modules/lessons yet), returns null and the
+ * caller just re-renders the product page in its "owned" state instead of
+ * redirecting. Never blocks/fails the enrollment itself on this lookup.
+ */
+async function findFirstLessonUrl(supabase: SupabaseClient, productSlug: string): Promise<string | null> {
+  const { data: product } = await supabase.from("products").select("id").eq("slug", productSlug).maybeSingle();
+  if (!product) return null;
+
+  const { data: capRows } = await supabase
+    .from("product_capabilities")
+    .select("capability")
+    .eq("product_id", (product as { id: string }).id);
+  const courseCapability = ((capRows ?? []) as { capability: string }[]).find((r) => r.capability.startsWith("course:"));
+  if (!courseCapability) return null;
+  const courseSlug = courseCapability.capability.split(":")[1];
+
+  const { data: course } = await supabase.from("courses").select("id").eq("slug", courseSlug).eq("is_published", true).maybeSingle();
+  if (!course) return null;
+
+  const { data: modules } = await supabase
+    .from("modules")
+    .select("id")
+    .eq("course_id", (course as { id: string }).id)
+    .eq("is_published", true)
+    .order("order_index", { ascending: true });
+  const moduleIds = ((modules ?? []) as { id: string }[]).map((m) => m.id);
+  if (moduleIds.length === 0) return null;
+
+  const { data: lessons } = await supabase
+    .from("lessons")
+    .select("id, module_id, order_index")
+    .in("module_id", moduleIds)
+    .eq("is_published", true);
+  const lessonList = (lessons ?? []) as { id: string; module_id: string; order_index: number }[];
+  if (lessonList.length === 0) return null;
+
+  // First lesson = lowest module order_index, then lowest lesson order_index within it.
+  const moduleOrder = new Map(moduleIds.map((id, i) => [id, i]));
+  lessonList.sort((a, b) => {
+    const moduleDiff = (moduleOrder.get(a.module_id) ?? 0) - (moduleOrder.get(b.module_id) ?? 0);
+    return moduleDiff !== 0 ? moduleDiff : a.order_index - b.order_index;
+  });
+
+  return `/courses/${courseSlug}/lessons/${lessonList[0].id}`;
 }

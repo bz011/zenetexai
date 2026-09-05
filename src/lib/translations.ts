@@ -207,6 +207,7 @@ export interface Translations {
     card: {
       view_details: string; enroll_free: string; enrolling: string; continue_learning: string;
       owned_badge: string; opening_soon: string; access_duration: string; free_badge: string;
+      launch_offer_badge: string;
     };
     product: {
       overview_heading: string; curriculum_heading: string; curriculum_empty: string;
@@ -673,6 +674,7 @@ const en: Translations = {
       opening_soon: "Online enrollment opening soon",
       access_duration: "{n} months access",
       free_badge: "FREE",
+      launch_offer_badge: "Launch Offer",
     },
     product: {
       overview_heading: "Overview",
@@ -1158,6 +1160,7 @@ const ar: Translations = {
       opening_soon: "سيتاح التسجيل الإلكتروني قريبًا",
       access_duration: "وصول لمدة {n} شهراً",
       free_badge: "مجاناً",
+      launch_offer_badge: "عرض الإطلاق",
     },
     product: {
       overview_heading: "نظرة عامة",

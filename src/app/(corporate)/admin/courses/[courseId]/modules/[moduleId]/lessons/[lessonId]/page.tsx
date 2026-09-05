@@ -45,8 +45,9 @@ export default async function AdminLessonEditPage({ params }: Props) {
               <option value="none">No video</option>
               <option value="youtube">YouTube</option>
               <option value="vimeo">Vimeo</option>
+              <option value="bunny">Bunny Stream</option>
             </select>
-            <input name="video_url" defaultValue={lesson.video_url ?? ""} className={inputCls} />
+            <input name="video_url" defaultValue={lesson.video_url ?? ""} placeholder="Video embed URL (or Bunny video GUID)" className={inputCls} />
             <input
               name="duration_minutes"
               type="number"
@@ -55,6 +56,10 @@ export default async function AdminLessonEditPage({ params }: Props) {
             />
             <input name="order_index" type="number" defaultValue={lesson.order_index} className={inputCls} />
           </div>
+          <p className="text-[11px] text-slate-500">
+            Bunny Stream: paste either the full embed URL from Bunny&apos;s dashboard, or just the video GUID
+            (requires <code>NEXT_PUBLIC_BUNNY_STREAM_LIBRARY_ID</code> to be configured).
+          </p>
           <textarea
             name="content_en"
             defaultValue={lesson.content_en ?? ""}

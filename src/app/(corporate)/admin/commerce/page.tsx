@@ -140,6 +140,16 @@ export default async function AdminCommercePage() {
                         className={`${inputCls} mt-1`}
                       />
                     </div>
+                    <div>
+                      <label className="block text-[11px] text-slate-500">Access duration (days — blank = same as regular price)</label>
+                      <input
+                        name="access_duration_days"
+                        type="number"
+                        min={1}
+                        defaultValue={product.promoPrice?.access_duration_days ?? product.regularPrice?.access_duration_days ?? ""}
+                        className={`${inputCls} mt-1`}
+                      />
+                    </div>
                     <label className="flex items-center gap-2 self-end pb-2.5 text-[13px] text-slate-400">
                       <input type="checkbox" name="is_active" defaultChecked={product.promoPrice?.is_active ?? true} className="accent-indigo-500" />
                       Active

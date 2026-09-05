@@ -39,7 +39,7 @@ export const lessonFormSchema = z.object({
   title_ar: z.string().trim().optional(),
   content_en: z.string().trim().optional(),
   content_ar: z.string().trim().optional(),
-  video_provider: z.enum(["youtube", "vimeo", "none"]),
+  video_provider: z.enum(["youtube", "vimeo", "bunny", "none"]),
   video_url: z.string().trim().optional(),
   duration_minutes: z.number().int().min(0).optional(),
   order_index: z.number().int().min(0),

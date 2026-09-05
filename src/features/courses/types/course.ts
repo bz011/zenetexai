@@ -1,4 +1,4 @@
-export type VideoProvider = "youtube" | "vimeo" | "none";
+export type VideoProvider = "youtube" | "vimeo" | "bunny" | "none";
 export type LearningAssessmentType = "checkpoint" | "module_assessment";
 
 // ============================================================================

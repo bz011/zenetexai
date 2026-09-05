@@ -114,12 +114,19 @@ export async function upsertPromoPrice(productId: string, existingPromoId: strin
     amount_minor_units: Number(formData.get("amount_minor_units")),
     valid_from: String(formData.get("valid_from") ?? ""),
     valid_until: String(formData.get("valid_until") ?? ""),
+    access_duration_days: formData.get("access_duration_days") ? Number(formData.get("access_duration_days")) : undefined,
     is_active: formData.get("is_active") === "on",
   });
   if (!parsed.success) throw new Error(logAndSummarize("upsertPromoPrice", parsed.error.flatten().fieldErrors));
 
-  const { data: regular } = await supabase.from("prices").select("currency").eq("product_id", productId).eq("kind", "regular").maybeSingle();
-  const currency = (regular as { currency: string } | null)?.currency ?? "AED";
+  const { data: regular } = await supabase
+    .from("prices")
+    .select("currency, access_duration_days")
+    .eq("product_id", productId)
+    .eq("kind", "regular")
+    .maybeSingle();
+  const regularRow = regular as { currency: string; access_duration_days: number | null } | null;
+  const currency = regularRow?.currency ?? "AED";
 
   const payload = {
     product_id: productId,
@@ -128,6 +135,11 @@ export async function upsertPromoPrice(productId: string, existingPromoId: strin
     amount_minor_units: parsed.data.amount_minor_units,
     valid_from: new Date(parsed.data.valid_from).toISOString(),
     valid_until: new Date(parsed.data.valid_until).toISOString(),
+    // Falls back to the regular price's access duration (e.g. "12 months")
+    // if the admin leaves this blank, rather than silently defaulting to
+    // NULL/lifetime - a promo should grant the same access length as the
+    // product normally would unless explicitly overridden.
+    access_duration_days: parsed.data.access_duration_days ?? regularRow?.access_duration_days ?? null,
     is_active: parsed.data.is_active,
   };
 

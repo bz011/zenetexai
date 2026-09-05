@@ -19,7 +19,11 @@ export default function EnrollFreeButton({ productSlug }: { productSlug: string 
       const result = await enrollFreeInProduct(productSlug);
       if (result.success) {
         setDone(true);
-        router.refresh();
+        if (result.redirectTo) {
+          router.push(result.redirectTo);
+        } else {
+          router.refresh();
+        }
       } else {
         setError(result.error ?? t.commerce.errors.generic);
       }

@@ -18,10 +18,16 @@ export default function ProductCard({ product, owned }: { product: ProductWithPr
     <Link href={`/courses/${product.slug}`} className="card card-hover flex flex-col p-6">
       <div className="flex items-start justify-between gap-3">
         <span className="label text-[10px]">{product.type}</span>
-        {owned && (
+        {owned ? (
           <span className="shrink-0 rounded-full bg-emerald-500/[0.12] px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
             {c.owned_badge}
           </span>
+        ) : (
+          isFreeNow && (
+            <span className="shrink-0 rounded-full bg-amber-500/[0.15] px-2.5 py-0.5 text-[11px] font-semibold text-amber-400">
+              {c.launch_offer_badge}
+            </span>
+          )
         )}
       </div>
 
