@@ -7,6 +7,8 @@ import {
   getPreviousNextLesson,
   getLessonResources,
   isLessonCompleted,
+  getCourseBySlug,
+  getCourseWithProgress,
 } from "@/features/courses/services/courseService";
 import { getQuizQuestions } from "@/features/courses/services/quizService";
 import { getLessonNote } from "@/features/courses/services/noteService";
@@ -41,20 +43,41 @@ export default async function LessonDetailPage({ params }: Props) {
     return <LockedAccess variant="course" ctaHref="/courses/pmp-mastery-program" />;
   }
 
-  const [checkpoint, completed, navLessons, resources, note] = await Promise.all([
+  const course = await getCourseBySlug(supabase, courseSlug);
+
+  const [checkpoint, completed, navLessons, resources, note, , courseWithProgress] = await Promise.all([
     getLessonCheckpoint(supabase, lessonId),
     isLessonCompleted(supabase, user.id, lessonId),
     getPreviousNextLesson(supabase, lesson.module_id, lesson.order_index),
     getLessonResources(supabase, lessonId),
     getLessonNote(lessonId),
     recordLessonView(lessonId),
+    course ? getCourseWithProgress(supabase, course, user.id) : Promise.resolve(null),
   ]);
 
   const checkpointQuestions = checkpoint ? await getQuizQuestions(supabase, checkpoint.id) : [];
 
+  // Sidebar only ever needs id/title/duration/completed - never a lesson's
+  // video_url or content_en/ar, so those are stripped here rather than
+  // shipping every other lesson's video reference into this page's payload.
+  const curriculum = (courseWithProgress?.modules ?? []).map((m) => ({
+    id: m.id,
+    titleEn: m.title_en,
+    titleAr: m.title_ar,
+    lessons: m.lessons.map((l) => ({
+      id: l.id,
+      titleEn: l.title_en,
+      titleAr: l.title_ar,
+      durationMinutes: l.duration_minutes,
+      completed: l.completed,
+    })),
+  }));
+
   return (
     <LessonDetailContent
       courseSlug={courseSlug}
+      courseTitleEn={course?.title_en ?? courseSlug}
+      courseTitleAr={course?.title_ar ?? null}
       lesson={lesson}
       completed={completed}
       checkpoint={checkpoint}
@@ -63,6 +86,9 @@ export default async function LessonDetailPage({ params }: Props) {
       nextLesson={navLessons.next}
       resources={resources}
       initialNoteText={note?.noteText ?? ""}
+      curriculum={curriculum}
+      totalLessons={courseWithProgress?.totalLessons ?? 0}
+      completedLessons={courseWithProgress?.completedLessons ?? 0}
     />
   );
 }

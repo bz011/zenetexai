@@ -201,6 +201,10 @@ export interface Translations {
       title: string; back_to_quiz: string; back_to_history: string; empty: string;
       your_answer: string; no_answer: string; hotspot_answered: string;
     };
+    workspace: {
+      curriculum_heading: string; progress_label: string;
+      view_curriculum: string; close_curriculum: string; duration_minutes_label: string;
+    };
   };
   commerce: {
     storefront: { eyebrow: string; heading: string; sub: string; empty: string };
@@ -654,6 +658,13 @@ const en: Translations = {
       your_answer: "Your answer",
       no_answer: "No answer submitted",
       hotspot_answered: "You clicked on the image",
+    },
+    workspace: {
+      curriculum_heading: "Course Content",
+      progress_label: "{completed}/{total} lessons completed",
+      view_curriculum: "Course Content",
+      close_curriculum: "Close",
+      duration_minutes_label: "{n} min",
     },
   },
 
@@ -1140,6 +1151,13 @@ const ar: Translations = {
       your_answer: "إجابتك",
       no_answer: "لم يتم إرسال إجابة",
       hotspot_answered: "لقد نقرت على الصورة",
+    },
+    workspace: {
+      curriculum_heading: "محتوى الدورة",
+      progress_label: "{completed}/{total} دروس مكتملة",
+      view_curriculum: "محتوى الدورة",
+      close_curriculum: "إغلاق",
+      duration_minutes_label: "{n} دقيقة",
     },
   },
 
