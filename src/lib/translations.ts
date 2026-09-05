@@ -211,7 +211,7 @@ export interface Translations {
     card: {
       view_details: string; enroll_free: string; enrolling: string; continue_learning: string;
       owned_badge: string; opening_soon: string; access_duration: string; free_badge: string;
-      launch_offer_badge: string;
+      launch_offer_badge: string; buy_now: string; redirecting_to_payment: string;
     };
     product: {
       overview_heading: string; curriculum_heading: string; curriculum_empty: string;
@@ -224,10 +224,18 @@ export interface Translations {
       course_title: string; course_body: string; course_cta: string;
       simulator_title: string; simulator_body: string; simulator_cta: string;
     };
-    errors: { generic: string };
+    errors: { generic: string; already_owned: string; checkout_unavailable: string; not_payable: string; product_unavailable: string };
     dashboard: {
       owned_heading: string; empty: string; browse_courses: string; expires_label: string;
       open_course: string; open_practice: string; open_mock_exam: string;
+    };
+    checkout: {
+      success_heading: string; success_body: string; access_until_label: string;
+      pending_heading: string; pending_body: string; refresh: string;
+      failed_heading: string; failed_body: string;
+      cancelled_heading: string; cancelled_body: string;
+      not_found_heading: string; not_found_body: string;
+      go_to_practice: string; go_to_mock_exam: string; back_to_product: string; try_again: string;
     };
   };
 }
@@ -686,6 +694,8 @@ const en: Translations = {
       access_duration: "{n} months access",
       free_badge: "FREE",
       launch_offer_badge: "Launch Offer",
+      buy_now: "Buy Now",
+      redirecting_to_payment: "Redirecting to payment...",
     },
     product: {
       overview_heading: "Overview",
@@ -711,7 +721,13 @@ const en: Translations = {
       simulator_body: "PMP Practice and Mock Exam are part of the PMP Exam Simulator. Enroll to unlock full access.",
       simulator_cta: "View PMP Exam Simulator",
     },
-    errors: { generic: "Something went wrong. Please try again." },
+    errors: {
+      generic: "Something went wrong. Please try again.",
+      already_owned: "You already have access to this.",
+      checkout_unavailable: "Checkout is temporarily unavailable. Please try again shortly.",
+      not_payable: "This product isn't available for purchase right now.",
+      product_unavailable: "This product is not currently available.",
+    },
     dashboard: {
       owned_heading: "My Learning",
       empty: "You don't own any programs yet.",
@@ -720,6 +736,24 @@ const en: Translations = {
       open_course: "Continue Course",
       open_practice: "Start Practicing",
       open_mock_exam: "Start Mock Exam",
+    },
+    checkout: {
+      success_heading: "Payment Successful",
+      success_body: "You now have full access to the PMP Exam Simulator — Practice Mode and Mock Exam.",
+      access_until_label: "Access until",
+      pending_heading: "Confirming Your Payment",
+      pending_body: "We're still confirming your payment with Ziina. This usually takes a few seconds.",
+      refresh: "Refresh",
+      failed_heading: "Payment Failed",
+      failed_body: "Your payment didn't go through and you have not been charged. You can try again.",
+      cancelled_heading: "Checkout Cancelled",
+      cancelled_body: "You cancelled checkout and have not been charged.",
+      not_found_heading: "We Couldn't Find That Order",
+      not_found_body: "This checkout link is invalid or has expired.",
+      go_to_practice: "Go to Practice Mode",
+      go_to_mock_exam: "Go to Mock Exam",
+      back_to_product: "Back to PMP Exam Simulator",
+      try_again: "Try Again",
     },
   },
 };
@@ -1179,6 +1213,8 @@ const ar: Translations = {
       access_duration: "وصول لمدة {n} شهراً",
       free_badge: "مجاناً",
       launch_offer_badge: "عرض الإطلاق",
+      buy_now: "اشترِ الآن",
+      redirecting_to_payment: "جارٍ التحويل إلى صفحة الدفع...",
     },
     product: {
       overview_heading: "نظرة عامة",
@@ -1204,7 +1240,13 @@ const ar: Translations = {
       simulator_body: "وضع التدريب والاختبار التجريبي لـ PMP جزء من محاكي اختبار PMP. سجّل للحصول على وصول كامل.",
       simulator_cta: "عرض محاكي اختبار PMP",
     },
-    errors: { generic: "حدث خطأ ما. حاول مرة أخرى." },
+    errors: {
+      generic: "حدث خطأ ما. حاول مرة أخرى.",
+      already_owned: "لديك بالفعل وصول إلى هذا المنتج.",
+      checkout_unavailable: "الدفع غير متاح حالياً. حاول مرة أخرى بعد قليل.",
+      not_payable: "هذا المنتج غير متاح للشراء حالياً.",
+      product_unavailable: "هذا المنتج غير متاح حالياً.",
+    },
     dashboard: {
       owned_heading: "تعلّمي",
       empty: "لا تملك أي برامج بعد.",
@@ -1213,6 +1255,24 @@ const ar: Translations = {
       open_course: "متابعة الدورة",
       open_practice: "ابدأ التدريب",
       open_mock_exam: "ابدأ الاختبار التجريبي",
+    },
+    checkout: {
+      success_heading: "تم الدفع بنجاح",
+      success_body: "أصبح لديك الآن وصول كامل إلى محاكي اختبار PMP — وضع التدريب والاختبار التجريبي.",
+      access_until_label: "الوصول حتى",
+      pending_heading: "جارٍ تأكيد الدفع",
+      pending_body: "ما زلنا نؤكد عملية الدفع مع Ziina. عادةً ما يستغرق هذا بضع ثوانٍ.",
+      refresh: "تحديث",
+      failed_heading: "فشلت عملية الدفع",
+      failed_body: "لم تكتمل عملية الدفع ولم يتم خصم أي مبلغ. يمكنك المحاولة مرة أخرى.",
+      cancelled_heading: "تم إلغاء الدفع",
+      cancelled_body: "لقد ألغيت عملية الدفع ولم يتم خصم أي مبلغ.",
+      not_found_heading: "لم نتمكن من العثور على هذا الطلب",
+      not_found_body: "رابط الدفع هذا غير صالح أو منتهي الصلاحية.",
+      go_to_practice: "الذهاب إلى وضع التدريب",
+      go_to_mock_exam: "الذهاب إلى الاختبار التجريبي",
+      back_to_product: "العودة إلى محاكي اختبار PMP",
+      try_again: "حاول مرة أخرى",
     },
   },
 };

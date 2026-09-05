@@ -6,6 +6,7 @@ import type { ProductWithPricing } from "@/features/commerce/types/commerce";
 import type { PublicCurriculumModule } from "@/features/courses/services/courseService";
 import { formatMoney } from "@/features/commerce/utils/money";
 import EnrollFreeButton from "@/features/commerce/components/EnrollFreeButton";
+import BuyNowButton from "@/features/commerce/components/BuyNowButton";
 
 interface Props {
   product: ProductWithPricing;
@@ -175,6 +176,8 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
                 </div>
               ) : isFreeNow ? (
                 <EnrollFreeButton productSlug={product.slug} />
+              ) : price ? (
+                <BuyNowButton productSlug={product.slug} />
               ) : (
                 <p className="text-[13px] text-slate-400">{c.opening_soon}</p>
               )}

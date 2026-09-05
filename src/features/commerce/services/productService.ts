@@ -20,7 +20,12 @@ const PRODUCT_COLUMNS =
 const PRICE_COLUMNS =
   "id, product_id, kind, currency, amount_minor_units, access_duration_days, valid_from, valid_until, is_active";
 
-export function resolveEffectivePrice(prices: Price[], now: Date = new Date()): EffectivePrice | null {
+/** Same resolution rule as resolveEffectivePrice below, but returns the
+ * actual `prices` row (with its id) instead of a display summary - needed
+ * wherever code must act on the effective price server-side (e.g.
+ * checkoutService resolving which price_id/access_duration_days a paid
+ * checkout is for), never trusting an amount the client already saw. */
+export function resolveEffectivePriceRow(prices: Price[], now: Date = new Date()): Price | null {
   const regular = prices.find((p) => p.kind === "regular" && p.is_active) ?? null;
   const activePromo =
     prices.find(
@@ -33,15 +38,21 @@ export function resolveEffectivePrice(prices: Price[], now: Date = new Date()): 
         now <= new Date(p.valid_until)
     ) ?? null;
 
-  if (!regular && !activePromo) return null;
+  return activePromo ?? regular;
+}
 
-  const effective = activePromo ?? regular!;
+export function resolveEffectivePrice(prices: Price[], now: Date = new Date()): EffectivePrice | null {
+  const regular = prices.find((p) => p.kind === "regular" && p.is_active) ?? null;
+  const effective = resolveEffectivePriceRow(prices, now);
+  if (!effective) return null;
+
+  const isPromotionActive = effective.kind === "promotional";
   return {
     currency: effective.currency,
     effectiveAmountMinorUnits: effective.amount_minor_units,
     regularAmountMinorUnits: regular?.amount_minor_units ?? null,
-    isPromotionActive: !!activePromo,
-    promotionValidUntil: activePromo?.valid_until ?? null,
+    isPromotionActive,
+    promotionValidUntil: isPromotionActive ? effective.valid_until : null,
     accessDurationDays: effective.access_duration_days,
   };
 }
