@@ -48,11 +48,15 @@ export const PMP_CURRICULUM: CurriculumModuleSeed[] = [
     titleAr: "مقدمة الكورس",
     orderIndex: 0,
     lessons: [
-      published(1, "PMP Course Introduction", "مقدمة دورة PMP", "Module 1 Part 1"),
-      published(2, "Why PMP Matters", "لماذا تُعد شهادة PMP مهمة؟", "Module 1 Part 2"),
-      published(3, "What's New in PMP — July 2026", "ما الجديد في PMP — يوليو 2026", "Module 1 Part 3"),
-      published(4, "People Domain Preview", "نظرة عامة على مجال الأشخاص", "Module 1 Part 4"),
-      published(5, "Business Environment Domain Preview", "نظرة عامة على مجال بيئة الأعمال", "Module 1 Part 5"),
+      // bunnyReferenceName below is the ACTUAL Bunny title (confirmed by the
+      // course owner 2026-09-06), not the tidy "Module 1 Part N" form the
+      // curriculum was originally drafted with - the real uploads use
+      // inconsistent separators/casing (underscore vs hyphen vs none).
+      published(1, "PMP Course Introduction", "مقدمة دورة PMP", "Module1_part1.mp4"),
+      published(2, "Why PMP Matters", "لماذا تُعد شهادة PMP مهمة؟", "Module1-part2.mp4"),
+      published(3, "What's New in PMP — July 2026", "ما الجديد في PMP — يوليو 2026", "module1-part3.mp4"),
+      published(4, "People Domain Preview", "نظرة عامة على مجال الأشخاص", "module1-part4.mp4"),
+      published(5, "Business Environment Domain Preview", "نظرة عامة على مجال بيئة الأعمال", "module1-part5.mp4"),
     ],
   },
   {
@@ -102,18 +106,21 @@ export const PMP_CURRICULUM: CurriculumModuleSeed[] = [
     lessons: [
       published(1, "People Domain Introduction", "مقدمة إلى مجال الأشخاص", "module4-video1.mp4"),
       published(2, "Common Vision and Shared Understanding", "الرؤية المشتركة والفهم المشترك", "module4-video2.mp4"),
-      published(3, "Leadership Styles and Situational Leadership", "أنماط القيادة والقيادة الموقفية", "module4-video3.mp4"),
+      // bunnyReferenceName for lessons 3, 8, 10-14 below is the ACTUAL Bunny
+      // title (confirmed by the course owner 2026-09-06) - the real uploads
+      // use inconsistent spacing/hyphenation around "module 4"/"video N".
+      published(3, "Leadership Styles and Situational Leadership", "أنماط القيادة والقيادة الموقفية", "module4 -video 3.mp4"),
       published(4, "Emotional Intelligence (EI)", "الذكاء العاطفي (EI)", "module4-video4.mp4"),
       published(5, "Motivation Theories", "نظريات التحفيز", "module4-video5.mp4"),
       published(6, "Team Development — Tuckman Model", "تطوير الفريق — نموذج تاكمان", "module4-video6.mp4"),
       published(7, "Conflict Management", "إدارة النزاعات", "module4-video7.mp4"),
-      published(8, "Negotiation and Influencing", "التفاوض والتأثير", "module4-video8.mp4"),
+      published(8, "Negotiation and Influencing", "التفاوض والتأثير", "module 4-video8.mp4"),
       published(9, "Stakeholder Engagement and Expectation Management", "إشراك أصحاب المصلحة وإدارة التوقعات", "module4-video9.mp4"),
-      published(10, "Communication and Collaboration", "التواصل والتعاون", "module4-video10.mp4"),
-      published(11, "Diversity, Equity and Inclusion", "التنوع والإنصاف والشمول", "module4-video11.mp4"),
-      published(12, "Virtual and Distributed Teams", "الفرق الافتراضية والموزعة", "module4-video12.mp4"),
-      published(13, "Training, Mentoring and Coaching", "التدريب والإرشاد والتوجيه", "module4-video13.mp4"),
-      published(14, "Knowledge Transfer, Reporting and Governance", "نقل المعرفة وإعداد التقارير والحوكمة", "module4-video14.mp4"),
+      published(10, "Communication and Collaboration", "التواصل والتعاون", "module 4 -video 10.mp4"),
+      published(11, "Diversity, Equity and Inclusion", "التنوع والإنصاف والشمول", "module4 - video 11.mp4"),
+      published(12, "Virtual and Distributed Teams", "الفرق الافتراضية والموزعة", "module 4 -video 12.mp4"),
+      published(13, "Training, Mentoring and Coaching", "التدريب والإرشاد والتوجيه", "module 4 - video 13.mp4"),
+      published(14, "Knowledge Transfer, Reporting and Governance", "نقل المعرفة وإعداد التقارير والحوكمة", "module 4 - video 14.mp4"),
     ],
   },
   {
@@ -122,14 +129,18 @@ export const PMP_CURRICULUM: CurriculumModuleSeed[] = [
     titleAr: "مجال العمليات",
     orderIndex: 4,
     lessons: [
-      published(1, "Process Domain Introduction", "مقدمة إلى مجال العمليات", "module 5 introduction compressed"),
+      // bunnyReferenceName for lessons 1, 7, 8 below is the ACTUAL Bunny
+      // title (confirmed by the course owner 2026-09-06): a stray space
+      // before the extension, a "modul5" typo, and a missing space
+      // respectively - none of these are guesses.
+      published(1, "Process Domain Introduction", "مقدمة إلى مجال العمليات", "module 5 introduction compressed .mp4"),
       published(2, "Integrated Project Planning and Delivery Strategy", "التخطيط المتكامل للمشروع واستراتيجية التسليم", "module 5 vid 1 compressed"),
       published(3, "Scope and Requirements Management", "إدارة النطاق والمتطلبات", "module 5 vid 2 compressed"),
       published(4, "Value-Based Delivery and Benefits", "التسليم القائم على القيمة والفوائد", "module 5 vid 3 compressed"),
       published(5, "Procurement, Contracts and Vendor Management", "إدارة المشتريات والعقود والموردين", "module 5 vid 4 compressed"),
       published(6, "Financial Planning and Management", "التخطيط والإدارة المالية", "module 5 vid 5 compressed"),
-      published(7, "Quality Planning and Management", "تخطيط الجودة وإدارتها", "module 5 vid 6 compressed"),
-      published(8, "Schedule Planning and Management", "تخطيط الجدول الزمني وإدارته", "module 5 vid 7 compressed"),
+      published(7, "Quality Planning and Management", "تخطيط الجودة وإدارتها", "modul5 vid 6.mp4"),
+      published(8, "Schedule Planning and Management", "تخطيط الجدول الزمني وإدارته", "module 5 vid 7compressed.mp4"),
       published(9, "Project Metrics, Status and Performance", "مقاييس المشروع وحالته وأداؤه", "module 5 vid 8 compressed"),
       published(10, "Project Closure and Transition", "إغلاق المشروع والانتقال", "module 5 vid 9 compressed"),
       {
