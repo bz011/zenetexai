@@ -65,7 +65,16 @@ const PUBLIC_ROUTES = new Set<string>([
 // the caller's entitlement before rendering real content - this line only
 // removes the *earlier, blunter* middleware-level redirect that used to
 // fire before a visitor could even see the catalog or a product page.
-const PUBLIC_PREFIXES = ["/blog", "/auth", "/api", "/courses"];
+// "/checkout" (Ziina return flow): /checkout/success and /checkout/cancel
+// already call requireUser() themselves, which does a real, network-verified
+// getUser() check and preserves the exact destination (including
+// ?purchase_id=...) in its own login redirect - see safeRedirect.ts. Left
+// off this list, this file's own getSession() (a fast, local-only JWT
+// check - see the file header) would gate the route first, and a false
+// negative right after the cross-site redirect back from pay.ziina.com
+// would bounce an actually-still-logged-in user to /login. This mirrors
+// the existing "/courses" entry below for exactly the same reason.
+const PUBLIC_PREFIXES = ["/blog", "/auth", "/api", "/courses", "/checkout"];
 
 function isPublicRoute(pathname: string): boolean {
   if (PUBLIC_ROUTES.has(pathname)) return true;
@@ -102,7 +111,12 @@ export async function middleware(request: NextRequest) {
 
   if (!session?.user && !isPublicRoute(request.nextUrl.pathname)) {
     const redirectUrl = new URL("/login", request.url);
-    redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname);
+    // Preserve the query string, not just the path - a redirect target can
+    // carry state a plain pathname can't (e.g. /checkout/success?purchase_id=...).
+    // Dropping it here silently discarded that state even when the rest of
+    // the login-redirect chain (requireUser, safeRedirect) was set up to
+    // carry it through correctly.
+    redirectUrl.searchParams.set("redirectTo", request.nextUrl.pathname + request.nextUrl.search);
     return NextResponse.redirect(redirectUrl);
   }
 
