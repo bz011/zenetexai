@@ -1,0 +1,3898 @@
+{
+  "byStatus": {
+    "ALREADY_PRESENT": 777,
+    "IMPORTED": 1
+  },
+  "results": [
+    {
+      "questionId": "Q000001",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000002",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000003",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000004",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000005",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000006",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000007",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000008",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000009",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000010",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000011",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000012",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000013",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000014",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000015",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000016",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000017",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000018",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000019",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000020",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000021",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000022",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000023",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000024",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000025",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000026",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000027",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000028",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000029",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000030",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000031",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000032",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000033",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000034",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000035",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000036",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000037",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000038",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000039",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000040",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000041",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000042",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000043",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000044",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000045",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000046",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000047",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000048",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000049",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000050",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000051",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000052",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000053",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000054",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000055",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000056",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000057",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000058",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000059",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000060",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000061",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000062",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000063",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000064",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000065",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000066",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000067",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000068",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000069",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000070",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000071",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000072",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000073",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000074",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000075",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000076",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000077",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000078",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000079",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000080",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000081",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000082",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000083",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000084",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000085",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000086",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000087",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000088",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000089",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000090",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000091",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000092",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000093",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000094",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000095",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000096",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000097",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000098",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000099",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000100",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000101",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000102",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000103",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000104",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000105",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000106",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000107",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000108",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000109",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000110",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000111",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000112",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000113",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000114",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000115",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000116",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000117",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000118",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000119",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000120",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000121",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000122",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000123",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000124",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000125",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000126",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000127",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000128",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000129",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000130",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000131",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000132",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000133",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000134",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000135",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000136",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000137",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000138",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000139",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000140",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000141",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000142",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000143",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000144",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000145",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000146",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000147",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000148",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000149",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000150",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000151",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000152",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000153",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000154",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000155",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000156",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000157",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000158",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000159",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000160",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000161",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000162",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000163",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000164",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000165",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000166",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000167",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000168",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000169",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000170",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000171",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000172",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000173",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000174",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000175",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000176",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000177",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000178",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000179",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000180",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000181",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000182",
+      "status": "IMPORTED",
+      "detail": "Imported successfully."
+    },
+    {
+      "questionId": "Q000183",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000184",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000185",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000186",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000187",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000188",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000189",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000190",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000191",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000192",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000193",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000194",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000195",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000196",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000197",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000198",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000199",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000200",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000201",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000202",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000203",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000204",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000205",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000206",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000207",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000208",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000209",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000210",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000211",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000212",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000213",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000214",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000215",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000216",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000217",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000218",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000219",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000220",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000221",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000222",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000223",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000224",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000225",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000226",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000227",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000228",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000229",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000230",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000231",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000232",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000233",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000234",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000235",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000236",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000237",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000238",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000239",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000240",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000241",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000242",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000243",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000244",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000245",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000246",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000247",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000248",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000249",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000250",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000251",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000252",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000253",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000254",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000255",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000256",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000257",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000258",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000259",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000260",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000261",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000262",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000263",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000264",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000265",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000266",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000267",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000268",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000269",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000270",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000271",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000272",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000273",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000274",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000275",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000276",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000277",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000278",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000279",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000280",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000281",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000282",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000283",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000284",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000285",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000286",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000287",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000288",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000289",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000290",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000291",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000292",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000293",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000294",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000295",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000296",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000297",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000298",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000299",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000300",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000301",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000302",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000303",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000304",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000305",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000306",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000307",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000308",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000309",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000310",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000311",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000312",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000313",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000314",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000315",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000316",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000317",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000318",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000319",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000320",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000321",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000322",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000323",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000324",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000325",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000326",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000327",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000328",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000329",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000330",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000331",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000332",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000334",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000335",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000336",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000337",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000338",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000339",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000340",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000341",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000342",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000343",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000344",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000345",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000346",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000347",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000348",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000349",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000350",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000351",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000352",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000353",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000354",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000355",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000356",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000357",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000358",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000359",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000360",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000361",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000362",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000363",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000364",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000365",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000366",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000367",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000368",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000369",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000370",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000371",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000372",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000373",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000374",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000375",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000376",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000377",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000378",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000379",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000380",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000381",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000382",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000383",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000384",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000385",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000386",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000387",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000388",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000389",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000390",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000391",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000392",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000393",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000394",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000395",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000396",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000397",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000398",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000399",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000400",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000401",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000402",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000403",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000404",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000405",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000406",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000407",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000408",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000409",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000410",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000411",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000412",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000413",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000414",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000415",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000416",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000417",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000418",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000420",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000421",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000422",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000423",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000424",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000425",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000426",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000427",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000428",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000429",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000430",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000431",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000432",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000433",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000434",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000435",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000436",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000437",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000438",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000439",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000440",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000441",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000442",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000443",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000444",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000445",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000446",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000447",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000448",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000449",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000450",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000451",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000452",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000453",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000454",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000455",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000456",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000457",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000458",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000459",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000460",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000461",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000462",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000463",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000464",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000465",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000466",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000467",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000468",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000469",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000470",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000471",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000472",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000473",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000474",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000475",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000476",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000477",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000478",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000479",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000480",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000481",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000482",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000483",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000484",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000485",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000486",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000487",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000488",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000489",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000490",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000491",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000492",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000493",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000494",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000495",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000496",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000497",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000498",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000499",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000500",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000501",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000502",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000503",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000504",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000505",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000506",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000507",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000508",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000509",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000510",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000511",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000512",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000513",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000514",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000515",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000516",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000517",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000518",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000519",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000520",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000521",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000522",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000523",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000524",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000525",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000526",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000527",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000528",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000529",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000530",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000531",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000532",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000533",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000534",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000535",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000536",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000537",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000539",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000540",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000541",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000542",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000544",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000545",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000546",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000547",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000548",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000549",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000550",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000551",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000552",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000553",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000554",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000555",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000556",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000557",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000558",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000559",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000560",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000561",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000562",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000563",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000564",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000565",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000566",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000567",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000568",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000569",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000570",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000571",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000572",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000573",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000574",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000575",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000576",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000577",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000578",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000579",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000580",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000581",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000582",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000583",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000584",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000585",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000586",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000587",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000588",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000589",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000590",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000591",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000592",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000593",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000594",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000595",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000596",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000597",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000598",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000599",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000600",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000601",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000602",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000603",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000604",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000605",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000606",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000607",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000608",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000609",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000610",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000611",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000612",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000613",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000614",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000615",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000616",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000617",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000618",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000619",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000620",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000621",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000622",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000623",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000624",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000625",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000626",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000627",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000628",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000629",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000630",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000631",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000632",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000633",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000634",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000635",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000636",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000637",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000638",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000639",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000640",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000641",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000642",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000643",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000644",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000645",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000646",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000647",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000648",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000649",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000650",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000651",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000652",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000653",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000654",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000655",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000656",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000657",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000658",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000659",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000660",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000661",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000662",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000663",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000664",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000665",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000666",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000667",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000668",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000669",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000670",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000671",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000672",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000673",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000674",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000675",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000676",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000677",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000678",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000679",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000680",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000681",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000682",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000683",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000684",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000685",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000686",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000687",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000688",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000689",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000690",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000691",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000692",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000693",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000694",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000695",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000696",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000697",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000698",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000699",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000700",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000701",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000702",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000703",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000704",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000705",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000706",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000707",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000708",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000709",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000710",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000711",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000712",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000713",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000714",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000715",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000716",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000717",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000718",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000719",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000720",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000721",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000722",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000723",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000724",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000725",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000726",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000727",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000728",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000729",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000730",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000731",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000732",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000733",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000734",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000735",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000736",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000737",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000738",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000739",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000740",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000741",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000742",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000743",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000744",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000745",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000746",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000747",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000748",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000749",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000750",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000751",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000752",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000753",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000754",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000755",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000756",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000757",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000758",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000759",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000760",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000761",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000762",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000763",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000764",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000765",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000766",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000767",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000768",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000769",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000770",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000771",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000772",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000773",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000774",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000775",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000776",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000777",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000778",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000779",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000780",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000781",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    },
+    {
+      "questionId": "Q000782",
+      "status": "ALREADY_PRESENT",
+      "detail": "Already in DB (exact-match workbook-origin question) - not re-imported (avoids unnecessary UPSERT churn)."
+    }
+  ]
+}

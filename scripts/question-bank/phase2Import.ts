@@ -50,12 +50,12 @@ type FinalStatus =
  * Q000222/Q000359/Q000615). */
 const OWNER_DECISION_IDS = new Set(["Q000715", "Q000719"]);
 const ASSET_ISSUE_IDS = new Set(["Q000118", "Q000133"]);
-/** Q000182's status cell contains shifted garbage (see the audit's
- * column-shift finding), not a genuine draft/needs-review state - without
- * this override the generic "status !== Approved" check would misfile it
- * as an owner-decision case when it's really the missing-question-text
- * data issue. */
-const DATA_ISSUE_OVERRIDE_IDS = new Set(["Q000182"]);
+/** Q000182's original column-shift corruption (status cell holding shifted
+ * garbage) was fixed by the owner and reconfirmed validator-clean in a
+ * later audit. The override that used to route it to UNRESOLVED_DATA_ISSUE
+ * regardless of actual state has been removed - it now goes through the
+ * normal classification path like every other question. */
+const DATA_ISSUE_OVERRIDE_IDS = new Set<string>([]);
 
 async function main() {
   console.log(`Phase 2 import starting. Source: ${EXCEL_PATH}\n`);
