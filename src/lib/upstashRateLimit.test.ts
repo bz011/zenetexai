@@ -41,15 +41,15 @@ describe("upstashRateLimit", () => {
 
   describe("when Upstash is not configured", () => {
     it("isRateLimitingConfigured() is false", async () => {
-      delete process.env.UPSTASH_REDIS_REST_URL;
-      delete process.env.UPSTASH_REDIS_REST_TOKEN;
+      delete process.env.UPSTASH_REDIS_REST_KV_REST_API_URL;
+      delete process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN;
       const mod = await freshModule();
       expect(mod.isRateLimitingConfigured()).toBe(false);
     });
 
     it("checkRateLimit fails OPEN (allows the request) and reports configured: false, without calling the limiter", async () => {
-      delete process.env.UPSTASH_REDIS_REST_URL;
-      delete process.env.UPSTASH_REDIS_REST_TOKEN;
+      delete process.env.UPSTASH_REDIS_REST_KV_REST_API_URL;
+      delete process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN;
       const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
       const mod = await freshModule();
 
@@ -63,8 +63,8 @@ describe("upstashRateLimit", () => {
     });
 
     it("only one of the two vars set still counts as not configured", async () => {
-      process.env.UPSTASH_REDIS_REST_URL = "https://example.upstash.io";
-      delete process.env.UPSTASH_REDIS_REST_TOKEN;
+      process.env.UPSTASH_REDIS_REST_KV_REST_API_URL = "https://example.upstash.io";
+      delete process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN;
       const mod = await freshModule();
       expect(mod.isRateLimitingConfigured()).toBe(false);
     });
@@ -72,8 +72,8 @@ describe("upstashRateLimit", () => {
 
   describe("when Upstash is configured", () => {
     beforeEach(() => {
-      process.env.UPSTASH_REDIS_REST_URL = "https://example.upstash.io";
-      process.env.UPSTASH_REDIS_REST_TOKEN = "fake-token-for-test";
+      process.env.UPSTASH_REDIS_REST_KV_REST_API_URL = "https://example.upstash.io";
+      process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN = "fake-token-for-test";
     });
 
     it("a request below the limit is allowed", async () => {

@@ -9,11 +9,13 @@
  * counter, backed by Upstash's REST-based Redis (works from any serverless
  * runtime, no persistent connection needed).
  *
- * CONFIGURATION: requires UPSTASH_REDIS_REST_URL and
- * UPSTASH_REDIS_REST_TOKEN (server-only - never NEXT_PUBLIC_, never
- * printed/logged). Both must be set together for a real Upstash Redis
- * database (created at upstash.com or via the Vercel Marketplace Upstash
- * integration) - see isRateLimitingConfigured().
+ * CONFIGURATION: requires UPSTASH_REDIS_REST_KV_REST_API_URL and
+ * UPSTASH_REDIS_REST_KV_REST_API_TOKEN (server-only - never NEXT_PUBLIC_,
+ * never printed/logged) - these are the exact variable names the Vercel
+ * Marketplace Upstash integration generates on connect; do not rename them
+ * in Vercel to match some other expected name, this module reads the
+ * names Vercel actually created. Both must be set together for a real
+ * Upstash Redis database - see isRateLimitingConfigured().
  *
  * FAIL-OPEN, LOUDLY, WHEN NOT CONFIGURED: if the env vars are absent,
  * checkRateLimit() returns { allowed: true, configured: false } and logs a
@@ -46,8 +48,8 @@ let redis: Redis | null | undefined;
 
 function getRedis(): Redis | null {
   if (redis !== undefined) return redis;
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  const url = process.env.UPSTASH_REDIS_REST_KV_REST_API_URL;
+  const token = process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN;
   redis = url && token ? new Redis({ url, token }) : null;
   return redis;
 }
@@ -109,7 +111,7 @@ export async function checkRateLimit(bucket: RateLimitBucket, identifier: string
   const client = getRedis();
   if (!client) {
     console.warn(
-      `[upstashRateLimit] NOT CONFIGURED (UPSTASH_REDIS_REST_URL/UPSTASH_REDIS_REST_TOKEN missing) - ` +
+      `[upstashRateLimit] NOT CONFIGURED (UPSTASH_REDIS_REST_KV_REST_API_URL/UPSTASH_REDIS_REST_KV_REST_API_TOKEN missing) - ` +
         `request allowed WITHOUT distributed rate limiting. bucket=${bucket}`
     );
     return { allowed: true, configured: false };
