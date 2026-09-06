@@ -27,10 +27,10 @@
  */
 
 import { revalidatePath } from "next/cache";
-import { requireUser } from "@/lib/auth/requireRole";
+import { requireProfile } from "@/lib/auth/requireRole";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { resolveEffectivePriceRow } from "./productService";
-import { createZiinaPaymentIntent, getZiinaPaymentIntent, type ZiinaPaymentIntentStatus } from "./ziinaClient";
+import { createZiinaPaymentIntent, getZiinaPaymentIntent, ZIINA_TEST_MODE, type ZiinaPaymentIntentStatus } from "./ziinaClient";
 import type { Price } from "@/features/commerce/types/commerce";
 import { checkRateLimit, getHashedClientIp } from "@/lib/upstashRateLimit";
 
@@ -49,7 +49,7 @@ function appUrl(): string {
 }
 
 export async function startZiinaCheckout(productSlug: string): Promise<StartCheckoutResult> {
-  const { supabase, user } = await requireUser({ loginRedirectTo: `/courses/${productSlug}` });
+  const { supabase, user, profile } = await requireProfile({ loginRedirectTo: `/courses/${productSlug}` });
 
   // Checked BEFORE any product/entitlement lookup, purchase row, or Ziina
   // call - a rejected request here creates zero DB state and never reaches
@@ -63,6 +63,26 @@ export async function startZiinaCheckout(productSlug: string): Promise<StartChec
   ]);
   if (!userLimit.allowed || !ipLimit.allowed) {
     return { success: false, error: "rate_limited" };
+  }
+
+  // PRODUCTION SAFETY GATE (2026-09-06 incident): Ziina remains in test
+  // mode (ZIINA_TEST_MODE, ziinaClient.ts) - its hosted checkout accepts
+  // any card input as a simulated success, since it's not talking to a
+  // real card network. That's fine for controlled testing, but with real
+  // public signups on production, it means ANY ordinary visitor could
+  // "pay" nothing at all and receive a genuine, durable practice:pmp +
+  // mock_exam:pmp entitlement - confirmed live when an admin's own test
+  // checkout completed and unlocked the Simulator for that account.
+  // verifyAndFulfillZiinaPurchase() was never the problem (it already
+  // never trusts anything but Ziina's own verified status/amount/
+  // currency) - the gap is that checkout was reachable by anyone at all
+  // while test mode is active. Restricting it to admin/instructor lets
+  // the team keep validating the full flow end-to-end without exposing
+  // it publicly. Remove this block only as part of a deliberate,
+  // explicit decision to go live (i.e. when ZIINA_TEST_MODE is flipped
+  // to false and Ziina is genuinely configured for real payments).
+  if (ZIINA_TEST_MODE && profile?.role !== "admin" && profile?.role !== "instructor") {
+    return { success: false, error: "checkout_unavailable" };
   }
 
   const { data: product } = await supabase
@@ -111,6 +131,7 @@ export async function startZiinaCheckout(productSlug: string): Promise<StartChec
       status: "pending",
       amount_minor_units: priceRow.amount_minor_units,
       currency: priceRow.currency,
+      is_test_payment: ZIINA_TEST_MODE,
     })
     .select("id")
     .single();
@@ -129,9 +150,9 @@ export async function startZiinaCheckout(productSlug: string): Promise<StartChec
       currencyCode: priceRow.currency,
       successUrl: `${base}/checkout/success?purchase_id=${purchaseId}`,
       cancelUrl: `${base}/checkout/cancel?purchase_id=${purchaseId}`,
-      // TEST MODE ONLY - do not remove `test: true` without an explicit
-      // instruction to go live with real Ziina charges.
-      test: true,
+      // Single source of truth - see ZIINA_TEST_MODE in ziinaClient.ts.
+      // Do not hardcode `true` here separately from that constant again.
+      test: ZIINA_TEST_MODE,
     });
   } catch (err) {
     console.error("[checkoutService] Ziina create payment intent failed:", err instanceof Error ? err.message : String(err));
@@ -169,11 +190,19 @@ interface PurchaseRow {
   amount_minor_units: number;
   currency: string;
   provider_reference: string | null;
+  is_test_payment: boolean;
 }
+
+const STAFF_ROLES_ALLOWED_TO_HOLD_TEST_ENTITLEMENTS = new Set(["admin", "instructor"]);
 
 async function getProductSlug(productId: string): Promise<string | null> {
   const { data } = await supabaseAdmin.from("products").select("slug").eq("id", productId).maybeSingle();
   return (data as { slug: string } | null)?.slug ?? null;
+}
+
+async function getProfileRole(userId: string): Promise<string | null> {
+  const { data } = await supabaseAdmin.from("profiles").select("role").eq("id", userId).maybeSingle();
+  return (data as { role: string } | null)?.role ?? null;
 }
 
 async function getActiveEntitlementExpiry(userId: string, productId: string): Promise<string | null> {
@@ -196,7 +225,7 @@ async function getActiveEntitlementExpiry(userId: string, productId: string): Pr
 export async function verifyAndFulfillZiinaPurchase(purchaseId: string, userId: string): Promise<CheckoutVerificationResult> {
   const { data: purchaseData, error } = await supabaseAdmin
     .from("purchases")
-    .select("id, user_id, product_id, price_id, status, amount_minor_units, currency, provider_reference")
+    .select("id, user_id, product_id, price_id, status, amount_minor_units, currency, provider_reference, is_test_payment")
     .eq("id", purchaseId)
     .maybeSingle();
 
@@ -206,6 +235,37 @@ export async function verifyAndFulfillZiinaPurchase(purchaseId: string, userId: 
   if (purchase.user_id !== userId) return { status: "forbidden" };
 
   const productSlug = await getProductSlug(purchase.product_id);
+
+  // PRODUCTION SAFETY GATE, fulfillment boundary (2026-09-06 incident,
+  // defense-in-depth alongside the checkout-creation gate above): decided
+  // from THIS PURCHASE ROW's own is_test_payment flag, never from the
+  // current ZIINA_TEST_MODE constant - a purchase created while test mode
+  // was active must always be treated as a test purchase for its own
+  // fulfillment, even if the constant is later flipped for live payments;
+  // conversely a genuinely live purchase (is_test_payment = false) is
+  // never subject to this check, regardless of what the constant says at
+  // verification time. The checkout-creation gate stops an ordinary user
+  // from STARTING a new test checkout, but an old pending purchase or a
+  // stale success-URL created before that fix shipped could still reach
+  // this function directly - so the same rule is enforced here too,
+  // independent of and in addition to the creation-time gate.
+  //
+  // Deliberately checked BEFORE any status branching below and without
+  // ever inspecting Ziina for this case: a test payment's owner without a
+  // staff role can never end up with a granted entitlement no matter what
+  // Ziina reports, and repeating this call changes nothing (the role is
+  // re-checked fresh every time, and is_test_payment never changes after
+  // the row is created) - so replay/retry cannot bypass it. The purchase
+  // row itself is never modified here - whatever Ziina did or didn't do
+  // stays exactly as history/audit trail; only entitlement-granting is
+  // blocked. Returns the same generic "failed" a real declined payment
+  // would - never a distinct status, never any role/security detail.
+  if (purchase.is_test_payment) {
+    const ownerRole = await getProfileRole(purchase.user_id);
+    if (!ownerRole || !STAFF_ROLES_ALLOWED_TO_HOLD_TEST_ENTITLEMENTS.has(ownerRole)) {
+      return { status: "failed", productSlug };
+    }
+  }
 
   if (purchase.status === "completed") {
     const expiresAt = await getActiveEntitlementExpiry(purchase.user_id, purchase.product_id);

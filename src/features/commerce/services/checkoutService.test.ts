@@ -4,8 +4,8 @@ process.env.NEXT_PUBLIC_APP_URL = "http://localhost:3000";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 
-const requireUserMock = vi.fn();
-vi.mock("@/lib/auth/requireRole", () => ({ requireUser: (...args: unknown[]) => requireUserMock(...args) }));
+const requireProfileMock = vi.fn();
+vi.mock("@/lib/auth/requireRole", () => ({ requireProfile: (...args: unknown[]) => requireProfileMock(...args) }));
 
 const adminFromMock = vi.fn();
 vi.mock("@/lib/supabase/admin", () => ({ supabaseAdmin: { from: (...args: unknown[]) => adminFromMock(...args) } }));
@@ -15,6 +15,10 @@ const getIntentMock = vi.fn();
 vi.mock("./ziinaClient", () => ({
   createZiinaPaymentIntent: (...args: unknown[]) => createIntentMock(...args),
   getZiinaPaymentIntent: (...args: unknown[]) => getIntentMock(...args),
+  // Matches the real ziinaClient.ts constant - kept true here deliberately,
+  // since the whole point of the staff-only-checkout tests below is to
+  // verify behavior WHILE test mode is active.
+  ZIINA_TEST_MODE: true,
 }));
 
 const checkRateLimitMock = vi.fn();
@@ -127,7 +131,7 @@ function buildRlsSupabase(config: { existingEntitlement?: { id: string; expires_
 
 describe("startZiinaCheckout", () => {
   beforeEach(() => {
-    requireUserMock.mockReset();
+    requireProfileMock.mockReset();
     adminFromMock.mockReset();
     createIntentMock.mockReset();
     checkRateLimitMock.mockReset();
@@ -135,7 +139,7 @@ describe("startZiinaCheckout", () => {
   });
 
   it("rejects the request BEFORE any purchase row is created or Ziina is ever called, when the per-user or per-IP rate limit is exceeded", async () => {
-    requireUserMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID } });
+    requireProfileMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID }, profile: { role: "admin" } });
     checkRateLimitMock.mockImplementation((bucket: string) =>
       Promise.resolve(bucket === "checkout-create" ? { allowed: false, configured: true, retryAfterSeconds: 42 } : { allowed: true, configured: true })
     );
@@ -148,7 +152,7 @@ describe("startZiinaCheckout", () => {
   });
 
   it("also rejects on the per-IP bucket alone, even when the per-user bucket is still within its limit", async () => {
-    requireUserMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID } });
+    requireProfileMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID }, profile: { role: "admin" } });
     checkRateLimitMock.mockImplementation((bucket: string) =>
       Promise.resolve(bucket === "checkout-create-ip" ? { allowed: false, configured: true, retryAfterSeconds: 10 } : { allowed: true, configured: true })
     );
@@ -159,8 +163,48 @@ describe("startZiinaCheckout", () => {
     expect(createIntentMock).not.toHaveBeenCalled();
   });
 
+  // --- Production incident 2026-09-06: a completed Ziina TEST payment on
+  // the live domain granted a real practice:pmp + mock_exam:pmp
+  // entitlement to an ordinary account, since checkout itself was reachable
+  // by anyone while Ziina is (and must remain) in test mode. Fix: while
+  // ZIINA_TEST_MODE is true, only admin/instructor may reach checkout at
+  // all - a test-mode "payment" can never even be attempted by an ordinary
+  // user, so it can never accidentally become a real production
+  // entitlement for one. ---
+
+  it("refuses checkout for an ordinary student while Ziina is in test mode, before any purchase row is created or Ziina is ever called", async () => {
+    requireProfileMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID }, profile: { role: "student" } });
+
+    const result = await startZiinaCheckout("pmp-exam-simulator");
+
+    expect(result).toEqual({ success: false, error: "checkout_unavailable" });
+    expect(adminFromMock).not.toHaveBeenCalled();
+    expect(createIntentMock).not.toHaveBeenCalled();
+  });
+
+  it("refuses checkout for a caller with no profile row at all (fails closed, never assumes staff)", async () => {
+    requireProfileMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID }, profile: null });
+
+    const result = await startZiinaCheckout("pmp-exam-simulator");
+
+    expect(result).toEqual({ success: false, error: "checkout_unavailable" });
+    expect(createIntentMock).not.toHaveBeenCalled();
+  });
+
+  it("still allows an instructor to checkout while Ziina is in test mode (controlled staff testing remains possible)", async () => {
+    requireProfileMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID }, profile: { role: "instructor" } });
+    mockAdminTables({
+      purchases: (op) => (op === "insert" ? { data: { id: "purchase-instructor-1" }, error: null } : { data: null, error: null }),
+    });
+    createIntentMock.mockResolvedValue({ id: "ziina-intent-instructor", redirect_url: "https://pay.ziina.com/payment_intent/ziina-intent-instructor" });
+
+    const result = await startZiinaCheckout("pmp-exam-simulator");
+
+    expect(result.success).toBe(true);
+  });
+
   it("creates a pending purchase, calls Ziina in test mode, and returns its redirect_url", async () => {
-    requireUserMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID } });
+    requireProfileMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID }, profile: { role: "admin" } });
     const inserted: unknown[] = [];
     const updates: unknown[] = [];
     mockAdminTables({
@@ -189,6 +233,9 @@ describe("startZiinaCheckout", () => {
       status: "pending",
       amount_minor_units: 35000,
       currency: "AED",
+      // Every purchase created while Ziina is in test mode must be
+      // explicitly flagged as such (migration 025) - never inferred later.
+      is_test_payment: true,
     });
     // The amount/currency Ziina is told to charge come from the server-resolved
     // price row, never from anything the client could have supplied.
@@ -199,9 +246,10 @@ describe("startZiinaCheckout", () => {
   });
 
   it("refuses to start checkout when the user already actively owns the product", async () => {
-    requireUserMock.mockResolvedValue({
+    requireProfileMock.mockResolvedValue({
       supabase: buildRlsSupabase({ existingEntitlement: { id: "ent-1", expires_at: null } }),
       user: { id: USER_ID },
+      profile: { role: "admin" },
     });
 
     const result = await startZiinaCheckout("pmp-exam-simulator");
@@ -211,9 +259,10 @@ describe("startZiinaCheckout", () => {
   });
 
   it("allows starting checkout again once a previous entitlement has expired", async () => {
-    requireUserMock.mockResolvedValue({
+    requireProfileMock.mockResolvedValue({
       supabase: buildRlsSupabase({ existingEntitlement: { id: "ent-1", expires_at: "2020-01-01T00:00:00.000Z" } }),
       user: { id: USER_ID },
+      profile: { role: "admin" },
     });
     mockAdminTables({
       purchases: (op) => (op === "insert" ? { data: { id: "purchase-2" }, error: null } : { data: null, error: null }),
@@ -226,9 +275,10 @@ describe("startZiinaCheckout", () => {
   });
 
   it("refuses to start a paid checkout when the resolved price is free (that path is grant_free_enrollment's job)", async () => {
-    requireUserMock.mockResolvedValue({
+    requireProfileMock.mockResolvedValue({
       supabase: buildRlsSupabase({ priceRows: [{ ...PRICE_ROW, amount_minor_units: 0 }] }),
       user: { id: USER_ID },
+      profile: { role: "admin" },
     });
 
     const result = await startZiinaCheckout("pmp-mastery-program");
@@ -238,7 +288,7 @@ describe("startZiinaCheckout", () => {
   });
 
   it("marks the purchase failed and reports checkout_unavailable when the Ziina API call throws", async () => {
-    requireUserMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID } });
+    requireProfileMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID }, profile: { role: "admin" } });
     const updates: unknown[] = [];
     mockAdminTables({
       purchases: (op, payload) => {
@@ -274,6 +324,9 @@ describe("verifyAndFulfillZiinaPurchase", () => {
     amount_minor_units: 35000,
     currency: "AED",
     provider_reference: "ziina-intent-1",
+    // Every purchase this app has ever created was made while Ziina is in
+    // test mode - matches reality (see ZIINA_TEST_MODE, ziinaClient.ts).
+    is_test_payment: true,
   };
 
   function mockPurchaseFlow(opts: {
@@ -284,6 +337,12 @@ describe("verifyAndFulfillZiinaPurchase", () => {
     onEntitlementInsert?: (payload: unknown) => void;
     accessDurationDays?: number | null;
     existingActiveExpiresAt?: string | null;
+    /** The purchase OWNER's profile role, as it is RIGHT NOW at verification
+     * time (not necessarily what it was when the purchase was created) -
+     * defaults to "admin" so every pre-existing test in this block, none of
+     * which is about the staff-only-test-entitlement rule, keeps
+     * representing a legitimate staff-owned test purchase unchanged. */
+    ownerRole?: string | null;
   }) {
     const purchaseRow = opts.purchase === undefined ? BASE_PURCHASE : opts.purchase;
     mockAdminTables({
@@ -297,6 +356,7 @@ describe("verifyAndFulfillZiinaPurchase", () => {
       },
       products: () => ({ data: { slug: opts.productSlug ?? "pmp-exam-simulator" }, error: null }),
       prices: () => ({ data: { access_duration_days: opts.accessDurationDays ?? 365 }, error: null }),
+      profiles: () => ({ data: opts.ownerRole === null ? null : { role: opts.ownerRole ?? "admin" }, error: null }),
       entitlements: (op, payload) => {
         if (op === "select") return { data: { expires_at: opts.existingActiveExpiresAt ?? null }, error: null };
         if (op === "insert") {
@@ -431,5 +491,110 @@ describe("verifyAndFulfillZiinaPurchase", () => {
 
     expect(result.status).toBe("pending");
     expect(getIntentMock).not.toHaveBeenCalled();
+  });
+
+  // --- Fulfillment-boundary safety gate (2026-09-06 incident follow-up):
+  // the checkout-CREATION gate stops an ordinary user from starting a new
+  // test checkout, but an old pending purchase or a stale success-URL
+  // created before that fix shipped could still reach fulfillment
+  // directly. These 5 tests are the exact scenarios requested. ---
+
+  it("1. student with an OLD PENDING test purchase who now completes the Ziina test payment gets NO entitlement", async () => {
+    let entitlementInsertCalled = false;
+    mockPurchaseFlow({ ownerRole: "student", onEntitlementInsert: () => (entitlementInsertCalled = true) });
+    getIntentMock.mockResolvedValue({ id: "ziina-intent-1", status: "completed", amount: 35000, currency_code: "AED" });
+
+    const result = await verifyAndFulfillZiinaPurchase("purchase-1", USER_ID);
+
+    expect(result).toEqual({ status: "failed", productSlug: "pmp-exam-simulator" });
+    expect(entitlementInsertCalled).toBe(false);
+    // The whole point of this gate is that it never needs to ask Ziina at
+    // all for a non-staff test purchase - blocked before that call.
+    expect(getIntentMock).not.toHaveBeenCalled();
+  });
+
+  it("2. student whose test purchase is ALREADY marked completed (e.g. granted by a pre-fix bug) gets NO entitlement/expiry reported on a fresh verification call", async () => {
+    mockPurchaseFlow({
+      purchase: { ...BASE_PURCHASE, status: "completed" },
+      ownerRole: "student",
+      existingActiveExpiresAt: "2027-09-06T00:00:00.000Z", // an entitlement DOES exist in the DB from before this fix
+    });
+
+    const result = await verifyAndFulfillZiinaPurchase("purchase-1", USER_ID);
+
+    // Never confirms/re-affirms the pre-existing entitlement to the caller,
+    // and never leaks that one technically exists.
+    expect(result).toEqual({ status: "failed", productSlug: "pmp-exam-simulator" });
+  });
+
+  it("3. an admin's controlled test purchase still fulfills normally (the staff carve-out works)", async () => {
+    let insertedEntitlement: unknown = null;
+    mockPurchaseFlow({ ownerRole: "admin", onEntitlementInsert: (p) => (insertedEntitlement = p) });
+    getIntentMock.mockResolvedValue({ id: "ziina-intent-1", status: "completed", amount: 35000, currency_code: "AED" });
+
+    const result = await verifyAndFulfillZiinaPurchase("purchase-1", USER_ID);
+
+    expect(result.status).toBe("completed");
+    expect(insertedEntitlement).toMatchObject({ user_id: USER_ID, status: "active" });
+  });
+
+  it("3b. an instructor's controlled test purchase also fulfills normally", async () => {
+    let insertedEntitlement: unknown = null;
+    mockPurchaseFlow({ ownerRole: "instructor", onEntitlementInsert: (p) => (insertedEntitlement = p) });
+    getIntentMock.mockResolvedValue({ id: "ziina-intent-1", status: "completed", amount: 35000, currency_code: "AED" });
+
+    const result = await verifyAndFulfillZiinaPurchase("purchase-1", USER_ID);
+
+    expect(result.status).toBe("completed");
+    expect(insertedEntitlement).toMatchObject({ status: "active" });
+  });
+
+  it("4. a future non-test (live) purchase is NOT blocked merely because is_test_payment is false, even for an ordinary student", async () => {
+    let insertedEntitlement: unknown = null;
+    mockPurchaseFlow({
+      purchase: { ...BASE_PURCHASE, is_test_payment: false },
+      ownerRole: "student",
+      onEntitlementInsert: (p) => (insertedEntitlement = p),
+    });
+    getIntentMock.mockResolvedValue({ id: "ziina-intent-1", status: "completed", amount: 35000, currency_code: "AED" });
+
+    const result = await verifyAndFulfillZiinaPurchase("purchase-1", USER_ID);
+
+    expect(result.status).toBe("completed");
+    expect(insertedEntitlement).toMatchObject({ status: "active" });
+  });
+
+  it("5. repeated verification cannot bypass the rule - calling it 3 times in a row for a student's test purchase never grants anything, ever", async () => {
+    let entitlementInsertCalled = false;
+    mockPurchaseFlow({ ownerRole: "student", onEntitlementInsert: () => (entitlementInsertCalled = true) });
+    getIntentMock.mockResolvedValue({ id: "ziina-intent-1", status: "completed", amount: 35000, currency_code: "AED" });
+
+    const first = await verifyAndFulfillZiinaPurchase("purchase-1", USER_ID);
+    const second = await verifyAndFulfillZiinaPurchase("purchase-1", USER_ID);
+    const third = await verifyAndFulfillZiinaPurchase("purchase-1", USER_ID);
+
+    expect([first.status, second.status, third.status]).toEqual(["failed", "failed", "failed"]);
+    expect(entitlementInsertCalled).toBe(false);
+  });
+
+  it("never exposes the role/security reason in the result - the failure looks identical to any other declined payment", async () => {
+    mockPurchaseFlow({ ownerRole: "student" });
+    getIntentMock.mockResolvedValue({ id: "ziina-intent-1", status: "completed", amount: 35000, currency_code: "AED" });
+
+    const result = await verifyAndFulfillZiinaPurchase("purchase-1", USER_ID);
+
+    expect(Object.keys(result).sort()).toEqual(["productSlug", "status"]);
+    expect(result.status).toBe("failed");
+  });
+
+  it("also blocks a test purchase whose owner has no profile row at all (fails closed, never assumes staff)", async () => {
+    let entitlementInsertCalled = false;
+    mockPurchaseFlow({ ownerRole: null, onEntitlementInsert: () => (entitlementInsertCalled = true) });
+    getIntentMock.mockResolvedValue({ id: "ziina-intent-1", status: "completed", amount: 35000, currency_code: "AED" });
+
+    const result = await verifyAndFulfillZiinaPurchase("purchase-1", USER_ID);
+
+    expect(result.status).toBe("failed");
+    expect(entitlementInsertCalled).toBe(false);
   });
 });

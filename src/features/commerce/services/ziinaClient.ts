@@ -15,6 +15,19 @@
 
 const ZIINA_API_BASE = "https://api-v2.ziina.com/api";
 
+/**
+ * Single source of truth for whether this deployment is running Ziina in
+ * test mode. Every caller that needs to know ("should checkout be
+ * restricted to staff while test mode is active?", "should this purchase
+ * row be flagged as a test transaction?") imports THIS constant rather
+ * than hardcoding `true` in more than one place - see checkoutService.ts.
+ * Flip to `false` only once Ziina is genuinely configured for live
+ * payments (a real merchant/live API key, live webhook/verification
+ * config, and an explicit decision to accept real charges) - never as a
+ * side effect of an unrelated change.
+ */
+export const ZIINA_TEST_MODE = true;
+
 export type ZiinaPaymentIntentStatus =
   | "requires_payment_instrument"
   | "requires_user_action"
