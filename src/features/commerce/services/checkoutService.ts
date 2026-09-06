@@ -65,22 +65,23 @@ export async function startZiinaCheckout(productSlug: string): Promise<StartChec
     return { success: false, error: "rate_limited" };
   }
 
-  // PRODUCTION SAFETY GATE (2026-09-06 incident): Ziina remains in test
-  // mode (ZIINA_TEST_MODE, ziinaClient.ts) - its hosted checkout accepts
-  // any card input as a simulated success, since it's not talking to a
-  // real card network. That's fine for controlled testing, but with real
-  // public signups on production, it means ANY ordinary visitor could
-  // "pay" nothing at all and receive a genuine, durable practice:pmp +
-  // mock_exam:pmp entitlement - confirmed live when an admin's own test
-  // checkout completed and unlocked the Simulator for that account.
-  // verifyAndFulfillZiinaPurchase() was never the problem (it already
-  // never trusts anything but Ziina's own verified status/amount/
-  // currency) - the gap is that checkout was reachable by anyone at all
-  // while test mode is active. Restricting it to admin/instructor lets
-  // the team keep validating the full flow end-to-end without exposing
-  // it publicly. Remove this block only as part of a deliberate,
-  // explicit decision to go live (i.e. when ZIINA_TEST_MODE is flipped
-  // to false and Ziina is genuinely configured for real payments).
+  // PRODUCTION SAFETY GATE (2026-09-06 incident). While ZIINA_TEST_MODE is
+  // true, Ziina's hosted checkout accepts any card input as a simulated
+  // success (no real card network involved), so an ordinary visitor could
+  // "pay" nothing and receive a genuine, durable entitlement - confirmed
+  // live in the original incident. Restricting checkout to admin/instructor
+  // during test mode lets the team validate the full flow without exposing
+  // it publicly.
+  //
+  // Deliberately kept as a live conditional rather than deleted now that
+  // Ziina has gone live (ZIINA_TEST_MODE = false, 2026-09-06): it is
+  // already inert for ordinary students today, since the condition starts
+  // with `ZIINA_TEST_MODE &&`, and it automatically re-arms itself with no
+  // further code change if this constant is ever flipped back to `true`
+  // for a future controlled test cycle. verifyAndFulfillZiinaPurchase()'s
+  // separate, row-driven `is_test_payment` check below is the one that
+  // actually protects real money - this gate only ever controlled who
+  // could *start* a test-mode checkout.
   if (ZIINA_TEST_MODE && profile?.role !== "admin" && profile?.role !== "instructor") {
     return { success: false, error: "checkout_unavailable" };
   }

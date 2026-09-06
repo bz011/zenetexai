@@ -598,3 +598,204 @@ describe("verifyAndFulfillZiinaPurchase", () => {
     expect(entitlementInsertCalled).toBe(false);
   });
 });
+
+// --- Go-live regression coverage (2026-09-06): ZIINA_TEST_MODE flipped to
+// `false` in ziinaClient.ts after independently-verified real Ziina
+// settlement. Every test above runs against the file-level mock of
+// ziinaClient.ts, which is deliberately kept at ZIINA_TEST_MODE: true so
+// the staff-only-during-test-mode behavior it exercises stays covered. The
+// tests below use vi.doMock + vi.resetModules() (same pattern as
+// upstashRateLimit.test.ts's stateful-limiter tests) to load a SEPARATE
+// instance of checkoutService.ts against ZIINA_TEST_MODE: false, proving
+// the actual live-mode behavior without touching any test above it. ---
+describe("startZiinaCheckout / verifyAndFulfillZiinaPurchase — LIVE mode (ZIINA_TEST_MODE = false)", () => {
+  beforeEach(() => {
+    requireProfileMock.mockReset();
+    adminFromMock.mockReset();
+    createIntentMock.mockReset();
+    getIntentMock.mockReset();
+    checkRateLimitMock.mockReset();
+    checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
+  });
+
+  async function freshLiveCheckoutService() {
+    vi.resetModules();
+    vi.doMock("./ziinaClient", () => ({
+      createZiinaPaymentIntent: (...args: unknown[]) => createIntentMock(...args),
+      getZiinaPaymentIntent: (...args: unknown[]) => getIntentMock(...args),
+      ZIINA_TEST_MODE: false,
+    }));
+    return import("./checkoutService");
+  }
+
+  const LIVE_BASE_PURCHASE = {
+    id: "purchase-1",
+    user_id: USER_ID,
+    product_id: PRODUCT_ID,
+    price_id: "price-1",
+    status: "pending",
+    amount_minor_units: 35000,
+    currency: "AED",
+    provider_reference: "ziina-intent-1",
+    is_test_payment: false,
+  };
+  const LIVE_PURCHASE = LIVE_BASE_PURCHASE;
+
+  it("1. an ordinary student CAN start checkout now that Ziina is live (the test-mode staff-only gate is inert)", async () => {
+    const { startZiinaCheckout: liveStart } = await freshLiveCheckoutService();
+    requireProfileMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID }, profile: { role: "student" } });
+    mockAdminTables({
+      purchases: (op) => (op === "insert" ? { data: { id: "purchase-live-1" }, error: null } : { data: null, error: null }),
+    });
+    createIntentMock.mockResolvedValue({ id: "ziina-intent-live-1", redirect_url: "https://pay.ziina.com/payment_intent/ziina-intent-live-1" });
+
+    const result = await liveStart("pmp-exam-simulator");
+
+    expect(result.success).toBe(true);
+  });
+
+  it("2. the new purchase row is created with is_test_payment=false, and Ziina is told test:false", async () => {
+    const { startZiinaCheckout: liveStart } = await freshLiveCheckoutService();
+    requireProfileMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID }, profile: { role: "student" } });
+    const inserted: unknown[] = [];
+    mockAdminTables({
+      purchases: (op, payload) => {
+        if (op === "insert") {
+          inserted.push(payload);
+          return { data: { id: "purchase-live-2" }, error: null };
+        }
+        return { data: null, error: null };
+      },
+    });
+    createIntentMock.mockResolvedValue({ id: "ziina-intent-live-2", redirect_url: "https://pay.ziina.com/payment_intent/ziina-intent-live-2" });
+
+    await liveStart("pmp-exam-simulator");
+
+    expect(inserted[0]).toMatchObject({ is_test_payment: false });
+    expect(createIntentMock).toHaveBeenCalledWith(expect.objectContaining({ test: false }));
+  });
+
+  it("3. a historical test purchase (is_test_payment=true) owned by a student is still never fulfilled, even though Ziina is now live", async () => {
+    const { verifyAndFulfillZiinaPurchase: liveVerify } = await freshLiveCheckoutService();
+    mockAdminTables({
+      purchases: (op) => (op === "select" ? { data: { ...LIVE_BASE_PURCHASE, is_test_payment: true }, error: null } : { data: { id: LIVE_BASE_PURCHASE.id }, error: null }),
+      products: () => ({ data: { slug: "pmp-exam-simulator" }, error: null }),
+      profiles: () => ({ data: { role: "student" }, error: null }),
+    });
+    getIntentMock.mockResolvedValue({ id: "ziina-intent-1", status: "completed", amount: 35000, currency_code: "AED" });
+
+    const result = await liveVerify("purchase-1", USER_ID);
+
+    expect(result).toEqual({ status: "failed", productSlug: "pmp-exam-simulator" });
+    expect(getIntentMock).not.toHaveBeenCalled();
+  });
+
+  it("4a. a failed live payment grants no entitlement", async () => {
+    const { verifyAndFulfillZiinaPurchase: liveVerify } = await freshLiveCheckoutService();
+    let entitlementInsertCalled = false;
+    mockAdminTables({
+      purchases: (op) => (op === "select" ? { data: LIVE_PURCHASE, error: null } : { data: { id: LIVE_PURCHASE.id }, error: null }),
+      products: () => ({ data: { slug: "pmp-exam-simulator" }, error: null }),
+      profiles: () => ({ data: { role: "student" }, error: null }),
+      entitlements: (op) => {
+        if (op === "insert") entitlementInsertCalled = true;
+        return { data: null, error: null };
+      },
+    });
+    getIntentMock.mockResolvedValue({ id: "ziina-intent-1", status: "failed", amount: 35000, currency_code: "AED" });
+
+    const result = await liveVerify("purchase-1", USER_ID);
+
+    expect(result.status).toBe("failed");
+    expect(entitlementInsertCalled).toBe(false);
+  });
+
+  it("4b. a cancelled live payment grants no entitlement", async () => {
+    const { verifyAndFulfillZiinaPurchase: liveVerify } = await freshLiveCheckoutService();
+    let entitlementInsertCalled = false;
+    mockAdminTables({
+      purchases: (op) => (op === "select" ? { data: LIVE_PURCHASE, error: null } : { data: { id: LIVE_PURCHASE.id }, error: null }),
+      products: () => ({ data: { slug: "pmp-exam-simulator" }, error: null }),
+      profiles: () => ({ data: { role: "student" }, error: null }),
+      entitlements: (op) => {
+        if (op === "insert") entitlementInsertCalled = true;
+        return { data: null, error: null };
+      },
+    });
+    getIntentMock.mockResolvedValue({ id: "ziina-intent-1", status: "canceled", amount: 35000, currency_code: "AED" });
+
+    const result = await liveVerify("purchase-1", USER_ID);
+
+    expect(result.status).toBe("cancelled");
+    expect(entitlementInsertCalled).toBe(false);
+  });
+
+  it("5. an amount mismatch on a live payment grants no entitlement", async () => {
+    const { verifyAndFulfillZiinaPurchase: liveVerify } = await freshLiveCheckoutService();
+    let entitlementInsertCalled = false;
+    mockAdminTables({
+      purchases: (op) => (op === "select" ? { data: LIVE_PURCHASE, error: null } : { data: { id: LIVE_PURCHASE.id }, error: null }),
+      products: () => ({ data: { slug: "pmp-exam-simulator" }, error: null }),
+      profiles: () => ({ data: { role: "student" }, error: null }),
+      entitlements: (op) => {
+        if (op === "insert") entitlementInsertCalled = true;
+        return { data: null, error: null };
+      },
+    });
+    getIntentMock.mockResolvedValue({ id: "ziina-intent-1", status: "completed", amount: 1, currency_code: "AED" });
+
+    const result = await liveVerify("purchase-1", USER_ID);
+
+    expect(result.status).toBe("failed");
+    expect(entitlementInsertCalled).toBe(false);
+  });
+
+  it("6. a currency mismatch on a live payment grants no entitlement", async () => {
+    const { verifyAndFulfillZiinaPurchase: liveVerify } = await freshLiveCheckoutService();
+    let entitlementInsertCalled = false;
+    mockAdminTables({
+      purchases: (op) => (op === "select" ? { data: LIVE_PURCHASE, error: null } : { data: { id: LIVE_PURCHASE.id }, error: null }),
+      products: () => ({ data: { slug: "pmp-exam-simulator" }, error: null }),
+      profiles: () => ({ data: { role: "student" }, error: null }),
+      entitlements: (op) => {
+        if (op === "insert") entitlementInsertCalled = true;
+        return { data: null, error: null };
+      },
+    });
+    getIntentMock.mockResolvedValue({ id: "ziina-intent-1", status: "completed", amount: 35000, currency_code: "USD" });
+
+    const result = await liveVerify("purchase-1", USER_ID);
+
+    expect(result.status).toBe("failed");
+    expect(entitlementInsertCalled).toBe(false);
+  });
+
+  it("7. repeated verification of an already-completed live purchase does not duplicate the entitlement or call Ziina again", async () => {
+    const { verifyAndFulfillZiinaPurchase: liveVerify } = await freshLiveCheckoutService();
+    mockAdminTables({
+      purchases: () => ({ data: { ...LIVE_PURCHASE, status: "completed" }, error: null }),
+      products: () => ({ data: { slug: "pmp-exam-simulator" }, error: null }),
+      profiles: () => ({ data: { role: "student" }, error: null }),
+      entitlements: () => ({ data: { expires_at: "2027-06-01T00:00:00.000Z" }, error: null }),
+    });
+
+    const result = await liveVerify("purchase-1", USER_ID);
+
+    expect(result).toEqual({ status: "completed", expiresAt: "2027-06-01T00:00:00.000Z", productSlug: "pmp-exam-simulator" });
+    expect(getIntentMock).not.toHaveBeenCalled();
+  });
+
+  it("8. the checkout rate limiter still blocks before any purchase row is created or Ziina is called, in live mode too", async () => {
+    const { startZiinaCheckout: liveStart } = await freshLiveCheckoutService();
+    requireProfileMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID }, profile: { role: "student" } });
+    checkRateLimitMock.mockImplementation((bucket: string) =>
+      Promise.resolve(bucket === "checkout-create" ? { allowed: false, configured: true, retryAfterSeconds: 42 } : { allowed: true, configured: true })
+    );
+
+    const result = await liveStart("pmp-exam-simulator");
+
+    expect(result).toEqual({ success: false, error: "rate_limited" });
+    expect(adminFromMock).not.toHaveBeenCalled();
+    expect(createIntentMock).not.toHaveBeenCalled();
+  });
+});

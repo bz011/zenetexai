@@ -20,13 +20,20 @@ const ZIINA_API_BASE = "https://api-v2.ziina.com/api";
  * test mode. Every caller that needs to know ("should checkout be
  * restricted to staff while test mode is active?", "should this purchase
  * row be flagged as a test transaction?") imports THIS constant rather
- * than hardcoding `true` in more than one place - see checkoutService.ts.
- * Flip to `false` only once Ziina is genuinely configured for live
- * payments (a real merchant/live API key, live webhook/verification
- * config, and an explicit decision to accept real charges) - never as a
- * side effect of an unrelated change.
+ * than hardcoding `true`/`false` in more than one place - see
+ * checkoutService.ts. Flipped to `false` on 2026-09-06: real Ziina
+ * settlement (payment -> wallet -> bank withdrawal) was independently
+ * verified before this change, and this is now a deliberate go-live
+ * decision, not a side effect of an unrelated change. Every downstream
+ * behavior that depends on this constant (the checkout-creation staff-only
+ * gate, and new purchases' `is_test_payment` value) automatically becomes
+ * inert/false now that it is false - see checkoutService.ts for both. The
+ * separate fulfillment-boundary check in checkoutService.ts is keyed off
+ * each PURCHASE ROW's own stored `is_test_payment`, not this live constant,
+ * so every historical test purchase stays permanently test-protected
+ * regardless of this flip.
  */
-export const ZIINA_TEST_MODE = true;
+export const ZIINA_TEST_MODE = false;
 
 export type ZiinaPaymentIntentStatus =
   | "requires_payment_instrument"
