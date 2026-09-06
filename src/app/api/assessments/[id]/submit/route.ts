@@ -22,6 +22,7 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { checkRateLimit } from "@/lib/upstashRateLimit";
 import { quizSubmitSchema } from "@/lib/validators/courseValidators";
 import { getQuizQuestions } from "@/features/courses/services/quizService";
 import { gradeQuizAnswer } from "@/features/courses/services/quizGradingService";
@@ -37,6 +38,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   if (!user) {
     return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 });
+  }
+
+  const limit = await checkRateLimit("assessment-submit", user.id);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { success: false, error: "Too many submissions. Please wait a moment and try again." },
+      { status: 429, headers: limit.retryAfterSeconds ? { "Retry-After": String(limit.retryAfterSeconds) } : undefined }
+    );
   }
 
   let body: unknown;

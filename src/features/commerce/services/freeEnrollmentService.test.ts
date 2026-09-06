@@ -5,6 +5,12 @@ vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 const requireUserMock = vi.fn();
 vi.mock("@/lib/auth/requireRole", () => ({ requireUser: (...args: unknown[]) => requireUserMock(...args) }));
 
+const checkRateLimitMock = vi.fn();
+vi.mock("@/lib/upstashRateLimit", () => ({
+  checkRateLimit: (...args: unknown[]) => checkRateLimitMock(...args),
+  getHashedClientIp: () => "hashed-test-ip",
+}));
+
 const { enrollFreeInProduct } = await import("./freeEnrollmentService");
 
 interface LessonLookupConfig {
@@ -45,7 +51,22 @@ function buildSupabaseMock(rpcResult: { data?: unknown; error?: { message: strin
 }
 
 describe("enrollFreeInProduct", () => {
-  beforeEach(() => requireUserMock.mockReset());
+  beforeEach(() => {
+    requireUserMock.mockReset();
+    checkRateLimitMock.mockReset();
+    checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
+  });
+
+  it("rejects BEFORE calling grant_free_enrollment when rate limited, without breaking the RPC's own idempotency guarantee (it is simply never reached)", async () => {
+    const supabase = buildSupabaseMock({ data: { success: true, already_enrolled: false } });
+    requireUserMock.mockResolvedValue({ supabase, user: { id: "user-1" } });
+    checkRateLimitMock.mockResolvedValue({ allowed: false, configured: true, retryAfterSeconds: 30 });
+
+    const result = await enrollFreeInProduct("pmp-mastery-program");
+
+    expect(result.success).toBe(false);
+    expect(supabase.rpc).not.toHaveBeenCalled();
+  });
 
   it("calls the grant_free_enrollment RPC with only the product slug - no price/free flag from the caller", async () => {
     const supabase = buildSupabaseMock({ data: { success: true, already_enrolled: false, expires_at: "2027-01-01T00:00:00.000Z" } });

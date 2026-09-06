@@ -9,6 +9,7 @@
  */
 
 import { requireUser } from "@/lib/auth/requireRole";
+import { checkRateLimit } from "@/lib/upstashRateLimit";
 import { getCertificationId, getEligibleQuestionCount } from "@/features/practice/services/practiceConfigService";
 import { getSessionQuestionsAndStates } from "@/features/practice/services/practiceQuestionService";
 import { submitPracticeSession } from "@/features/practice/services/practiceGradingService";
@@ -31,7 +32,17 @@ export async function checkEligibleQuestionCount(filters: PracticeFilters): Prom
 }
 
 export async function createPracticeSession(config: PracticeConfig): Promise<CreatePracticeSessionResult> {
-  const { supabase } = await requireUser();
+  const { supabase, user } = await requireUser();
+
+  // Checked before the certification lookup and the gated RPC (which does
+  // real question-selection work) - a rejected request here does no DB
+  // writes at all. Entitlement (practice:pmp) is still enforced entirely
+  // by create_practice_session_gated()/RLS, unchanged - this is an
+  // independent traffic control, not a second authorization mechanism.
+  const limit = await checkRateLimit("practice-create", user.id);
+  if (!limit.allowed) {
+    return { success: false, error: "Too many attempts. Please wait a moment and try again." };
+  }
 
   const certificationId = await getCertificationId(supabase, "PMP");
   if (!certificationId) {
@@ -170,6 +181,9 @@ export async function getPracticeSession(sessionId: string): Promise<PracticeRun
 export async function saveAnswer(sessionId: string, questionId: string, response: QuizSubmitAnswer): Promise<{ success: boolean }> {
   const { supabase, user } = await requireUser();
 
+  const limit = await checkRateLimit("answer-save", user.id);
+  if (!limit.allowed) return { success: false };
+
   const { data: owned } = await supabase.from("practice_sessions").select("id, status").eq("id", sessionId).eq("user_id", user.id).maybeSingle();
   if (!owned || (owned as { status: string }).status !== "active") return { success: false };
 
@@ -246,6 +260,9 @@ export async function toggleFlag(sessionId: string, questionId: string, isFlagge
  */
 export async function submitSession(sessionId: string): Promise<{ success: boolean; error?: string }> {
   const { supabase, user } = await requireUser();
+
+  const limit = await checkRateLimit("assessment-submit", user.id);
+  if (!limit.allowed) return { success: false, error: "rate_limited" };
 
   const { data } = await supabase
     .from("practice_sessions")

@@ -9,6 +9,7 @@
  */
 
 import { requireUser } from "@/lib/auth/requireRole";
+import { checkRateLimit } from "@/lib/upstashRateLimit";
 import { getBankQuestions } from "@/features/courses/services/quizService";
 import { submitMockExamAttempt } from "@/features/mock-exam/services/examGradingService";
 import {
@@ -63,6 +64,17 @@ export async function findActiveMockExamAttemptId(): Promise<string | null> {
  */
 export async function createMockExamAttempt(): Promise<CreateMockExamAttemptResult> {
   const { supabase, user } = await requireUser();
+
+  // Checked before the inventory fetch + blueprint allocation below (real
+  // work: fetches the full approved-question inventory and the caller's
+  // question history, then runs the domain x approach x difficulty
+  // allocation) - a rejected request here does none of that. Entitlement
+  // (mock_exam:pmp) is still enforced entirely by
+  // create_mock_exam_attempt_gated()/RLS, unchanged.
+  const limit = await checkRateLimit("mockexam-create", user.id);
+  if (!limit.allowed) {
+    return { success: false, error: "Too many attempts. Please wait a moment and try again." };
+  }
 
   const certificationId = await getCertificationId(supabase, "PMP");
   if (!certificationId) {
@@ -201,6 +213,11 @@ export async function createMockExamAttempt(): Promise<CreateMockExamAttemptResu
  */
 export async function retakeMockExamAttempt(originalAttemptId: string): Promise<CreateMockExamAttemptResult> {
   const { supabase, user } = await requireUser();
+
+  const limit = await checkRateLimit("mockexam-create", user.id);
+  if (!limit.allowed) {
+    return { success: false, error: "Too many attempts. Please wait a moment and try again." };
+  }
 
   const { data: original } = await supabase
     .from("mock_exam_attempts")
@@ -413,6 +430,9 @@ export async function getMockExamAttempt(attemptId: string): Promise<MockExamRun
 export async function saveExamAnswer(attemptId: string, questionId: string, response: QuizSubmitAnswer): Promise<{ success: boolean }> {
   const { supabase, user } = await requireUser();
 
+  const limit = await checkRateLimit("answer-save", user.id);
+  if (!limit.allowed) return { success: false };
+
   const { data: owned } = await supabase.from("mock_exam_attempts").select("id, status, current_section").eq("id", attemptId).eq("user_id", user.id).maybeSingle();
   if (!owned) return { success: false };
   const attemptRow = owned as { status: string; current_section: number };
@@ -622,6 +642,9 @@ export async function endExamBreak(attemptId: string): Promise<{ success: boolea
  */
 export async function submitMockExam(attemptId: string): Promise<{ success: boolean; error?: string }> {
   const { supabase, user } = await requireUser();
+
+  const limit = await checkRateLimit("assessment-submit", user.id);
+  if (!limit.allowed) return { success: false, error: "rate_limited" };
 
   const { data } = await supabase
     .from("mock_exam_attempts")

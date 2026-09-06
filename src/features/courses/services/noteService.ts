@@ -7,6 +7,7 @@
  */
 
 import { requireUser } from "@/lib/auth/requireRole";
+import { checkRateLimit } from "@/lib/upstashRateLimit";
 import { saveLessonNoteSchema } from "@/lib/validators/courseValidators";
 import type { StudentLessonNote } from "@/features/courses/types/course";
 
@@ -29,6 +30,9 @@ export async function saveLessonNote(
   noteText: string
 ): Promise<{ success: boolean; error?: string }> {
   const { supabase, user } = await requireUser();
+
+  const limit = await checkRateLimit("note-write", user.id);
+  if (!limit.allowed) return { success: false, error: "rate_limited" };
 
   const parsed = saveLessonNoteSchema.safeParse({ noteText });
   if (!parsed.success) {

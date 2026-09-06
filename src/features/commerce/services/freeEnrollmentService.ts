@@ -16,6 +16,7 @@
 import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireUser } from "@/lib/auth/requireRole";
+import { checkRateLimit, getHashedClientIp } from "@/lib/upstashRateLimit";
 
 export interface FreeEnrollmentResult {
   success: boolean;
@@ -34,10 +35,22 @@ const ERROR_MESSAGES: Record<string, string> = {
   not_authenticated: "Please log in to continue.",
   product_unavailable: "This product is not currently available.",
   no_active_free_promotion: "This product is not currently free. Please refresh the page.",
+  rate_limited: "Too many attempts. Please wait a moment and try again.",
 };
 
 export async function enrollFreeInProduct(productSlug: string): Promise<FreeEnrollmentResult> {
-  const { supabase } = await requireUser({ loginRedirectTo: `/courses/${productSlug}` });
+  const { supabase, user } = await requireUser({ loginRedirectTo: `/courses/${productSlug}` });
+
+  // grant_free_enrollment() is already idempotent (never duplicates an
+  // entitlement), so this isn't closing a correctness gap - it stops
+  // pointless repeated DB round-trips/log noise from a scripted retry loop.
+  const [userLimit, ipLimit] = await Promise.all([
+    checkRateLimit("free-enrollment", user.id),
+    checkRateLimit("free-enrollment-ip", getHashedClientIp()),
+  ]);
+  if (!userLimit.allowed || !ipLimit.allowed) {
+    return { success: false, error: ERROR_MESSAGES.rate_limited };
+  }
 
   const { data, error } = await supabase.rpc("grant_free_enrollment", { p_product_slug: productSlug });
 

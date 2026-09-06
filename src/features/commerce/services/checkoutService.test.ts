@@ -17,6 +17,12 @@ vi.mock("./ziinaClient", () => ({
   getZiinaPaymentIntent: (...args: unknown[]) => getIntentMock(...args),
 }));
 
+const checkRateLimitMock = vi.fn();
+vi.mock("@/lib/upstashRateLimit", () => ({
+  checkRateLimit: (...args: unknown[]) => checkRateLimitMock(...args),
+  getHashedClientIp: () => "hashed-test-ip",
+}));
+
 const { startZiinaCheckout, verifyAndFulfillZiinaPurchase } = await import("./checkoutService");
 
 type Op = "select" | "insert" | "update" | null;
@@ -124,6 +130,33 @@ describe("startZiinaCheckout", () => {
     requireUserMock.mockReset();
     adminFromMock.mockReset();
     createIntentMock.mockReset();
+    checkRateLimitMock.mockReset();
+    checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
+  });
+
+  it("rejects the request BEFORE any purchase row is created or Ziina is ever called, when the per-user or per-IP rate limit is exceeded", async () => {
+    requireUserMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID } });
+    checkRateLimitMock.mockImplementation((bucket: string) =>
+      Promise.resolve(bucket === "checkout-create" ? { allowed: false, configured: true, retryAfterSeconds: 42 } : { allowed: true, configured: true })
+    );
+
+    const result = await startZiinaCheckout("pmp-exam-simulator");
+
+    expect(result).toEqual({ success: false, error: "rate_limited" });
+    expect(adminFromMock).not.toHaveBeenCalled();
+    expect(createIntentMock).not.toHaveBeenCalled();
+  });
+
+  it("also rejects on the per-IP bucket alone, even when the per-user bucket is still within its limit", async () => {
+    requireUserMock.mockResolvedValue({ supabase: buildRlsSupabase({}), user: { id: USER_ID } });
+    checkRateLimitMock.mockImplementation((bucket: string) =>
+      Promise.resolve(bucket === "checkout-create-ip" ? { allowed: false, configured: true, retryAfterSeconds: 10 } : { allowed: true, configured: true })
+    );
+
+    const result = await startZiinaCheckout("pmp-exam-simulator");
+
+    expect(result).toEqual({ success: false, error: "rate_limited" });
+    expect(createIntentMock).not.toHaveBeenCalled();
   });
 
   it("creates a pending purchase, calls Ziina in test mode, and returns its redirect_url", async () => {

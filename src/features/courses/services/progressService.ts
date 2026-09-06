@@ -7,12 +7,16 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth/requireRole";
+import { checkRateLimit } from "@/lib/upstashRateLimit";
 
 export async function markLessonComplete(
   lessonId: string,
   courseSlug: string
 ): Promise<{ success: boolean; error?: string }> {
   const { supabase, user } = await requireUser();
+
+  const limit = await checkRateLimit("progress-write", user.id);
+  if (!limit.allowed) return { success: false, error: "rate_limited" };
 
   const { error } = await supabase
     .from("lesson_progress")
@@ -33,6 +37,13 @@ export async function markLessonComplete(
  */
 export async function recordLessonView(lessonId: string): Promise<{ success: boolean; error?: string }> {
   const { supabase, user } = await requireUser();
+
+  // Fires on every lesson page view - the "progress-write" bucket's 60/min
+  // is generous enough for legitimate rapid navigation; a rejection here
+  // is silent/best-effort (this powers "Resume Learning" only, it never
+  // blocks the lesson itself from rendering).
+  const limit = await checkRateLimit("progress-write", user.id);
+  if (!limit.allowed) return { success: false, error: "rate_limited" };
 
   const { data: lesson } = await supabase
     .from("lessons")

@@ -32,6 +32,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 import { resolveEffectivePriceRow } from "./productService";
 import { createZiinaPaymentIntent, getZiinaPaymentIntent, type ZiinaPaymentIntentStatus } from "./ziinaClient";
 import type { Price } from "@/features/commerce/types/commerce";
+import { checkRateLimit, getHashedClientIp } from "@/lib/upstashRateLimit";
 
 const PRICE_COLUMNS = "id, product_id, kind, currency, amount_minor_units, access_duration_days, valid_from, valid_until, is_active";
 
@@ -49,6 +50,20 @@ function appUrl(): string {
 
 export async function startZiinaCheckout(productSlug: string): Promise<StartCheckoutResult> {
   const { supabase, user } = await requireUser({ loginRedirectTo: `/courses/${productSlug}` });
+
+  // Checked BEFORE any product/entitlement lookup, purchase row, or Ziina
+  // call - a rejected request here creates zero DB state and never reaches
+  // Ziina. Per-user AND per-IP: per-user stops one account hammering
+  // Start Checkout; per-IP (looser) stops one IP cycling through many
+  // accounts to do the same. See src/lib/upstashRateLimit.ts for the
+  // fail-open-with-warning behavior when Upstash isn't configured.
+  const [userLimit, ipLimit] = await Promise.all([
+    checkRateLimit("checkout-create", user.id),
+    checkRateLimit("checkout-create-ip", getHashedClientIp()),
+  ]);
+  if (!userLimit.allowed || !ipLimit.allowed) {
+    return { success: false, error: "rate_limited" };
+  }
 
   const { data: product } = await supabase
     .from("products")

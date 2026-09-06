@@ -224,7 +224,7 @@ export interface Translations {
       course_title: string; course_body: string; course_cta: string;
       simulator_title: string; simulator_body: string; simulator_cta: string;
     };
-    errors: { generic: string; already_owned: string; checkout_unavailable: string; not_payable: string; product_unavailable: string };
+    errors: { generic: string; already_owned: string; checkout_unavailable: string; not_payable: string; product_unavailable: string; rate_limited: string };
     dashboard: {
       owned_heading: string; empty: string; browse_courses: string; expires_label: string;
       open_course: string; open_practice: string; open_mock_exam: string;
@@ -725,6 +725,7 @@ const en: Translations = {
       generic: "Something went wrong. Please try again.",
       already_owned: "You already have access to this.",
       checkout_unavailable: "Checkout is temporarily unavailable. Please try again shortly.",
+      rate_limited: "Too many attempts. Please wait a moment and try again.",
       not_payable: "This product isn't available for purchase right now.",
       product_unavailable: "This product is not currently available.",
     },
@@ -1244,6 +1245,7 @@ const ar: Translations = {
       generic: "حدث خطأ ما. حاول مرة أخرى.",
       already_owned: "لديك بالفعل وصول إلى هذا المنتج.",
       checkout_unavailable: "الدفع غير متاح حالياً. حاول مرة أخرى بعد قليل.",
+      rate_limited: "محاولات كثيرة جداً. الرجاء الانتظار قليلاً ثم المحاولة مرة أخرى.",
       not_payable: "هذا المنتج غير متاح للشراء حالياً.",
       product_unavailable: "هذا المنتج غير متاح حالياً.",
     },

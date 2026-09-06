@@ -17,6 +17,8 @@
   "dependencies": {
     "@supabase/ssr": "^0.5.1",
     "@supabase/supabase-js": "^2.43.4",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.4",
     "next": "14.2.35",
     "openai": "^4.68.0",
     "pg": "^8.13.1",
