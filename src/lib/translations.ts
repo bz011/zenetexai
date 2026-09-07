@@ -537,8 +537,7 @@ const en: Translations = {
       { value: "general", label: "General Contact" },
     ],
     details: [
-      { id: "location", label: "Location", value: "Dubai, United Arab Emirates", href: null, icon: "◈" },
-      { id: "whatsapp", label: "WhatsApp", value: "+971 56 446 8444", href: "https://wa.me/971564468444", icon: "◎" },
+      { id: "whatsapp", label: "WhatsApp", value: "+971 56 622 7824", href: "https://wa.me/971566227824", icon: "◎" },
       { id: "response", label: "Response Time", value: "Within 24 hours", href: null, icon: "◷" },
     ],
     note: "No commitment required. Tell us your challenge and we'll propose a clear path forward — no pressure, no fluff.",
@@ -1057,8 +1056,7 @@ const ar: Translations = {
       { value: "general", label: "تواصل عام" },
     ],
     details: [
-      { id: "location", label: "الموقع", value: "دبي، الإمارات العربية المتحدة", href: null, icon: "◈" },
-      { id: "whatsapp", label: "واتساب", value: "+971 56 446 8444", href: "https://wa.me/971564468444", icon: "◎" },
+      { id: "whatsapp", label: "واتساب", value: "+971 56 622 7824", href: "https://wa.me/971566227824", icon: "◎" },
       { id: "response", label: "وقت الاستجابة", value: "خلال 24 ساعة", href: null, icon: "◷" },
     ],
     note: "لا يوجد أي إلزام. أخبرنا بتحديك وسنقترح مساراً واضحاً — دون ضغط أو مبالغة.",

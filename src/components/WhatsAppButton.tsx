@@ -2,7 +2,7 @@
 
 import { useLang } from "@/lib/LanguageContext";
 
-const WHATSAPP_NUMBER = "971564468444";
+const WHATSAPP_NUMBER = "971566227824";
 
 export default function WhatsAppButton() {
   const { lang, isRTL } = useLang();

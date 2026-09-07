@@ -32,8 +32,8 @@ export default async function AdminCommercePage() {
         <span className="label">Admin</span>
         <h1 className="mt-3 text-2xl font-bold text-white">Commerce</h1>
         <p className="mt-2 text-[13px] text-slate-500">
-          Product visibility, pricing, and launch-promotion configuration. No payment provider is connected yet —
-          this only controls what the public storefront shows and who gets a free entitlement.
+          Product visibility, pricing, and launch-promotion configuration. This controls what the public storefront
+          shows, live Ziina checkout pricing, and who gets a free entitlement.
         </p>
 
         <div className="mt-8 space-y-6">
