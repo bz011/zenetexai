@@ -30,7 +30,7 @@ function VerifyEmailInner() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center px-6 py-24">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-24">
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/[0.08] blur-[120px]" />
 
       <div className="relative w-full max-w-sm text-center">
@@ -82,9 +82,32 @@ function VerifyEmailInner() {
   );
 }
 
+/**
+ * Matches VerifyEmailInner's own outer wrapper/card dimensions rather than
+ * `null` - see the identical fix/rationale in LoginContent.tsx (a `null`
+ * fallback here causes the same class of CLS regression, the whole
+ * min-h-screen block popping in from nothing once useSearchParams()
+ * resolves). Purely a loading placeholder - no behavior change.
+ */
+function VerifyEmailSkeleton() {
+  return (
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-24">
+      <div className="w-full max-w-sm animate-pulse text-center">
+        <div className="mx-auto h-[22px] w-32 rounded bg-white/[0.06]" />
+        <div className="card mt-8 space-y-3 p-7">
+          <div className="mx-auto h-14 w-14 rounded-full bg-white/[0.05]" />
+          <div className="mx-auto mt-2 h-[18px] w-40 rounded bg-white/[0.06]" />
+          <div className="mx-auto h-[14px] w-56 rounded bg-white/[0.04]" />
+        </div>
+        <div className="mx-auto mt-5 h-[14px] w-32 rounded bg-white/[0.04]" />
+      </div>
+    </div>
+  );
+}
+
 export default function VerifyEmailContent() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<VerifyEmailSkeleton />}>
       <VerifyEmailInner />
     </Suspense>
   );

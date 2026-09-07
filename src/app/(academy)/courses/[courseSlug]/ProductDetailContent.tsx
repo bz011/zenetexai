@@ -37,7 +37,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
   ].filter((v): v is string => !!v);
 
   return (
-    <div className="relative min-h-screen px-6 py-24">
+    <div className="relative min-h-screen overflow-hidden px-6 py-24">
       <div className="pointer-events-none absolute left-1/2 top-0 h-[350px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/[0.08] blur-[100px]" />
 
       <div className="container-page relative max-w-3xl">

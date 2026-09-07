@@ -50,7 +50,7 @@ function LoginForm() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center px-6 py-24">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-24">
       <div className="pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/[0.08] blur-[120px]" />
 
       <div className="relative w-full max-w-sm">
@@ -124,9 +124,37 @@ function LoginForm() {
   );
 }
 
+/**
+ * Matches LoginForm's own outer wrapper/card dimensions (min-h-screen
+ * centering + roughly the same input/button heights) rather than `null` -
+ * a `null` fallback measurably caused a ~0.5 CLS on this page (confirmed
+ * via Lighthouse), since the whole min-h-screen block popped in from
+ * nothing the instant useSearchParams() resolved on the client, pushing
+ * the footer down by a full screen's worth of height. Purely a loading
+ * placeholder - no behavior change.
+ */
+function LoginFormSkeleton() {
+  return (
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-24">
+      <div className="w-full max-w-sm animate-pulse">
+        <div className="mb-8 text-center">
+          <div className="mx-auto h-[22px] w-32 rounded bg-white/[0.06]" />
+          <div className="mx-auto mt-3 h-[14px] w-40 rounded bg-white/[0.04]" />
+        </div>
+        <div className="card space-y-4 p-7">
+          <div className="h-[62px] rounded-xl bg-white/[0.03]" />
+          <div className="h-[62px] rounded-xl bg-white/[0.03]" />
+          <div className="h-[46px] rounded-xl bg-white/[0.05]" />
+        </div>
+        <div className="mx-auto mt-5 h-[14px] w-48 rounded bg-white/[0.04]" />
+      </div>
+    </div>
+  );
+}
+
 export default function LoginContent() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<LoginFormSkeleton />}>
       <LoginForm />
     </Suspense>
   );
