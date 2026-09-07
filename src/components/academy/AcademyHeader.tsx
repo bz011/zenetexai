@@ -64,7 +64,7 @@ export default function AcademyHeader() {
 
           {!isLoading && isAuthenticated ? (
             <div className="hidden items-center gap-2 md:flex">
-              <Link href="/dashboard" className="rounded-lg bg-indigo-600 px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-indigo-700">
+              <Link href="/dashboard" className="btn-primary px-4 py-2 text-[13px]">
                 {t.nav.dashboard}
               </Link>
               <button onClick={handleLogout} className="px-3.5 py-2 text-[13px] font-medium text-indigo-600 transition-colors hover:text-indigo-700">
@@ -76,7 +76,7 @@ export default function AcademyHeader() {
               <Link href="/login" className="px-3.5 py-2 text-[13px] font-medium text-indigo-600 transition-colors hover:text-indigo-700">
                 {t.nav.login}
               </Link>
-              <Link href="/courses" className="rounded-lg bg-indigo-600 px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-indigo-700">
+              <Link href="/courses" className="btn-primary px-4 py-2 text-[13px]">
                 {t.academyNav.enroll}
               </Link>
             </div>
@@ -125,7 +125,7 @@ export default function AcademyHeader() {
                   <Link
                     href="/dashboard"
                     onClick={() => setMenuOpen(false)}
-                    className="flex-1 rounded-lg bg-indigo-600 px-4 py-2.5 text-center text-[13px] font-semibold text-white transition-colors hover:bg-indigo-700"
+                    className="btn-primary flex-1 px-4 py-2.5 text-center text-[13px]"
                   >
                     {t.nav.dashboard}
                   </Link>
@@ -151,7 +151,7 @@ export default function AcademyHeader() {
                   <Link
                     href="/courses"
                     onClick={() => setMenuOpen(false)}
-                    className="flex-1 rounded-lg bg-indigo-600 px-4 py-2.5 text-center text-[13px] font-semibold text-white transition-colors hover:bg-indigo-700"
+                    className="btn-primary flex-1 px-4 py-2.5 text-center text-[13px]"
                   >
                     {t.academyNav.enroll}
                   </Link>

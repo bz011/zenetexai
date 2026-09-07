@@ -156,7 +156,7 @@ export interface Translations {
       request_new_link: string;
     };
     verifyEmail: {
-      title: string; sub: string; sub_generic: string;
+      title: string; sub: string; sub_after_email: string; sub_generic: string;
       resend_btn: string; resend_loading: string; resend_success: string;
       back_to_login: string;
     };
@@ -574,12 +574,13 @@ const en: Translations = {
       request_new_link: "Request new link",
     },
     verifyEmail: {
-      title: "Check your inbox",
-      sub: "We've sent a confirmation link to",
-      sub_generic: "We've sent a confirmation link to your email.",
+      title: "Account created successfully",
+      sub: "We've sent a verification link to",
+      sub_after_email: ". Please verify your email, then return to ZentexAI and log in.",
+      sub_generic: "We've sent a verification link to your email. Please verify your email, then return to ZentexAI and log in.",
       resend_btn: "Resend email", resend_loading: "Sending...",
       resend_success: "Verification email sent again.",
-      back_to_login: "Back to login",
+      back_to_login: "Go to Login",
     },
     dashboard: {
       welcome: "Welcome back", role_label: "Role", logout: "Log out",
@@ -605,7 +606,7 @@ const en: Translations = {
     errors: {
       generic: "Something went wrong. Please try again.",
       invalid_credentials: "Incorrect email or password.",
-      email_not_confirmed: "Please verify your email before signing in.",
+      email_not_confirmed: "Please verify your email before logging in.",
       email_taken: "An account with this email already exists.",
       weak_password: "Please choose a stronger password.",
       rate_limited: "Too many attempts. Please wait a moment and try again.",
@@ -1093,12 +1094,13 @@ const ar: Translations = {
       request_new_link: "طلب رابط جديد",
     },
     verifyEmail: {
-      title: "تحقق من بريدك الوارد",
-      sub: "أرسلنا رابط تأكيد إلى",
-      sub_generic: "أرسلنا رابط تأكيد إلى بريدك الإلكتروني.",
+      title: "تم إنشاء حسابك بنجاح",
+      sub: "أرسلنا رابط التحقق إلى",
+      sub_after_email: ". يرجى تأكيد بريدك الإلكتروني، ثم العودة إلى ZentexAI وتسجيل الدخول.",
+      sub_generic: "أرسلنا رابط التحقق إلى بريدك الإلكتروني. يرجى تأكيد بريدك الإلكتروني، ثم العودة إلى ZentexAI وتسجيل الدخول.",
       resend_btn: "إعادة إرسال البريد", resend_loading: "جارٍ الإرسال...",
       resend_success: "تم إرسال بريد التحقق مرة أخرى.",
-      back_to_login: "العودة لتسجيل الدخول",
+      back_to_login: "الذهاب إلى تسجيل الدخول",
     },
     dashboard: {
       welcome: "مرحباً بعودتك", role_label: "الدور", logout: "تسجيل الخروج",

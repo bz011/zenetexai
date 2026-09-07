@@ -57,7 +57,7 @@ export default function BreakScreen({ breakNumber, initialRemainingSeconds, onRe
         <button
           onClick={onResume}
           disabled={resuming}
-          className="mt-6 inline-flex items-center justify-center rounded-xl bg-indigo-600 px-6 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+          className="btn-primary mt-6 px-6 py-2.5 text-[14px]"
         >
           {resuming ? b.resuming : b.resumeNow}
         </button>

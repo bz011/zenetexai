@@ -44,7 +44,7 @@ export default function ExamNavigator({ sectionNumber, sectionQuestionIndexes, c
               aria-label={`Question ${positionInSection} of this section${isAnswered ? ", answered" : ", unanswered"}${isFlagged ? ", flagged" : ""}`}
               className={`relative flex h-8 w-8 items-center justify-center rounded-lg border text-[11px] font-semibold transition-colors ${
                 isCurrent
-                  ? "border-indigo-600 bg-indigo-600 text-white"
+                  ? "border-indigo-600 bg-indigo-600 text-[#fff]"
                   : isAnswered
                     ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:border-emerald-300"
                     : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50"

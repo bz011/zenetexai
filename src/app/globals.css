@@ -234,6 +234,7 @@
   .academy-shell .btn-primary {
     background-color: #4f46e5;
     box-shadow: none;
+    color: #fff;
   }
   .academy-shell .btn-primary:hover {
     background-color: #4338ca;

@@ -27,6 +27,15 @@ export interface LoginInput {
 export interface SignupResponse {
   success: boolean;
   user?: User;
+  /**
+   * True only when Supabase returned a real session immediately - i.e. this
+   * project's email-confirmation requirement is OFF (or this address was
+   * somehow already confirmed). The normal, expected case for this app is
+   * false: Supabase requires confirmation, so signUp() returns a user with
+   * no session, and the caller must show the "check your email" state
+   * rather than treating this as a real login.
+   */
+  requiresEmailConfirmation: boolean;
   error?: string;
 }
 
@@ -47,6 +56,7 @@ export async function signUp(input: SignupInput): Promise<SignupResponse> {
     if (!input.email || !input.password || !input.firstName || !input.lastName) {
       return {
         success: false,
+        requiresEmailConfirmation: false,
         error: "Missing required fields",
       };
     }
@@ -67,6 +77,7 @@ export async function signUp(input: SignupInput): Promise<SignupResponse> {
     if (error) {
       return {
         success: false,
+        requiresEmailConfirmation: false,
         error: error.message,
       };
     }
@@ -74,10 +85,14 @@ export async function signUp(input: SignupInput): Promise<SignupResponse> {
     return {
       success: true,
       user: data.user!,
+      // No session means Supabase did not log this user in immediately -
+      // the normal case when email confirmation is required.
+      requiresEmailConfirmation: data.session === null,
     };
   } catch (err: unknown) {
     return {
       success: false,
+      requiresEmailConfirmation: false,
       error: (err as Error).message,
     };
   }

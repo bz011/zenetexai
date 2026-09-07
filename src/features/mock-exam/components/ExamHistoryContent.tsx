@@ -76,7 +76,7 @@ export default function ExamHistoryContent({ groups }: Props) {
             <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-indigo-600">PMP</span>
             <h1 className="mt-3 text-2xl font-bold text-slate-900">Mock Exam {h.title}</h1>
           </div>
-          <Link href="/pmp/mock-exam" className="rounded-lg bg-indigo-600 px-5 py-2.5 text-[13px] font-semibold text-white hover:bg-indigo-700">
+          <Link href="/pmp/mock-exam" className="btn-primary px-5 py-2.5 text-[13px]">
             {t.assessment.results.startNewExam}
           </Link>
         </div>
@@ -88,7 +88,7 @@ export default function ExamHistoryContent({ groups }: Props) {
             <div className="flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-12 text-center">
               <p className="text-[14px] font-medium text-slate-900">{h.noAttemptsYet}</p>
               <p className="text-[13px] text-slate-500">{h.startPrompt}</p>
-              <Link href="/pmp/mock-exam" className="mt-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-[13px] font-semibold text-white hover:bg-indigo-700">
+              <Link href="/pmp/mock-exam" className="btn-primary mt-2 px-5 py-2.5 text-[13px]">
                 {t.assessment.results.startNewExam}
               </Link>
             </div>
@@ -112,7 +112,7 @@ export default function ExamHistoryContent({ groups }: Props) {
                           {entry.score !== null && <span className="text-[14px] font-semibold text-slate-900">{entry.score}%</span>}
                           <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${STATUS_CLS[entry.status]}`}>{STATUS_LABEL[entry.status]}</span>
                           {entry.status === "active" || entry.status === "on_break" ? (
-                            <Link href={`/pmp/mock-exam/${entry.id}`} className="rounded-lg bg-indigo-600 px-4 py-2 text-[12px] font-semibold text-white hover:bg-indigo-700">
+                            <Link href={`/pmp/mock-exam/${entry.id}`} className="btn-primary px-4 py-2 text-[12px]">
                               {h.resume}
                             </Link>
                           ) : (

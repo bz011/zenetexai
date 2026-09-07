@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useRef, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLang } from "@/lib/LanguageContext";
@@ -24,9 +24,17 @@ export default function SignupContent() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  // Synchronous guard against a double-submit (rapid double-click/double-tap,
+  // or an Enter-key submit racing a click) actually reaching Supabase twice.
+  // `disabled={loading}` on the button already covers the common case, but
+  // that only takes effect after a state update/re-render; a ref is
+  // read/written immediately, with no such gap, so this is a strictly
+  // stronger guarantee that one submit == exactly one signUp() call.
+  const submittingRef = useRef(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (submittingRef.current) return;
     setFormError(null);
 
     const result = signupSchema.safeParse({
@@ -42,12 +50,24 @@ export default function SignupContent() {
     }
     setFieldErrors({});
 
+    submittingRef.current = true;
     setLoading(true);
     const res = await signUp({ email, password, firstName, lastName });
     setLoading(false);
+    submittingRef.current = false;
 
     if (!res.success) {
       setFormError(mapAuthError(res.error, t));
+      return;
+    }
+
+    if (!res.requiresEmailConfirmation) {
+      // Email confirmation is off for this project (or this address was
+      // already confirmed) - Supabase returned a real session, so this
+      // user IS genuinely logged in already. Sending them to "check your
+      // email, then log in" would be actively wrong here.
+      router.push("/dashboard");
+      router.refresh();
       return;
     }
 

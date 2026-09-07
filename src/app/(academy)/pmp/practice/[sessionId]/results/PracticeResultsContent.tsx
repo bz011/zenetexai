@@ -48,7 +48,7 @@ export default function PracticeResultsContent({ sessionId, summary, reviewList 
         fetchDetail={(questionId) => getPracticeReviewQuestionDetail(sessionId, questionId)}
         actions={
           <>
-            <Link href="/pmp/practice" className="rounded-lg bg-indigo-600 px-5 py-2.5 text-[13px] font-semibold text-white hover:bg-indigo-700">
+            <Link href="/pmp/practice" className="btn-primary px-5 py-2.5 text-[13px]">
               {r.newPractice}
             </Link>
             <Link href="/pmp/practice/history" className="px-2 py-2.5 text-[13px] font-medium text-indigo-600 hover:text-indigo-700">

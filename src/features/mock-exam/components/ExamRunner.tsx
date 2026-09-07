@@ -384,21 +384,21 @@ export default function ExamRunner({ attemptId, initialData }: Props) {
                 <button
                   onClick={attemptSubmit}
                   disabled={submitting}
-                  className="rounded-lg bg-indigo-600 px-6 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+                  className="btn-primary px-6 py-2.5 text-[13px]"
                 >
                   {submitting ? rn.submitting : rn.submitExam}
                 </button>
               ) : isLastQuestionOfSection ? (
                 <button
                   onClick={handleFinishSection}
-                  className="rounded-lg bg-indigo-600 px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-indigo-700"
+                  className="btn-primary px-5 py-2.5 text-[13px]"
                 >
                   {rn.finishSection} {currentSection} →
                 </button>
               ) : (
                 <button
                   onClick={() => goToIndex(currentIndex + 1)}
-                  className="rounded-lg bg-indigo-600 px-5 py-2.5 text-[13px] font-semibold text-white transition-colors hover:bg-indigo-700"
+                  className="btn-primary px-5 py-2.5 text-[13px]"
                 >
                   {rn.next} →
                 </button>
@@ -443,7 +443,7 @@ export default function ExamRunner({ attemptId, initialData }: Props) {
                   setShowSubmitConfirm(false);
                   void handleSubmit();
                 }}
-                className="flex-1 rounded-lg bg-indigo-600 py-2.5 text-[13px] font-semibold text-white hover:bg-indigo-700"
+                className="btn-primary flex-1 py-2.5 text-[13px]"
               >
                 {rn.submitAnyway}
               </button>

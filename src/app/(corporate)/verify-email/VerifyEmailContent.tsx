@@ -47,7 +47,7 @@ function VerifyEmailInner() {
 
           <h1 className="mt-5 text-lg font-semibold text-white">{v.title}</h1>
           <p className="mt-2 text-[14px] leading-relaxed text-slate-400">
-            {email ? `${v.sub} ${email}` : v.sub_generic}
+            {email ? `${v.sub} ${email}${v.sub_after_email}` : v.sub_generic}
           </p>
 
           {status === "sent" && (
@@ -61,22 +61,20 @@ function VerifyEmailInner() {
             </p>
           )}
 
+          <Link href="/login" className="btn-primary mt-6 block w-full py-2.5 text-center text-[13px]">
+            {v.back_to_login}
+          </Link>
+
           {email && (
             <button
               onClick={handleResend}
               disabled={status === "sending"}
-              className="btn-ghost mt-6 w-full py-2.5 text-[13px]"
+              className="btn-ghost mt-3 w-full py-2.5 text-[13px]"
             >
               {status === "sending" ? v.resend_loading : v.resend_btn}
             </button>
           )}
         </div>
-
-        <p className="mt-5 text-center text-[13px] text-slate-500">
-          <Link href="/login" className="text-indigo-400 hover:text-indigo-300 transition-colors">
-            {v.back_to_login}
-          </Link>
-        </p>
       </div>
     </div>
   );
@@ -96,10 +94,11 @@ function VerifyEmailSkeleton() {
         <div className="mx-auto h-[22px] w-32 rounded bg-white/[0.06]" />
         <div className="card mt-8 space-y-3 p-7">
           <div className="mx-auto h-14 w-14 rounded-full bg-white/[0.05]" />
-          <div className="mx-auto mt-2 h-[18px] w-40 rounded bg-white/[0.06]" />
+          <div className="mx-auto mt-2 h-[18px] w-48 rounded bg-white/[0.06]" />
           <div className="mx-auto h-[14px] w-56 rounded bg-white/[0.04]" />
+          <div className="mt-6 h-[38px] rounded-xl bg-white/[0.05]" />
+          <div className="mt-3 h-[38px] rounded-xl bg-white/[0.03]" />
         </div>
-        <div className="mx-auto mt-5 h-[14px] w-32 rounded bg-white/[0.04]" />
       </div>
     </div>
   );

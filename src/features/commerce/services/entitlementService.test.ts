@@ -5,6 +5,14 @@ function buildSupabaseMock(config: {
   entitlements: { product_id: string; expires_at: string | null }[];
   capabilities: { product_id: string; capability: string }[];
   products?: { id: string; slug: string; type: string; title_en: string; title_ar: string }[];
+  /** Defaults to "student" so every pre-existing test in this file, none of
+   * which is about the admin bypass, keeps representing an ordinary user
+   * unchanged. */
+  role?: string;
+  /** Every capability the system defines, regardless of who owns what -
+   * only consulted for an admin caller (mirrors product_capabilities' own
+   * "anyone can view" RLS policy - see migration 019). */
+  allCapabilities?: string[];
 }) {
   return {
     from: (table: string) => {
@@ -18,10 +26,26 @@ function buildSupabaseMock(config: {
         };
       }
       if (table === "product_capabilities") {
-        return { select: () => ({ in: async () => ({ data: config.capabilities, error: null }) }) };
+        return {
+          select: () => ({
+            in: async () => ({ data: config.capabilities, error: null }),
+            // getUserCapabilities() calls select("capability") with no
+            // further filter for an admin caller - the query object itself
+            // is awaited directly in that branch.
+            then: (resolve: (v: { data: unknown; error: null }) => void) =>
+              resolve({ data: (config.allCapabilities ?? []).map((capability) => ({ capability })), error: null }),
+          }),
+        };
       }
       if (table === "products") {
         return { select: () => ({ in: async () => ({ data: config.products ?? [], error: null }) }) };
+      }
+      if (table === "profiles") {
+        return {
+          select: () => ({
+            eq: () => ({ maybeSingle: async () => ({ data: { role: config.role ?? "student" }, error: null }) }),
+          }),
+        };
       }
       throw new Error(`Unexpected table: ${table}`);
     },
@@ -67,6 +91,30 @@ describe("getUserCapabilities", () => {
     expect(result.has("practice:pmp")).toBe(true);
     expect(result.has("mock_exam:pmp")).toBe(true);
   });
+
+  // --- Admin full-PMP-access requirement: admin gets every capability the
+  // system defines, with ZERO entitlement rows - never via a fake purchase,
+  // enrollment, or manually-inserted entitlement. Mirrors the database-layer
+  // bypass in has_active_capability() (migration 026). ---
+
+  it("an admin gets every capability the system defines, even with zero entitlements", async () => {
+    const supabase = buildSupabaseMock({
+      role: "admin",
+      entitlements: [],
+      capabilities: [],
+      allCapabilities: ["course:pmp", "practice:pmp", "mock_exam:pmp"],
+    });
+    const result = await getUserCapabilities(supabase as never, "admin-1");
+    expect(result.has("course:pmp")).toBe(true);
+    expect(result.has("practice:pmp")).toBe(true);
+    expect(result.has("mock_exam:pmp")).toBe(true);
+  });
+
+  it("an instructor (not admin) is NOT granted the bypass - only role='admin' qualifies", async () => {
+    const supabase = buildSupabaseMock({ role: "instructor", entitlements: [], capabilities: [] });
+    const result = await getUserCapabilities(supabase as never, "instructor-1");
+    expect(result.size).toBe(0);
+  });
 });
 
 describe("hasCapability", () => {
@@ -93,6 +141,39 @@ describe("hasCapability", () => {
       ],
     });
     expect(await hasCapability(supabase as never, "user-1", "course:pmp")).toBe(false);
+  });
+
+  it("an admin has course:pmp, practice:pmp, and mock_exam:pmp with zero entitlements", async () => {
+    const supabase = buildSupabaseMock({
+      role: "admin",
+      entitlements: [],
+      capabilities: [],
+      allCapabilities: ["course:pmp", "practice:pmp", "mock_exam:pmp"],
+    });
+    expect(await hasCapability(supabase as never, "admin-1", "course:pmp")).toBe(true);
+    expect(await hasCapability(supabase as never, "admin-1", "practice:pmp")).toBe(true);
+    expect(await hasCapability(supabase as never, "admin-1", "mock_exam:pmp")).toBe(true);
+  });
+
+  it("a student without any entitlement remains blocked from all three PMP capabilities", async () => {
+    const supabase = buildSupabaseMock({ role: "student", entitlements: [], capabilities: [] });
+    expect(await hasCapability(supabase as never, "student-1", "course:pmp")).toBe(false);
+    expect(await hasCapability(supabase as never, "student-1", "practice:pmp")).toBe(false);
+    expect(await hasCapability(supabase as never, "student-1", "mock_exam:pmp")).toBe(false);
+  });
+
+  it("a student WITH the correct entitlement remains allowed (admin bypass logic never interferes with real access)", async () => {
+    const supabase = buildSupabaseMock({
+      role: "student",
+      entitlements: [{ product_id: "simulator-product", expires_at: null }],
+      capabilities: [
+        { product_id: "simulator-product", capability: "practice:pmp" },
+        { product_id: "simulator-product", capability: "mock_exam:pmp" },
+      ],
+    });
+    expect(await hasCapability(supabase as never, "student-1", "practice:pmp")).toBe(true);
+    expect(await hasCapability(supabase as never, "student-1", "mock_exam:pmp")).toBe(true);
+    expect(await hasCapability(supabase as never, "student-1", "course:pmp")).toBe(false);
   });
 });
 

@@ -40,7 +40,7 @@ export default function SectionCompleteScreen({ completedSection, nextSection, b
             <button
               onClick={onStartBreak}
               disabled={submitting}
-              className="rounded-xl bg-indigo-600 px-6 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+              className="btn-primary px-6 py-2.5 text-[14px]"
             >
               {submitting ? sc.pleaseWait : tf(sc.startBreak, { n: breakMinutes })}
             </button>
@@ -51,7 +51,7 @@ export default function SectionCompleteScreen({ completedSection, nextSection, b
             className={
               breakEligible
                 ? "rounded-xl border border-slate-200 px-6 py-2.5 text-[14px] font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
-                : "rounded-xl bg-indigo-600 px-6 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-50"
+                : "btn-primary px-6 py-2.5 text-[14px]"
             }
           >
             {submitting ? sc.pleaseWait : breakEligible ? tf(sc.continueWithoutBreak, { n: nextSection }) : tf(sc.continueToSection, { n: nextSection })}

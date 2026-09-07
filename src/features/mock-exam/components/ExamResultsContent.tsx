@@ -94,7 +94,7 @@ export default function ExamResultsContent({ attemptId, summary, reviewList, ret
             >
               {retaking ? "..." : r.retakeSameExam}
             </button>
-            <Link href="/pmp/mock-exam" className="rounded-lg bg-indigo-600 px-5 py-2.5 text-[13px] font-semibold text-white hover:bg-indigo-700">
+            <Link href="/pmp/mock-exam" className="btn-primary px-5 py-2.5 text-[13px]">
               {r.startNewExam}
             </Link>
             <Link href="/pmp/mock-exam/history" className="px-2 py-2.5 text-[13px] font-medium text-indigo-600 hover:text-indigo-700">

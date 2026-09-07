@@ -29,8 +29,38 @@ async function getActiveProductIds(supabase: SupabaseClient, userId: string): Pr
     .map((row) => row.product_id);
 }
 
-/** Every capability the user currently, actively holds (across all owned products). */
+/**
+ * True when the user's own profile row has role = 'admin'. Mirrors the
+ * database-layer admin bypass in has_active_capability() (migration 026) -
+ * an admin has full access to every capability-gated resource without a
+ * purchase, fake purchase, enrollment, or manually-inserted entitlement.
+ * Kept as a separate, tiny query rather than threading role through every
+ * one of this function's many call sites (course/lesson/practice/mock-exam
+ * pages) - those pages already trust this module as the sole source of
+ * truth for access, so the bypass belongs here, not duplicated at each caller.
+ */
+async function isAdmin(supabase: SupabaseClient, userId: string): Promise<boolean> {
+  const { data } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
+  return (data as { role: string } | null)?.role === "admin";
+}
+
+/**
+ * Every capability the user currently, actively holds (across all owned
+ * products) - EXCEPT for an admin, who gets every capability that exists
+ * anywhere in the system (product_capabilities has an open "anyone can
+ * view" SELECT policy - see migration 019 - so this is a safe, ordinary
+ * read for any authenticated caller). This is deliberately "every real
+ * capability the system defines" rather than a hardcoded list of the three
+ * PMP capabilities, so it stays correct if a future course/product adds a
+ * new capability without needing another code change here.
+ */
 export async function getUserCapabilities(supabase: SupabaseClient, userId: string): Promise<Set<Capability>> {
+  if (await isAdmin(supabase, userId)) {
+    const { data, error } = await supabase.from("product_capabilities").select("capability");
+    if (error || !data) return new Set();
+    return new Set((data as { capability: string }[]).map((r) => r.capability));
+  }
+
   const activeProductIds = await getActiveProductIds(supabase, userId);
   if (activeProductIds.length === 0) return new Set();
 

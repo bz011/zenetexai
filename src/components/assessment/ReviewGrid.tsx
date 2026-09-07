@@ -49,7 +49,7 @@ export default function ReviewGrid({ list, filter, onFilterChange, selectedQuest
               key={f}
               onClick={() => onFilterChange(f)}
               className={`rounded-lg border px-4 py-2 text-[13px] font-medium transition-colors ${
-                filter === f ? "border-indigo-600 bg-indigo-600 text-white" : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
+                filter === f ? "border-indigo-600 bg-indigo-600 text-[#fff]" : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
               }`}
             >
               {t[f]} ({count})
@@ -72,7 +72,7 @@ export default function ReviewGrid({ list, filter, onFilterChange, selectedQuest
                 aria-current={isSelected ? "true" : undefined}
                 className={`relative flex h-9 w-9 items-center justify-center rounded-lg border text-[12px] font-semibold transition-colors ${
                   isSelected
-                    ? "border-indigo-600 bg-indigo-600 text-white"
+                    ? "border-indigo-600 bg-indigo-600 text-[#fff]"
                     : e.isCorrect === true
                       ? "border-emerald-200 bg-emerald-50 text-emerald-700 hover:border-emerald-300"
                       : e.isCorrect === false

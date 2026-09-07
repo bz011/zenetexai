@@ -67,7 +67,7 @@ export default function ExamStartPanel({ activeAttemptId }: Props) {
         {activeAttemptId ? (
           <button
             onClick={() => router.push(`/pmp/mock-exam/${activeAttemptId}`)}
-            className="w-full rounded-xl bg-indigo-600 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-indigo-700"
+            className="btn-primary w-full py-3 text-[14px]"
           >
             Resume In-Progress Exam
           </button>
@@ -75,7 +75,7 @@ export default function ExamStartPanel({ activeAttemptId }: Props) {
           <button
             onClick={handleBegin}
             disabled={isPending}
-            className="w-full rounded-xl bg-indigo-600 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-40"
+            className="btn-primary w-full py-3 text-[14px]"
           >
             {isPending ? "Preparing your exam..." : "Begin Mock Exam"}
           </button>
