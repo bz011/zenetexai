@@ -40,14 +40,28 @@ export default function HotspotQuestion({ question, value, onChange }: Props) {
   }
 
   return (
-    <div className="relative inline-block">
+    // A fixed-width block box, not `inline-block`: percentages (the image's
+    // `w-full`, the marker's left/top) need a real containing-block width to
+    // resolve against. `inline-block` has none of its own (it shrinks to
+    // its content), which silently breaks `max-width: 100%` on the image -
+    // the image then falls back to sizing itself purely from `max-height` x
+    // its own natural aspect ratio, completely ignoring the actual
+    // card/viewport width. Confirmed via direct measurement: the chart
+    // rendered at a fixed ~728px regardless of a 360-412px mobile viewport,
+    // overflowing the page - exactly the "thin sliver of a much wider image"
+    // bug reported. `max-w-2xl` keeps desktop sizing close to the previous
+    // `max-h-96` cap without an explicit height (which would either distort
+    // the image at odd container widths or require JS to preserve aspect
+    // ratio); `w-full` on the image makes it exactly fill this box at any
+    // width, mobile included, with `h-auto` preserving its aspect ratio.
+    <div className="relative w-full max-w-2xl">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={imgRef}
         src={getQuestionImagePublicUrl(image.imagePath)}
         alt={image.altEn ?? ""}
         onClick={handleClick}
-        className="max-h-96 cursor-crosshair rounded-xl border border-white/[0.08]"
+        className="h-auto w-full cursor-crosshair rounded-xl border border-white/[0.08]"
       />
       {marker && (
         <div

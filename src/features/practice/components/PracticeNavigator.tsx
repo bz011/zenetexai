@@ -26,7 +26,7 @@ export default function PracticeNavigator({ total, currentIndex, answeredIndexes
             <button
               key={i}
               onClick={() => onJump(i)}
-              className={`relative flex h-8 w-8 items-center justify-center rounded-lg text-[11px] font-semibold transition-colors ${
+              className={`relative flex aspect-square min-h-8 min-w-8 items-center justify-center rounded-lg text-[11px] font-semibold transition-colors ${
                 isCurrent
                   ? "bg-indigo-500 text-[#fff]"
                   : isAnswered

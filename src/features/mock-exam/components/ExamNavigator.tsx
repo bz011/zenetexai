@@ -42,7 +42,7 @@ export default function ExamNavigator({ sectionNumber, sectionQuestionIndexes, c
               onClick={() => onJump(i)}
               aria-current={isCurrent ? "true" : undefined}
               aria-label={`Question ${positionInSection} of this section${isAnswered ? ", answered" : ", unanswered"}${isFlagged ? ", flagged" : ""}`}
-              className={`relative flex h-8 w-8 items-center justify-center rounded-lg border text-[11px] font-semibold transition-colors ${
+              className={`relative flex aspect-square min-h-8 min-w-8 items-center justify-center rounded-lg border text-[11px] font-semibold transition-colors ${
                 isCurrent
                   ? "border-indigo-600 bg-indigo-600 text-[#fff]"
                   : isAnswered

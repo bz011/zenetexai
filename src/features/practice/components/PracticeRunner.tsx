@@ -213,13 +213,13 @@ export default function PracticeRunner({ sessionId, initialData }: Props) {
               <p className="text-[14px] text-slate-500">{rn.noQuestionAvailable}</p>
             ) : (
               <>
-                <div className="flex items-start justify-between gap-4">
-                  <p className="text-[15px] font-medium text-white">
+                <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                  <p className="text-[15px] font-medium leading-relaxed text-white">
                     {lang === "ar" && currentQuestion.questionTextAr ? currentQuestion.questionTextAr : currentQuestion.questionTextEn}
                   </p>
                   <button
                     onClick={handleFlagToggle}
-                    className={`shrink-0 rounded-lg px-3 py-1.5 text-[12px] font-medium transition-colors ${
+                    className={`self-end shrink-0 rounded-lg px-3 py-1.5 text-[12px] font-medium transition-colors sm:self-auto ${
                       flags[currentQuestion.id] ? "bg-amber-500/[0.15] text-amber-400" : "bg-white/[0.06] text-slate-400 hover:bg-white/[0.1]"
                     }`}
                   >
