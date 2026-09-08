@@ -21,9 +21,16 @@
  *    next/font/google (src/lib/fonts.ts), which self-hosts the font files
  *    at build time - confirmed no runtime request to fonts.googleapis.com
  *    or fonts.gstatic.com exists.
- *  - No remote <img>/next/image origin is configured or used (no
- *    images.remotePatterns in this file, no Supabase Storage image usage
- *    found in the app) - img-src stays 'self' + data:.
+ *  - img-src: question-bank images (StandardQuestion.tsx, HotspotQuestion.tsx)
+ *    load directly from Supabase Storage's public object URLs, built at
+ *    runtime by getQuestionImagePublicUrl() (src/lib/supabase/imageUrls.ts) -
+ *    a grep for a literal `<img src="...">` string missed this in the
+ *    original go-live sprint, since the URL is only ever built dynamically
+ *    from a DB-stored path, never written out as a literal in source.
+ *    Confirmed via a real authenticated browser session that omitting the
+ *    Supabase origin here silently blocks every question image site-wide
+ *    (browser console: "violates ... img-src 'self' data:") - the DOM/data
+ *    layer was never at fault.
  */
 const SUPABASE_ORIGIN = (() => {
   try {
@@ -57,7 +64,7 @@ const CSP_DIRECTIVES = [
   //     build does not require it.
   "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data:",
+  `img-src 'self' data:${SUPABASE_ORIGIN ? ` ${SUPABASE_ORIGIN}` : ""}`,
   "font-src 'self' data:",
   `connect-src 'self'${SUPABASE_ORIGIN ? ` ${SUPABASE_ORIGIN}` : ""}`,
   "media-src 'self'",
