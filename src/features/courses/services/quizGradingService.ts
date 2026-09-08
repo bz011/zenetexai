@@ -86,9 +86,45 @@ async function getCorrectDragDropOrder(supabaseAdmin: SupabaseAdmin, questionId:
   return ((data ?? []) as { item_id: string; correct_position: number }[]).map((r) => r.item_id);
 }
 
+/**
+ * hotspots.x/y/width/height are authored as PIXEL coordinates on the
+ * image's natural (full-resolution) dimensions - confirmed directly
+ * against all 4 existing hotspot questions' actual image files, not
+ * assumed. isHotspotClickCorrect() has always compared against a
+ * submitted click that is a 0-100 percentage (see HotspotQuestion.tsx),
+ * so the raw pixel values were never convertible to a match - no click
+ * could ever land inside any region's declared bounds. Normalizing here,
+ * once, at the fetch boundary keeps isHotspotClickCorrect() itself a pure
+ * percentage-vs-percentage comparison, unchanged.
+ *
+ * The natural dimensions come from question_images.natural_width/height
+ * (migration 027, backfilled by scripts/content/backfillImageDimensions.ts
+ * from the real image file, once, server-side) - never re-fetched or
+ * decoded here, and never trusted from the browser.
+ */
 async function getHotspotRegions(supabaseAdmin: SupabaseAdmin, questionId: string): Promise<HotspotRegion[]> {
-  const { data } = await supabaseAdmin.from("hotspots").select("x, y, width, height").eq("question_id", questionId);
-  return (data ?? []) as HotspotRegion[];
+  const [{ data: regions }, { data: images }] = await Promise.all([
+    supabaseAdmin.from("hotspots").select("x, y, width, height").eq("question_id", questionId),
+    supabaseAdmin.from("question_images").select("natural_width, natural_height").eq("question_id", questionId).limit(1),
+  ]);
+
+  const image = ((images ?? [])[0] ?? null) as { natural_width: number | null; natural_height: number | null } | null;
+
+  // Fail closed: without known natural dimensions there is no safe way to
+  // normalize pixel-authored regions into the 0-100 scale a submitted
+  // click always uses. Comparing raw pixels against a percentage would
+  // silently mis-grade rather than visibly block a genuinely-unresolvable
+  // click - never do that.
+  if (!image?.natural_width || !image?.natural_height) return [];
+
+  const { natural_width: naturalWidth, natural_height: naturalHeight } = image;
+
+  return ((regions ?? []) as HotspotRegion[]).map((r) => ({
+    x: (r.x / naturalWidth) * 100,
+    y: (r.y / naturalHeight) * 100,
+    width: (r.width / naturalWidth) * 100,
+    height: (r.height / naturalHeight) * 100,
+  }));
 }
 
 export interface GradableQuestion {

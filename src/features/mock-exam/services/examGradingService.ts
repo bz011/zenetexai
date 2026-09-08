@@ -94,14 +94,29 @@ export async function submitMockExamAttempt(
     const options = (optionRows ?? []) as { id: string; question_id: string }[];
     const optionIds = options.map((o) => o.id);
 
-    const [{ data: answerKeyRows }, { data: matchingPairRows }, { data: dragDropPositionRows }, { data: hotspotRows }] = await Promise.all([
-      optionIds.length
-        ? supabaseAdmin.from("question_answer_key").select("option_id, is_correct").in("option_id", optionIds)
-        : Promise.resolve({ data: [] as { option_id: string; is_correct: boolean }[] }),
-      supabaseAdmin.from("matching_answer_key").select("question_id, left_item_id, right_item_id").in("question_id", questionIds),
-      supabaseAdmin.from("drag_and_drop_answer_key").select("question_id, item_id, correct_position").in("question_id", questionIds),
-      supabaseAdmin.from("hotspots").select("question_id, x, y, width, height").in("question_id", questionIds),
-    ]);
+    const [{ data: answerKeyRows }, { data: matchingPairRows }, { data: dragDropPositionRows }, { data: hotspotRows }, { data: hotspotImageRows }] =
+      await Promise.all([
+        optionIds.length
+          ? supabaseAdmin.from("question_answer_key").select("option_id, is_correct").in("option_id", optionIds)
+          : Promise.resolve({ data: [] as { option_id: string; is_correct: boolean }[] }),
+        supabaseAdmin.from("matching_answer_key").select("question_id, left_item_id, right_item_id").in("question_id", questionIds),
+        supabaseAdmin.from("drag_and_drop_answer_key").select("question_id, item_id, correct_position").in("question_id", questionIds),
+        supabaseAdmin.from("hotspots").select("question_id, x, y, width, height").in("question_id", questionIds),
+        // hotspots.x/y/width/height are pixel coordinates on the image's
+        // natural dimensions (see quizGradingService.ts's getHotspotRegions
+        // for the full root-cause explanation) - a submitted click is
+        // always a 0-100 percentage, so the region must be normalized with
+        // the same natural_width/natural_height (migration 027) before any
+        // comparison, exactly like the practice/assessment grading path.
+        supabaseAdmin.from("question_images").select("question_id, natural_width, natural_height").in("question_id", questionIds),
+      ]);
+
+    const naturalSizeByQuestion = new Map<string, { width: number; height: number }>();
+    for (const img of (hotspotImageRows ?? []) as { question_id: string; natural_width: number | null; natural_height: number | null }[]) {
+      if (img.natural_width && img.natural_height && !naturalSizeByQuestion.has(img.question_id)) {
+        naturalSizeByQuestion.set(img.question_id, { width: img.natural_width, height: img.natural_height });
+      }
+    }
 
     const correctByOptionId = new Map(((answerKeyRows ?? []) as { option_id: string; is_correct: boolean }[]).map((a) => [a.option_id, a.is_correct]));
     for (const opt of options) {
@@ -124,8 +139,18 @@ export async function submitMockExamAttempt(
     }
 
     for (const h of (hotspotRows ?? []) as { question_id: string; x: number; y: number; width: number; height: number }[]) {
+      const natural = naturalSizeByQuestion.get(h.question_id);
+      // Fail closed (same rule as quizGradingService.ts): without a known
+      // natural size, do not guess - a question with no normalizable
+      // region simply has no region a click can ever match.
+      if (!natural) continue;
       const list = hotspotRegionsByQuestion.get(h.question_id) ?? [];
-      list.push({ x: h.x, y: h.y, width: h.width, height: h.height });
+      list.push({
+        x: (h.x / natural.width) * 100,
+        y: (h.y / natural.height) * 100,
+        width: (h.width / natural.width) * 100,
+        height: (h.height / natural.height) * 100,
+      });
       hotspotRegionsByQuestion.set(h.question_id, list);
     }
   }
