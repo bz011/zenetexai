@@ -161,15 +161,15 @@ export const PMP_CURRICULUM: CurriculumModuleSeed[] = [
     titleAr: "مجال بيئة الأعمال",
     orderIndex: 5,
     lessons: [
-      published(1, "Business Environment Introduction", "مقدمة إلى مجال بيئة الأعمال", "introduction video"),
+      published(1, "Business Environment Introduction", "مقدمة إلى مجال بيئة الأعمال", "module 6 introduction video.mp4"),
       published(2, "Project Governance", "حوكمة المشروع", "module 6 video 1"),
       published(3, "Compliance, Security & Sustainability", "الامتثال والأمن والاستدامة", "module 6 video 2"),
       published(4, "Change Control & Change Management", "ضبط التغييرات وإدارة التغيير", "module 6 video 3"),
-      published(5, "Impediments, Blockers & Issue Management", "إدارة العوائق والعقبات والمشكلات", "module 6 video 4"),
+      published(5, "Impediments, Blockers & Issue Management", "إدارة العوائق والعقبات والمشكلات", "module6 video 4.mp4"),
       published(6, "Project Risk Management", "إدارة مخاطر المشروع", "module 6 video 5"),
       published(7, "Continuous Improvement & Organizational Learning", "التحسين المستمر والتعلم المؤسسي", "module 6 video 6"),
       published(8, "Organizational Change", "التغيير المؤسسي", "module 6 video 7"),
-      published(9, "External Business Environment", "بيئة الأعمال الخارجية", "module 6 video 8"),
+      published(9, "External Business Environment", "بيئة الأعمال الخارجية", "module 6 video 8 .mp4"),
     ],
   },
 ];
