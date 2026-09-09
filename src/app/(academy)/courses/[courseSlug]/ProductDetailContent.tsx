@@ -37,7 +37,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
   ].filter((v): v is string => !!v);
 
   return (
-    <div className="relative min-h-screen overflow-hidden px-6 py-24">
+    <div dir={lang === "ar" ? "rtl" : "ltr"} className="relative min-h-screen overflow-hidden px-6 py-24">
       <div className="pointer-events-none absolute left-1/2 top-0 h-[350px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/[0.08] blur-[100px]" />
 
       <div className="container-page relative max-w-3xl">
@@ -51,6 +51,31 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
               <section>
                 <h2 className="text-[15px] font-semibold text-white">{p.overview_heading}</h2>
                 <p className="mt-2 text-[14px] leading-relaxed text-slate-400">{description}</p>
+              </section>
+            )}
+
+            {/* PMP Mastery Program only - keyed on the exact product slug (not
+                courseSlug/course:pmp capability), since the bundle product
+                also carries course:pmp but is a different page/offer. */}
+            {product.slug === "pmp-mastery-program" && (
+              <section>
+                <h2 className="text-[15px] font-semibold text-white">{p.instructor.heading}</h2>
+                <div className="mt-3 card p-5">
+                  <div className="flex flex-col items-center gap-4 text-center md:flex-row md:items-start md:text-start">
+                    <div
+                      aria-hidden="true"
+                      className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xl font-bold text-[#fff]"
+                    >
+                      {p.instructor.name.charAt(0)}
+                    </div>
+                    <div>
+                      <h3 className="text-[14px] font-semibold text-white">{p.instructor.name}</h3>
+                      <p className="mt-1 text-[12px] font-medium text-indigo-400">{p.instructor.credentials}</p>
+                      <p className="mt-0.5 text-[12px] text-slate-500">{p.instructor.role}</p>
+                      <p className="mt-3 text-[13px] leading-relaxed text-slate-400">{p.instructor.bio}</p>
+                    </div>
+                  </div>
+                </div>
               </section>
             )}
 

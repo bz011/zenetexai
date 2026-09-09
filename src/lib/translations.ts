@@ -219,6 +219,7 @@ export interface Translations {
       promo_ends_label: string; capability_course: string; capability_practice: string;
       capability_mock_exam: string; not_found: string;
       login_prompt: string; login_cta: string; signup_cta: string;
+      instructor: { heading: string; name: string; credentials: string; role: string; bio: string };
     };
     locked: {
       course_title: string; course_body: string; course_cta: string;
@@ -712,6 +713,13 @@ const en: Translations = {
       login_prompt: "Log in or create an account to continue.",
       login_cta: "Log In",
       signup_cta: "Sign Up",
+      instructor: {
+        heading: "Meet Your Instructor",
+        name: "Zaid Al-Badareen, PMP®",
+        credentials: "Electrical Engineer | PMP® | MSc Artificial Intelligence",
+        role: "Founder & Lead Instructor — ZentexAI",
+        bio: "Zaid Al-Badareen is an Electrical Engineer, PMP® certified project management professional, and holds an MSc in Artificial Intelligence. His background spans engineering, project execution, education, and artificial intelligence. As Founder and Lead Instructor at ZentexAI, he combines practical project experience with modern AI expertise to teach PMP concepts through understanding, decision-making, and realistic project scenarios—not memorization.",
+      },
     },
     locked: {
       course_title: "Course Access Required",
@@ -1232,6 +1240,13 @@ const ar: Translations = {
       login_prompt: "سجّل الدخول أو أنشئ حساباً للمتابعة.",
       login_cta: "تسجيل الدخول",
       signup_cta: "إنشاء حساب",
+      instructor: {
+        heading: "تعرّف على مدربك",
+        name: "زيد البدّارين، PMP®",
+        credentials: "مهندس كهرباء | PMP® | ماجستير في الذكاء الاصطناعي",
+        role: "المؤسس والمدرب الرئيسي — ZentexAI",
+        bio: "زيد البدّارين مهندس كهرباء، حاصل على شهادة PMP® وماجستير في الذكاء الاصطناعي، بخبرة تجمع بين الهندسة وتنفيذ المشاريع والتعليم والذكاء الاصطناعي. بصفته مؤسس ZentexAI ومدربها الرئيسي، يجمع بين الخبرة العملية والمعرفة الحديثة في الذكاء الاصطناعي لتقديم مفاهيم PMP من خلال الفهم، واتخاذ القرار، وتحليل سيناريوهات المشاريع الواقعية بدلًا من الحفظ.",
+      },
     },
     locked: {
       course_title: "الوصول إلى الدورة مطلوب",
