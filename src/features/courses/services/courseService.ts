@@ -286,3 +286,56 @@ export async function getPublicCurriculumOutline(supabase: SupabaseClient, cours
     }))
     .filter((m) => m.lessons.length > 0);
 }
+
+/**
+ * Which of the given (already RLS-visible, i.e. published) assessment ids
+ * actually have at least one real question attached - a `learning_assessments`
+ * row existing and being published is not enough on its own for a quiz to
+ * be usable. Mirrors quizService.getQuizQuestions()'s own source-of-truth
+ * exactly (bank-linked question_links OR legacy learning_assessment_questions,
+ * never both for the same assessment) via a lightweight existence check
+ * rather than fetching full question payloads, since only presence/absence
+ * is needed here. Callers use this to decide whether to show a quiz CTA at
+ * all - never render QuizRunner for an assessment not in this set.
+ */
+export async function getReadyAssessmentIds(supabase: SupabaseClient, assessmentIds: string[]): Promise<Set<string>> {
+  if (assessmentIds.length === 0) return new Set();
+
+  const [{ data: linkRows }, { data: legacyRows }] = await Promise.all([
+    supabase.from("learning_assessment_question_links").select("assessment_id").in("assessment_id", assessmentIds),
+    supabase.from("learning_assessment_questions").select("assessment_id").in("assessment_id", assessmentIds),
+  ]);
+
+  const ready = new Set<string>();
+  for (const r of (linkRows ?? []) as { assessment_id: string }[]) ready.add(r.assessment_id);
+  for (const r of (legacyRows ?? []) as { assessment_id: string }[]) ready.add(r.assessment_id);
+  return ready;
+}
+
+export interface AssessmentAttemptStatus {
+  attempted: Set<string>;
+  /**
+   * EVER passed, derived from persisted learning_assessment_attempts rows
+   * rather than a stored flag - once a passing attempt exists it is never
+   * un-passed by a later failed retake (this is "does at least one
+   * passed=true row exist", which stays true forever regardless of what
+   * attempts follow - no separate permanent boolean needed or maintained).
+   */
+  passed: Set<string>;
+}
+
+/** One query, both sets - avoids a second round trip for "attempted at all" (used to distinguish a first "Take Quiz" CTA from a "Retake Quiz" one after a failed attempt). */
+export async function getAssessmentAttemptStatus(supabase: SupabaseClient, userId: string, assessmentIds: string[]): Promise<AssessmentAttemptStatus> {
+  if (assessmentIds.length === 0) return { attempted: new Set(), passed: new Set() };
+
+  const { data } = await supabase
+    .from("learning_assessment_attempts")
+    .select("assessment_id, passed")
+    .eq("user_id", userId)
+    .in("assessment_id", assessmentIds);
+
+  const rows = (data ?? []) as { assessment_id: string; passed: boolean }[];
+  const attempted = new Set(rows.map((r) => r.assessment_id));
+  const passed = new Set(rows.filter((r) => r.passed).map((r) => r.assessment_id));
+  return { attempted, passed };
+}

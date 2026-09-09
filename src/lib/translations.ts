@@ -192,7 +192,7 @@ export interface Translations {
     };
     assessment: {
       submit: string; submitting: string; passed: string; failed: string; generic_error: string;
-      retry: string; continue_learning: string; view_history: string;
+      retry: string; continue_learning: string; view_history: string; not_ready: string;
     };
     notes: { title: string; placeholder: string; save: string; saving: string; saved: string };
     resources: { title: string };
@@ -204,6 +204,7 @@ export interface Translations {
     workspace: {
       curriculum_heading: string; progress_label: string;
       view_curriculum: string; close_curriculum: string; duration_minutes_label: string;
+      take_quiz: string; retake_quiz: string; quiz_passed: string;
     };
   };
   commerce: {
@@ -219,6 +220,7 @@ export interface Translations {
       promo_ends_label: string; capability_course: string; capability_practice: string;
       capability_mock_exam: string; not_found: string;
       login_prompt: string; login_cta: string; signup_cta: string;
+      learn_heading: string; learn_points: string[]; included_structure_label: string;
       instructor: { heading: string; name: string; credentials: string; role: string; bio: string };
     };
     locked: {
@@ -644,6 +646,7 @@ const en: Translations = {
       retry: "Retry",
       continue_learning: "Continue Learning",
       view_history: "View past attempts",
+      not_ready: "This quiz isn't available yet. Please check back soon.",
     },
     notes: {
       title: "My Notes",
@@ -674,6 +677,9 @@ const en: Translations = {
       view_curriculum: "Course Content",
       close_curriculum: "Close",
       duration_minutes_label: "{n} min",
+      take_quiz: "Take Module Quiz",
+      retake_quiz: "Retake Quiz",
+      quiz_passed: "Passed",
     },
   },
 
@@ -682,7 +688,7 @@ const en: Translations = {
     storefront: {
       eyebrow: "Academy",
       heading: "Courses & Programs",
-      sub: "Browse the PMP Mastery Program, PMP Exam Simulator, and Complete Package — no account required to look around.",
+      sub: "Browse the PMP Mastery Program and PMP Exam Simulator — no account required to look around.",
       empty: "No programs are available yet. Check back soon.",
     },
     card: {
@@ -713,6 +719,15 @@ const en: Translations = {
       login_prompt: "Log in or create an account to continue.",
       login_cta: "Log In",
       signup_cta: "Sign Up",
+      learn_heading: "What You'll Learn",
+      learn_points: [
+        "Core PMP foundations, terminology, and exam content areas",
+        "Predictive, agile, and hybrid project approaches",
+        "The People, Process, and Business Environment domains",
+        "The decision-making mindset the PMP exam actually tests",
+        "Practical, scenario-based understanding — not memorization",
+      ],
+      included_structure_label: "{modules} modules · {lessons} video lessons",
       instructor: {
         heading: "Meet Your Instructor",
         name: "Zaid Al-Badareen, PMP®",
@@ -900,7 +915,7 @@ const ar: Translations = {
 
     founder_eyebrow: "القيادة",
     founder_h2: "تعرّف على المؤسس",
-    founder_summary: "تأسست ZentexAI على يد زيد البدارين، المؤسس والرئيس التنفيذي — مهندس كهربائي، حاصل على شهادة PMP® في إدارة المشاريع، وحاصل على درجة الماجستير في العلوم (MSc) في الذكاء الاصطناعي.",
+    founder_summary: "تأسست ZentexAI على يد زيد البدّارين، المؤسس والرئيس التنفيذي — مهندس كهربائي، حاصل على شهادة PMP® في إدارة المشاريع، وحاصل على درجة الماجستير في العلوم (MSc) في الذكاء الاصطناعي.",
     founder_btn: "← اقرأ القصة كاملة",
 
     articles_eyebrow: "الموارد",
@@ -1009,9 +1024,9 @@ const ar: Translations = {
     founder_eyebrow: "القيادة",
     founder_h2: "تعرّف على المؤسس",
     founder: {
-      name: "زيد البدارين",
+      name: "زيد البدّارين",
       titles: ["المؤسس والرئيس التنفيذي، ZentexAI", "مهندس كهربائي", "PMP® - محترف معتمد في إدارة المشاريع", "ماجستير العلوم (MSc) في الذكاء الاصطناعي"],
-      bio: "زيد البدارين هو المؤسس والرئيس التنفيذي لشركة ZentexAI، شركة حلول ذكاء اصطناعي واستشارات إدارة مشاريع تركز على مساعدة المؤسسات على تبني الذكاء الاصطناعي العملي وتسليم مشاريع ناجحة. يحمل درجة البكالوريوس في الهندسة الكهربائية، وهو محترف معتمد PMP® في إدارة المشاريع، وحصل على درجة الماجستير في العلوم (MSc) في الذكاء الاصطناعي. من خلال ZentexAI، يجمع بين خبرته الهندسية وخبرته في إدارة المشاريع وتخصصه في الذكاء الاصطناعي لمساعدة المؤسسات على تطبيق حلول ذكاء اصطناعي عملية، ودعم المهنيين في تطوير مهارات إدارة المشاريع اللازمة للنجاح في بيئة العمل سريعة التطور اليوم.",
+      bio: "زيد البدّارين هو المؤسس والرئيس التنفيذي لشركة ZentexAI، شركة حلول ذكاء اصطناعي واستشارات إدارة مشاريع تركز على مساعدة المؤسسات على تبني الذكاء الاصطناعي العملي وتسليم مشاريع ناجحة. يحمل درجة البكالوريوس في الهندسة الكهربائية، وهو محترف معتمد PMP® في إدارة المشاريع، وحصل على درجة الماجستير في العلوم (MSc) في الذكاء الاصطناعي. من خلال ZentexAI، يجمع بين خبرته الهندسية وخبرته في إدارة المشاريع وتخصصه في الذكاء الاصطناعي لمساعدة المؤسسات على تطبيق حلول ذكاء اصطناعي عملية، ودعم المهنيين في تطوير مهارات إدارة المشاريع اللازمة للنجاح في بيئة العمل سريعة التطور اليوم.",
     },
     cta_h2: "هل تريد العمل معنا؟",
     cta_p: "أخبرنا عن مؤسستك أو أهدافك — سنعاود التواصل معك شخصياً.",
@@ -1171,6 +1186,7 @@ const ar: Translations = {
       retry: "إعادة المحاولة",
       continue_learning: "متابعة التعلم",
       view_history: "عرض المحاولات السابقة",
+      not_ready: "هذا الاختبار غير متاح بعد. يرجى التحقق مرة أخرى قريباً.",
     },
     notes: {
       title: "ملاحظاتي",
@@ -1201,6 +1217,9 @@ const ar: Translations = {
       view_curriculum: "محتوى الدورة",
       close_curriculum: "إغلاق",
       duration_minutes_label: "{n} دقيقة",
+      take_quiz: "ابدأ اختبار الوحدة",
+      retake_quiz: "إعادة الاختبار",
+      quiz_passed: "تم الاجتياز",
     },
   },
 
@@ -1209,7 +1228,7 @@ const ar: Translations = {
     storefront: {
       eyebrow: "الأكاديمية",
       heading: "الدورات والبرامج",
-      sub: "تصفح برنامج احتراف PMP، ومحاكي اختبار PMP، والباقة الكاملة — دون الحاجة لإنشاء حساب للتصفح.",
+      sub: "تصفح برنامج احتراف PMP ومحاكي اختبار PMP — دون الحاجة لإنشاء حساب للتصفح.",
       empty: "لا توجد برامج متاحة حالياً. تحقق مرة أخرى قريباً.",
     },
     card: {
@@ -1240,12 +1259,21 @@ const ar: Translations = {
       login_prompt: "سجّل الدخول أو أنشئ حساباً للمتابعة.",
       login_cta: "تسجيل الدخول",
       signup_cta: "إنشاء حساب",
+      learn_heading: "ماذا ستتعلم",
+      learn_points: [
+        "أساسيات PMP ومصطلحاتها ومجالات محتوى الامتحان",
+        "أساليب المشاريع التنبؤية (Predictive) والرشيقة (Agile) والهجينة (Hybrid)",
+        "مجالات الأفراد (People) والعمليات (Process) وبيئة الأعمال (Business Environment)",
+        "عقلية اتخاذ القرار التي يقيسها امتحان PMP فعلياً",
+        "فهم عملي قائم على سيناريوهات واقعية — لا حفظ",
+      ],
+      included_structure_label: "{modules} وحدات · {lessons} درس فيديو",
       instructor: {
         heading: "تعرّف على مدربك",
-        name: "زيد البدّارين، PMP®",
+        name: "زيد البدارين، PMP®",
         credentials: "مهندس كهرباء | PMP® | ماجستير في الذكاء الاصطناعي",
         role: "المؤسس والمدرب الرئيسي — ZentexAI",
-        bio: "زيد البدّارين مهندس كهرباء، حاصل على شهادة PMP® وماجستير في الذكاء الاصطناعي، بخبرة تجمع بين الهندسة وتنفيذ المشاريع والتعليم والذكاء الاصطناعي. بصفته مؤسس ZentexAI ومدربها الرئيسي، يجمع بين الخبرة العملية والمعرفة الحديثة في الذكاء الاصطناعي لتقديم مفاهيم PMP من خلال الفهم، واتخاذ القرار، وتحليل سيناريوهات المشاريع الواقعية بدلًا من الحفظ.",
+        bio: "زيد البدارين مهندس كهرباء، حاصل على شهادة PMP® وماجستير في الذكاء الاصطناعي، بخبرة تجمع بين الهندسة وتنفيذ المشاريع والتعليم والذكاء الاصطناعي. بصفته مؤسس ZentexAI ومدربها الرئيسي، يجمع بين الخبرة العملية والمعرفة الحديثة في الذكاء الاصطناعي لتقديم مفاهيم PMP من خلال الفهم، واتخاذ القرار، وتحليل سيناريوهات المشاريع الواقعية بدلًا من الحفظ.",
       },
     },
     locked: {

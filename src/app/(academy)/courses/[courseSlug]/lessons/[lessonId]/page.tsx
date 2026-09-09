@@ -9,6 +9,8 @@ import {
   isLessonCompleted,
   getCourseBySlug,
   getCourseWithProgress,
+  getReadyAssessmentIds,
+  getAssessmentAttemptStatus,
 } from "@/features/courses/services/courseService";
 import { getQuizQuestions } from "@/features/courses/services/quizService";
 import { getLessonNote } from "@/features/courses/services/noteService";
@@ -57,21 +59,50 @@ export default async function LessonDetailPage({ params }: Props) {
 
   const checkpointQuestions = checkpoint ? await getQuizQuestions(supabase, checkpoint.id) : [];
 
+  // Module quizzes: courseService already attaches each module's
+  // module_assessment row (moduleAssessment), but a row existing and being
+  // published is not enough on its own for a quiz to be shown as usable -
+  // getReadyAssessmentIds additionally requires at least one real question,
+  // so a quiz entry point never appears for content that hasn't been
+  // authored/imported yet (Module 1 also naturally has none: no row at all).
+  const moduleAssessmentIds = (courseWithProgress?.modules ?? [])
+    .map((m) => m.moduleAssessment?.id)
+    .filter((id): id is string => !!id);
+  const [readyAssessmentIds, attemptStatus] = await Promise.all([
+    getReadyAssessmentIds(supabase, moduleAssessmentIds),
+    getAssessmentAttemptStatus(supabase, user.id, moduleAssessmentIds),
+  ]);
+
   // Sidebar only ever needs id/title/duration/completed - never a lesson's
   // video_url or content_en/ar, so those are stripped here rather than
   // shipping every other lesson's video reference into this page's payload.
-  const curriculum = (courseWithProgress?.modules ?? []).map((m) => ({
-    id: m.id,
-    titleEn: m.title_en,
-    titleAr: m.title_ar,
-    lessons: m.lessons.map((l) => ({
-      id: l.id,
-      titleEn: l.title_en,
-      titleAr: l.title_ar,
-      durationMinutes: l.duration_minutes,
-      completed: l.completed,
-    })),
-  }));
+  const curriculum = (courseWithProgress?.modules ?? []).map((m) => {
+    const assessment = m.moduleAssessment;
+    const quiz =
+      assessment && readyAssessmentIds.has(assessment.id)
+        ? {
+            assessmentId: assessment.id,
+            titleEn: assessment.title_en,
+            titleAr: assessment.title_ar,
+            passed: attemptStatus.passed.has(assessment.id),
+            attempted: attemptStatus.attempted.has(assessment.id),
+          }
+        : null;
+
+    return {
+      id: m.id,
+      titleEn: m.title_en,
+      titleAr: m.title_ar,
+      lessons: m.lessons.map((l) => ({
+        id: l.id,
+        titleEn: l.title_en,
+        titleAr: l.title_ar,
+        durationMinutes: l.duration_minutes,
+        completed: l.completed,
+      })),
+      quiz,
+    };
+  });
 
   return (
     <LessonDetailContent

@@ -11,11 +11,22 @@ export interface CurriculumLesson {
   completed: boolean;
 }
 
+export interface CurriculumModuleQuiz {
+  assessmentId: string;
+  titleEn: string;
+  titleAr: string | null;
+  /** Ever passed - derived from persisted attempts, stays true forever once achieved (see courseService.getAssessmentAttemptStatus). */
+  passed: boolean;
+  attempted: boolean;
+}
+
 export interface CurriculumModule {
   id: string;
   titleEn: string;
   titleAr: string | null;
   lessons: CurriculumLesson[];
+  /** Null when the module has no quiz (Module 1) or its quiz isn't ready yet (published but not yet seeded with questions) - never rendered in either case. */
+  quiz: CurriculumModuleQuiz | null;
 }
 
 interface Props {
@@ -108,6 +119,28 @@ export default function CourseCurriculumSidebar({
                   );
                 })}
               </div>
+
+              {mod.quiz && (
+                <Link
+                  href={`/courses/${courseSlug}/assessments/${mod.quiz.assessmentId}`}
+                  className={`mt-0.5 flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors ${
+                    mod.quiz.passed
+                      ? "text-emerald-400 hover:bg-emerald-500/[0.08]"
+                      : "text-indigo-400 hover:bg-indigo-500/[0.08]"
+                  }`}
+                >
+                  <span
+                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] ${
+                      mod.quiz.passed ? "bg-emerald-500/[0.15] text-emerald-400" : "border border-indigo-400/40 text-transparent"
+                    }`}
+                  >
+                    {mod.quiz.passed ? "✓" : ""}
+                  </span>
+                  <span className="flex-1 truncate">
+                    {mod.quiz.passed ? w.quiz_passed : mod.quiz.attempted ? w.retake_quiz : w.take_quiz}
+                  </span>
+                </Link>
+              )}
             </div>
           );
         })}

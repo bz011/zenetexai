@@ -26,6 +26,8 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
   const price = product.price;
   const isFreeNow = !!price && price.isPromotionActive && price.effectiveAmountMinorUnits === 0;
 
+  const totalLessons = curriculum.reduce((sum, mod) => sum + mod.lessons.length, 0);
+
   const hasCourse = product.capabilities.includes("course:pmp");
   const hasPractice = product.capabilities.includes("practice:pmp");
   const hasMockExam = product.capabilities.includes("mock_exam:pmp");
@@ -51,6 +53,21 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
               <section>
                 <h2 className="text-[15px] font-semibold text-white">{p.overview_heading}</h2>
                 <p className="mt-2 text-[14px] leading-relaxed text-slate-400">{description}</p>
+              </section>
+            )}
+
+            {/* Same PMP Mastery Program scoping as the instructor section
+                below - real curriculum structure only, no invented claims. */}
+            {product.slug === "pmp-mastery-program" && (
+              <section>
+                <h2 className="text-[15px] font-semibold text-white">{p.learn_heading}</h2>
+                <ul className="mt-3 space-y-2">
+                  {p.learn_points.map((point) => (
+                    <li key={point} className="flex items-start gap-2 text-[13px] leading-relaxed text-slate-300">
+                      <span className="mt-0.5 text-indigo-400">✓</span> <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
               </section>
             )}
 
@@ -88,6 +105,12 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
                       <span className="text-emerald-400">✓</span> {label}
                     </li>
                   ))}
+                  {totalLessons > 0 && (
+                    <li className="flex items-center gap-2 text-[13px] text-slate-300">
+                      <span className="text-emerald-400">✓</span>{" "}
+                      {p.included_structure_label.replace("{modules}", String(curriculum.length)).replace("{lessons}", String(totalLessons))}
+                    </li>
+                  )}
                 </ul>
               </section>
             )}

@@ -5,6 +5,7 @@ import { getAssessmentById } from "@/features/courses/services/courseService";
 import { getQuizQuestions } from "@/features/courses/services/quizService";
 import { hasCapability } from "@/features/commerce/services/entitlementService";
 import LockedAccess from "@/components/academy/LockedAccess";
+import QuizNotReady from "@/components/academy/QuizNotReady";
 import ModuleAssessmentContent from "./ModuleAssessmentContent";
 
 interface Props {
@@ -29,6 +30,14 @@ export default async function ModuleAssessmentPage({ params }: Props) {
   }
 
   const questions = await getQuizQuestions(supabase, assessmentId);
+
+  // Defense-in-depth (see QuizNotReady's own comment): a published
+  // assessment row with zero real questions must never be openable as a
+  // live quiz - RLS already keeps an UNpublished one fully invisible, this
+  // covers the "published before content was seeded" case.
+  if (questions.length === 0) {
+    return <QuizNotReady courseSlug={courseSlug} />;
+  }
 
   return (
     <ModuleAssessmentContent courseSlug={courseSlug} assessment={assessment} questions={questions} />
