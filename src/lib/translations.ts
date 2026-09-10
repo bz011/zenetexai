@@ -192,7 +192,7 @@ export interface Translations {
     };
     assessment: {
       submit: string; submitting: string; passed: string; failed: string; generic_error: string;
-      retry: string; continue_learning: string; view_history: string; not_ready: string;
+      retry: string; continue_learning: string; view_history: string; not_ready: string; locked: string;
     };
     notes: { title: string; placeholder: string; save: string; saving: string; saved: string };
     resources: { title: string };
@@ -205,6 +205,7 @@ export interface Translations {
       curriculum_heading: string; progress_label: string;
       view_curriculum: string; close_curriculum: string; duration_minutes_label: string;
       take_quiz: string; retake_quiz: string; quiz_passed: string;
+      quiz_locked: string; quiz_locked_hint: string;
     };
   };
   commerce: {
@@ -231,6 +232,7 @@ export interface Translations {
     dashboard: {
       owned_heading: string; empty: string; browse_courses: string; expires_label: string;
       open_course: string; open_practice: string; open_mock_exam: string;
+      certificate_locked: string; certificate_view: string; certificate_download: string;
     };
     checkout: {
       success_heading: string; success_body: string; access_until_label: string;
@@ -240,6 +242,26 @@ export interface Translations {
       not_found_heading: string; not_found_body: string;
       go_to_practice: string; go_to_mock_exam: string; back_to_product: string; try_again: string;
     };
+  };
+  certificate: {
+    heading: string;
+    not_entitled_body: string; not_entitled_cta: string;
+    not_eligible_heading: string; not_eligible_body: string;
+    missing_name_heading: string; missing_name_body: string;
+    first_name_label: string; last_name_label: string; name_save: string; name_saving: string; name_error: string;
+    academy_name: string; program_name: string;
+    certifies_that: string; has_completed: string; offered_by: string;
+    issued_on_label: string; certificate_number_label: string; instructor_label: string;
+    instructor_name: string; instructor_role: string;
+    download_pdf: string; preparing_pdf: string; view_verification: string;
+    disclaimer: string;
+    back_to_dashboard: string;
+  };
+  verify: {
+    heading: string; sub: string;
+    valid_heading: string; not_found_heading: string; not_found_body: string;
+    student_label: string; course_label: string; issued_label: string; certificate_number_label: string;
+    academy_name: string;
   };
 }
 
@@ -647,6 +669,7 @@ const en: Translations = {
       continue_learning: "Continue Learning",
       view_history: "View past attempts",
       not_ready: "This quiz isn't available yet. Please check back soon.",
+      locked: "Complete all lessons in this module to unlock the quiz.",
     },
     notes: {
       title: "My Notes",
@@ -680,6 +703,8 @@ const en: Translations = {
       take_quiz: "Take Module Quiz",
       retake_quiz: "Retake Quiz",
       quiz_passed: "Passed",
+      quiz_locked: "Locked",
+      quiz_locked_hint: "Complete all lessons in this module to unlock the quiz.",
     },
   },
 
@@ -760,6 +785,9 @@ const en: Translations = {
       open_course: "Continue Course",
       open_practice: "Start Practicing",
       open_mock_exam: "Start Mock Exam",
+      certificate_locked: "Complete all course lessons and pass all module quizzes to earn your Certificate of Completion.",
+      certificate_view: "View Certificate",
+      certificate_download: "Download Certificate",
     },
     checkout: {
       success_heading: "Payment Successful",
@@ -779,6 +807,49 @@ const en: Translations = {
       back_to_product: "Back to PMP Exam Simulator",
       try_again: "Try Again",
     },
+  },
+
+  // ── Certificate of Completion (Sprint 11) ───────────────────────────────────
+  certificate: {
+    heading: "Certificate of Completion",
+    not_entitled_body: "You need an active PMP Mastery Program enrollment to earn a certificate.",
+    not_entitled_cta: "View PMP Mastery Program",
+    not_eligible_heading: "Certificate Not Yet Available",
+    not_eligible_body: "Complete all course lessons and pass all module quizzes to earn your Certificate of Completion.",
+    missing_name_heading: "Add Your Name to Continue",
+    missing_name_body: "We need your full name on file before we can issue your certificate.",
+    first_name_label: "First name",
+    last_name_label: "Last name",
+    name_save: "Save and continue",
+    name_saving: "Saving...",
+    name_error: "Please enter both your first and last name.",
+    academy_name: "ZentexAI Academy",
+    program_name: "PMP Mastery Program",
+    certifies_that: "This certifies that",
+    has_completed: "has successfully completed the",
+    offered_by: "offered by ZentexAI Academy.",
+    issued_on_label: "Issued on",
+    certificate_number_label: "Certificate Number",
+    instructor_label: "Instructor",
+    instructor_name: "Zaid Al-Badareen, PMP®",
+    instructor_role: "Founder & Lead Instructor — ZentexAI",
+    download_pdf: "Download Certificate",
+    preparing_pdf: "Preparing PDF...",
+    view_verification: "Verify this certificate",
+    disclaimer: "This certificate recognizes completion of the ZentexAI Academy PMP Mastery Program. It is not a PMP® or PMI® certification and does not represent PMI-issued credentials or exam eligibility.",
+    back_to_dashboard: "Back to Dashboard",
+  },
+  verify: {
+    heading: "Certificate Verification",
+    sub: "Enter or follow a certificate link to confirm it was issued by ZentexAI Academy.",
+    valid_heading: "Valid Certificate",
+    not_found_heading: "Certificate Not Found",
+    not_found_body: "We couldn't find a certificate with this number. Please check the number and try again.",
+    student_label: "Student",
+    course_label: "Course",
+    issued_label: "Issued",
+    certificate_number_label: "Certificate Number",
+    academy_name: "ZentexAI Academy",
   },
 };
 
@@ -1187,6 +1258,7 @@ const ar: Translations = {
       continue_learning: "متابعة التعلم",
       view_history: "عرض المحاولات السابقة",
       not_ready: "هذا الاختبار غير متاح بعد. يرجى التحقق مرة أخرى قريباً.",
+      locked: "أكمل جميع دروس هذه الوحدة لفتح الاختبار.",
     },
     notes: {
       title: "ملاحظاتي",
@@ -1220,6 +1292,8 @@ const ar: Translations = {
       take_quiz: "ابدأ اختبار الوحدة",
       retake_quiz: "إعادة الاختبار",
       quiz_passed: "تم الاجتياز",
+      quiz_locked: "مقفل",
+      quiz_locked_hint: "أكمل جميع دروس هذه الوحدة لفتح الاختبار.",
     },
   },
 
@@ -1300,6 +1374,9 @@ const ar: Translations = {
       open_course: "متابعة الدورة",
       open_practice: "ابدأ التدريب",
       open_mock_exam: "ابدأ الاختبار التجريبي",
+      certificate_locked: "أكمل جميع دروس الدورة واجتز اختبارات الوحدات للحصول على شهادة إتمام الدورة.",
+      certificate_view: "عرض الشهادة",
+      certificate_download: "تحميل الشهادة",
     },
     checkout: {
       success_heading: "تم الدفع بنجاح",
@@ -1319,6 +1396,49 @@ const ar: Translations = {
       back_to_product: "العودة إلى محاكي اختبار PMP",
       try_again: "حاول مرة أخرى",
     },
+  },
+
+  // ── شهادة إتمام الدورة (Sprint 11) ──────────────────────────────────────────
+  certificate: {
+    heading: "شهادة إتمام الدورة",
+    not_entitled_body: "تحتاج إلى اشتراك فعّال في برنامج PMP Mastery Program للحصول على شهادة.",
+    not_entitled_cta: "عرض برنامج PMP Mastery Program",
+    not_eligible_heading: "الشهادة غير متاحة بعد",
+    not_eligible_body: "أكمل جميع دروس الدورة واجتز اختبارات الوحدات للحصول على شهادة إتمام الدورة.",
+    missing_name_heading: "أضف اسمك للمتابعة",
+    missing_name_body: "نحتاج إلى اسمك الكامل قبل أن نتمكن من إصدار شهادتك.",
+    first_name_label: "الاسم الأول",
+    last_name_label: "اسم العائلة",
+    name_save: "حفظ والمتابعة",
+    name_saving: "جارٍ الحفظ...",
+    name_error: "يرجى إدخال الاسم الأول واسم العائلة.",
+    academy_name: "ZentexAI Academy",
+    program_name: "PMP Mastery Program",
+    certifies_that: "تشهد هذه الوثيقة بأن",
+    has_completed: "قد أكمل بنجاح برنامج",
+    offered_by: "المقدَّم من ZentexAI Academy.",
+    issued_on_label: "تاريخ الإصدار",
+    certificate_number_label: "رقم الشهادة",
+    instructor_label: "المدرّب",
+    instructor_name: "زيد البدارين، PMP®",
+    instructor_role: "المؤسس والمدرّب الرئيسي — ZentexAI",
+    download_pdf: "تحميل الشهادة",
+    preparing_pdf: "جارٍ تجهيز ملف PDF...",
+    view_verification: "التحقق من هذه الشهادة",
+    disclaimer: "تُقرّ هذه الشهادة بإتمام برنامج PMP Mastery Program المقدَّم من ZentexAI Academy. وهي ليست شهادة PMP® أو PMI®، ولا تمثّل اعتماداً صادراً عن PMI أو أهلية لأداء الامتحان.",
+    back_to_dashboard: "العودة إلى لوحة التحكم",
+  },
+  verify: {
+    heading: "التحقق من الشهادة",
+    sub: "أدخل رقم الشهادة أو اتبع رابطها للتأكد من إصدارها عن ZentexAI Academy.",
+    valid_heading: "شهادة صالحة",
+    not_found_heading: "الشهادة غير موجودة",
+    not_found_body: "لم نتمكن من العثور على شهادة بهذا الرقم. يرجى التحقق من الرقم والمحاولة مرة أخرى.",
+    student_label: "الطالب",
+    course_label: "الدورة",
+    issued_label: "تاريخ الإصدار",
+    certificate_number_label: "رقم الشهادة",
+    academy_name: "ZentexAI Academy",
   },
 };
 

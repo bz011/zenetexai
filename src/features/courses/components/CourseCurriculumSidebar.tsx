@@ -18,6 +18,8 @@ export interface CurriculumModuleQuiz {
   /** Ever passed - derived from persisted attempts, stays true forever once achieved (see courseService.getAssessmentAttemptStatus). */
   passed: boolean;
   attempted: boolean;
+  /** True until every published lesson in this module is completed (see courseService.isModuleQuizUnlocked) - renders as a disabled row instead of a link. */
+  locked: boolean;
 }
 
 export interface CurriculumModule {
@@ -120,7 +122,19 @@ export default function CourseCurriculumSidebar({
                 })}
               </div>
 
-              {mod.quiz && (
+              {mod.quiz && mod.quiz.locked && (
+                <div
+                  className="mt-0.5 flex cursor-not-allowed items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium text-slate-600"
+                  title={w.quiz_locked_hint}
+                >
+                  <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-white/[0.1] text-[10px]">
+                    🔒
+                  </span>
+                  <span className="flex-1 truncate">{w.quiz_locked}</span>
+                </div>
+              )}
+
+              {mod.quiz && !mod.quiz.locked && (
                 <Link
                   href={`/courses/${courseSlug}/assessments/${mod.quiz.assessmentId}`}
                   className={`mt-0.5 flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors ${

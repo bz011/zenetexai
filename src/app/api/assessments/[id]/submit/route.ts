@@ -26,6 +26,7 @@ import { checkRateLimit } from "@/lib/upstashRateLimit";
 import { quizSubmitSchema } from "@/lib/validators/courseValidators";
 import { getQuizQuestions } from "@/features/courses/services/quizService";
 import { gradeQuizAnswer } from "@/features/courses/services/quizGradingService";
+import { isModuleQuizUnlocked } from "@/features/courses/services/courseService";
 import type { QuizQuestionResult, QuizSubmitResult } from "@/features/courses/types/course";
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -64,12 +65,27 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   // to this user (published, or admin/instructor) before grading it.
   const { data: assessment, error: assessmentError } = await supabase
     .from("learning_assessments")
-    .select("id, passing_score")
+    .select("id, passing_score, module_id")
     .eq("id", assessmentId)
     .single();
 
   if (assessmentError || !assessment) {
     return NextResponse.json({ success: false, error: "Assessment not found" }, { status: 404 });
+  }
+
+  // Module-quiz unlocking (Sprint 11) — server-side enforcement independent
+  // of the UI: even a direct POST to this endpoint (bypassing the assessment
+  // page's own QuizLocked check) cannot be graded/recorded before every
+  // published lesson in the module has been completed. Same check, same
+  // function, as the page — see courseService.isModuleQuizUnlocked.
+  if (assessment.module_id) {
+    const unlocked = await isModuleQuizUnlocked(supabase, user.id, assessment.module_id);
+    if (!unlocked) {
+      return NextResponse.json(
+        { success: false, error: "Complete all lessons in this module before taking the quiz." },
+        { status: 403 }
+      );
+    }
   }
 
   // Real question set for this assessment — submitted answers for any other

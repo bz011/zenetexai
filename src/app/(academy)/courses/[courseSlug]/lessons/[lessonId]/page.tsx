@@ -78,6 +78,14 @@ export default async function LessonDetailPage({ params }: Props) {
   // shipping every other lesson's video reference into this page's payload.
   const curriculum = (courseWithProgress?.modules ?? []).map((m) => {
     const assessment = m.moduleAssessment;
+    // Locked until every published lesson in THIS module is completed
+    // (Sprint 11) - computed from the same per-lesson `completed` flags
+    // already fetched above, so no extra query is needed here. A passed
+    // quiz can never be locked again by this check (retaking an already-
+    // passed quiz remains available even if, hypothetically, a lesson were
+    // later unpublished - m.lessons only ever lists currently-published
+    // lessons, so this only reflects the current requirement).
+    const locked = m.lessons.length > 0 && m.lessons.some((l) => !l.completed);
     const quiz =
       assessment && readyAssessmentIds.has(assessment.id)
         ? {
@@ -86,6 +94,7 @@ export default async function LessonDetailPage({ params }: Props) {
             titleAr: assessment.title_ar,
             passed: attemptStatus.passed.has(assessment.id),
             attempted: attemptStatus.attempted.has(assessment.id),
+            locked: locked && !attemptStatus.passed.has(assessment.id),
           }
         : null;
 

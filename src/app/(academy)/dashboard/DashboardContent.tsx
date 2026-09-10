@@ -20,6 +20,8 @@ interface Props {
   owned: OwnedLearningResource[];
   resume: ContinueLearningInfo | null;
   stats: DashboardStats;
+  /** undefined = no PMP course entitlement (don't show anything certificate-related); null = entitled but not yet issued; string = issued certificate id. */
+  certificateId: string | null | undefined;
 }
 
 function StatCard({ label, value }: { label: string; value: string }) {
@@ -31,7 +33,7 @@ function StatCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-export default function DashboardContent({ profile, owned, resume, stats }: Props) {
+export default function DashboardContent({ profile, owned, resume, stats, certificateId }: Props) {
   const { t, lang } = useLang();
   const d = t.auth.dashboard;
   const c = t.commerce.dashboard;
@@ -137,6 +139,22 @@ export default function DashboardContent({ profile, owned, resume, stats }: Prop
                         </Link>
                       )}
                     </div>
+                    {hasCourse && certificateId !== undefined && (
+                      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-white/[0.06] pt-3">
+                        {certificateId ? (
+                          <>
+                            <Link href="/certificate" className="btn-primary px-4 py-2 text-[12px]">
+                              {c.certificate_view}
+                            </Link>
+                            <a href={`/api/certificates/${certificateId}/pdf`} className="btn-ghost px-4 py-2 text-[12px]">
+                              {c.certificate_download}
+                            </a>
+                          </>
+                        ) : (
+                          <p className="text-[12px] text-slate-500">{c.certificate_locked}</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 );
               })}

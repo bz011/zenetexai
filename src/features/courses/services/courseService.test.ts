@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getPublicCurriculumOutline, getReadyAssessmentIds, getAssessmentAttemptStatus } from "./courseService";
+import { getPublicCurriculumOutline, getReadyAssessmentIds, getAssessmentAttemptStatus, isModuleQuizUnlocked } from "./courseService";
 
 function buildSupabaseMock(config: {
   course: { id: string } | null;
@@ -176,5 +176,61 @@ describe("getAssessmentAttemptStatus", () => {
     expect(result.attempted.has("failed-one")).toBe(true);
     expect(result.passed.has("failed-one")).toBe(false);
     expect(result.attempted.has("untouched-one")).toBe(false);
+  });
+});
+
+// --- Module-quiz unlocking (Sprint 11): a module quiz stays locked until
+// EVERY published lesson in its module has a lesson_progress row for this
+// user - order doesn't matter, only completeness. Both the assessment page
+// and the submit API route call this exact function, so these tests are
+// the single source of truth for the unlock rule itself. ---
+describe("isModuleQuizUnlocked", () => {
+  function buildMock(config: { lessonIds: string[]; completedLessonIds: string[] }) {
+    return {
+      from: (table: string) => {
+        if (table === "lessons") {
+          const chain = { eq: () => chain, then: (resolve: (v: unknown) => void) => resolve({ data: config.lessonIds.map((id) => ({ id })), error: null }) };
+          return { select: () => chain };
+        }
+        if (table === "lesson_progress") {
+          const chain = {
+            eq: () => chain,
+            in: async () => ({ data: config.completedLessonIds.map((id) => ({ lesson_id: id })), error: null }),
+          };
+          return { select: () => chain };
+        }
+        throw new Error(`Unexpected table: ${table}`);
+      },
+    };
+  }
+
+  it("is unlocked when a module has zero published lessons (nothing to gate on)", async () => {
+    const supabase = buildMock({ lessonIds: [], completedLessonIds: [] });
+    expect(await isModuleQuizUnlocked(supabase as never, "user-1", "module-1")).toBe(true);
+  });
+
+  it("is locked when 9 of 10 published lessons are completed", async () => {
+    const lessonIds = Array.from({ length: 10 }, (_, i) => `lesson-${i}`);
+    const supabase = buildMock({ lessonIds, completedLessonIds: lessonIds.slice(0, 9) });
+    expect(await isModuleQuizUnlocked(supabase as never, "user-1", "module-1")).toBe(false);
+  });
+
+  it("unlocks the moment the final lesson is completed", async () => {
+    const lessonIds = Array.from({ length: 10 }, (_, i) => `lesson-${i}`);
+    const supabase = buildMock({ lessonIds, completedLessonIds: lessonIds });
+    expect(await isModuleQuizUnlocked(supabase as never, "user-1", "module-1")).toBe(true);
+  });
+
+  it("does not require lessons to be completed in order - any 10 of 10, regardless of which ones, unlocks it", async () => {
+    const lessonIds = ["lesson-a", "lesson-b", "lesson-c"];
+    // Completed out of order / non-sequentially (c, then a, then b).
+    const supabase = buildMock({ lessonIds, completedLessonIds: ["lesson-c", "lesson-a", "lesson-b"] });
+    expect(await isModuleQuizUnlocked(supabase as never, "user-1", "module-1")).toBe(true);
+  });
+
+  it("is locked when zero lessons are completed", async () => {
+    const lessonIds = ["lesson-a", "lesson-b"];
+    const supabase = buildMock({ lessonIds, completedLessonIds: [] });
+    expect(await isModuleQuizUnlocked(supabase as never, "user-1", "module-1")).toBe(false);
   });
 });

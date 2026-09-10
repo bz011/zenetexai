@@ -114,6 +114,37 @@ export async function getCourseWithProgress(
   };
 }
 
+/**
+ * Whether ALL published lessons in a module have been completed by this
+ * user — the single source of truth for module-quiz unlocking (Sprint 11).
+ * Lessons need not be completed in order; only the total count matters.
+ *
+ * Deliberately counts DISTINCT completed lesson_progress rows against the
+ * count of published lesson ids, rather than checking "any progress
+ * exists" — a module with zero published lessons returns true (nothing to
+ * gate on) so a misconfigured/empty module can never permanently lock a
+ * quiz, but this should not occur for Modules 2-6 in practice.
+ *
+ * Called from BOTH the assessment page (UI: show QuizLocked vs the real
+ * quiz) and the submit API route (server-side enforcement) — same query,
+ * same answer, so the two surfaces can never disagree.
+ */
+export async function isModuleQuizUnlocked(supabase: SupabaseClient, userId: string, moduleId: string): Promise<boolean> {
+  const { data: lessons } = await supabase.from("lessons").select("id").eq("module_id", moduleId).eq("is_published", true);
+
+  const lessonIds = (lessons ?? []).map((l: { id: string }) => l.id);
+  if (lessonIds.length === 0) return true;
+
+  const { data: progress } = await supabase
+    .from("lesson_progress")
+    .select("lesson_id")
+    .eq("user_id", userId)
+    .in("lesson_id", lessonIds);
+
+  const completedCount = new Set((progress ?? []).map((p: { lesson_id: string }) => p.lesson_id)).size;
+  return completedCount >= lessonIds.length;
+}
+
 export async function isLessonCompleted(
   supabase: SupabaseClient,
   userId: string,
