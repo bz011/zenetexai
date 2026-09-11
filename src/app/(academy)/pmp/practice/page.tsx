@@ -4,7 +4,7 @@ import { hasCapability } from "@/features/commerce/services/entitlementService";
 import LockedAccess from "@/components/academy/LockedAccess";
 import PracticeConfigForm from "@/features/practice/components/PracticeConfigForm";
 
-export const metadata: Metadata = { title: "Practice Mode — ZENTEXAI" };
+export const metadata: Metadata = { title: "Practice Mode — ZENTEXAI", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function PracticeConfigPage() {

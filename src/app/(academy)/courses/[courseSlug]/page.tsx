@@ -5,14 +5,34 @@ import { getProductBySlug } from "@/features/commerce/services/productService";
 import { getUserCapabilities } from "@/features/commerce/services/entitlementService";
 import { getPublicCurriculumOutline } from "@/features/courses/services/courseService";
 import ProductDetailContent from "./ProductDetailContent";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd, courseJsonLd } from "@/lib/structuredData";
+import { createSupabaseServer } from "@/lib/supabase/server";
 
 interface Props {
   params: Promise<{ courseSlug: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { courseSlug } = await params;
-  return { title: `${courseSlug} — ZENTEXAI Academy` };
+  const { courseSlug: productSlug } = await params;
+  const supabase = createSupabaseServer();
+  const product = await getProductBySlug(supabase, productSlug);
+
+  if (!product || !product.is_published) {
+    return { title: "Product Not Found — ZENTEXAI Academy", robots: { index: false, follow: false } };
+  }
+
+  const title = `${product.title_en} — ZentexAI Academy`;
+  const description = product.description_en;
+  const path = `/courses/${product.slug}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: path },
+    openGraph: { title, description, url: path, type: "website" },
+    twitter: { card: "summary_large_image", title, description },
+  };
 }
 
 export const dynamic = "force-dynamic";
@@ -43,12 +63,18 @@ export default async function ProductDetailPage({ params }: Props) {
   const alreadyOwned = product.capabilities.length > 0 && product.capabilities.every((c) => ownedCapabilities.has(c));
 
   return (
-    <ProductDetailContent
-      product={product}
-      courseSlug={courseSlug}
-      curriculum={curriculum}
-      isAuthenticated={!!user}
-      alreadyOwned={alreadyOwned}
-    />
+    <>
+      <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Courses", path: "/courses" }, { name: product.title_en, path: `/courses/${product.slug}` }])} />
+      {product.type === "course" && (
+        <JsonLd data={courseJsonLd({ name: product.title_en, description: product.description_en, path: `/courses/${product.slug}` })} />
+      )}
+      <ProductDetailContent
+        product={product}
+        courseSlug={courseSlug}
+        curriculum={curriculum}
+        isAuthenticated={!!user}
+        alreadyOwned={alreadyOwned}
+      />
+    </>
   );
 }

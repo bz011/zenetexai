@@ -10,7 +10,7 @@ interface Props {
   params: Promise<{ sessionId: string }>;
 }
 
-export const metadata: Metadata = { title: "Practice Results — ZENTEXAI" };
+export const metadata: Metadata = { title: "Practice Results — ZENTEXAI", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function PracticeResultsPage({ params }: Props) {

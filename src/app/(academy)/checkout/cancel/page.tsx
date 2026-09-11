@@ -7,7 +7,7 @@ interface Props {
   searchParams: Promise<{ purchase_id?: string }>;
 }
 
-export const metadata: Metadata = { title: "Checkout Cancelled — ZENTEXAI Academy" };
+export const metadata: Metadata = { title: "Checkout Cancelled — ZENTEXAI Academy", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 // Uses the exact same verification call as /checkout/success - which URL

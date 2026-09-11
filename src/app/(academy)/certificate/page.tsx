@@ -9,7 +9,7 @@ import CertificateContent from "./CertificateContent";
 
 const COURSE_SLUG = "pmp";
 
-export const metadata: Metadata = { title: "Certificate of Completion — ZENTEXAI Academy" };
+export const metadata: Metadata = { title: "Certificate of Completion — ZENTEXAI Academy", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function CertificatePage() {

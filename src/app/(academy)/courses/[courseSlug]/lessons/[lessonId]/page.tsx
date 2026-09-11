@@ -23,7 +23,7 @@ interface Props {
   params: Promise<{ courseSlug: string; lessonId: string }>;
 }
 
-export const metadata: Metadata = { title: "Lesson — ZENTEXAI Academy" };
+export const metadata: Metadata = { title: "Lesson — ZENTEXAI Academy", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function LessonDetailPage({ params }: Props) {

@@ -7,7 +7,11 @@ interface Props {
   params: Promise<{ certificateNumber: string }>;
 }
 
-export const metadata: Metadata = { title: "Certificate Verification — ZENTEXAI Academy" };
+// Public (no auth) so anyone with a link can verify a certificate, but not
+// meant to accumulate organic search traffic - each URL is one named
+// individual's record, not a keyword-targeted page, so it's excluded from
+// the sitemap and marked noindex here even though it stays crawlable.
+export const metadata: Metadata = { title: "Certificate Verification — ZENTEXAI Academy", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 /**

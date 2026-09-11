@@ -5,7 +5,7 @@ import LockedAccess from "@/components/academy/LockedAccess";
 import { findActiveMockExamAttemptId } from "@/features/mock-exam/services/examAttemptService";
 import ExamStartPanel from "@/features/mock-exam/components/ExamStartPanel";
 
-export const metadata: Metadata = { title: "PMP Mock Exam — ZENTEXAI" };
+export const metadata: Metadata = { title: "PMP Mock Exam — ZENTEXAI", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function MockExamStartPage() {

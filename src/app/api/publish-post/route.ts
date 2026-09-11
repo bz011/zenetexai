@@ -4,19 +4,6 @@ import { requireApiRole } from "@/lib/auth/requireRole";
 import { publishPostSchema } from "@/lib/validators/blogValidators";
 import { isRateLimited } from "@/lib/rateLimit";
 
-const CREATE_TABLE_SQL = `
-  CREATE TABLE IF NOT EXISTS website_posts (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    title TEXT NOT NULL,
-    slug TEXT NOT NULL UNIQUE,
-    body TEXT NOT NULL,
-    meta_title TEXT NOT NULL,
-    meta_description TEXT NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    published_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-  );
-`;
-
 export async function POST(req: Request) {
   const auth = await requireApiRole(["admin"]);
   if (!auth.authorized) {
@@ -47,9 +34,10 @@ export async function POST(req: Request) {
 
   try {
     const pool = getPool();
-    await pool.query(CREATE_TABLE_SQL);
 
-    // Fully parameterized - no request value is ever concatenated into SQL text.
+    // Schema (table, PK, slug UNIQUE, RLS) is owned by migrations/029_website_posts.sql,
+    // not this route - see that file for why. Fully parameterized below - no
+    // request value is ever concatenated into SQL text.
     const result = await pool.query(
       `INSERT INTO website_posts (title, slug, body, meta_title, meta_description)
        VALUES ($1, $2, $3, $4, $5)

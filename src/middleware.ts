@@ -48,6 +48,14 @@ const PUBLIC_ROUTES = new Set<string>([
   "/resources",
   "/contact",
   "/enroll",
+  // SEO infrastructure (Next.js native metadata routes, src/app/sitemap.ts
+  // and src/app/robots.ts) - these MUST be reachable by an unauthenticated
+  // crawler. Before this fix, the default-deny policy below silently
+  // redirected both to /login, which is the most likely root cause of
+  // https://zentexai.com/sitemap.xml returning a non-200/non-XML response
+  // in Search Console rather than the sitemap itself.
+  "/sitemap.xml",
+  "/robots.txt",
 ]);
 
 // Prefixes for public routes that have dynamic sub-paths, or that must
@@ -74,7 +82,11 @@ const PUBLIC_ROUTES = new Set<string>([
 // negative right after the cross-site redirect back from pay.ziina.com
 // would bounce an actually-still-logged-in user to /login. This mirrors
 // the existing "/courses" entry below for exactly the same reason.
-const PUBLIC_PREFIXES = ["/blog", "/auth", "/api", "/courses", "/checkout"];
+// "/verify" (Sprint 11): the public certificate-verification page
+// (/verify/[certificateNumber]) must be reachable by anyone with a link,
+// with no account - see its own page.tsx comment. It intentionally does
+// its own narrow, whitelisted-field data access rather than requiring auth.
+const PUBLIC_PREFIXES = ["/blog", "/auth", "/api", "/courses", "/checkout", "/verify"];
 
 function isPublicRoute(pathname: string): boolean {
   if (PUBLIC_ROUTES.has(pathname)) return true;

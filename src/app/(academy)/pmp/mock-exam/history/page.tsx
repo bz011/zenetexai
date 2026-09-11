@@ -5,7 +5,7 @@ import LockedAccess from "@/components/academy/LockedAccess";
 import { getMockExamHistory } from "@/features/mock-exam/services/examHistoryService";
 import ExamHistoryContent from "@/features/mock-exam/components/ExamHistoryContent";
 
-export const metadata: Metadata = { title: "Mock Exam History — ZENTEXAI" };
+export const metadata: Metadata = { title: "Mock Exam History — ZENTEXAI", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function MockExamHistoryPage() {

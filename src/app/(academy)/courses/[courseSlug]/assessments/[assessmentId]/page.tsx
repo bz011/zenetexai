@@ -13,7 +13,7 @@ interface Props {
   params: Promise<{ courseSlug: string; assessmentId: string }>;
 }
 
-export const metadata: Metadata = { title: "Module Assessment — ZENTEXAI Academy" };
+export const metadata: Metadata = { title: "Module Assessment — ZENTEXAI Academy", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function ModuleAssessmentPage({ params }: Props) {

@@ -10,7 +10,7 @@ interface Props {
   params: Promise<{ attemptId: string }>;
 }
 
-export const metadata: Metadata = { title: "PMP Mock Exam — ZENTEXAI" };
+export const metadata: Metadata = { title: "PMP Mock Exam — ZENTEXAI", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function MockExamAttemptPage({ params }: Props) {

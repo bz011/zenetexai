@@ -7,7 +7,7 @@ interface Props {
   searchParams: Promise<{ purchase_id?: string }>;
 }
 
-export const metadata: Metadata = { title: "Payment — ZENTEXAI Academy" };
+export const metadata: Metadata = { title: "Payment — ZENTEXAI Academy", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 // Reaching this URL proves nothing on its own (Ziina redirects here whether

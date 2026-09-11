@@ -8,7 +8,7 @@ interface Props {
   params: Promise<{ courseSlug: string; assessmentId: string; attemptId: string }>;
 }
 
-export const metadata: Metadata = { title: "Quiz Attempt — ZENTEXAI Academy" };
+export const metadata: Metadata = { title: "Quiz Attempt — ZENTEXAI Academy", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function QuizAttemptDetailPage({ params }: Props) {

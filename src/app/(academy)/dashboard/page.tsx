@@ -6,7 +6,7 @@ import { getCourseBySlug } from "@/features/courses/services/courseService";
 import { getCourseCertificate } from "@/features/courses/services/certificateService";
 import DashboardContent from "./DashboardContent";
 
-export const metadata: Metadata = { title: "Dashboard — ZENTEXAI" };
+export const metadata: Metadata = { title: "Dashboard — ZENTEXAI", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {

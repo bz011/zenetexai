@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getPool } from "@/lib/db";
 import MarkdownBody from "@/components/MarkdownBody";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd, articleJsonLd } from "@/lib/structuredData";
 
 export const dynamic = "force-dynamic";
 
@@ -14,6 +16,11 @@ interface Post {
   meta_title: string;
   meta_description: string;
   published_at: string;
+}
+
+/** Arabic-script Unicode range check - used only to pick lang/dir for the article wrapper, since website_posts has no language column. */
+function isArabicText(text: string): boolean {
+  return /[؀-ۿ]/.test(text);
 }
 
 async function fetchPost(slug: string): Promise<Post | null> {
@@ -38,10 +45,15 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { slug } = await params;
   const post = await fetchPost(slug);
-  if (!post) return { title: "Post Not Found — ZENTEXAI" };
+  if (!post) return { title: "Post Not Found — ZENTEXAI", robots: { index: false, follow: false } };
+
+  const path = `/blog/${post.slug}`;
   return {
     title: post.meta_title,
     description: post.meta_description,
+    alternates: { canonical: path },
+    openGraph: { title: post.meta_title, description: post.meta_description, url: path, type: "article", publishedTime: post.published_at },
+    twitter: { card: "summary_large_image", title: post.meta_title, description: post.meta_description },
   };
 }
 
@@ -52,7 +64,8 @@ export default async function BlogPostPage(
   const post = await fetchPost(slug);
   if (!post) notFound();
 
-  const publishedDate = new Date(post.published_at).toLocaleDateString("en-US", {
+  const arabic = isArabicText(post.title);
+  const publishedDate = new Date(post.published_at).toLocaleDateString(arabic ? "ar" : "en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -60,17 +73,31 @@ export default async function BlogPostPage(
 
   return (
     <div className="relative min-h-screen overflow-hidden">
+      <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }, { name: post.title, path: `/blog/${post.slug}` }])} />
+      <JsonLd
+        data={articleJsonLd({
+          headline: post.title,
+          description: post.meta_description,
+          path: `/blog/${post.slug}`,
+          datePublished: post.published_at,
+          inLanguage: arabic ? "ar" : "en",
+        })}
+      />
       <div className="pointer-events-none absolute left-1/2 top-0 h-[350px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/[0.08] blur-[100px]" />
 
-      <article className="container-page relative px-6 pb-24 pt-36">
+      <article
+        lang={arabic ? "ar" : "en"}
+        dir={arabic ? "rtl" : "ltr"}
+        className="container-page relative px-6 pb-24 pt-36"
+      >
         <Link href="/blog" className="mb-8 inline-flex items-center gap-1.5 text-[13px] text-slate-500 hover:text-slate-300 transition-colors">
-          ← Back to Blog
+          {arabic ? "→ العودة إلى المدونة" : "← Back to Blog"}
         </Link>
 
         <header className="mb-12 border-b border-white/[0.06] pb-10">
-          <p className="label mb-3">Blog</p>
+          <p className="label mb-3">{arabic ? "المدونة" : "Blog"}</p>
           <h1 className="text-3xl font-bold text-white md:text-4xl leading-tight">{post.title}</h1>
-          <p className="mt-4 text-[13px] text-slate-500">Published {publishedDate}</p>
+          <p className="mt-4 text-[13px] text-slate-500">{arabic ? `نُشر بتاريخ ${publishedDate}` : `Published ${publishedDate}`}</p>
         </header>
 
         <MarkdownBody content={post.body} />

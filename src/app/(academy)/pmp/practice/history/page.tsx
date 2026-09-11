@@ -9,7 +9,7 @@ interface Props {
   searchParams: Promise<{ page?: string }>;
 }
 
-export const metadata: Metadata = { title: "Practice History — ZENTEXAI" };
+export const metadata: Metadata = { title: "Practice History — ZENTEXAI", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 20;
