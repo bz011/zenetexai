@@ -4,6 +4,15 @@ import { fetchPublishedPosts } from "@/lib/posts";
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://zentexai.com";
 
+// Without this, Next.js treats this route as eligible for static generation
+// (confirmed via `npm run build` marking /sitemap.xml as "○ Static") since it
+// calls no per-request API (headers/cookies) - meaning it would only ever
+// reflect whatever was in the database at the last build, not new content
+// published afterward. Regenerating at most once per hour is a documented,
+// supported option for Next.js metadata route files and is more than fresh
+// enough for a sitemap (crawlers do not need sub-hour freshness).
+export const revalidate = 3600;
+
 /**
  * Dynamic XML sitemap (served natively by Next.js at /sitemap.xml from this
  * file - no package needed). Lists ONLY real, public, canonical pages that
