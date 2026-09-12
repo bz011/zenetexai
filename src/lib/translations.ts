@@ -18,7 +18,7 @@ interface InquiryType { value: string; label: string }
 
 export interface Translations {
   nav: {
-    home: string; services: string; academy: string; resources: string;
+    home: string; services: string; academy: string; resources: string; blog: string;
     about: string; contact: string; login: string;
     dashboard: string; logout: string;
   };
@@ -269,7 +269,7 @@ export interface Translations {
 
 const en: Translations = {
   nav: {
-    home: "Home", services: "Services", academy: "Academy", resources: "Resources",
+    home: "Home", services: "Services", academy: "Academy", resources: "Resources", blog: "Blog",
     about: "About", contact: "Contact", login: "Login",
     dashboard: "Dashboard", logout: "Log out",
   },
@@ -402,10 +402,10 @@ const en: Translations = {
     founder_btn: "Read the full story →",
 
     articles_eyebrow: "Resources",
-    articles_h2: "Latest Articles",
-    articles_sub: "Practical insights on AI adoption and project management.",
+    articles_h2: "Latest Insights",
+    articles_sub: "Practical insights on artificial intelligence and project management.",
     articles_empty: "We're preparing our first articles. Check back soon.",
-    articles_view_all: "View all articles →",
+    articles_view_all: "View All Articles",
   },
 
   // ── Services ────────────────────────────────────────────────────────────────
@@ -857,7 +857,7 @@ const en: Translations = {
 
 const ar: Translations = {
   nav: {
-    home: "الرئيسية", services: "الخدمات", academy: "الأكاديمية", resources: "الموارد",
+    home: "الرئيسية", services: "الخدمات", academy: "الأكاديمية", resources: "الموارد", blog: "المدونة",
     about: "من نحن", contact: "تواصل معنا", login: "تسجيل الدخول",
     dashboard: "لوحة التحكم", logout: "تسجيل الخروج",
   },
@@ -991,9 +991,9 @@ const ar: Translations = {
 
     articles_eyebrow: "الموارد",
     articles_h2: "أحدث المقالات",
-    articles_sub: "رؤى عملية حول تبني الذكاء الاصطناعي وإدارة المشاريع.",
+    articles_sub: "محتوى عملي في الذكاء الاصطناعي وإدارة المشاريع.",
     articles_empty: "نحن بصدد إعداد أولى مقالاتنا. تفقّد الموقع لاحقاً.",
-    articles_view_all: "← عرض جميع المقالات",
+    articles_view_all: "عرض جميع المقالات",
   },
 
   // ── Services ─────────────────────────────────────────────────────────────────

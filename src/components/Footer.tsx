@@ -12,6 +12,7 @@ export default function Footer() {
     [t.nav.services, "/services"],
     [t.nav.academy, "/academy"],
     [t.nav.resources, "/resources"],
+    [t.nav.blog, "/blog"],
     [t.nav.about, "/about"],
     [t.nav.contact, "/contact"],
   ];

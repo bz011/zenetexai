@@ -23,6 +23,7 @@ export default function Header() {
     { href: "/services", label: t.nav.services },
     { href: "/academy", label: t.nav.academy },
     { href: "/resources", label: t.nav.resources },
+    { href: "/blog", label: t.nav.blog },
     { href: "/about", label: t.nav.about },
     { href: "/contact", label: t.nav.contact },
   ];

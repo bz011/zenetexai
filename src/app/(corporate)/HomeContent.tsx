@@ -139,17 +139,15 @@ export default function HomeContent({ latestPosts }: Props) {
       </section>
 
       {/* ── Latest Articles ────────────────────────────────────────────── */}
-      <section className="border-t border-white/[0.06] py-32">
-        <div className="container-page">
-          <div className="animate-fade-up mb-12 text-center">
-            <span className="label">{h.articles_eyebrow}</span>
-            <h2 className="mt-3 text-2xl font-bold text-white md:text-3xl">{h.articles_h2}</h2>
-            <p className="mx-auto mt-3 max-w-md text-[15px] text-slate-400">{h.articles_sub}</p>
-          </div>
+      {latestPosts.length > 0 && (
+        <section className="border-t border-white/[0.06] py-32">
+          <div className="container-page">
+            <div className="animate-fade-up mb-12 text-center">
+              <span className="label">{t.nav.blog}</span>
+              <h2 className="mt-3 text-2xl font-bold text-white md:text-3xl">{h.articles_h2}</h2>
+              <p className="mx-auto mt-3 max-w-md text-[15px] text-slate-400">{h.articles_sub}</p>
+            </div>
 
-          {latestPosts.length === 0 ? (
-            <p className="text-center text-[13px] text-slate-500">{h.articles_empty}</p>
-          ) : (
             <div className="grid gap-4 md:grid-cols-3">
               {latestPosts.map((post) => (
                 <Link key={post.id} href={`/blog/${post.slug}`} className="card card-hover block p-6">
@@ -159,13 +157,13 @@ export default function HomeContent({ latestPosts }: Props) {
                 </Link>
               ))}
             </div>
-          )}
 
-          <div className="mt-10 text-center">
-            <Link href="/resources" className="btn-ghost">{h.articles_view_all}</Link>
+            <div className="mt-10 text-center">
+              <Link href="/blog" className="btn-ghost">{h.articles_view_all}</Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <CTASection />
     </>
