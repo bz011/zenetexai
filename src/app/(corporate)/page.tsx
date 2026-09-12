@@ -13,9 +13,9 @@ import { fetchPublishedPosts } from "@/lib/posts";
 // to that request's visitor immediately with nothing to fall back on.
 export const revalidate = 3600;
 
-const title = "ZentexAI — AI Solutions & Professional PMP Training";
+const title = "ZentexAI — AI Solutions, AI Agents & Automation in the UAE";
 const description =
-  "ZentexAI helps organizations across the UAE and MENA region apply AI automation effectively, and helps professionals master the PMP exam through our Arabic-friendly PMP Mastery Program and exam simulator.";
+  "ZentexAI delivers AI solutions, AI agents, and automation for businesses in the UAE and MENA, plus project management consulting and PMP exam training with a practical simulator.";
 
 export const metadata: Metadata = {
   title,

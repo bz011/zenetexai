@@ -56,6 +56,33 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
               </section>
             )}
 
+            {/* Natural cross-link between the two real, closely-related PMP
+                products - a visitor on one is very likely also interested in
+                the other. Descriptive anchor text, not exact-match keyword
+                stuffing; keyed on product.slug like the sections below. */}
+            {product.slug === "pmp-mastery-program" && (
+              <p className="text-[13px] leading-relaxed text-slate-500">
+                {lang === "ar" ? (
+                  <>تريد التدرّب على الامتحان فقط؟ اطّلع على{" "}
+                    <Link href="/courses/pmp-exam-simulator" className="text-indigo-400 transition-colors hover:text-indigo-300">محاكي اختبار PMP</Link>.</>
+                ) : (
+                  <>Looking for exam practice on its own? See the{" "}
+                    <Link href="/courses/pmp-exam-simulator" className="text-indigo-400 transition-colors hover:text-indigo-300">PMP Exam Simulator</Link>.</>
+                )}
+              </p>
+            )}
+            {product.slug === "pmp-exam-simulator" && (
+              <p className="text-[13px] leading-relaxed text-slate-500">
+                {lang === "ar" ? (
+                  <>تريد دورة كاملة أيضاً؟ اطّلع على{" "}
+                    <Link href="/courses/pmp-mastery-program" className="text-indigo-400 transition-colors hover:text-indigo-300">برنامج احتراف PMP</Link>.</>
+                ) : (
+                  <>Want full course instruction too? See the{" "}
+                    <Link href="/courses/pmp-mastery-program" className="text-indigo-400 transition-colors hover:text-indigo-300">PMP Mastery Program</Link>.</>
+                )}
+              </p>
+            )}
+
             {/* Same PMP Mastery Program scoping as the instructor section
                 below - real curriculum structure only, no invented claims. */}
             {product.slug === "pmp-mastery-program" && (

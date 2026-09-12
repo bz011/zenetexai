@@ -338,7 +338,7 @@ const en: Translations = {
     sub: "ZentexAI helps organizations apply AI effectively and strengthen how they deliver projects — through AI solutions, hands-on consulting, and professional learning programs, including our flagship PMP Mastery Program.",
     cta_primary: "Talk to Our Team",
     cta_secondary: "Explore Services",
-    region_note: "Serving organizations and professionals across the UAE, Saudi Arabia, and the wider MENA region",
+    region_note: "Serving organizations and professionals across the UAE and the wider MENA region",
   },
   cta: {
     badge: "Get in Touch",
@@ -926,7 +926,7 @@ const ar: Translations = {
     sub: "تساعد ZentexAI المؤسسات على تبني الذكاء الاصطناعي بفعالية وتعزيز طريقة تسليم مشاريعها — من خلال حلول الذكاء الاصطناعي، والاستشارات العملية، وبرامج التعليم الاحترافي، بما في ذلك برنامجنا الرائد PMP Mastery Program.",
     cta_primary: "تحدث إلى فريقنا",
     cta_secondary: "استكشف الخدمات",
-    region_note: "نخدم المؤسسات والمهنيين في دولة الإمارات العربية المتحدة والمملكة العربية السعودية ومنطقة الشرق الأوسط وشمال أفريقيا",
+    region_note: "نخدم المؤسسات والمهنيين في دولة الإمارات العربية المتحدة ومنطقة الشرق الأوسط وشمال أفريقيا",
   },
   cta: {
     badge: "تواصل معنا",
