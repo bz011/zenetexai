@@ -11,6 +11,7 @@
     "import:question-bank": "tsx scripts/question-bank/import.ts",
     "generate:questions": "tsx scripts/question-generation/generateBatch.ts",
     "build:patterns": "tsx scripts/question-generation/buildPatternLibrary.ts",
+    "bunny-sync": "tsx scripts/curriculum/bunnySync.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
