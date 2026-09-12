@@ -398,7 +398,7 @@ const en: Translations = {
 
     founder_eyebrow: "Leadership",
     founder_h2: "Meet the Founder",
-    founder_summary: "ZentexAI was founded by Zaid Al-Badareen, Founder & CEO — an Electrical Engineer, PMP® certified project management professional, and MSc candidate in Artificial Intelligence (expected 2027).",
+    founder_summary: "ZentexAI was founded by Zaid Al-Badareen, Founder & CEO — an Electrical Engineer, PMP® certified project management professional, and holder of a Master of Science (MSc) in Artificial Intelligence.",
     founder_btn: "Read the full story →",
 
     articles_eyebrow: "Resources",
@@ -508,8 +508,8 @@ const en: Translations = {
     founder_h2: "Meet the Founder",
     founder: {
       name: "Zaid Al-Badareen",
-      titles: ["Founder & CEO, ZentexAI", "Electrical Engineer", "PMP® Certified Project Management Professional", "MSc Candidate, Artificial Intelligence (expected 2027)"],
-      bio: "Zaid Al-Badareen is the Founder and CEO of ZentexAI, an AI solutions and project management consulting company focused on helping organizations adopt practical artificial intelligence and deliver successful projects. He holds a Bachelor's degree in Electrical Engineering, is a PMP® certified project management professional, and is currently an MSc candidate in Artificial Intelligence, with expected completion in May 2027. Through ZentexAI, he combines engineering, project management, and AI expertise to help organizations implement practical AI solutions while supporting professionals in developing the project management skills needed to succeed in today's rapidly evolving workplace.",
+      titles: ["Founder & CEO, ZentexAI", "Electrical Engineer", "PMP® Certified Project Management Professional", "MSc in Artificial Intelligence"],
+      bio: "Zaid Al-Badareen is the Founder and CEO of ZentexAI, an AI solutions and project management consulting company focused on helping organizations adopt practical artificial intelligence and deliver successful projects. He holds a Bachelor's degree in Electrical Engineering, is a PMP® certified project management professional, and holds a Master of Science (MSc) in Artificial Intelligence. Through ZentexAI, he combines engineering, project management, and AI expertise to help organizations implement practical AI solutions while supporting professionals in developing the project management skills needed to succeed in today's rapidly evolving workplace.",
     },
     cta_h2: "Want to work with us?",
     cta_p: "Tell us about your organization or your goals — we'll get back to you personally.",
@@ -756,9 +756,9 @@ const en: Translations = {
       instructor: {
         heading: "Meet Your Instructor",
         name: "Zaid Al-Badareen, PMP®",
-        credentials: "Electrical Engineer | PMP® | MSc Candidate, Artificial Intelligence",
+        credentials: "Electrical Engineer | PMP® | MSc, Artificial Intelligence",
         role: "Founder & Lead Instructor — ZentexAI",
-        bio: "Zaid Al-Badareen is an Electrical Engineer, PMP® certified project management professional, and is currently an MSc candidate in Artificial Intelligence, with expected completion in May 2027. His background spans engineering, project execution, education, and artificial intelligence. As Founder and Lead Instructor at ZentexAI, he combines practical project experience with modern AI expertise to teach PMP concepts through understanding, decision-making, and realistic project scenarios—not memorization.",
+        bio: "Zaid Al-Badareen is an Electrical Engineer, PMP® certified project management professional, and holds a Master of Science (MSc) in Artificial Intelligence. His background spans engineering, project execution, education, and artificial intelligence. As Founder and Lead Instructor at ZentexAI, he combines practical project experience with modern AI expertise to teach PMP concepts through understanding, decision-making, and realistic project scenarios—not memorization.",
       },
     },
     locked: {
@@ -986,7 +986,7 @@ const ar: Translations = {
 
     founder_eyebrow: "القيادة",
     founder_h2: "تعرّف على المؤسس",
-    founder_summary: "تأسست ZentexAI على يد زيد البدّارين، المؤسس والرئيس التنفيذي — مهندس كهربائي، حاصل على شهادة PMP® في إدارة المشاريع، ويدرس حالياً لنيل درجة الماجستير في العلوم (MSc) في الذكاء الاصطناعي، ومن المتوقع إتمامها في مايو 2027.",
+    founder_summary: "تأسست ZentexAI على يد زيد البدّارين، المؤسس والرئيس التنفيذي — مهندس كهربائي، حاصل على شهادة PMP® في إدارة المشاريع، وحاصل على درجة الماجستير في الذكاء الاصطناعي.",
     founder_btn: "← اقرأ القصة كاملة",
 
     articles_eyebrow: "الموارد",
@@ -1096,8 +1096,8 @@ const ar: Translations = {
     founder_h2: "تعرّف على المؤسس",
     founder: {
       name: "زيد البدّارين",
-      titles: ["المؤسس والرئيس التنفيذي، ZentexAI", "مهندس كهربائي", "PMP® - محترف معتمد في إدارة المشاريع", "طالب ماجستير في الذكاء الاصطناعي (متوقع 2027)"],
-      bio: "زيد البدّارين هو المؤسس والرئيس التنفيذي لشركة ZentexAI، شركة حلول ذكاء اصطناعي واستشارات إدارة مشاريع تركز على مساعدة المؤسسات على تبني الذكاء الاصطناعي العملي وتسليم مشاريع ناجحة. يحمل درجة البكالوريوس في الهندسة الكهربائية، وهو محترف معتمد PMP® في إدارة المشاريع، ويدرس حالياً لنيل درجة الماجستير في العلوم (MSc) في الذكاء الاصطناعي، ومن المتوقع إتمامها في مايو 2027. من خلال ZentexAI، يجمع بين خبرته الهندسية وخبرته في إدارة المشاريع وتخصصه في الذكاء الاصطناعي لمساعدة المؤسسات على تطبيق حلول ذكاء اصطناعي عملية، ودعم المهنيين في تطوير مهارات إدارة المشاريع اللازمة للنجاح في بيئة العمل سريعة التطور اليوم.",
+      titles: ["المؤسس والرئيس التنفيذي، ZentexAI", "مهندس كهربائي", "PMP® - محترف معتمد في إدارة المشاريع", "ماجستير في الذكاء الاصطناعي"],
+      bio: "زيد البدّارين هو المؤسس والرئيس التنفيذي لشركة ZentexAI، شركة حلول ذكاء اصطناعي واستشارات إدارة مشاريع تركز على مساعدة المؤسسات على تبني الذكاء الاصطناعي العملي وتسليم مشاريع ناجحة. يحمل درجة البكالوريوس في الهندسة الكهربائية، وهو محترف معتمد PMP® في إدارة المشاريع، وحاصل على درجة الماجستير في الذكاء الاصطناعي. من خلال ZentexAI، يجمع بين خبرته الهندسية وخبرته في إدارة المشاريع وتخصصه في الذكاء الاصطناعي لمساعدة المؤسسات على تطبيق حلول ذكاء اصطناعي عملية، ودعم المهنيين في تطوير مهارات إدارة المشاريع اللازمة للنجاح في بيئة العمل سريعة التطور اليوم.",
     },
     cta_h2: "هل تريد العمل معنا؟",
     cta_p: "أخبرنا عن مؤسستك أو أهدافك — سنعاود التواصل معك شخصياً.",
@@ -1345,9 +1345,9 @@ const ar: Translations = {
       instructor: {
         heading: "تعرّف على مدربك",
         name: "زيد البدارين، PMP®",
-        credentials: "مهندس كهرباء | PMP® | طالب ماجستير في الذكاء الاصطناعي",
+        credentials: "مهندس كهرباء | PMP® | ماجستير في الذكاء الاصطناعي",
         role: "المؤسس والمدرب الرئيسي — ZentexAI",
-        bio: "زيد البدارين مهندس كهرباء، حاصل على شهادة PMP®، ويدرس حالياً لنيل درجة الماجستير في الذكاء الاصطناعي (من المتوقع إتمامها في مايو 2027)، بخبرة تجمع بين الهندسة وتنفيذ المشاريع والتعليم والذكاء الاصطناعي. بصفته مؤسس ZentexAI ومدربها الرئيسي، يجمع بين الخبرة العملية والمعرفة الحديثة في الذكاء الاصطناعي لتقديم مفاهيم PMP من خلال الفهم، واتخاذ القرار، وتحليل سيناريوهات المشاريع الواقعية بدلًا من الحفظ.",
+        bio: "زيد البدارين مهندس كهرباء، حاصل على شهادة PMP®، وحاصل على درجة الماجستير في الذكاء الاصطناعي، بخبرة تجمع بين الهندسة وتنفيذ المشاريع والتعليم والذكاء الاصطناعي. بصفته مؤسس ZentexAI ومدربها الرئيسي، يجمع بين الخبرة العملية والمعرفة الحديثة في الذكاء الاصطناعي لتقديم مفاهيم PMP من خلال الفهم، واتخاذ القرار، وتحليل سيناريوهات المشاريع الواقعية بدلًا من الحفظ.",
       },
     },
     locked: {
