@@ -16,7 +16,7 @@ export default function AcademyFooter() {
   return (
     <footer className="border-t border-slate-200 bg-white">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 py-10 text-center sm:flex-row sm:justify-between sm:text-left">
-        <Link href="/academy" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2">
           <Logo variant="horizontal" tone="light" />
         </Link>
 
