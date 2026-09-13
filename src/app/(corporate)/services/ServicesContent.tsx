@@ -30,8 +30,13 @@ export default function ServicesContent() {
                   <h2 className="mt-2 text-xl font-semibold text-white md:text-2xl">{cat.title}</h2>
                   <p className="mt-3 text-[14px] leading-relaxed text-slate-400">{cat.desc}</p>
                   {cat.learnMoreHref && cat.learnMoreLabel && (
-                    <Link href={cat.learnMoreHref} className="mt-3 inline-block text-[13px] font-medium text-indigo-400 transition-colors hover:text-indigo-300">
+                    <Link href={cat.learnMoreHref} className="mt-3 block text-[13px] font-medium text-indigo-400 transition-colors hover:text-indigo-300">
                       {cat.learnMoreLabel}
+                    </Link>
+                  )}
+                  {cat.learnMoreHref2 && cat.learnMoreLabel2 && (
+                    <Link href={cat.learnMoreHref2} className="mt-1.5 block text-[13px] font-medium text-indigo-400 transition-colors hover:text-indigo-300">
+                      {cat.learnMoreLabel2}
                     </Link>
                   )}
                 </div>

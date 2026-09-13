@@ -163,6 +163,9 @@ export default function AiAgentsAutomationContent() {
       <section className="border-t border-white/[0.06] px-6 py-16">
         <div className="container-page">
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center">
+            <Link href="/services/whatsapp-automation-uae" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
+              WhatsApp Automation &amp; AI Agents UAE
+            </Link>
             <Link href="/blog/ai-agents-for-business-uae" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
               AI Agents for Business in the UAE
             </Link>

@@ -9,7 +9,7 @@ interface ValueItem { title: string; desc: string }
 interface FeatureItem { title: string; desc: string }
 interface BenefitItem { title: string; desc: string }
 interface ContactDetail { id: string; label: string; value: string; href: string | null; icon: string }
-interface ServiceCategory { id: string; title: string; desc: string; examples: string[]; learnMoreHref?: string; learnMoreLabel?: string }
+interface ServiceCategory { id: string; title: string; desc: string; examples: string[]; learnMoreHref?: string; learnMoreLabel?: string; learnMoreHref2?: string; learnMoreLabel2?: string }
 interface AcademyProgram { id: string; title: string; tag: string; status: string; duration?: string; desc: string }
 interface FounderInfo { name: string; titles: string[]; bio: string }
 interface InquiryType { value: string; label: string }
@@ -116,6 +116,30 @@ export interface Translations {
     usecases_eyebrow: string; usecases_h2: string; usecases_sub: string;
     usecases: FeatureItem[];
     process_eyebrow: string; process_h2: string;
+    process: ProcessStep[];
+    faq_eyebrow: string; faq_h2: string;
+    faq: FaqItem[];
+    cta_h2: string; cta_sub: string; cta_btn: string;
+  };
+  whatsappAutomation: {
+    hero_eyebrow: string; hero_h1: string; hero_sub: string; hero_cta1: string; hero_cta2: string;
+    compare_h2: string;
+    compare_chatbot_label: string; compare_chatbot_desc: string;
+    compare_agent_label: string; compare_agent_desc: string;
+    automate_eyebrow: string; automate_h2: string; automate_sub: string;
+    automate_cards: FeatureItem[];
+    workflow_eyebrow: string; workflow_h2: string; workflow_sub: string;
+    workflow_steps: string[];
+    crm_eyebrow: string; crm_h2: string; crm_p1: string; crm_p2: string; crm_p3: string; crm_note: string;
+    booking_eyebrow: string; booking_h2: string; booking_sub: string;
+    booking_steps: string[];
+    lang_h2: string; lang_p: string;
+    platform_h2: string; platform_p: string;
+    security_eyebrow: string; security_h2: string; security_sub: string;
+    security_points: FeatureItem[];
+    usecases_eyebrow: string; usecases_h2: string; usecases_sub: string;
+    usecases: FeatureItem[];
+    process_eyebrow: string; process_h2: string; process_sub: string;
     process: ProcessStep[];
     faq_eyebrow: string; faq_h2: string;
     faq: FaqItem[];
@@ -441,6 +465,8 @@ const en: Translations = {
         examples: ["AI Agents", "Workflow Automation", "Business Chatbots", "Knowledge Assistants", "Custom AI Applications"],
         learnMoreHref: "/services/ai-agents-automation-uae",
         learnMoreLabel: "Learn more about AI agents & automation →",
+        learnMoreHref2: "/services/whatsapp-automation-uae",
+        learnMoreLabel2: "See WhatsApp automation & AI agents →",
       },
       {
         id: "ai-consulting",
@@ -555,6 +581,130 @@ const en: Translations = {
     cta_h2: "Ready to Automate a Real Workflow?",
     cta_sub: "Tell us about the process you want to improve — we'll assess whether an AI agent is the right fit, and what it would take.",
     cta_btn: "Discuss Your AI Workflow",
+  },
+
+  whatsappAutomation: {
+    hero_eyebrow: "WhatsApp Automation & AI Agents",
+    hero_h1: "WhatsApp Automation & AI Agents for UAE Businesses",
+    hero_sub: "Turn WhatsApp conversations into controlled business workflows — answer questions, qualify leads, book appointments, update business systems, follow up, and escalate to your team when needed.",
+    hero_cta1: "Discuss Your WhatsApp Workflow",
+    hero_cta2: "See What You Can Automate",
+
+    compare_h2: "Beyond a Simple Chatbot",
+    compare_chatbot_label: "A Simple Chatbot",
+    compare_chatbot_desc: "Responds to predefined questions and fixed conversation flows, with no real understanding of context or your business systems.",
+    compare_agent_label: "An AI-Powered WhatsApp Workflow",
+    compare_agent_desc: "Understands natural messages, uses your approved business knowledge, collects the information it needs, calls permitted business tools, performs approved actions, records the outcome, and escalates to a person when necessary — with humans always in control.",
+
+    automate_eyebrow: "Capabilities",
+    automate_h2: "What Can Be Automated",
+    automate_sub: "Real WhatsApp workflows we build for UAE businesses.",
+    automate_cards: [
+      { title: "Customer Enquiries", desc: "Grounded answers to common questions, using your approved business information." },
+      { title: "Lead Capture & Qualification", desc: "Collects requirements and identifies the appropriate next step for each enquiry." },
+      { title: "Appointment Booking", desc: "Checks permitted availability and books or reschedules where a calendar is integrated, with confirmations and reminders." },
+      { title: "CRM Integration", desc: "Creates or updates leads and customer records through controlled integrations with your CRM." },
+      { title: "Follow-Ups", desc: "Approved reminders and follow-up messages, consistent with WhatsApp's platform rules on outbound messaging." },
+      { title: "Human Handoff", desc: "Escalates sensitive, complex, uncertain, or explicitly requested cases to your team." },
+    ],
+
+    workflow_eyebrow: "Example Workflow",
+    workflow_h2: "From Message to Verified Outcome",
+    workflow_sub: "The same Understand → Decide → Act → Verify → Escalate architecture behind every ZentexAI agent, applied to WhatsApp.",
+    workflow_steps: [
+      "Customer sends a WhatsApp message",
+      "The AI agent understands the request",
+      "It retrieves approved business knowledge",
+      "It decides whether an approved action is required",
+      "It uses a permitted tool — CRM, calendar, or business API",
+      "It verifies the result",
+      "It responds, or escalates to a human",
+    ],
+
+    crm_eyebrow: "CRM Integration",
+    crm_h2: "What \"CRM Integration\" Actually Means",
+    crm_p1: "CRM stands for Customer Relationship Management — the system your sales or support team already uses to track leads and customers.",
+    crm_p2: "A customer messages on WhatsApp. The automation collects their name, company, requirement, contact information, and lead source. If approved and integrated, it then creates or updates the corresponding lead in your CRM.",
+    crm_p3: "This reduces duplicate manual entry and helps your team pick up the conversation with full context, instead of starting from zero.",
+    crm_note: "CRM and calendar connections are integrations ZentexAI designs around your specific systems and requirements through supported APIs — not a fixed, one-size-fits-all connector list.",
+
+    booking_eyebrow: "Appointment Booking",
+    booking_h2: "Appointment Booking on WhatsApp",
+    booking_sub: "A realistic flow for clinics, consultancies, professional services, education and training providers, and other appointment-based businesses.",
+    booking_steps: [
+      "Customer asks for an appointment",
+      "Agent collects the required information",
+      "Checks your connected calendar or booking system",
+      "Presents available options",
+      "Customer selects a time",
+      "Booking is created",
+      "Confirmation is sent",
+      "Reminder workflow runs",
+      "Escalates to a human when required",
+    ],
+
+    lang_h2: "Built for Arabic and English Conversations",
+    lang_p: "Multilingual workflows can be designed for UAE businesses, including both Arabic and English interactions. As with any AI system, accuracy depends on the specific language, dialect, and business context — we don't claim perfect understanding of every dialect, and human escalation stays available for anything the agent isn't confident about.",
+
+    platform_h2: "Built on the Official WhatsApp Business Platform",
+    platform_p: "Production WhatsApp automation should run on the official WhatsApp Business Platform, not unofficial methods that risk your business number being restricted. The platform has its own rules around business messaging, including approved templates for outbound messages sent outside the customer service window — we design workflows that respect those rules rather than work around them.",
+
+    security_eyebrow: "Security & Control",
+    security_h2: "Security & Control, By Design",
+    security_sub: "The same discipline behind every ZentexAI agent, applied to your WhatsApp number and connected systems.",
+    security_points: [
+      { title: "Approved Knowledge Sources", desc: "The agent answers using knowledge you've reviewed, not open-ended internet content." },
+      { title: "Tool Permission Boundaries", desc: "Access to your CRM, calendar, or other systems is limited to exactly what the workflow needs." },
+      { title: "Input & Output Validation", desc: "Messages and requested actions are checked against defined rules before anything is executed." },
+      { title: "Least-Privilege Access", desc: "Integrations are scoped narrowly, not given broad, account-wide access." },
+      { title: "Human Approval for Sensitive Actions", desc: "High-impact actions can require human sign-off before they happen." },
+      { title: "Logging & Observability", desc: "Conversations and actions are logged so you can review exactly what happened." },
+      { title: "Reliable Failure Handling", desc: "When something is uncertain or unavailable, the agent fails safely and escalates." },
+      { title: "Controlled CRM & Calendar Access", desc: "The agent only reads and writes the specific records it's permitted to." },
+    ],
+
+    usecases_eyebrow: "UAE Use Cases",
+    usecases_h2: "Built for Real UAE Workflows",
+    usecases_sub: "Examples of the kind of WhatsApp workflows we design — not case studies, but the categories of work these systems handle well.",
+    usecases: [
+      { title: "Clinics", desc: "Appointment enquiries, booking requests, reminders, and escalation to staff for anything requiring medical judgment." },
+      { title: "Professional Services", desc: "Lead qualification and consultation booking for law firms, accounting practices, and similar advisory businesses." },
+      { title: "Education & Training", desc: "Course enquiries, registration guidance, and support escalation for training providers." },
+      { title: "Service Businesses", desc: "Quote and request intake, lead routing, and follow-up for salons, repair services, and similar businesses." },
+      { title: "Operations & Customer Support", desc: "Status enquiries, approved information, and case routing for support teams." },
+    ],
+
+    process_eyebrow: "Implementation",
+    process_h2: "How We Build It",
+    process_sub: "Scope depends on workflow complexity, the number of integrations, your business rules, approval requirements, WhatsApp setup, and your existing systems — so we define a realistic plan together rather than assuming a fixed template.",
+    process: [
+      { step: "01", title: "Discover", desc: "We understand your business, customers, and current WhatsApp conversations." },
+      { step: "02", title: "Map Workflow", desc: "We map exactly what should happen, step by step, for each type of enquiry." },
+      { step: "03", title: "Design Controls", desc: "We define what the agent can know, decide, and do — and what always needs a human." },
+      { step: "04", title: "Integrate", desc: "We connect the WhatsApp Business Platform and the specific systems your workflow needs." },
+      { step: "05", title: "Test", desc: "We test real scenarios, including edge cases and escalation paths, before going live." },
+      { step: "06", title: "Deploy", desc: "The workflow goes live within agreed boundaries, with logging and oversight in place." },
+      { step: "07", title: "Improve", desc: "We refine the workflow's knowledge and rules based on real conversations." },
+    ],
+
+    faq_eyebrow: "FAQ",
+    faq_h2: "Common Questions",
+    faq: [
+      { q: "What is WhatsApp automation?", a: "WhatsApp automation uses software (and, for more advanced cases, an AI agent) to handle parts of a WhatsApp conversation — answering questions, collecting information, or performing approved actions — without a person handling every message manually." },
+      { q: "What is the difference between WhatsApp automation and a chatbot?", a: "A basic chatbot follows fixed, predefined flows. AI-powered WhatsApp automation understands natural messages, uses your approved knowledge, and can take bounded actions in your systems, escalating to a person when needed." },
+      { q: "Can an AI agent respond to customers on WhatsApp?", a: "Yes — within the knowledge and permissions you approve, and with a clear path to a human for anything outside that scope." },
+      { q: "Can WhatsApp automation connect to our CRM?", a: "Yes, where an integration is technically possible and you approve the access. We design CRM and calendar connections around your specific systems through supported APIs." },
+      { q: "Can customers book appointments through WhatsApp?", a: "Yes, where your calendar or booking system is integrated — the agent checks real availability and creates the booking directly in the conversation." },
+      { q: "Can employees take over a conversation?", a: "Yes — human handoff is a core part of the design, not an afterthought. Sensitive, complex, or explicitly requested cases are escalated with full context." },
+      { q: "Can the AI answer in Arabic and English?", a: "Multilingual workflows can be designed for both Arabic and English. Accuracy depends on the specific language and context, so we don't claim perfect handling of every dialect." },
+      { q: "Do we need WhatsApp Business API?", a: "Production automation should run on the official WhatsApp Business Platform rather than unofficial methods, which can put your business number at risk. We help determine the right setup for your business." },
+      { q: "How do you control what the AI agent is allowed to do?", a: "Through explicit permission boundaries defined during the design phase — covering what the agent can know, decide, and act on, and what always requires human approval." },
+      { q: "How long does implementation take?", a: "Timelines depend on workflow complexity, the number of integrations, and your WhatsApp setup. We define a realistic timeline together during the Discover and Map Workflow phases rather than quoting a fixed duration upfront." },
+    ],
+
+    cta_h2: "Ready to Automate Your WhatsApp Conversations?",
+    cta_sub: "Tell us how customers currently reach you on WhatsApp — we'll assess what's worth automating and what should stay with your team.",
+    cta_btn: "Discuss Your WhatsApp Workflow",
   },
 
   // ── Academy ─────────────────────────────────────────────────────────────────
@@ -1119,6 +1269,8 @@ const ar: Translations = {
         examples: ["وكلاء ذكاء اصطناعي", "أتمتة سير العمل", "روبوتات محادثة للأعمال", "مساعدات معرفية", "تطبيقات ذكاء اصطناعي مخصصة"],
         learnMoreHref: "/services/ai-agents-automation-uae",
         learnMoreLabel: "اعرف المزيد عن وكلاء الذكاء الاصطناعي والأتمتة ←",
+        learnMoreHref2: "/services/whatsapp-automation-uae",
+        learnMoreLabel2: "اطّلع على أتمتة واتساب ووكلاء الذكاء الاصطناعي ←",
       },
       {
         id: "ai-consulting",
@@ -1233,6 +1385,130 @@ const ar: Translations = {
     cta_h2: "جاهز لأتمتة سير عمل حقيقي؟",
     cta_sub: "أخبرنا عن العملية التي تريد تحسينها — سنقيّم ما إذا كان وكيل الذكاء الاصطناعي هو الحل المناسب، وما يتطلبه ذلك.",
     cta_btn: "ناقش سير عملك مع الذكاء الاصطناعي",
+  },
+
+  whatsappAutomation: {
+    hero_eyebrow: "أتمتة واتساب ووكلاء الذكاء الاصطناعي",
+    hero_h1: "أتمتة واتساب ووكلاء ذكاء اصطناعي للشركات في دولة الإمارات",
+    hero_sub: "حوّل محادثات واتساب إلى سير عمل تجاري محكوم — أجب عن الأسئلة، وأهّل العملاء المحتملين، واحجز المواعيد، وحدّث أنظمة عملك، وتابع مع العملاء، وصعّد الأمر إلى فريقك عند الحاجة.",
+    hero_cta1: "ناقش سير عمل واتساب الخاص بك",
+    hero_cta2: "اطّلع على ما يمكن أتمتته",
+
+    compare_h2: "أبعد من مجرد روبوت محادثة بسيط",
+    compare_chatbot_label: "روبوت محادثة بسيط",
+    compare_chatbot_desc: "يرد على أسئلة محددة مسبقاً ضمن مسارات محادثة ثابتة، دون فهم حقيقي للسياق أو أنظمة عملك.",
+    compare_agent_label: "سير عمل واتساب مدعوم بالذكاء الاصطناعي",
+    compare_agent_desc: "يفهم الرسائل الطبيعية، ويستخدم معرفة عملك المعتمدة، ويجمع المعلومات التي يحتاجها، ويستدعي أدوات العمل المصرّح بها، وينفّذ إجراءات معتمدة، ويسجّل النتيجة، ويصعّد الأمر إلى شخص عند الحاجة — مع بقاء البشر في موقع التحكم دائماً.",
+
+    automate_eyebrow: "القدرات",
+    automate_h2: "ما الذي يمكن أتمتته",
+    automate_sub: "سير عمل حقيقي عبر واتساب نبنيه للشركات في دولة الإمارات.",
+    automate_cards: [
+      { title: "استفسارات العملاء", desc: "إجابات مبنية على معرفة معتمدة لأسئلة شائعة، باستخدام معلومات عملك المعتمدة." },
+      { title: "استقطاب العملاء المحتملين وتأهيلهم", desc: "يجمع المتطلبات ويحدد الخطوة التالية المناسبة لكل استفسار." },
+      { title: "حجز المواعيد", desc: "يتحقق من التوفر المسموح به ويحجز أو يعيد الجدولة عند ربط تقويم، مع إرسال تأكيدات وتذكيرات." },
+      { title: "التكامل مع نظام إدارة علاقات العملاء", desc: "ينشئ أو يحدّث بيانات العملاء المحتملين والسجلات من خلال تكاملات محكومة مع نظام إدارة علاقات عملائك." },
+      { title: "المتابعة", desc: "تذكيرات ورسائل متابعة معتمدة، متوافقة مع قواعد منصة واتساب الخاصة بالرسائل الصادرة." },
+      { title: "التحويل إلى موظف", desc: "يصعّد الحالات الحساسة أو المعقدة أو غير المؤكدة أو التي يُطلب فيها ذلك صراحة إلى فريقك." },
+    ],
+
+    workflow_eyebrow: "مثال على سير العمل",
+    workflow_h2: "من الرسالة إلى نتيجة مُتحقق منها",
+    workflow_sub: "نفس بنية افهم ← قرّر ← نفّذ ← تحقّق ← صعّد التي يقوم عليها كل وكيل من ZentexAI، مطبّقة على واتساب.",
+    workflow_steps: [
+      "يرسل العميل رسالة عبر واتساب",
+      "يفهم وكيل الذكاء الاصطناعي الطلب",
+      "يستدعي المعرفة التجارية المعتمدة",
+      "يقرر ما إذا كان الأمر يتطلب إجراءً معتمداً",
+      "يستخدم أداة مصرّح بها — نظام إدارة علاقات العملاء أو التقويم أو واجهة برمجية للأعمال",
+      "يتحقق من النتيجة",
+      "يرد على العميل، أو يصعّد الأمر إلى شخص",
+    ],
+
+    crm_eyebrow: "التكامل مع نظام إدارة علاقات العملاء",
+    crm_h2: "ماذا يعني \"التكامل مع نظام إدارة علاقات العملاء\" فعلياً",
+    crm_p1: "نظام إدارة علاقات العملاء (CRM) هو النظام الذي يستخدمه فريق المبيعات أو الدعم لديك بالفعل لتتبع العملاء المحتملين والحاليين.",
+    crm_p2: "يرسل العميل رسالة عبر واتساب. تجمع الأتمتة اسمه، وشركته، ومتطلباته، وبيانات التواصل، ومصدر العميل المحتمل. وإذا كان ذلك معتمداً ومتكاملاً، تُنشئ أو تحدّث سجل العميل المحتمل في نظام إدارة علاقات العملاء لديك.",
+    crm_p3: "هذا يقلل من الإدخال اليدوي المكرر، ويساعد فريقك على متابعة المحادثة بكامل سياقها بدلاً من البدء من الصفر.",
+    crm_note: "ربط أنظمة إدارة علاقات العملاء والتقويم هو تكامل تصممه ZentexAI حول أنظمتك ومتطلباتك المحددة من خلال واجهات برمجية مدعومة — وليس قائمة موصلات ثابتة وموحدة لكل الحالات.",
+
+    booking_eyebrow: "حجز المواعيد",
+    booking_h2: "حجز المواعيد عبر واتساب",
+    booking_sub: "سير عمل واقعي للعيادات والاستشارات والمهن الاحترافية ومقدمي التعليم والتدريب والشركات الأخرى القائمة على المواعيد.",
+    booking_steps: [
+      "يطلب العميل موعداً",
+      "يجمع الوكيل المعلومات المطلوبة",
+      "يتحقق من تقويمك أو نظام الحجز المتصل",
+      "يعرض الخيارات المتاحة",
+      "يختار العميل وقتاً",
+      "يتم إنشاء الحجز",
+      "يُرسل تأكيد",
+      "يعمل سير عمل التذكير",
+      "يصعّد الأمر إلى شخص عند الحاجة",
+    ],
+
+    lang_h2: "مبني لمحادثات باللغتين العربية والإنجليزية",
+    lang_p: "يمكن تصميم سير عمل متعدد اللغات للشركات في دولة الإمارات، بما يشمل التفاعل باللغتين العربية والإنجليزية. وكما هو الحال مع أي نظام ذكاء اصطناعي، تعتمد الدقة على اللغة واللهجة والسياق التجاري المحدد — لا ندّعي فهماً مثالياً لكل لهجة، ويبقى التصعيد إلى شخص متاحاً لأي حالة لا يكون الوكيل واثقاً منها.",
+
+    platform_h2: "مبني على منصة واتساب بزنس الرسمية",
+    platform_p: "يجب أن تعمل أتمتة واتساب الإنتاجية على منصة واتساب بزنس الرسمية، لا على طرق غير رسمية قد تعرّض رقم عملك التجاري لخطر التقييد. تمتلك المنصة قواعدها الخاصة المتعلقة بالمراسلة التجارية، بما في ذلك القوالب المعتمدة للرسائل الصادرة خارج نافذة خدمة العملاء — ونحن نصمم سير العمل بما يحترم هذه القواعد بدلاً من الالتفاف عليها.",
+
+    security_eyebrow: "الأمان والتحكم",
+    security_h2: "أمان وتحكم مبنيان بالتصميم",
+    security_sub: "نفس الانضباط الذي يقوم عليه كل وكيل من ZentexAI، مطبّق على رقم واتساب الخاص بك وأنظمتك المتصلة.",
+    security_points: [
+      { title: "مصادر معرفة معتمدة", desc: "يجيب الوكيل باستخدام معرفة راجعتها أنت، لا محتوى مفتوحاً من الإنترنت." },
+      { title: "حدود صلاحيات الأدوات", desc: "يقتصر الوصول إلى نظام إدارة علاقات العملاء أو التقويم أو الأنظمة الأخرى على ما يحتاجه سير العمل فقط." },
+      { title: "التحقق من المدخلات والمخرجات", desc: "يتم فحص الرسائل والإجراءات المطلوبة مقابل قواعد محددة قبل تنفيذ أي شيء." },
+      { title: "وصول بأقل الصلاحيات", desc: "تُحدد نطاقات التكاملات بدقة، دون منح وصول واسع على مستوى الحساب بالكامل." },
+      { title: "موافقة بشرية للإجراءات الحساسة", desc: "يمكن أن تتطلب الإجراءات عالية التأثير موافقة بشرية قبل تنفيذها." },
+      { title: "التسجيل والمراقبة", desc: "يتم تسجيل المحادثات والإجراءات لتتمكن من مراجعة ما حدث بالضبط." },
+      { title: "معالجة موثوقة للأعطال", desc: "عندما يكون الأمر غير مؤكد أو غير متاح، يفشل الوكيل بأمان ويصعّد الأمر." },
+      { title: "وصول محكوم لنظام إدارة العملاء والتقويم", desc: "لا يقرأ الوكيل أو يكتب إلا السجلات المحددة المصرّح له بها." },
+    ],
+
+    usecases_eyebrow: "حالات استخدام في دولة الإمارات",
+    usecases_h2: "مبني لسير عمل حقيقي في دولة الإمارات",
+    usecases_sub: "أمثلة على نوعية سير عمل واتساب الذي نصممه — وليست دراسات حالة، بل فئات العمل التي تتعامل معها هذه الأنظمة بشكل جيد.",
+    usecases: [
+      { title: "العيادات", desc: "استفسارات المواعيد وطلبات الحجز والتذكيرات، والتصعيد إلى الموظفين لأي أمر يتطلب حكماً طبياً." },
+      { title: "المهن الاحترافية", desc: "تأهيل العملاء المحتملين وحجز الاستشارات لمكاتب المحاماة والمحاسبة والأعمال الاستشارية المماثلة." },
+      { title: "التعليم والتدريب", desc: "استفسارات الدورات وإرشادات التسجيل والتصعيد للدعم لدى مقدمي التدريب." },
+      { title: "شركات الخدمات", desc: "استقبال طلبات عروض الأسعار وتوجيه العملاء المحتملين والمتابعة لصالونات التجميل وخدمات الإصلاح والأعمال المماثلة." },
+      { title: "العمليات ودعم العملاء", desc: "استفسارات الحالة والمعلومات المعتمدة وتوجيه الحالات لفرق الدعم." },
+    ],
+
+    process_eyebrow: "التنفيذ",
+    process_h2: "كيف نبنيه",
+    process_sub: "يعتمد النطاق على تعقيد سير العمل، وعدد التكاملات، وقواعد عملك، ومتطلبات الموافقة، وإعداد واتساب، وأنظمتك الحالية — لذا نحدد خطة واقعية معاً بدلاً من افتراض نموذج ثابت.",
+    process: [
+      { step: "01", title: "الاكتشاف", desc: "نفهم عملك وعملاءك ومحادثات واتساب الحالية." },
+      { step: "02", title: "رسم سير العمل", desc: "نرسم بدقة ما يجب أن يحدث، خطوة بخطوة، لكل نوع من الاستفسارات." },
+      { step: "03", title: "تصميم الضوابط", desc: "نحدد ما يستطيع الوكيل معرفته وتقريره وتنفيذه — وما يتطلب دائماً شخصاً." },
+      { step: "04", title: "التكامل", desc: "نربط منصة واتساب بزنس والأنظمة المحددة التي يحتاجها سير عملك." },
+      { step: "05", title: "الاختبار", desc: "نختبر سيناريوهات حقيقية، بما في ذلك الحالات الاستثنائية ومسارات التصعيد، قبل الإطلاق." },
+      { step: "06", title: "الإطلاق", desc: "يبدأ سير العمل ضمن الحدود المتفق عليها، مع تسجيل وإشراف قائمين." },
+      { step: "07", title: "التحسين", desc: "نحسّن معرفة سير العمل وقواعده بناءً على محادثات حقيقية." },
+    ],
+
+    faq_eyebrow: "الأسئلة الشائعة",
+    faq_h2: "أسئلة متكررة",
+    faq: [
+      { q: "ما هي أتمتة واتساب؟", a: "تستخدم أتمتة واتساب برمجيات (ولحالات أكثر تقدماً، وكيل ذكاء اصطناعي) للتعامل مع أجزاء من محادثة واتساب — الإجابة عن الأسئلة، أو جمع المعلومات، أو تنفيذ إجراءات معتمدة — دون أن يتعامل شخص مع كل رسالة يدوياً." },
+      { q: "ما الفرق بين أتمتة واتساب وروبوت المحادثة؟", a: "يتبع روبوت المحادثة الأساسي مسارات ثابتة ومحددة مسبقاً. أما الأتمتة المدعومة بالذكاء الاصطناعي فتفهم الرسائل الطبيعية، وتستخدم معرفتك المعتمدة، ويمكنها اتخاذ إجراءات محدودة في أنظمتك، مع التصعيد إلى شخص عند الحاجة." },
+      { q: "هل يمكن لوكيل ذكاء اصطناعي الرد على العملاء عبر واتساب؟", a: "نعم — ضمن المعرفة والصلاحيات التي تعتمدها، ومع مسار واضح للتحويل إلى شخص لأي أمر خارج ذلك النطاق." },
+      { q: "هل يمكن لأتمتة واتساب الاتصال بنظام إدارة علاقات العملاء لدينا؟", a: "نعم، حيثما يكون التكامل ممكناً تقنياً وتوافق أنت على الوصول. نصمم روابط نظام إدارة علاقات العملاء والتقويم حول أنظمتك المحددة من خلال واجهات برمجية مدعومة." },
+      { q: "هل يمكن للعملاء حجز المواعيد عبر واتساب؟", a: "نعم، حيثما يكون تقويمك أو نظام الحجز متكاملاً — يتحقق الوكيل من التوفر الفعلي وينشئ الحجز مباشرة ضمن المحادثة." },
+      { q: "هل يمكن للموظفين تولي المحادثة؟", a: "نعم — التحويل إلى موظف جزء أساسي من التصميم، وليس فكرة لاحقة. تُصعَّد الحالات الحساسة أو المعقدة أو التي يُطلب فيها ذلك صراحة مع كامل السياق." },
+      { q: "هل يمكن للذكاء الاصطناعي الرد باللغتين العربية والإنجليزية؟", a: "يمكن تصميم سير عمل متعدد اللغات للعربية والإنجليزية معاً. تعتمد الدقة على اللغة والسياق المحدد، لذا لا ندّعي تعاملاً مثالياً مع كل لهجة." },
+      { q: "هل نحتاج إلى واجهة واتساب بزنس البرمجية؟", a: "يجب أن تعمل الأتمتة الإنتاجية على منصة واتساب بزنس الرسمية بدلاً من طرق غير رسمية قد تعرّض رقم عملك للخطر. نساعدك على تحديد الإعداد المناسب لعملك." },
+      { q: "كيف تتحكمون بما يُسمح لوكيل الذكاء الاصطناعي بفعله؟", a: "من خلال حدود صلاحيات صريحة تُحدد أثناء مرحلة التصميم، تغطي ما يستطيع الوكيل معرفته وتقريره وتنفيذه، وما يتطلب دائماً موافقة بشرية." },
+      { q: "كم يستغرق التنفيذ؟", a: "تعتمد المدة الزمنية على تعقيد سير العمل، وعدد التكاملات، وإعداد واتساب لديك. نحدد جدولاً زمنياً واقعياً معاً خلال مرحلتي الاكتشاف ورسم سير العمل بدلاً من تحديد مدة ثابتة مسبقاً." },
+    ],
+
+    cta_h2: "جاهز لأتمتة محادثات واتساب لديك؟",
+    cta_sub: "أخبرنا كيف يتواصل معك العملاء حالياً عبر واتساب — سنقيّم ما يستحق الأتمتة وما يجب أن يبقى مع فريقك.",
+    cta_btn: "ناقش سير عمل واتساب الخاص بك",
   },
 
   // ── Academy ──────────────────────────────────────────────────────────────────

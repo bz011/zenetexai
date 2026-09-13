@@ -390,7 +390,7 @@ Before building WhatsApp automation, it helps to have:
 
 If you're not sure where to begin, start by tracking your team's WhatsApp conversations for a week and tagging each one as "could have been automated" or "needed a human." That single exercise usually makes the highest-value starting point obvious, and it's a useful input into a broader [AI agent and automation](/services/ai-agents-automation-uae) conversation.
 
-ZentexAI builds WhatsApp automation for UAE businesses that's connected to real booking systems, CRMs, and order data — not a generic bot with canned replies. If you want a clear, honest view of what's worth automating in your business, [reach out](/contact) and tell us about your current WhatsApp volume and biggest bottleneck.
+ZentexAI builds WhatsApp automation for UAE businesses that's connected to real booking systems, CRMs, and order data — not a generic bot with canned replies. See [how we design WhatsApp automation and AI agents](/services/whatsapp-automation-uae) for a closer look at the workflow, CRM, and booking patterns behind it. If you want a clear, honest view of what's worth automating in your business, [reach out](/contact) and tell us about your current WhatsApp volume and biggest bottleneck.
 
 Related reading: [AI Agents for Business in the UAE](/blog/ai-agents-for-business-uae)`,
   },

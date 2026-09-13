@@ -36,6 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/`, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/services`, changeFrequency: "monthly" },
     { url: `${SITE_URL}/services/ai-agents-automation-uae`, changeFrequency: "monthly" },
+    { url: `${SITE_URL}/services/whatsapp-automation-uae`, changeFrequency: "monthly" },
     { url: `${SITE_URL}/academy`, changeFrequency: "monthly" },
     { url: `${SITE_URL}/about`, changeFrequency: "yearly" },
     { url: `${SITE_URL}/contact`, changeFrequency: "yearly" },
