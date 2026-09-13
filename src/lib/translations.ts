@@ -9,10 +9,11 @@ interface ValueItem { title: string; desc: string }
 interface FeatureItem { title: string; desc: string }
 interface BenefitItem { title: string; desc: string }
 interface ContactDetail { id: string; label: string; value: string; href: string | null; icon: string }
-interface ServiceCategory { id: string; title: string; desc: string; examples: string[] }
+interface ServiceCategory { id: string; title: string; desc: string; examples: string[]; learnMoreHref?: string; learnMoreLabel?: string }
 interface AcademyProgram { id: string; title: string; tag: string; status: string; duration?: string; desc: string }
 interface FounderInfo { name: string; titles: string[]; bio: string }
 interface InquiryType { value: string; label: string }
+interface FaqItem { q: string; a: string }
 
 // ─── Translation shape ────────────────────────────────────────────────────────
 
@@ -100,6 +101,25 @@ export interface Translations {
     process_eyebrow: string; process_h2: string;
     process: ProcessStep[];
     cta_h2: string; cta_p: string; cta_btn1: string; cta_btn2: string;
+  };
+  aiAgentsAutomation: {
+    hero_eyebrow: string; hero_h1: string; hero_sub: string; hero_cta1: string; hero_cta2: string;
+    compare_h2: string;
+    compare_chatbot_label: string; compare_chatbot_desc: string;
+    compare_agent_label: string; compare_agent_desc: string;
+    automate_eyebrow: string; automate_h2: string; automate_sub: string;
+    automate_cards: FeatureItem[];
+    how_eyebrow: string; how_h2: string; how_sub: string;
+    how_steps: ProcessStep[];
+    security_eyebrow: string; security_h2: string; security_sub: string;
+    security_points: FeatureItem[];
+    usecases_eyebrow: string; usecases_h2: string; usecases_sub: string;
+    usecases: FeatureItem[];
+    process_eyebrow: string; process_h2: string;
+    process: ProcessStep[];
+    faq_eyebrow: string; faq_h2: string;
+    faq: FaqItem[];
+    cta_h2: string; cta_sub: string; cta_btn: string;
   };
   academy: {
     hero_eyebrow: string; hero_h1: string; hero_sub: string;
@@ -419,6 +439,8 @@ const en: Translations = {
         title: "AI Solutions",
         desc: "Practical AI systems built to do real work inside your organization.",
         examples: ["AI Agents", "Workflow Automation", "Business Chatbots", "Knowledge Assistants", "Custom AI Applications"],
+        learnMoreHref: "/services/ai-agents-automation-uae",
+        learnMoreLabel: "Learn more about AI agents & automation →",
       },
       {
         id: "ai-consulting",
@@ -445,6 +467,94 @@ const en: Translations = {
     cta_p: "Tell us about it. We'll respond within 24 hours.",
     cta_btn1: "Contact Us",
     cta_btn2: "About Us",
+  },
+
+  aiAgentsAutomation: {
+    hero_eyebrow: "AI Agents & Automation",
+    hero_h1: "AI Agents & Business Automation for UAE Businesses",
+    hero_sub: "Secure, production-ready AI agents that connect knowledge, workflows, and business systems to perform approved work — with human oversight where it matters.",
+    hero_cta1: "Discuss Your AI Workflow",
+    hero_cta2: "Explore Use Cases",
+
+    compare_h2: "Not Just a Chatbot",
+    compare_chatbot_label: "A Simple Chatbot",
+    compare_chatbot_desc: "Responds to messages using scripted or generic replies, with little awareness of your business context, data, or systems.",
+    compare_agent_label: "A Production AI Agent",
+    compare_agent_desc: "Understands context using your approved knowledge, decides within clear boundaries, calls the systems it's permitted to use, performs the action, verifies the outcome, and escalates to a person when the situation calls for it.",
+
+    automate_eyebrow: "Capabilities",
+    automate_h2: "What ZentexAI Can Automate",
+    automate_sub: "Real workflow categories we build AI agents around — not a generic feature list.",
+    automate_cards: [
+      { title: "Customer Support & FAQs", desc: "Grounded answers to common customer questions, with escalation when a question needs a person." },
+      { title: "Lead Capture & Qualification", desc: "New enquiries are captured, qualified against your criteria, and logged for follow-up." },
+      { title: "Appointment Scheduling", desc: "Enquiries are turned into booked appointments, with confirmations and reminders handled automatically." },
+      { title: "Document & Request Processing", desc: "Incoming requests or documents are read, classified, and routed to the right process." },
+      { title: "Internal Knowledge Assistance", desc: "Employees get answers from your approved internal knowledge instead of searching scattered documents." },
+      { title: "Reporting & Status Updates", desc: "Approved data is collected, summarized, and routed to the right person on schedule." },
+    ],
+
+    how_eyebrow: "How It Works",
+    how_h2: "Understand. Decide. Act. Verify. Escalate.",
+    how_sub: "The same five-step pattern underlies every agent we build, adapted to your approved workflow and permissions.",
+    how_steps: [
+      { step: "01", title: "Understand", desc: "The agent reads the incoming request or message and interprets it using your approved business knowledge — not general internet knowledge." },
+      { step: "02", title: "Decide", desc: "Based on your defined rules and permissions, the agent decides what should happen next, and whether it's allowed to act on its own." },
+      { step: "03", title: "Act", desc: "Within its permitted boundaries, the agent performs the action — updating a system, sending a message, creating a record — through approved integrations." },
+      { step: "04", title: "Verify", desc: "The agent checks that the action actually completed correctly before considering the task done." },
+      { step: "05", title: "Escalate", desc: "When a request falls outside its permissions, confidence, or scope, the agent hands it to the right person with full context — instead of guessing." },
+    ],
+
+    security_eyebrow: "Security & Control",
+    security_h2: "Security & Control, By Design",
+    security_sub: "This is where a production AI agent earns trust — not by promising perfection, but by being built with real boundaries.",
+    security_points: [
+      { title: "Approved Knowledge Only", desc: "Agents answer and act using knowledge you've reviewed and approved, not open-ended internet content." },
+      { title: "Least-Privilege Tool Access", desc: "Each agent is only given access to the specific systems and actions it actually needs — nothing more." },
+      { title: "Validation Before Action", desc: "Inputs and requested actions are checked against defined rules before anything is executed." },
+      { title: "Human Approval Where Required", desc: "Sensitive or high-impact actions can be routed for human sign-off before they happen." },
+      { title: "Audit & Logging", desc: "Every decision and action an agent takes is logged, so you can review exactly what happened and why." },
+      { title: "Reliable Failure Handling", desc: "When something is uncertain, unavailable, or out of scope, the agent fails safely and escalates rather than guessing." },
+    ],
+
+    usecases_eyebrow: "Use Cases",
+    usecases_h2: "UAE Business Use Cases",
+    usecases_sub: "Built for UAE SMEs, service businesses, clinics, professional services, education and training providers, and operations teams looking to automate real workflows — not just add a chat widget.",
+    usecases: [
+      { title: "Customer Service", desc: "An AI agent answers grounded, company-specific questions from customers and escalates anything it can't confidently resolve to your team." },
+      { title: "Lead Qualification", desc: "A new enquiry is captured, qualified against your criteria, logged in your CRM, and queued for the right follow-up." },
+      { title: "Appointments", desc: "A WhatsApp enquiry checks real availability, books the appointment, and sends a confirmation and reminder." },
+      { title: "Operations", desc: "Incoming requests or documents are read, classified, routed to the right process, and used to update your systems." },
+      { title: "Internal Knowledge", desc: "Employees ask questions against your approved internal knowledge instead of searching through scattered documents." },
+      { title: "Business Reporting", desc: "Approved data is collected and summarized into a report, routed to the right person on schedule." },
+    ],
+
+    process_eyebrow: "Implementation",
+    process_h2: "How We Build It",
+    process: [
+      { step: "01", title: "Discover", desc: "We map your current workflow, systems, and where an agent can genuinely help." },
+      { step: "02", title: "Design", desc: "We define exactly what the agent is allowed to know, decide, and do — including escalation rules." },
+      { step: "03", title: "Build", desc: "We build the agent against your approved knowledge and the integrations it needs." },
+      { step: "04", title: "Test", desc: "We test real scenarios, including edge cases and failure paths, before anything goes live." },
+      { step: "05", title: "Deploy", desc: "The agent goes live within the agreed boundaries, with logging and oversight in place." },
+      { step: "06", title: "Improve", desc: "We refine the agent's knowledge and rules based on real usage." },
+    ],
+
+    faq_eyebrow: "FAQ",
+    faq_h2: "Common Questions",
+    faq: [
+      { q: "What is an AI agent?", a: "An AI agent is a system that can understand a request, decide what to do about it within defined boundaries, take action through your approved systems, verify the result, and escalate to a person when needed — rather than only generating a reply." },
+      { q: "How is an AI agent different from a chatbot?", a: "A chatbot typically responds to messages. A production AI agent can also make bounded decisions and take real actions in your systems, under permissions you define." },
+      { q: "Can an AI agent connect to our existing systems?", a: "Yes, where an integration is technically possible and you approve the access. Agents are built to work through defined, permitted integrations rather than broad, unrestricted access." },
+      { q: "Can AI agents work with WhatsApp?", a: "Yes. WhatsApp is a common channel for enquiries, appointment booking, and customer communication in the UAE, and can be connected as one of an agent's approved channels." },
+      { q: "Can the system hand conversations to employees?", a: "Yes — escalation to a human is a core part of how these agents are designed, not an afterthought." },
+      { q: "How do you control what an AI agent is allowed to do?", a: "Through explicit permission boundaries defined during the design phase, covering what the agent can know, decide, and act on, and what always requires human approval." },
+      { q: "How long does an AI automation project take?", a: "Timelines depend on the complexity of the workflow and the systems being integrated. We define a realistic timeline together during the Discover and Design phases rather than quoting a fixed duration upfront." },
+    ],
+
+    cta_h2: "Ready to Automate a Real Workflow?",
+    cta_sub: "Tell us about the process you want to improve — we'll assess whether an AI agent is the right fit, and what it would take.",
+    cta_btn: "Discuss Your AI Workflow",
   },
 
   // ── Academy ─────────────────────────────────────────────────────────────────
@@ -1007,6 +1117,8 @@ const ar: Translations = {
         title: "حلول الذكاء الاصطناعي",
         desc: "أنظمة ذكاء اصطناعي عملية مبنية لتؤدي عملاً حقيقياً داخل مؤسستك.",
         examples: ["وكلاء ذكاء اصطناعي", "أتمتة سير العمل", "روبوتات محادثة للأعمال", "مساعدات معرفية", "تطبيقات ذكاء اصطناعي مخصصة"],
+        learnMoreHref: "/services/ai-agents-automation-uae",
+        learnMoreLabel: "اعرف المزيد عن وكلاء الذكاء الاصطناعي والأتمتة ←",
       },
       {
         id: "ai-consulting",
@@ -1033,6 +1145,94 @@ const ar: Translations = {
     cta_p: "أخبرنا عنه. سنرد خلال 24 ساعة.",
     cta_btn1: "تواصل معنا",
     cta_btn2: "من نحن",
+  },
+
+  aiAgentsAutomation: {
+    hero_eyebrow: "وكلاء الذكاء الاصطناعي والأتمتة",
+    hero_h1: "وكلاء ذكاء اصطناعي وأتمتة أعمال للشركات في دولة الإمارات",
+    hero_sub: "وكلاء ذكاء اصطناعي آمنون وجاهزون للإنتاج يربطون المعرفة وسير العمل وأنظمة عملك لتنفيذ مهام معتمدة — مع إشراف بشري حيثما يلزم.",
+    hero_cta1: "ناقش سير عملك مع الذكاء الاصطناعي",
+    hero_cta2: "استكشف حالات الاستخدام",
+
+    compare_h2: "ليس مجرد روبوت محادثة",
+    compare_chatbot_label: "روبوت محادثة بسيط",
+    compare_chatbot_desc: "يرد على الرسائل بردود جاهزة أو عامة، مع إدراك محدود لسياق عملك أو بياناته أو أنظمته.",
+    compare_agent_label: "وكيل ذكاء اصطناعي جاهز للإنتاج",
+    compare_agent_desc: "يفهم السياق باستخدام معرفتك المعتمدة، ويقرر ضمن حدود واضحة، ويستدعي الأنظمة المصرّح له باستخدامها، وينفّذ الإجراء، ويتحقق من النتيجة، ويصعّد الأمر إلى شخص عند الحاجة.",
+
+    automate_eyebrow: "القدرات",
+    automate_h2: "ماذا يمكن لـ ZentexAI أتمتته",
+    automate_sub: "فئات عمل حقيقية نبني حولها وكلاء الذكاء الاصطناعي — وليست قائمة ميزات عامة.",
+    automate_cards: [
+      { title: "خدمة العملاء والأسئلة الشائعة", desc: "إجابات مبنية على معرفة معتمدة لأسئلة العملاء الشائعة، مع التصعيد عندما يحتاج السؤال إلى شخص." },
+      { title: "استقطاب العملاء المحتملين وتأهيلهم", desc: "يتم استقبال الاستفسارات الجديدة وتأهيلها وفق معاييرك، وتسجيلها للمتابعة." },
+      { title: "جدولة المواعيد", desc: "تتحول الاستفسارات إلى مواعيد محجوزة، مع تأكيدات وتذكيرات تلقائية." },
+      { title: "معالجة المستندات والطلبات", desc: "تتم قراءة الطلبات أو المستندات الواردة وتصنيفها وتوجيهها إلى العملية الصحيحة." },
+      { title: "مساعدة المعرفة الداخلية", desc: "يحصل الموظفون على إجابات من معرفتك الداخلية المعتمدة بدلاً من البحث في مستندات متفرقة." },
+      { title: "التقارير وتحديثات الحالة", desc: "يتم جمع البيانات المعتمدة وتلخيصها وتوجيهها إلى الشخص المناسب في موعدها." },
+    ],
+
+    how_eyebrow: "كيف يعمل",
+    how_h2: "افهم. قرّر. نفّذ. تحقّق. صعّد.",
+    how_sub: "نفس النمط المكوّن من خمس خطوات يقوم عليه كل وكيل نبنيه، ويُكيَّف حسب سير عملك وصلاحياتك المعتمدة.",
+    how_steps: [
+      { step: "01", title: "افهم", desc: "يقرأ الوكيل الطلب أو الرسالة الواردة ويفسّرها باستخدام معرفة عملك المعتمدة — لا معرفة عامة من الإنترنت." },
+      { step: "02", title: "قرّر", desc: "بناءً على قواعدك وصلاحياتك المحددة، يقرر الوكيل ما يجب أن يحدث تالياً، وما إذا كان مسموحاً له بالتصرف من تلقاء نفسه." },
+      { step: "03", title: "نفّذ", desc: "ضمن حدوده المسموح بها، ينفّذ الوكيل الإجراء — تحديث نظام، إرسال رسالة، إنشاء سجل — عبر التكاملات المعتمدة." },
+      { step: "04", title: "تحقّق", desc: "يتأكد الوكيل من أن الإجراء اكتمل فعلاً وبشكل صحيح قبل اعتبار المهمة منتهية." },
+      { step: "05", title: "صعّد", desc: "عندما يخرج الطلب عن صلاحياته أو ثقته أو نطاقه، يسلّمه الوكيل إلى الشخص المناسب مع كامل السياق — بدلاً من التخمين." },
+    ],
+
+    security_eyebrow: "الأمان والتحكم",
+    security_h2: "أمان وتحكم مبنيان بالتصميم",
+    security_sub: "هنا يكتسب وكيل الذكاء الاصطناعي الجاهز للإنتاج الثقة — ليس بوعد الكمال، بل ببنائه بحدود حقيقية.",
+    security_points: [
+      { title: "معرفة معتمدة فقط", desc: "يجيب الوكلاء وينفّذون باستخدام معرفة راجعتها واعتمدتها، لا محتوى مفتوحاً من الإنترنت." },
+      { title: "وصول محدود بأقل الصلاحيات", desc: "يُمنح كل وكيل فقط الوصول إلى الأنظمة والإجراءات التي يحتاجها فعلاً — لا أكثر." },
+      { title: "التحقق قبل التنفيذ", desc: "يتم فحص المدخلات والإجراءات المطلوبة مقابل قواعد محددة قبل تنفيذ أي شيء." },
+      { title: "موافقة بشرية حيثما يلزم", desc: "يمكن توجيه الإجراءات الحساسة أو عالية التأثير للحصول على موافقة بشرية قبل تنفيذها." },
+      { title: "التدقيق والتسجيل", desc: "يتم تسجيل كل قرار وإجراء يتخذه الوكيل، لتتمكن من مراجعة ما حدث بالضبط ولماذا." },
+      { title: "معالجة موثوقة للأعطال", desc: "عندما يكون الأمر غير مؤكد أو غير متاح أو خارج النطاق، يفشل الوكيل بأمان ويصعّد الأمر بدلاً من التخمين." },
+    ],
+
+    usecases_eyebrow: "حالات الاستخدام",
+    usecases_h2: "حالات استخدام لشركات في دولة الإمارات",
+    usecases_sub: "مبني للشركات الصغيرة والمتوسطة، وشركات الخدمات، والعيادات، والمهن الاحترافية، ومقدمي التعليم والتدريب، وفرق العمليات التي تسعى لأتمتة سير عمل حقيقي — لا مجرد إضافة نافذة محادثة.",
+    usecases: [
+      { title: "خدمة العملاء", desc: "يجيب وكيل الذكاء الاصطناعي على أسئلة العملاء المبنية على معرفة معتمدة، ويصعّد ما لا يستطيع حله بثقة إلى فريقك." },
+      { title: "تأهيل العملاء المحتملين", desc: "يتم استقبال استفسار جديد وتأهيله وفق معاييرك، وتسجيله في نظام إدارة علاقات العملاء، وتوجيهه للمتابعة المناسبة." },
+      { title: "المواعيد", desc: "يتحقق استفسار عبر واتساب من التوفر الفعلي، ويحجز الموعد، ويرسل تأكيداً وتذكيراً." },
+      { title: "العمليات", desc: "تتم قراءة الطلبات أو المستندات الواردة وتصنيفها وتوجيهها إلى العملية الصحيحة، واستخدامها لتحديث أنظمتك." },
+      { title: "المعرفة الداخلية", desc: "يطرح الموظفون أسئلة على معرفتك الداخلية المعتمدة بدلاً من البحث في مستندات متفرقة." },
+      { title: "تقارير الأعمال", desc: "يتم جمع البيانات المعتمدة وتلخيصها في تقرير، وتوجيهه إلى الشخص المناسب في موعده." },
+    ],
+
+    process_eyebrow: "التنفيذ",
+    process_h2: "كيف نبنيه",
+    process: [
+      { step: "01", title: "الاكتشاف", desc: "نرسم خريطة لسير عملك الحالي وأنظمتك والمواضع التي يمكن للوكيل أن يساعد فيها فعلاً." },
+      { step: "02", title: "التصميم", desc: "نحدد بدقة ما يُسمح للوكيل بمعرفته وقراره وتنفيذه — بما في ذلك قواعد التصعيد." },
+      { step: "03", title: "البناء", desc: "نبني الوكيل بناءً على معرفتك المعتمدة والتكاملات التي يحتاجها." },
+      { step: "04", title: "الاختبار", desc: "نختبر سيناريوهات حقيقية، بما في ذلك الحالات الاستثنائية ومسارات الفشل، قبل أي إطلاق فعلي." },
+      { step: "05", title: "الإطلاق", desc: "يبدأ الوكيل العمل ضمن الحدود المتفق عليها، مع تسجيل وإشراف قائمين." },
+      { step: "06", title: "التحسين", desc: "نحسّن معرفة الوكيل وقواعده بناءً على الاستخدام الفعلي." },
+    ],
+
+    faq_eyebrow: "الأسئلة الشائعة",
+    faq_h2: "أسئلة متكررة",
+    faq: [
+      { q: "ما هو وكيل الذكاء الاصطناعي؟", a: "وكيل الذكاء الاصطناعي هو نظام يستطيع فهم طلب ما، وتقرير ما يجب فعله حياله ضمن حدود محددة، وتنفيذ إجراء عبر أنظمتك المعتمدة، والتحقق من النتيجة، وتصعيد الأمر إلى شخص عند الحاجة — لا الاكتفاء بتوليد رد فقط." },
+      { q: "ما الفرق بين وكيل الذكاء الاصطناعي وروبوت المحادثة؟", a: "عادةً ما يرد روبوت المحادثة على الرسائل فقط. أما وكيل الذكاء الاصطناعي الجاهز للإنتاج فيمكنه أيضاً اتخاذ قرارات محدودة وتنفيذ إجراءات حقيقية في أنظمتك، ضمن صلاحيات تحددها أنت." },
+      { q: "هل يمكن لوكيل الذكاء الاصطناعي الاتصال بأنظمتنا الحالية؟", a: "نعم، حيثما يكون التكامل ممكناً تقنياً وتوافق أنت على الوصول إليه. يُبنى الوكلاء للعمل عبر تكاملات محددة ومصرّح بها بدلاً من وصول واسع وغير مقيّد." },
+      { q: "هل يمكن لوكلاء الذكاء الاصطناعي العمل عبر واتساب؟", a: "نعم. يُعد واتساب قناة شائعة للاستفسارات وحجز المواعيد والتواصل مع العملاء في دولة الإمارات، ويمكن ربطه كإحدى القنوات المعتمدة للوكيل." },
+      { q: "هل يمكن للنظام تحويل المحادثات إلى الموظفين؟", a: "نعم — التصعيد إلى شخص هو جزء أساسي من تصميم هذه الوكلاء، وليس فكرة لاحقة." },
+      { q: "كيف تتحكمون بما يُسمح لوكيل الذكاء الاصطناعي بفعله؟", a: "من خلال حدود صلاحيات صريحة تُحدد أثناء مرحلة التصميم، تغطي ما يستطيع الوكيل معرفته وتقريره وتنفيذه، وما يتطلب دائماً موافقة بشرية." },
+      { q: "كم يستغرق مشروع أتمتة الذكاء الاصطناعي؟", a: "تعتمد المدة الزمنية على تعقيد سير العمل والأنظمة المطلوب ربطها. نحدد جدولاً زمنياً واقعياً معاً خلال مرحلتي الاكتشاف والتصميم بدلاً من تحديد مدة ثابتة مسبقاً." },
+    ],
+
+    cta_h2: "جاهز لأتمتة سير عمل حقيقي؟",
+    cta_sub: "أخبرنا عن العملية التي تريد تحسينها — سنقيّم ما إذا كان وكيل الذكاء الاصطناعي هو الحل المناسب، وما يتطلبه ذلك.",
+    cta_btn: "ناقش سير عملك مع الذكاء الاصطناعي",
   },
 
   // ── Academy ──────────────────────────────────────────────────────────────────

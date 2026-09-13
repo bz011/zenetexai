@@ -335,7 +335,7 @@ You don't need to automate your entire customer journey on day one. The business
 
 ## Where ZentexAI Fits In
 
-ZentexAI builds practical AI agents and automation for businesses in the UAE and the wider region — not generic chatbots, but agents connected to your real tools and workflows, built with a clear scope and measurable outcome. If you're exploring whether an AI agent makes sense for your business, [get in touch](/contact) and tell us about the process you're trying to improve — we'll give you a straight answer, including if the honest answer is "not yet."
+ZentexAI builds practical AI agents and automation for businesses in the UAE and the wider region — not generic chatbots, but agents connected to your real tools and workflows, built with a clear scope and measurable outcome. See [how we approach AI agents and business automation](/services/ai-agents-automation-uae) for a closer look at the security, permissions, and workflow design behind a production agent. If you're exploring whether an AI agent makes sense for your business, [get in touch](/contact) and tell us about the process you're trying to improve — we'll give you a straight answer, including if the honest answer is "not yet."
 
 Related reading: [How to Assess Whether a Business Is Ready for AI Automation](/blog/is-your-business-ready-for-ai-automation)`,
   },
@@ -388,7 +388,7 @@ Before building WhatsApp automation, it helps to have:
 
 ## Where to Start
 
-If you're not sure where to begin, start by tracking your team's WhatsApp conversations for a week and tagging each one as "could have been automated" or "needed a human." That single exercise usually makes the highest-value starting point obvious, and it's a useful input into a broader [AI automation](/services#ai-solutions) conversation.
+If you're not sure where to begin, start by tracking your team's WhatsApp conversations for a week and tagging each one as "could have been automated" or "needed a human." That single exercise usually makes the highest-value starting point obvious, and it's a useful input into a broader [AI agent and automation](/services/ai-agents-automation-uae) conversation.
 
 ZentexAI builds WhatsApp automation for UAE businesses that's connected to real booking systems, CRMs, and order data — not a generic bot with canned replies. If you want a clear, honest view of what's worth automating in your business, [reach out](/contact) and tell us about your current WhatsApp volume and biggest bottleneck.
 
@@ -442,7 +442,7 @@ Salons, tutoring centers, repair services, consultancies, and any other appointm
 
 This mirrors the general framework in [How to Assess Whether a Business Is Ready for AI Automation](/blog/is-your-business-ready-for-ai-automation) — the same readiness questions apply, with an extra layer of care around anything client- or patient-facing.
 
-ZentexAI works with clinics and service businesses in the UAE to design automation that respects where human judgment needs to stay in control. If you'd like an honest assessment of what's worth automating in your practice, [contact us](/contact) to talk through your specific workflow.`,
+ZentexAI works with clinics and service businesses in the UAE to design automation that respects where human judgment needs to stay in control — see [our approach to permission boundaries and escalation](/services/ai-agents-automation-uae) for how that's built in from the start. If you'd like an honest assessment of what's worth automating in your practice, [contact us](/contact) to talk through your specific workflow.`,
   },
   {
     slug: "is-your-business-ready-for-ai-automation",
@@ -492,7 +492,7 @@ Being "not ready" isn't a dead end — it's useful information. The most common 
 
 ## A Simple Way to Score Yourself
 
-Go through the five questions above honestly. If you have clear, confident answers to at least four of them, you're likely ready to start a focused first automation project — probably in [WhatsApp automation](/blog/whatsapp-automation-uae-businesses) or a single well-defined [AI agent](/blog/ai-agents-for-business-uae) use case. If you're confident on two or fewer, the better first investment is process clarity, not automation software.
+Go through the five questions above honestly. If you have clear, confident answers to at least four of them, you're likely ready to start a focused first automation project — probably in [WhatsApp automation](/blog/whatsapp-automation-uae-businesses) or a single well-defined [AI agent](/blog/ai-agents-for-business-uae) use case. See [what a production AI agent actually involves](/services/ai-agents-automation-uae) if you want to understand the moving parts before scoping one. If you're confident on two or fewer, the better first investment is process clarity, not automation software.
 
 ## Getting an Outside View
 

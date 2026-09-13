@@ -54,6 +54,11 @@ export default function HomeContent({ latestPosts }: Props) {
                     </span>
                   ))}
                 </div>
+                {cat.learnMoreHref && cat.learnMoreLabel && (
+                  <Link href={cat.learnMoreHref} className="mt-4 inline-block text-[13px] font-medium text-indigo-400 transition-colors hover:text-indigo-300">
+                    {cat.learnMoreLabel}
+                  </Link>
+                )}
               </div>
             ))}
           </div>

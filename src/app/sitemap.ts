@@ -17,8 +17,8 @@ export const revalidate = 3600;
  * Dynamic XML sitemap (served natively by Next.js at /sitemap.xml from this
  * file - no package needed). Lists ONLY real, public, canonical pages that
  * return 200:
- *  - static marketing pages (home, services, academy, about, contact,
- *    resources, blog index)
+ *  - static marketing pages (home, services, the AI Agents & Automation UAE
+ *    landing page, academy, about, contact, resources, blog index)
  *  - published product pages (currently: PMP Mastery Program, PMP Exam
  *    Simulator) - read directly by slug/is_published, not hardcoded, so an
  *    admin publishing/unpublishing a product is reflected automatically
@@ -35,6 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticEntries: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/`, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/services`, changeFrequency: "monthly" },
+    { url: `${SITE_URL}/services/ai-agents-automation-uae`, changeFrequency: "monthly" },
     { url: `${SITE_URL}/academy`, changeFrequency: "monthly" },
     { url: `${SITE_URL}/about`, changeFrequency: "yearly" },
     { url: `${SITE_URL}/contact`, changeFrequency: "yearly" },

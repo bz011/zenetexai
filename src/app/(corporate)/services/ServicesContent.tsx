@@ -29,6 +29,11 @@ export default function ServicesContent() {
                   <span className="label text-[10px]">{String(i + 1).padStart(2, "0")}</span>
                   <h2 className="mt-2 text-xl font-semibold text-white md:text-2xl">{cat.title}</h2>
                   <p className="mt-3 text-[14px] leading-relaxed text-slate-400">{cat.desc}</p>
+                  {cat.learnMoreHref && cat.learnMoreLabel && (
+                    <Link href={cat.learnMoreHref} className="mt-3 inline-block text-[13px] font-medium text-indigo-400 transition-colors hover:text-indigo-300">
+                      {cat.learnMoreLabel}
+                    </Link>
+                  )}
                 </div>
                 <div className="flex flex-1 flex-wrap content-start gap-2.5">
                   {cat.examples.map((ex) => (

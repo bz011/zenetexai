@@ -44,6 +44,13 @@ const PUBLIC_ROUTES = new Set<string>([
   "/verify-email",
   "/about",
   "/services",
+  // SEO Phase 2: a dedicated public landing page nested under /services.
+  // "/services" above is an exact match, not a prefix, so this sub-path
+  // needs its own entry - without it, the default-deny policy below would
+  // silently redirect this public marketing page to /login, exactly like
+  // the /sitemap.xml and /verify entries below had to be added for the
+  // same reason.
+  "/services/ai-agents-automation-uae",
   "/academy",
   "/resources",
   "/contact",
