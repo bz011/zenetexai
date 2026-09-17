@@ -145,6 +145,22 @@ export interface Translations {
     faq: FaqItem[];
     cta_h2: string; cta_sub: string; cta_btn: string;
   };
+  machineLearning: {
+    hero_eyebrow: string; hero_h1: string; hero_sub: string; hero_cta1: string; hero_cta2: string;
+    fit_eyebrow: string; fit_h2: string; fit_sub: string;
+    fit_points: FeatureItem[];
+    usecases_eyebrow: string; usecases_h2: string; usecases_sub: string;
+    usecases: FeatureItem[];
+    process_eyebrow: string; process_h2: string; process_sub: string;
+    process: ProcessStep[];
+    compare_h2: string;
+    compare_ml_label: string; compare_ml_desc: string;
+    compare_agents_label: string; compare_agents_desc: string;
+    compare_link_label: string;
+    faq_eyebrow: string; faq_h2: string;
+    faq: FaqItem[];
+    cta_h2: string; cta_sub: string; cta_btn: string;
+  };
   academy: {
     hero_eyebrow: string; hero_h1: string; hero_sub: string;
     hero_btn1: string; hero_btn2: string;
@@ -480,6 +496,14 @@ const en: Translations = {
         desc: "Hands-on project delivery expertise — from setting up a PMO to recovering a troubled project.",
         examples: ["PMO Setup", "Agile Transformation", "Hybrid Delivery", "Project Recovery", "Risk Management"],
       },
+      {
+        id: "machine-learning",
+        title: "Machine Learning",
+        desc: "Practical machine learning for forecasting, classification, and anomaly detection.",
+        examples: ["Demand Forecasting", "Classification", "Anomaly Detection", "Predictive Analytics"],
+        learnMoreHref: "/services/machine-learning-uae",
+        learnMoreLabel: "Learn more about machine learning services →",
+      },
     ],
     process_eyebrow: "How We Work",
     process_h2: "Our Process",
@@ -705,6 +729,67 @@ const en: Translations = {
     cta_h2: "Ready to Automate Your WhatsApp Conversations?",
     cta_sub: "Tell us how customers currently reach you on WhatsApp — we'll assess what's worth automating and what should stay with your team.",
     cta_btn: "Discuss Your WhatsApp Workflow",
+  },
+
+  machineLearning: {
+    hero_eyebrow: "Machine Learning",
+    hero_h1: "Machine Learning Services for UAE Businesses",
+    hero_sub: "Practical machine learning for forecasting, classification, and anomaly detection — built around your actual data and a clear business problem, not a generic model.",
+    hero_cta1: "Discuss Your Data",
+    hero_cta2: "See What's Possible",
+
+    fit_eyebrow: "Fit First",
+    fit_h2: "Machine Learning Isn't Always the Right Tool",
+    fit_sub: "Before recommending a model, we check whether the problem, data, and expected outcome actually justify one.",
+    fit_points: [
+      { title: "Enough Historical Data", desc: "A model needs a real history of examples to learn from — without it, a simpler rule-based approach is usually the better start." },
+      { title: "A Genuinely Predictive Problem", desc: "Some problems are better solved with clear business rules or automation than with a trained model." },
+      { title: "A Clear Definition of Success", desc: "We define what \"good enough\" looks like before building anything, so the outcome can actually be evaluated." },
+      { title: "A Way to Act on the Output", desc: "A prediction only creates value if something in the business actually changes because of it." },
+    ],
+
+    usecases_eyebrow: "Potential Use Cases",
+    usecases_h2: "Where Machine Learning Can Help",
+    usecases_sub: "Examples of the kind of problems machine learning is well suited to — illustrative use cases, not completed ZentexAI client projects.",
+    usecases: [
+      { title: "Demand Forecasting", desc: "Predicting future demand, orders, or resource needs from historical patterns, to support planning and inventory decisions." },
+      { title: "Classification", desc: "Automatically categorizing incoming items — leads, tickets, documents, transactions — based on patterns in past examples." },
+      { title: "Anomaly Detection", desc: "Flagging unusual activity, outliers, or potential errors that would be difficult to catch with fixed rules alone." },
+      { title: "Predictive Analytics", desc: "Estimating a likely future outcome, such as churn risk or demand shifts, to help teams act earlier." },
+    ],
+
+    process_eyebrow: "How We Work",
+    process_h2: "A Careful, Evidence-Based Process",
+    process_sub: "Every step exists to confirm the model is actually solving the right problem before it goes anywhere near production.",
+    process: [
+      { step: "01", title: "Business Problem", desc: "We start with the decision you're trying to improve, not the technology." },
+      { step: "02", title: "Data Readiness Assessment", desc: "We check whether the data needed to solve the problem actually exists, and in what condition." },
+      { step: "03", title: "Baseline", desc: "We establish a simple baseline first, so any model's value can be measured against something real." },
+      { step: "04", title: "Model Evaluation", desc: "We test candidate approaches against the baseline, using metrics tied to the business outcome, not just technical accuracy." },
+      { step: "05", title: "Integration", desc: "A validated model is connected to the systems and workflows where its output is actually needed." },
+      { step: "06", title: "Monitoring", desc: "Once live, model performance is monitored over time, since real-world data drifts and results can degrade." },
+    ],
+
+    compare_h2: "Machine Learning vs. AI Agents & Automation",
+    compare_ml_label: "Machine Learning",
+    compare_ml_desc: "Learns patterns from historical data to predict, classify, or detect outliers. The output is typically a prediction or a score that informs a decision.",
+    compare_agents_label: "AI Agents & Automation",
+    compare_agents_desc: "Understands a request and takes action across your systems. The output is typically a completed task, not a prediction.",
+    compare_link_label: "See AI Agents & Automation UAE",
+
+    faq_eyebrow: "FAQ",
+    faq_h2: "Common Questions",
+    faq: [
+      { q: "What is machine learning?", a: "Machine learning is a way of building software that learns patterns from historical data, rather than following only fixed, manually written rules — commonly used for prediction, classification, and detecting anomalies." },
+      { q: "How is this different from AI agents?", a: "Machine learning produces a prediction or classification. An AI agent takes that kind of input, or other business context, and acts on it within defined systems and permissions. The two are often used together, but they solve different problems." },
+      { q: "Do you build custom models or use existing tools?", a: "The right approach depends on the problem. Sometimes a custom model is justified, and sometimes an existing tool or a simpler statistical method gets you there faster and more reliably. We recommend based on the problem, not a fixed toolset." },
+      { q: "How long does a machine learning project take?", a: "Timelines depend heavily on data readiness and problem complexity — a project with clean, available historical data moves much faster than one starting from scattered or incomplete records. We give a realistic estimate after the data-readiness assessment, not before." },
+      { q: "Is machine learning right for my business?", a: "Only if the problem is genuinely predictive, there's enough historical data to learn from, and there's a clear way to act on the result. Part of our first conversation is honestly assessing whether it's the right fit at all." },
+    ],
+
+    cta_h2: "Have a Forecasting or Classification Problem in Mind?",
+    cta_sub: "Tell us about the data and the decision you're trying to improve — we'll give you an honest view of whether machine learning is the right next step.",
+    cta_btn: "Discuss Your Data",
   },
 
   // ── Academy ─────────────────────────────────────────────────────────────────
@@ -1284,6 +1369,14 @@ const ar: Translations = {
         desc: "خبرة عملية في تسليم المشاريع — من إنشاء مكتب إدارة المشاريع إلى إنقاذ مشروع متعثر.",
         examples: ["إنشاء مكتب إدارة المشاريع", "التحول إلى الأجايل", "التسليم الهجين", "إنقاذ المشاريع", "إدارة المخاطر"],
       },
+      {
+        id: "machine-learning",
+        title: "تعلّم الآلة",
+        desc: "تعلّم آلة عملي للتنبؤ والتصنيف واكتشاف الحالات الشاذة.",
+        examples: ["التنبؤ بالطلب", "التصنيف", "اكتشاف الحالات الشاذة", "التحليلات التنبؤية"],
+        learnMoreHref: "/services/machine-learning-uae",
+        learnMoreLabel: "اعرف المزيد عن خدمات تعلّم الآلة ←",
+      },
     ],
     process_eyebrow: "طريقة عملنا",
     process_h2: "منهجيتنا",
@@ -1509,6 +1602,67 @@ const ar: Translations = {
     cta_h2: "جاهز لأتمتة محادثات واتساب لديك؟",
     cta_sub: "أخبرنا كيف يتواصل معك العملاء حالياً عبر واتساب — سنقيّم ما يستحق الأتمتة وما يجب أن يبقى مع فريقك.",
     cta_btn: "ناقش سير عمل واتساب الخاص بك",
+  },
+
+  machineLearning: {
+    hero_eyebrow: "تعلّم الآلة",
+    hero_h1: "خدمات تعلّم الآلة للشركات في دولة الإمارات",
+    hero_sub: "تعلّم آلة عملي للتنبؤ والتصنيف واكتشاف الحالات الشاذة — مبني حول بياناتك الفعلية ومشكلة عمل واضحة، لا نموذج عام جاهز.",
+    hero_cta1: "ناقش بياناتك",
+    hero_cta2: "اطّلع على الإمكانيات",
+
+    fit_eyebrow: "الملاءمة أولاً",
+    fit_h2: "تعلّم الآلة ليس الحل الأنسب دائماً",
+    fit_sub: "قبل أن نوصي بنموذج، نتحقق مما إذا كانت المشكلة والبيانات والنتيجة المتوقعة تبرر ذلك فعلاً.",
+    fit_points: [
+      { title: "بيانات تاريخية كافية", desc: "يحتاج النموذج إلى سجل حقيقي من الأمثلة ليتعلم منها — وبدونه، يكون نهج قائم على قواعد بسيطة غالباً هو البداية الأفضل." },
+      { title: "مشكلة تنبؤية فعلاً", desc: "بعض المشكلات يُحلّ بشكل أفضل بقواعد عمل واضحة أو بالأتمتة بدلاً من نموذج مدرَّب." },
+      { title: "تعريف واضح للنجاح", desc: "نحدد كيف يبدو \"الأداء الكافي\" قبل بناء أي شيء، حتى يمكن تقييم النتيجة فعلياً." },
+      { title: "طريقة للتصرف بناءً على النتيجة", desc: "لا يخلق التنبؤ قيمة إلا إذا تغيّر شيء فعلي في العمل بسببه." },
+    ],
+
+    usecases_eyebrow: "حالات استخدام محتملة",
+    usecases_h2: "أين يمكن لتعلّم الآلة أن يساعد",
+    usecases_sub: "أمثلة على نوعية المشكلات التي يناسبها تعلّم الآلة — حالات استخدام توضيحية، وليست مشاريع فعلية منجزة لعملاء ZentexAI.",
+    usecases: [
+      { title: "التنبؤ بالطلب", desc: "التنبؤ بالطلب المستقبلي أو الطلبات أو احتياجات الموارد من الأنماط التاريخية، لدعم قرارات التخطيط والمخزون." },
+      { title: "التصنيف", desc: "تصنيف العناصر الواردة تلقائياً — العملاء المحتملون، التذاكر، المستندات، المعاملات — بناءً على أنماط من أمثلة سابقة." },
+      { title: "اكتشاف الحالات الشاذة", desc: "رصد النشاط غير المعتاد أو القيم الشاذة أو الأخطاء المحتملة التي يصعب رصدها بقواعد ثابتة وحدها." },
+      { title: "التحليلات التنبؤية", desc: "تقدير نتيجة مستقبلية محتملة، مثل احتمال فقدان العميل أو تحولات الطلب، لمساعدة الفرق على التصرف مبكراً." },
+    ],
+
+    process_eyebrow: "كيف نعمل",
+    process_h2: "منهجية دقيقة قائمة على الأدلة",
+    process_sub: "كل خطوة موجودة للتأكد من أن النموذج يحل المشكلة الصحيحة فعلاً قبل أن يقترب من بيئة الإنتاج.",
+    process: [
+      { step: "01", title: "مشكلة العمل", desc: "نبدأ بالقرار الذي تريد تحسينه، لا بالتقنية." },
+      { step: "02", title: "تقييم جاهزية البيانات", desc: "نتحقق مما إذا كانت البيانات اللازمة لحل المشكلة موجودة فعلاً، وما حالتها." },
+      { step: "03", title: "خط الأساس", desc: "نضع خط أساس بسيطاً أولاً، حتى يمكن قياس قيمة أي نموذج مقارنةً بشيء حقيقي." },
+      { step: "04", title: "تقييم النموذج", desc: "نختبر الأساليب المرشحة مقابل خط الأساس، باستخدام مقاييس مرتبطة بنتيجة العمل، لا الدقة التقنية فقط." },
+      { step: "05", title: "التكامل", desc: "يُربط النموذج المعتمد بالأنظمة وسير العمل حيث تُستخدم نتائجه فعلياً." },
+      { step: "06", title: "المراقبة", desc: "بعد الإطلاق، يُراقب أداء النموذج مع الوقت، لأن بيانات الواقع تتغير ويمكن أن تتراجع النتائج." },
+    ],
+
+    compare_h2: "تعلّم الآلة مقابل وكلاء الذكاء الاصطناعي والأتمتة",
+    compare_ml_label: "تعلّم الآلة",
+    compare_ml_desc: "يتعلم الأنماط من البيانات التاريخية للتنبؤ أو التصنيف أو اكتشاف القيم الشاذة. النتيجة عادة تنبؤ أو درجة تُستخدم لاتخاذ قرار.",
+    compare_agents_label: "وكلاء الذكاء الاصطناعي والأتمتة",
+    compare_agents_desc: "يفهم طلباً وينفّذ إجراءً عبر أنظمتك. النتيجة عادة مهمة منجزة، لا تنبؤاً.",
+    compare_link_label: "اطّلع على وكلاء الذكاء الاصطناعي والأتمتة في الإمارات",
+
+    faq_eyebrow: "الأسئلة الشائعة",
+    faq_h2: "أسئلة متكررة",
+    faq: [
+      { q: "ما هو تعلّم الآلة؟", a: "تعلّم الآلة هو أسلوب لبناء برمجيات تتعلم الأنماط من البيانات التاريخية، بدلاً من اتباع قواعد ثابتة مكتوبة يدوياً فقط — يُستخدم عادة للتنبؤ والتصنيف واكتشاف الحالات الشاذة." },
+      { q: "ما الفرق بين هذا ووكلاء الذكاء الاصطناعي؟", a: "ينتج تعلّم الآلة تنبؤاً أو تصنيفاً. أما وكيل الذكاء الاصطناعي فيأخذ هذا النوع من المدخلات، أو سياق عمل آخر، وينفّذ إجراءً بناءً عليه ضمن أنظمة وصلاحيات محددة. غالباً ما يُستخدمان معاً، لكنهما يحلان مشكلتين مختلفتين." },
+      { q: "هل تبنون نماذج مخصصة أم تستخدمون أدوات جاهزة؟", a: "يعتمد الأسلوب المناسب على المشكلة. أحياناً يكون النموذج المخصص مبرراً، وأحياناً تكون أداة جاهزة أو أسلوب إحصائي أبسط أسرع وأكثر موثوقية. نوصي بناءً على المشكلة، لا على أداة ثابتة مسبقاً." },
+      { q: "كم يستغرق مشروع تعلّم الآلة؟", a: "تعتمد المدة الزمنية بشكل كبير على جاهزية البيانات وتعقيد المشكلة — فالمشروع ببيانات تاريخية نظيفة ومتاحة يتقدم أسرع بكثير من مشروع يبدأ من سجلات متفرقة أو غير مكتملة. نقدّم تقديراً واقعياً بعد تقييم جاهزية البيانات، لا قبله." },
+      { q: "هل تعلّم الآلة مناسب لعملي؟", a: "فقط إذا كانت المشكلة تنبؤية فعلاً، وهناك بيانات تاريخية كافية للتعلم منها، وطريقة واضحة للتصرف بناءً على النتيجة. جزء من محادثتنا الأولى هو تقييم صادق لمدى ملاءمة الحل من الأساس." },
+    ],
+
+    cta_h2: "لديك مشكلة تنبؤ أو تصنيف في ذهنك؟",
+    cta_sub: "أخبرنا عن البيانات والقرار الذي تريد تحسينه — سنعطيك رأياً صادقاً حول ما إذا كان تعلّم الآلة هو الخطوة التالية المناسبة.",
+    cta_btn: "ناقش بياناتك",
   },
 
   // ── Academy ──────────────────────────────────────────────────────────────────

@@ -166,6 +166,9 @@ export default function AiAgentsAutomationContent() {
             <Link href="/services/whatsapp-automation-uae" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
               WhatsApp Automation &amp; AI Agents UAE
             </Link>
+            <Link href="/services/machine-learning-uae" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
+              Machine Learning Services UAE
+            </Link>
             <Link href="/blog/ai-agents-for-business-uae" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
               AI Agents for Business in the UAE
             </Link>

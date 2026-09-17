@@ -37,7 +37,12 @@ export default function HomeContent({ latestPosts }: Props) {
             <p className="mt-4 text-[15px] leading-relaxed text-slate-400">{h.core_services_sub}</p>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-3">
+          {/* sm:2 / lg:4 (not md:3) - sv.categories now holds 4 items (AI
+              Solutions, AI Consulting, PM Consulting, Machine Learning), and
+              3 columns would leave the 4th card alone on its own row. 2 and
+              4 both divide evenly into 4, so every breakpoint fills its last
+              row completely. */}
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {sv.categories.map((cat, i) => (
               <div
                 key={cat.id}
