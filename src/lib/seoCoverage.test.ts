@@ -21,7 +21,7 @@ const SERVICE_PATHS = [
 ];
 
 function pageFile(routePath: string): string {
-  return path.join(ROOT, "src/app/(corporate)", routePath, "page.tsx");
+  return path.join(ROOT, "src/app/(en)/(corporate)", routePath, "page.tsx");
 }
 
 describe("SEO coverage", () => {
@@ -64,7 +64,7 @@ describe("SEO coverage", () => {
       expect(title, p).toBeTruthy();
       expect(desc, p).toBeTruthy();
       expect(src).toContain(`const PATH = "${p}"`);
-      expect(src).toContain("alternates: { canonical: PATH }");
+      expect(src).toContain('alternates: alternatesFor(PATH, "en")');
       expect(seen.has(title!)).toBe(false);
       seen.add(title!);
     }
@@ -117,5 +117,79 @@ describe("structured data builders", () => {
     const without = serviceJsonLd({ name: "n", description: "d", path: "/x" });
     expect(withArea.areaServed).toBeDefined();
     expect("areaServed" in without).toBe(false);
+  });
+});
+
+// ─── Arabic URLs ────────────────────────────────────────────────────────────
+import { ARABIC_EQUIVALENT_PATHS, hasArabicVersion, toArabicPath } from "./i18nRoutes";
+import { ARABIC_SEO, arabicMetadata } from "./arabicSeo";
+
+function arabicPageFile(enPath: string): string {
+  const rel = enPath === "/" ? "" : enPath;
+  const group = enPath === "/academy" || enPath === "/courses" ? "(academy)" : "(corporate)";
+  return path.join(ROOT, "src/app/(ar)/ar", group, rel, "page.tsx");
+}
+
+describe("Arabic URLs: sitemap, hreflang, metadata", () => {
+  it("has a real Arabic page and Arabic SEO metadata for every advertised equivalent", () => {
+    for (const p of ARABIC_EQUIVALENT_PATHS) {
+      expect(fs.existsSync(arabicPageFile(p)), `${p} -> ${arabicPageFile(p)}`).toBe(true);
+      expect(ARABIC_SEO[p], p).toBeDefined();
+      expect(ARABIC_SEO[p].title).toMatch(/[؀-ۿ]/);
+      expect(ARABIC_SEO[p].description).toMatch(/[؀-ۿ]/);
+    }
+    expect(Object.keys(ARABIC_SEO).sort()).toEqual([...ARABIC_EQUIVALENT_PATHS].sort());
+  });
+
+  it("lists both language versions in the sitemap with reciprocal hreflang, and never an Arabic URL without a page", async () => {
+    const entries = await sitemap();
+    const byPath = new Map(entries.map((e) => [new URL(e.url).pathname, e]));
+    for (const p of ARABIC_EQUIVALENT_PATHS) {
+      const en = byPath.get(p);
+      const ar = byPath.get(toArabicPath(p));
+      expect(en, p).toBeDefined();
+      expect(ar, toArabicPath(p)).toBeDefined();
+      const enLang = en!.alternates?.languages as Record<string, string>;
+      const arLang = ar!.alternates?.languages as Record<string, string>;
+      expect(arLang).toEqual(enLang);
+      expect(new URL(enLang.en).pathname).toBe(p);
+      expect(new URL(enLang.ar).pathname).toBe(toArabicPath(p));
+      expect(new URL(enLang["x-default"]).pathname).toBe(p);
+    }
+    const arabicUrls = entries.map((e) => new URL(e.url).pathname).filter((u) => u === "/ar" || u.startsWith("/ar/"));
+    expect(arabicUrls.length).toBe(ARABIC_EQUIVALENT_PATHS.length);
+    for (const u of arabicUrls) expect(hasArabicVersion(u === "/ar" ? "/" : u.slice(3))).toBe(true);
+    // Pages with no Arabic version get no alternates block and no /ar twin.
+    for (const p of ["/about", "/contact", "/resources", "/blog"]) {
+      expect(byPath.get(p)?.alternates).toBeUndefined();
+      expect(byPath.has(toArabicPath(p))).toBe(false);
+    }
+  });
+
+  it("builds Arabic metadata with an /ar self-canonical and reciprocal hreflang", () => {
+    for (const p of ARABIC_EQUIVALENT_PATHS) {
+      const m = arabicMetadata(p);
+      const alt = m.alternates as { canonical: string; languages: Record<string, string> };
+      expect(alt.canonical).toBe(toArabicPath(p));
+      expect(alt.languages).toEqual({ en: p, ar: toArabicPath(p), "x-default": p });
+    }
+  });
+
+  it("gives the English pages the same hreflang set as their Arabic twins", () => {
+    for (const p of ARABIC_EQUIVALENT_PATHS) {
+      const enFile = p === "/" ? "src/app/(en)/(corporate)/page.tsx"
+        : p === "/academy" ? "src/app/(en)/(academy)/academy/page.tsx"
+        : p === "/courses" ? "src/app/(en)/(academy)/courses/page.tsx"
+        : `src/app/(en)/(corporate)${p}/page.tsx`;
+      const src = fs.readFileSync(path.join(ROOT, enFile), "utf8");
+      expect(src, enFile).toContain("alternatesFor(");
+    }
+  });
+
+  it("uses a dedicated Arabic root layout that server-renders lang=ar dir=rtl", () => {
+    const src = fs.readFileSync(path.join(ROOT, "src/app/(ar)/layout.tsx"), "utf8");
+    expect(src).toContain('<html lang="ar" dir="rtl">');
+    const en = fs.readFileSync(path.join(ROOT, "src/app/(en)/layout.tsx"), "utf8");
+    expect(en).toContain('<html lang="en" dir="ltr">');
   });
 });

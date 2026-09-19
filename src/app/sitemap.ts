@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { fetchPublishedPosts } from "@/lib/posts";
+import { hasArabicVersion, toArabicPath } from "@/lib/i18nRoutes";
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://zentexai.com";
 
@@ -31,8 +32,30 @@ export const revalidate = 3600;
  * password reset/verify-email) - none of those are meant to rank, and
  * several require a session that a crawler will never have anyway.
  */
+type StaticEntry = MetadataRoute.Sitemap[number];
+
+/**
+ * Pages that exist in both languages are emitted as two entries (English +
+ * Arabic), each carrying the full reciprocal hreflang set. Only paths in
+ * ARABIC_EQUIVALENT_PATHS - i.e. with a real Arabic page behind them - are
+ * ever given an Arabic entry or an alternates block.
+ */
+function withArabicVersions(entries: StaticEntry[]): StaticEntry[] {
+  return entries.flatMap((entry) => {
+    const enPath = new URL(entry.url).pathname;
+    if (!hasArabicVersion(enPath)) return [entry];
+    const en = `${SITE_URL}${enPath === "/" ? "/" : enPath}`;
+    const ar = `${SITE_URL}${toArabicPath(enPath)}`;
+    const languages = { en, ar, "x-default": en };
+    return [
+      { ...entry, alternates: { languages } },
+      { ...entry, url: ar, alternates: { languages } },
+    ];
+  });
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const staticEntries: MetadataRoute.Sitemap = [
+  const staticEntries: MetadataRoute.Sitemap = withArabicVersions([
     { url: `${SITE_URL}/`, changeFrequency: "weekly", priority: 1 },
     { url: `${SITE_URL}/services`, changeFrequency: "monthly" },
     { url: `${SITE_URL}/services/ai-agents-automation-uae`, changeFrequency: "monthly" },
@@ -46,7 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/resources`, changeFrequency: "weekly" },
     { url: `${SITE_URL}/blog`, changeFrequency: "weekly" },
     { url: `${SITE_URL}/courses`, changeFrequency: "monthly" },
-  ];
+  ]);
 
   let productEntries: MetadataRoute.Sitemap = [];
   try {

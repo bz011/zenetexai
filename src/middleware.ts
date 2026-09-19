@@ -34,6 +34,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { ARABIC_EQUIVALENT_PATHS, toArabicPath } from "@/lib/i18nRoutes";
 
 const PUBLIC_ROUTES = new Set<string>([
   "/",
@@ -67,6 +68,11 @@ const PUBLIC_ROUTES = new Set<string>([
   // in Search Console rather than the sitemap itself.
   "/sitemap.xml",
   "/robots.txt",
+  // Arabic versions (/ar, /ar/academy, ...). Derived from the same list that
+  // drives hreflang and the sitemap, and matched EXACTLY (no "/ar" prefix
+  // rule), so only pages with a real Arabic route are public and any other
+  // /ar/... path stays behind the default-deny gate.
+  ...ARABIC_EQUIVALENT_PATHS.map(toArabicPath),
 ]);
 
 // Prefixes for public routes that have dynamic sub-paths, or that must

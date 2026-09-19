@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import Link from "@/components/LocaleLink";
 import { useRouter } from "next/navigation";
 import { useLang } from "@/lib/LanguageContext";
 import { useAuth } from "@/features/auth/hooks/useAuth";

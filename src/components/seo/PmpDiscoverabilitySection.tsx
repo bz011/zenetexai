@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/LocaleLink";
 import JsonLd from "@/components/JsonLd";
 import { faqJsonLd } from "@/lib/structuredData";
 
@@ -108,13 +108,14 @@ const CONTENT: Record<Variant, Block> = {
   },
 };
 
-export default function PmpDiscoverabilitySection({ variant }: { variant: Variant }) {
+export default function PmpDiscoverabilitySection({ variant, arabicOnly = false }: { variant: Variant; arabicOnly?: boolean }) {
   const c = CONTENT[variant];
   return (
     <section id={c.id} className="border-t border-white/[0.06] px-6 py-20">
-      <JsonLd data={faqJsonLd(c.faq, "en")} />
+      {!arabicOnly && <JsonLd data={faqJsonLd(c.faq, "en")} />}
       <JsonLd data={faqJsonLd(c.faqAr, "ar")} />
-      <div className="container-page grid gap-10 lg:grid-cols-2">
+      <div className={`container-page grid gap-10 ${arabicOnly ? "" : "lg:grid-cols-2"}`}>
+        {!arabicOnly && (
         <div lang="en" dir="ltr">
           <h2 className="text-2xl font-bold text-white md:text-3xl">{c.h2En}</h2>
           {c.pEn.map((p) => (
@@ -132,6 +133,7 @@ export default function PmpDiscoverabilitySection({ variant }: { variant: Varian
             ))}
           </div>
         </div>
+        )}
 
         <div lang="ar" dir="rtl">
           <h2 className="text-2xl font-bold text-white md:text-3xl">{c.h2Ar}</h2>
@@ -156,12 +158,13 @@ export default function PmpDiscoverabilitySection({ variant }: { variant: Varian
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center">
           {c.links.map((l) => (
             <Link key={l.href} href={l.href} className="text-[13px] font-medium text-indigo-400 transition-colors hover:text-indigo-300">
-              {l.en} · <span lang="ar">{l.ar}</span>
+              {arabicOnly ? <span lang="ar">{l.ar}</span> : <>{l.en} · <span lang="ar">{l.ar}</span></>}
             </Link>
           ))}
         </div>
         <p className="mt-6 text-center text-[11px] text-slate-600">
-          PMP is a registered mark of Project Management Institute, Inc. ZentexAI is an independent training provider. · PMP علامة مسجلة لمعهد إدارة المشاريع (PMI). ZentexAI جهة تدريب مستقلة.
+          {!arabicOnly && "PMP is a registered mark of Project Management Institute, Inc. ZentexAI is an independent training provider. · "}
+          <span lang="ar">PMP علامة مسجلة لمعهد إدارة المشاريع (PMI). ZentexAI جهة تدريب مستقلة.</span>
         </p>
       </div>
     </section>
