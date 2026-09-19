@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import AcademyContent from "./AcademyContent";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/structuredData";
+import PmpDiscoverabilitySection from "@/components/seo/PmpDiscoverabilitySection";
 
-const title = "ZentexAI Academy — PMP Mastery Program & Exam Simulator";
+const title = "PMP Course in Arabic & English (UAE) | ZentexAI Academy";
 const description =
-  "Professional training from ZentexAI: a comprehensive Arabic-friendly PMP Mastery Program, an intelligent PMP exam simulator, and upcoming AI Agents training.";
+  "ZentexAI Academy offers an Arabic-friendly PMP Mastery Program (دورة PMP بالعربي) and a PMP exam simulator for professionals in the UAE and MENA, plus upcoming AI Agents training.";
 
 export const metadata: Metadata = {
   title,
@@ -20,6 +21,7 @@ export default function AcademyPage() {
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Academy", path: "/academy" }])} />
       <AcademyContent />
+      <PmpDiscoverabilitySection variant="course" />
     </>
   );
 }

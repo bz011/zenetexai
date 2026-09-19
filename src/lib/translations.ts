@@ -1,3 +1,5 @@
+import { dataAnalyticsCopy, powerBiCopy, type ServiceLandingCopy } from "./serviceLandingCopy";
+
 export type Lang = "en" | "ar";
 
 // ─── Shared types ─────────────────────────────────────────────────────────────
@@ -161,6 +163,8 @@ export interface Translations {
     faq: FaqItem[];
     cta_h2: string; cta_sub: string; cta_btn: string;
   };
+  dataAnalytics: ServiceLandingCopy;
+  powerBi: ServiceLandingCopy;
   academy: {
     hero_eyebrow: string; hero_h1: string; hero_sub: string;
     hero_btn1: string; hero_btn2: string;
@@ -600,6 +604,8 @@ const en: Translations = {
       { q: "Can the system hand conversations to employees?", a: "Yes — escalation to a human is a core part of how these agents are designed, not an afterthought." },
       { q: "How do you control what an AI agent is allowed to do?", a: "Through explicit permission boundaries defined during the design phase, covering what the agent can know, decide, and act on, and what always requires human approval." },
       { q: "How long does an AI automation project take?", a: "Timelines depend on the complexity of the workflow and the systems being integrated. We define a realistic timeline together during the Discover and Design phases rather than quoting a fixed duration upfront." },
+      { q: "Do you build AI agents for businesses in Dubai and across the UAE?", a: "ZentexAI designs AI agents and business automation for companies across the UAE, including Dubai and Abu Dhabi, and the wider Middle East. Every project starts with a scoping conversation about your workflow, systems, and data, so we can confirm what is realistic before any build begins." },
+      { q: "What does AI agent development involve?", a: "It usually covers defining the task the agent should own, connecting it to the right knowledge and business systems, setting permissions and human-approval points, testing against real scenarios, and monitoring after launch. The goal is a working, supervised agent, not a demo." },
     ],
 
     cta_h2: "Ready to Automate a Real Workflow?",
@@ -724,6 +730,8 @@ const en: Translations = {
       { q: "Do we need WhatsApp Business API?", a: "Production automation should run on the official WhatsApp Business Platform rather than unofficial methods, which can put your business number at risk. We help determine the right setup for your business." },
       { q: "How do you control what the AI agent is allowed to do?", a: "Through explicit permission boundaries defined during the design phase — covering what the agent can know, decide, and act on, and what always requires human approval." },
       { q: "How long does implementation take?", a: "Timelines depend on workflow complexity, the number of integrations, and your WhatsApp setup. We define a realistic timeline together during the Discover and Map Workflow phases rather than quoting a fixed duration upfront." },
+      { q: "Can you automate WhatsApp for my Dubai or UAE business?", a: "ZentexAI builds WhatsApp automation and AI agents for UAE businesses, covering areas such as lead qualification, booking, and CRM handoff, with controlled human takeover. The exact setup depends on your systems and on WhatsApp Business platform requirements, which we review during scoping." },
+      { q: "Does WhatsApp AI automation have to follow WhatsApp's rules?", a: "Yes. The WhatsApp Business platform has rules about customer opt-in and about message templates for business-initiated conversations. We design conversation flows to work within them and confirm the current requirements with you during scoping." },
     ],
 
     cta_h2: "Ready to Automate Your WhatsApp Conversations?",
@@ -785,12 +793,17 @@ const en: Translations = {
       { q: "Do you build custom models or use existing tools?", a: "The right approach depends on the problem. Sometimes a custom model is justified, and sometimes an existing tool or a simpler statistical method gets you there faster and more reliably. We recommend based on the problem, not a fixed toolset." },
       { q: "How long does a machine learning project take?", a: "Timelines depend heavily on data readiness and problem complexity — a project with clean, available historical data moves much faster than one starting from scattered or incomplete records. We give a realistic estimate after the data-readiness assessment, not before." },
       { q: "Is machine learning right for my business?", a: "Only if the problem is genuinely predictive, there's enough historical data to learn from, and there's a clear way to act on the result. Part of our first conversation is honestly assessing whether it's the right fit at all." },
+      { q: "Do you offer predictive analytics and forecasting for businesses in Dubai?", a: "ZentexAI's machine learning services are designed for businesses across the UAE, including Dubai and Abu Dhabi. Forecasting and predictive analytics projects are scoped around your own historical data and a specific business decision, so the first step is a conversation about the problem and the data available." },
+      { q: "Do we need dashboards or clean reporting before machine learning?", a: "Often, yes. Models depend on reliable historical data, and if reporting is inconsistent today, fixing that first usually delivers value sooner and makes any later model more trustworthy. See our data analytics services for that foundation." },
     ],
 
     cta_h2: "Have a Forecasting or Classification Problem in Mind?",
     cta_sub: "Tell us about the data and the decision you're trying to improve — we'll give you an honest view of whether machine learning is the right next step.",
     cta_btn: "Discuss Your Data",
   },
+
+  dataAnalytics: dataAnalyticsCopy.en,
+  powerBi: powerBiCopy.en,
 
   // ── Academy ─────────────────────────────────────────────────────────────────
   academy: {
@@ -1473,6 +1486,8 @@ const ar: Translations = {
       { q: "هل يمكن للنظام تحويل المحادثات إلى الموظفين؟", a: "نعم — التصعيد إلى شخص هو جزء أساسي من تصميم هذه الوكلاء، وليس فكرة لاحقة." },
       { q: "كيف تتحكمون بما يُسمح لوكيل الذكاء الاصطناعي بفعله؟", a: "من خلال حدود صلاحيات صريحة تُحدد أثناء مرحلة التصميم، تغطي ما يستطيع الوكيل معرفته وتقريره وتنفيذه، وما يتطلب دائماً موافقة بشرية." },
       { q: "كم يستغرق مشروع أتمتة الذكاء الاصطناعي؟", a: "تعتمد المدة الزمنية على تعقيد سير العمل والأنظمة المطلوب ربطها. نحدد جدولاً زمنياً واقعياً معاً خلال مرحلتي الاكتشاف والتصميم بدلاً من تحديد مدة ثابتة مسبقاً." },
+      { q: "هل تبنون وكلاء ذكاء اصطناعي للشركات في دبي وعموم الإمارات؟", a: "تصمم ZentexAI وكلاء الذكاء الاصطناعي وأتمتة الأعمال للشركات في عموم دولة الإمارات، بما في ذلك دبي وأبوظبي، ومنطقة الشرق الأوسط عموماً. يبدأ كل مشروع بحوار لتحديد النطاق حول سير عملك وأنظمتك وبياناتك، لنؤكد ما هو واقعي قبل بدء أي بناء." },
+      { q: "ماذا يشمل تطوير وكلاء الذكاء الاصطناعي؟", a: "يشمل عادة تحديد المهمة التي سيتولاها الوكيل، وربطه بالمعرفة والأنظمة المناسبة، وتحديد الصلاحيات ونقاط الموافقة البشرية، والاختبار على سيناريوهات حقيقية، والمراقبة بعد الإطلاق. الهدف وكيل يعمل تحت الإشراف، لا مجرد عرض تجريبي." },
     ],
 
     cta_h2: "جاهز لأتمتة سير عمل حقيقي؟",
@@ -1597,6 +1612,8 @@ const ar: Translations = {
       { q: "هل نحتاج إلى واجهة واتساب بزنس البرمجية؟", a: "يجب أن تعمل الأتمتة الإنتاجية على منصة واتساب بزنس الرسمية بدلاً من طرق غير رسمية قد تعرّض رقم عملك للخطر. نساعدك على تحديد الإعداد المناسب لعملك." },
       { q: "كيف تتحكمون بما يُسمح لوكيل الذكاء الاصطناعي بفعله؟", a: "من خلال حدود صلاحيات صريحة تُحدد أثناء مرحلة التصميم، تغطي ما يستطيع الوكيل معرفته وتقريره وتنفيذه، وما يتطلب دائماً موافقة بشرية." },
       { q: "كم يستغرق التنفيذ؟", a: "تعتمد المدة الزمنية على تعقيد سير العمل، وعدد التكاملات، وإعداد واتساب لديك. نحدد جدولاً زمنياً واقعياً معاً خلال مرحلتي الاكتشاف ورسم سير العمل بدلاً من تحديد مدة ثابتة مسبقاً." },
+      { q: "هل يمكنكم أتمتة واتساب لشركتي في دبي أو الإمارات؟", a: "تبني ZentexAI أتمتة واتساب ووكلاء ذكاء اصطناعي للشركات في الإمارات، تشمل مجالات مثل تأهيل العملاء المحتملين والحجوزات وتسليم البيانات إلى نظام إدارة العملاء، مع تسليم بشري مضبوط. يعتمد الإعداد الدقيق على أنظمتك وعلى متطلبات منصة WhatsApp Business التي نراجعها أثناء تحديد النطاق." },
+      { q: "هل يجب أن تلتزم أتمتة واتساب بالذكاء الاصطناعي بقواعد واتساب؟", a: "نعم. لدى منصة WhatsApp Business قواعد بشأن موافقة العميل المسبقة وقوالب الرسائل للمحادثات التي تبدأها الشركة. نصمم تدفقات المحادثة لتعمل ضمنها ونؤكد معك المتطلبات الحالية أثناء تحديد النطاق." },
     ],
 
     cta_h2: "جاهز لأتمتة محادثات واتساب لديك؟",
@@ -1658,12 +1675,17 @@ const ar: Translations = {
       { q: "هل تبنون نماذج مخصصة أم تستخدمون أدوات جاهزة؟", a: "يعتمد الأسلوب المناسب على المشكلة. أحياناً يكون النموذج المخصص مبرراً، وأحياناً تكون أداة جاهزة أو أسلوب إحصائي أبسط أسرع وأكثر موثوقية. نوصي بناءً على المشكلة، لا على أداة ثابتة مسبقاً." },
       { q: "كم يستغرق مشروع تعلّم الآلة؟", a: "تعتمد المدة الزمنية بشكل كبير على جاهزية البيانات وتعقيد المشكلة — فالمشروع ببيانات تاريخية نظيفة ومتاحة يتقدم أسرع بكثير من مشروع يبدأ من سجلات متفرقة أو غير مكتملة. نقدّم تقديراً واقعياً بعد تقييم جاهزية البيانات، لا قبله." },
       { q: "هل تعلّم الآلة مناسب لعملي؟", a: "فقط إذا كانت المشكلة تنبؤية فعلاً، وهناك بيانات تاريخية كافية للتعلم منها، وطريقة واضحة للتصرف بناءً على النتيجة. جزء من محادثتنا الأولى هو تقييم صادق لمدى ملاءمة الحل من الأساس." },
+      { q: "هل تقدمون التحليلات التنبؤية والتوقعات للشركات في دبي؟", a: "خدمات تعلّم الآلة من ZentexAI مصممة للشركات في عموم دولة الإمارات، بما في ذلك دبي وأبوظبي. تُحدَّد مشاريع التنبؤ والتحليلات التنبؤية حول بياناتك التاريخية وقرار عمل محدد، لذا فالخطوة الأولى حوار حول المشكلة والبيانات المتاحة." },
+      { q: "هل نحتاج إلى لوحات معلومات أو تقارير نظيفة قبل تعلّم الآلة؟", a: "غالباً نعم. تعتمد النماذج على بيانات تاريخية موثوقة، وإذا كانت التقارير غير متسقة اليوم فإن إصلاح ذلك أولاً يحقق قيمة أسرع ويجعل أي نموذج لاحق أجدر بالثقة. راجع خدمات تحليل البيانات لدينا لهذا الأساس." },
     ],
 
     cta_h2: "لديك مشكلة تنبؤ أو تصنيف في ذهنك؟",
     cta_sub: "أخبرنا عن البيانات والقرار الذي تريد تحسينه — سنعطيك رأياً صادقاً حول ما إذا كان تعلّم الآلة هو الخطوة التالية المناسبة.",
     cta_btn: "ناقش بياناتك",
   },
+
+  dataAnalytics: dataAnalyticsCopy.ar,
+  powerBi: powerBiCopy.ar,
 
   // ── Academy ──────────────────────────────────────────────────────────────────
   academy: {

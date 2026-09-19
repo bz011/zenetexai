@@ -53,6 +53,8 @@ const PUBLIC_ROUTES = new Set<string>([
   "/services/ai-agents-automation-uae",
   "/services/whatsapp-automation-uae",
   "/services/machine-learning-uae",
+  "/services/data-analytics-uae",
+  "/services/power-bi-consulting-uae",
   "/academy",
   "/resources",
   "/contact",

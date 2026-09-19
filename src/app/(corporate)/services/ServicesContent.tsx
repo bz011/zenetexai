@@ -57,6 +57,19 @@ export default function ServicesContent() {
       </section>
 
       {/* Process */}
+      {/* Dedicated service pages */}
+      <section className="border-t border-white/[0.06] px-6 py-14">
+        <div className="container-page">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center">
+            <Link href="/services/ai-agents-automation-uae" className="text-[13px] font-medium text-indigo-400 transition-colors hover:text-indigo-300">AI Agents &amp; Automation UAE</Link>
+            <Link href="/services/whatsapp-automation-uae" className="text-[13px] font-medium text-indigo-400 transition-colors hover:text-indigo-300">WhatsApp Automation UAE</Link>
+            <Link href="/services/machine-learning-uae" className="text-[13px] font-medium text-indigo-400 transition-colors hover:text-indigo-300">Machine Learning Services UAE</Link>
+            <Link href="/services/data-analytics-uae" className="text-[13px] font-medium text-indigo-400 transition-colors hover:text-indigo-300">Data Analytics Services UAE</Link>
+            <Link href="/services/power-bi-consulting-uae" className="text-[13px] font-medium text-indigo-400 transition-colors hover:text-indigo-300">Power BI Consulting UAE</Link>
+          </div>
+        </div>
+      </section>
+
       <section className="border-t border-white/[0.06] bg-white/[0.015] px-6 py-24">
         <div className="container-page">
           <div className="mb-12 text-center">

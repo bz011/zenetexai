@@ -169,6 +169,12 @@ export default function AiAgentsAutomationContent() {
             <Link href="/services/machine-learning-uae" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
               Machine Learning Services UAE
             </Link>
+            <Link href="/services/data-analytics-uae" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
+              Data Analytics Services UAE
+            </Link>
+            <Link href="/services/power-bi-consulting-uae" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
+              Power BI Consulting UAE
+            </Link>
             <Link href="/blog/ai-agents-for-business-uae" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
               AI Agents for Business in the UAE
             </Link>

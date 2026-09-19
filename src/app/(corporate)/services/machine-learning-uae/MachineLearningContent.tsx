@@ -126,6 +126,26 @@ export default function MachineLearningContent() {
         </div>
       </section>
 
+      {/* Related services and reading */}
+      <section className="border-t border-white/[0.06] px-6 py-16">
+        <div className="container-page">
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center">
+            <Link href="/services/data-analytics-uae" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
+              Data Analytics Services UAE
+            </Link>
+            <Link href="/services/power-bi-consulting-uae" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
+              Power BI Consulting UAE
+            </Link>
+            <Link href="/services/ai-agents-automation-uae" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
+              AI Agents &amp; Automation UAE
+            </Link>
+            <Link href="/blog" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
+              ZentexAI Blog
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="border-t border-white/[0.06] px-6 py-24 text-center">
         <div className="container-page">

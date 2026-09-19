@@ -93,7 +93,7 @@ export function articleJsonLd(params: { headline: string; description: string; p
 }
 
 /** One real service category on the Services page - name/description only, matching what the page visibly says. */
-export function serviceJsonLd(params: { name: string; description: string; path: string }) {
+export function serviceJsonLd(params: { name: string; description: string; path: string; areaServed?: string[] }) {
   return {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -101,5 +101,24 @@ export function serviceJsonLd(params: { name: string; description: string; path:
     description: params.description,
     url: absoluteUrl(params.path),
     provider: { "@type": "Organization", name: BRAND.name, url: SITE_URL },
+    ...(params.areaServed?.length ? { areaServed: params.areaServed.map((name) => ({ "@type": "Place", name })) } : {}),
+  };
+}
+
+/**
+ * FAQPage - only ever fed the exact question/answer text that is visibly
+ * rendered on the same page (the pages pass their own on-page FAQ data), so
+ * the markup can never drift from or invent content.
+ */
+export function faqJsonLd(items: { q: string; a: string }[], inLanguage: "en" | "ar" = "en") {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    inLanguage,
+    mainEntity: items.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: item.a },
+    })),
   };
 }

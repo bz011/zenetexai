@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import AiAgentsAutomationContent from "./AiAgentsAutomationContent";
 import JsonLd from "@/components/JsonLd";
-import { breadcrumbJsonLd, serviceJsonLd } from "@/lib/structuredData";
+import { breadcrumbJsonLd, faqJsonLd, serviceJsonLd } from "@/lib/structuredData";
+import translations from "@/lib/translations";
 
 const title = "AI Agents & Business Automation UAE | ZentexAI";
 const description =
-  "ZentexAI designs secure, production-ready AI agents and business automation for UAE companies, connecting knowledge, workflows and business systems with controlled human oversight.";
+  "AI agent development and business automation for UAE companies, including Dubai and Abu Dhabi, and the wider Middle East: secure, production-ready agents that connect knowledge, workflows and business systems with controlled human oversight.";
 const PATH = "/services/ai-agents-automation-uae";
 
 export const metadata: Metadata = {
@@ -31,8 +32,10 @@ export default function AiAgentsAutomationPage() {
           name: "AI Agents & Business Automation",
           description: "Secure, production-ready AI agents that connect approved knowledge, workflows, and business systems for UAE companies, with human oversight where it matters.",
           path: PATH,
+          areaServed: ["United Arab Emirates"],
         })}
       />
+      <JsonLd data={faqJsonLd(translations.en.aiAgentsAutomation.faq)} />
       <AiAgentsAutomationContent />
     </>
   );

@@ -5,10 +5,11 @@ import { getUserCapabilities } from "@/features/commerce/services/entitlementSer
 import CoursesContent from "./CoursesContent";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/structuredData";
+import PmpDiscoverabilitySection from "@/components/seo/PmpDiscoverabilitySection";
 
-const title = "PMP Courses & Exam Simulator — ZentexAI Academy";
+const title = "PMP Exam Simulator & Courses in Arabic and English | ZentexAI";
 const description =
-  "Browse the PMP Mastery Program and PMP Exam Simulator from ZentexAI Academy — structured lessons, a full practice question bank, and realistic exam simulations.";
+  "Browse ZentexAI Academy's PMP Exam Simulator (محاكي PMP) and PMP Mastery Program: Arabic and English practice questions, filterable Practice Mode, and full-length timed mock exams.";
 
 export const metadata: Metadata = {
   title,
@@ -38,6 +39,7 @@ export default async function CoursesPage() {
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Courses", path: "/courses" }])} />
       <CoursesContent products={products} ownedCapabilities={Array.from(ownedCapabilities)} />
+      <PmpDiscoverabilitySection variant="simulator" />
     </>
   );
 }

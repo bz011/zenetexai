@@ -217,6 +217,9 @@ export default function WhatsappAutomationContent() {
             <Link href="/services/ai-agents-automation-uae" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
               AI Agents &amp; Automation UAE
             </Link>
+            <Link href="/services/data-analytics-uae" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
+              Data Analytics Services UAE
+            </Link>
             <Link href="/blog/whatsapp-automation-uae-businesses" className="text-[13px] text-slate-500 transition-colors hover:text-slate-200">
               WhatsApp Automation for UAE Businesses
             </Link>

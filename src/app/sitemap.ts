@@ -38,6 +38,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/services/ai-agents-automation-uae`, changeFrequency: "monthly" },
     { url: `${SITE_URL}/services/whatsapp-automation-uae`, changeFrequency: "monthly" },
     { url: `${SITE_URL}/services/machine-learning-uae`, changeFrequency: "monthly" },
+    { url: `${SITE_URL}/services/data-analytics-uae`, changeFrequency: "monthly" },
+    { url: `${SITE_URL}/services/power-bi-consulting-uae`, changeFrequency: "monthly" },
     { url: `${SITE_URL}/academy`, changeFrequency: "monthly" },
     { url: `${SITE_URL}/about`, changeFrequency: "yearly" },
     { url: `${SITE_URL}/contact`, changeFrequency: "yearly" },
