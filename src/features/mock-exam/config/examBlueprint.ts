@@ -138,6 +138,15 @@ const SHARED_INTERACTION_TYPE_WEIGHTS: Record<PmpInteractionType, number> = {
   matching: 0,
 };
 
+/**
+ * Minimum number of questions with real, valid image rows (question_images
+ * with a non-blank image_path, not flagged image_verified_broken) that every
+ * newly generated exam should contain. Best-effort against inventory: if
+ * fewer eligible image-bearing questions exist, the engine uses all of them
+ * and records the shortfall in the attempt's blueprint_snapshot.
+ */
+export const MOCK_EXAM_MIN_IMAGE_QUESTIONS = 12;
+
 const SHARED_ANSWER_TYPE_WEIGHTS: Record<PmpAnswerType, number> = {
   single: 92,
   multiple_response: 8,

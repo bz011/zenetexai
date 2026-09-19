@@ -26,10 +26,11 @@ import {
   resolveInteractionTypeCounts,
   resolveAnswerTypeCounts,
   selectQuestionsForDraws,
+  enforceImageQuota,
   sectionForSequenceIndex,
   cellKey,
 } from "@/features/mock-exam/services/blueprintEngine";
-import { getActiveBlueprint, getBlueprintByVersion, type PmpInteractionType, type PmpAnswerType } from "@/features/mock-exam/config/examBlueprint";
+import { getActiveBlueprint, getBlueprintByVersion, MOCK_EXAM_MIN_IMAGE_QUESTIONS, type PmpInteractionType, type PmpAnswerType } from "@/features/mock-exam/config/examBlueprint";
 import type { CreateMockExamAttemptResult, MockExamAttempt, MockExamAttemptQuestionState, MockExamRunnerData } from "@/features/mock-exam/types/mockExam";
 import type { QuizSubmitAnswer } from "@/features/courses/types/course";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -134,7 +135,7 @@ export async function createMockExamAttempt(): Promise<CreateMockExamAttemptResu
     const topUp = leftover.slice(0, stillNeeded);
     topUpCount = topUp.length;
     selected = selected.concat(
-      topUp.map((r) => ({ questionId: r.questionId, interactionType: r.interactionType, answerType: r.answerType, domain: r.domain, approach: r.approach, difficulty: r.difficulty }))
+      topUp.map((r) => ({ questionId: r.questionId, interactionType: r.interactionType, answerType: r.answerType, hasImage: r.hasImage, domain: r.domain, approach: r.approach, difficulty: r.difficulty }))
     );
   }
 
@@ -144,6 +145,11 @@ export async function createMockExamAttempt(): Promise<CreateMockExamAttemptResu
       error: `Could only assemble ${selected.length}/${blueprint.totalQuestions} questions even after every fallback - the approved bank is too small right now.`,
     };
   }
+
+  // Image-bearing minimum (best-effort against real inventory): swaps within
+  // the same Domain only, so domain allocation and total count are untouched.
+  const imageQuota = enforceImageQuota(selected, inventoryRows, MOCK_EXAM_MIN_IMAGE_QUESTIONS, history.seenCounts, history.previousAttemptQuestionIds);
+  selected = imageQuota.selected;
 
   // Presentation order is randomized (PMI's real exam does not group
   // questions by domain/approach) - composition (which 180 got picked) is
@@ -169,6 +175,14 @@ export async function createMockExamAttempt(): Promise<CreateMockExamAttemptResu
     answerTypeFallbackLog,
     excludedIncompleteInventoryCount: excludedIncompleteCount,
     topUpCount,
+    imageQuota: {
+      requested: imageQuota.requested,
+      available: imageQuota.available,
+      achieved: imageQuota.achieved,
+      shortfall: imageQuota.shortfall,
+      swaps: imageQuota.swaps,
+      log: imageQuota.log,
+    },
     previousAttemptId: history.previousAttemptId,
     previousAttemptOverlapCount,
     previousAttemptOverlapTarget: PREVIOUS_ATTEMPT_OVERLAP_TARGET,

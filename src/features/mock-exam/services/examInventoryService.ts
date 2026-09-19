@@ -41,6 +41,16 @@ export async function fetchApprovedQuestionInventory(
     .eq("image_verified_broken", false);
 
   const allRows = (data ?? []) as QuestionInventoryRow[];
+
+  // "Image-bearing" means a real question_images row with a usable path -
+  // deliberately not interaction_type or questions.has_image, which do not
+  // guarantee an image exists.
+  const { data: imageData } = await supabase.from("question_images").select("question_id, image_path");
+  const imageQuestionIds = new Set(
+    ((imageData ?? []) as { question_id: string; image_path: string | null }[])
+      .filter((i) => i.image_path && i.image_path.trim() !== "")
+      .map((i) => i.question_id)
+  );
   const complete = allRows.filter((r) => r.domain && r.approach && r.difficulty);
 
   return {
@@ -51,6 +61,7 @@ export async function fetchApprovedQuestionInventory(
       difficulty: r.difficulty as PmpDifficulty,
       interactionType: r.interaction_type as PmpInteractionType,
       answerType: r.answer_type as PmpAnswerType,
+      hasImage: imageQuestionIds.has(r.question_id),
     })),
     excludedIncompleteCount: allRows.length - complete.length,
   };

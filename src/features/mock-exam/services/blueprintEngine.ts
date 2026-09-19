@@ -282,6 +282,8 @@ export interface InventoryQuestionRow {
   difficulty: PmpDifficulty;
   interactionType: PmpInteractionType;
   answerType: PmpAnswerType;
+  /** True only when the question has at least one question_images row with a non-blank image_path. Independent of interaction_type / has_image. */
+  hasImage: boolean;
 }
 
 export function groupQuestionsByCell(rows: InventoryQuestionRow[]): Map<string, InventoryQuestionRow[]> {
@@ -387,6 +389,7 @@ export interface SelectedExamQuestion {
   questionId: string;
   interactionType: PmpInteractionType;
   answerType: PmpAnswerType;
+  hasImage: boolean;
   /** The question's REAL stored domain/approach/difficulty (from the source cell it was actually drawn from) - not the blueprint's original target, which may differ after a fallback. Results breakdowns must reflect reality, never the intention. */
   domain: PmpDomain;
   approach: PmpApproach;
@@ -422,6 +425,7 @@ export function selectQuestionsForDraws(
         questionId: q.questionId,
         interactionType: q.interactionType,
         answerType: q.answerType,
+        hasImage: q.hasImage,
         domain: q.domain,
         approach: q.approach,
         difficulty: q.difficulty,
@@ -430,4 +434,119 @@ export function selectQuestionsForDraws(
   }
 
   return selected;
+}
+
+
+export interface ImageQuotaResult {
+  selected: SelectedExamQuestion[];
+  /** The requested minimum (e.g. 12), before capping against inventory. */
+  requested: number;
+  /** Eligible image-bearing questions available in the inventory. */
+  available: number;
+  /** Image-bearing questions in the final selection. */
+  achieved: number;
+  /** max(0, requested - achieved): non-zero only when inventory itself is too small. */
+  shortfall: number;
+  swaps: { sameCell: number; sameApproach: number; sameDomain: number };
+  log: string[];
+}
+
+function reuseRank(questionId: string, seenCounts: ReadonlyMap<string, number>, previousIds: ReadonlySet<string>): number {
+  const seen = seenCounts.get(questionId) ?? 0;
+  const tier = seen === 0 ? 0 : previousIds.has(questionId) ? 2 : 1;
+  return tier * 1000 + seen;
+}
+
+/**
+ * Ensures the selection holds at least `minImages` image-bearing questions
+ * (whenever inventory allows) by swapping unselected image-bearing questions
+ * in for selected non-image ones. Total count is never changed, and swaps
+ * never leave the removed question's Domain, so domain allocation is
+ * preserved exactly; the closest available match is always used first
+ * (same Domain x Approach x Difficulty cell, then same Domain x Approach,
+ * then same Domain), so approach/difficulty balance degrades only when it
+ * has to. Removal prefers "standard" questions (never spends scarce
+ * drag_and_drop/hotspot/graphic questions), then the least-preferred by
+ * reuse-avoidance rank; swap-in prefers never-seen questions. Pure - the
+ * caller supplies the full eligible inventory (already excluding
+ * image_verified_broken) and never invents a question.
+ */
+export function enforceImageQuota(
+  selected: SelectedExamQuestion[],
+  rows: InventoryQuestionRow[],
+  minImages: number,
+  seenCounts: ReadonlyMap<string, number>,
+  previousAttemptQuestionIds: ReadonlySet<string>,
+  rng: () => number = Math.random
+): ImageQuotaResult {
+  const result = [...selected];
+  const log: string[] = [];
+  const swaps = { sameCell: 0, sameApproach: 0, sameDomain: 0 };
+
+  const imageInventory = rows.filter((r) => r.hasImage);
+  const available = imageInventory.length;
+  const countImages = () => result.filter((q) => q.hasImage).length;
+
+  const selectedIds = new Set(result.map((q) => q.questionId));
+  let candidates = shuffleArray(
+    imageInventory.filter((r) => !selectedIds.has(r.questionId)),
+    rng
+  );
+
+  const target = Math.min(minImages, available);
+  let need = target - countImages();
+
+  while (need > 0 && candidates.length > 0) {
+    let best: { cand: InventoryQuestionRow; removeIdx: number; level: number; rank: number } | null = null;
+
+    for (const cand of candidates) {
+      let pick: { idx: number; level: number; sortKey: number } | null = null;
+      for (let i = 0; i < result.length; i++) {
+        const r = result[i];
+        if (r.hasImage || r.domain !== cand.domain) continue;
+        const level = r.approach === cand.approach ? (r.difficulty === cand.difficulty ? 0 : 1) : 2;
+        const rareType = r.interactionType === "standard" ? 0 : 1;
+        const answerMismatch = r.answerType === cand.answerType ? 0 : 1;
+        // level dominates, then keep rare types, then answer-type match, then worst reuse rank first.
+        const sortKey = level * 1e7 + rareType * 1e6 + answerMismatch * 1e5 - reuseRank(r.questionId, seenCounts, previousAttemptQuestionIds);
+        if (!pick || sortKey < pick.sortKey) pick = { idx: i, level, sortKey };
+      }
+      if (!pick) continue;
+      const rank = reuseRank(cand.questionId, seenCounts, previousAttemptQuestionIds);
+      if (!best || pick.level < best.level || (pick.level === best.level && rank < best.rank)) {
+        best = { cand, removeIdx: pick.idx, level: pick.level, rank };
+      }
+    }
+
+    if (!best) break;
+
+    result[best.removeIdx] = {
+      questionId: best.cand.questionId,
+      interactionType: best.cand.interactionType,
+      answerType: best.cand.answerType,
+      hasImage: true,
+      domain: best.cand.domain,
+      approach: best.cand.approach,
+      difficulty: best.cand.difficulty,
+    };
+    if (best.level === 0) swaps.sameCell++;
+    else if (best.level === 1) swaps.sameApproach++;
+    else swaps.sameDomain++;
+    candidates = candidates.filter((c) => c.questionId !== best!.cand.questionId);
+    need--;
+  }
+
+  const achieved = countImages();
+  const shortfall = Math.max(0, minImages - achieved);
+  const swapTotal = swaps.sameCell + swaps.sameApproach + swaps.sameDomain;
+  if (swapTotal > 0) {
+    log.push(
+      `image quota: swapped in ${swapTotal} image-bearing question(s) (same cell ${swaps.sameCell}, same approach ${swaps.sameApproach}, same domain only ${swaps.sameDomain})`
+    );
+  }
+  if (shortfall > 0) {
+    log.push(`image quota: wanted ${minImages}, only ${achieved} achievable (${available} eligible image-bearing question(s) in inventory) - shortfall ${shortfall}`);
+  }
+
+  return { selected: result, requested: minImages, available, achieved, shortfall, swaps, log };
 }

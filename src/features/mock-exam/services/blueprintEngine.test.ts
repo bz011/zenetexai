@@ -10,6 +10,8 @@ import {
   groupQuestionsByCell,
   pickQuestionsForDraw,
   selectQuestionsForDraws,
+  enforceImageQuota,
+  type SelectedExamQuestion,
   type InventoryQuestionRow,
   type CellDraw,
 } from "./blueprintEngine";
@@ -196,6 +198,7 @@ function row(overrides: Partial<InventoryQuestionRow> = {}): InventoryQuestionRo
     difficulty: "Moderate",
     interactionType: "standard",
     answerType: "single",
+    hasImage: false,
     ...overrides,
   };
 }
@@ -342,5 +345,128 @@ describe("selectQuestionsForDraws", () => {
 
     expect(selected).toHaveLength(5);
     expect(selected.filter((s) => previousIds.includes(s.questionId))).toHaveLength(5);
+  });
+});
+
+
+describe("enforceImageQuota", () => {
+  const NO_SEEN = new Map<string, number>();
+  const DOMAINS = ["People", "Process", "Business Environment"] as const;
+
+  function pool(): InventoryQuestionRow[] {
+    // 3 domains x 70 standard non-image questions + 24 image-bearing (8 per domain).
+    const rows: InventoryQuestionRow[] = [];
+    for (const d of DOMAINS) {
+      for (let i = 0; i < 70; i++) rows.push(row({ questionId: `${d}-std-${i}`, domain: d }));
+      for (let i = 0; i < 8; i++) rows.push(row({ questionId: `${d}-img-${i}`, domain: d, interactionType: "graphic_based", hasImage: true }));
+    }
+    return rows;
+  }
+
+  function toSelected(rows: InventoryQuestionRow[]): SelectedExamQuestion[] {
+    return rows.map((r) => ({
+      questionId: r.questionId,
+      interactionType: r.interactionType,
+      answerType: r.answerType,
+      hasImage: r.hasImage,
+      domain: r.domain,
+      approach: r.approach,
+      difficulty: r.difficulty,
+    }));
+  }
+
+  function domainCounts(sel: SelectedExamQuestion[]) {
+    return DOMAINS.map((d) => sel.filter((q) => q.domain === d).length);
+  }
+
+  it("raises a zero-image selection to 12 image-bearing questions, keeping total count and domain counts identical", () => {
+    const rows = pool();
+    const initial = toSelected(rows.filter((r) => !r.hasImage).slice(0, 180));
+    const beforeDomains = domainCounts(initial);
+
+    const res = enforceImageQuota(initial, rows, 12, NO_SEEN, NO_PREVIOUS);
+
+    expect(res.achieved).toBe(12);
+    expect(res.shortfall).toBe(0);
+    expect(res.selected).toHaveLength(180);
+    expect(new Set(res.selected.map((q) => q.questionId)).size).toBe(180);
+    expect(domainCounts(res.selected)).toEqual(beforeDomains);
+    expect(res.selected.filter((q) => q.hasImage)).toHaveLength(12);
+  });
+
+  it("does not remove anything when the selection already meets the minimum", () => {
+    const rows = pool();
+    const imgs = rows.filter((r) => r.hasImage).slice(0, 15);
+    const std = rows.filter((r) => !r.hasImage).slice(0, 165);
+    const initial = toSelected([...imgs, ...std]);
+    const res = enforceImageQuota(initial, rows, 12, NO_SEEN, NO_PREVIOUS);
+    expect(res.swaps).toEqual({ sameCell: 0, sameApproach: 0, sameDomain: 0 });
+    expect(res.achieved).toBe(15);
+    expect(res.selected.map((q) => q.questionId)).toEqual(initial.map((q) => q.questionId));
+  });
+
+  it("uses every available image-bearing question and reports the shortfall when inventory has fewer than 12", () => {
+    const rows = [
+      ...Array.from({ length: 50 }, (_, i) => row({ questionId: `std-${i}` })),
+      ...Array.from({ length: 5 }, (_, i) => row({ questionId: `img-${i}`, interactionType: "graphic_based", hasImage: true })),
+    ];
+    const initial = toSelected(rows.filter((r) => !r.hasImage).slice(0, 40));
+    const res = enforceImageQuota(initial, rows, 12, NO_SEEN, NO_PREVIOUS);
+    expect(res.available).toBe(5);
+    expect(res.achieved).toBe(5);
+    expect(res.shortfall).toBe(7);
+    expect(res.selected).toHaveLength(40);
+    expect(res.log.some((l) => l.includes("shortfall 7"))).toBe(true);
+  });
+
+  it("never selects a question that is not in the eligible inventory (e.g. one filtered out as broken)", () => {
+    const rows = pool();
+    const brokenImage = "People-img-0";
+    const eligible = rows.filter((r) => r.questionId !== brokenImage);
+    const initial = toSelected(eligible.filter((r) => !r.hasImage).slice(0, 180));
+    const res = enforceImageQuota(initial, eligible, 12, NO_SEEN, NO_PREVIOUS);
+    expect(res.selected.some((q) => q.questionId === brokenImage)).toBe(false);
+  });
+
+  it("prefers same-cell swaps and keeps the cell distribution when possible", () => {
+    const rows = [
+      ...Array.from({ length: 20 }, (_, i) => row({ questionId: `p-${i}`, domain: "People", approach: "Agile", difficulty: "Easy" })),
+      ...Array.from({ length: 20 }, (_, i) => row({ questionId: `r-${i}`, domain: "Process", approach: "Hybrid", difficulty: "Difficult" })),
+      row({ questionId: "img-people", domain: "People", approach: "Agile", difficulty: "Easy", interactionType: "graphic_based", hasImage: true }),
+    ];
+    const initial = toSelected(rows.filter((r) => !r.hasImage).slice(0, 30));
+    const res = enforceImageQuota(initial, rows, 1, NO_SEEN, NO_PREVIOUS);
+    expect(res.swaps.sameCell).toBe(1);
+    expect(res.selected.filter((q) => q.domain === "People" && q.approach === "Agile" && q.difficulty === "Easy")).toHaveLength(
+      initial.filter((q) => q.domain === "People" && q.approach === "Agile" && q.difficulty === "Easy").length
+    );
+  });
+
+  it("does not spend scarce rare-type questions as swap-out when a standard question is available", () => {
+    const rows = [
+      row({ questionId: "dnd", interactionType: "drag_and_drop" }),
+      row({ questionId: "std-a" }),
+      row({ questionId: "img", interactionType: "graphic_based", hasImage: true }),
+    ];
+    const res = enforceImageQuota(toSelected(rows.slice(0, 2)), rows, 1, NO_SEEN, NO_PREVIOUS);
+    expect(res.selected.map((q) => q.questionId).sort()).toEqual(["dnd", "img"]);
+  });
+
+  it("prefers never-seen image questions over previously-seen ones", () => {
+    const rows = [
+      row({ questionId: "std-a" }),
+      row({ questionId: "img-seen", interactionType: "graphic_based", hasImage: true }),
+      row({ questionId: "img-new", interactionType: "graphic_based", hasImage: true }),
+    ];
+    const res = enforceImageQuota(toSelected([rows[0]]), rows, 1, new Map([["img-seen", 2]]), NO_PREVIOUS);
+    expect(res.selected[0].questionId).toBe("img-new");
+  });
+
+  it("is deterministic given the same injected rng", () => {
+    const rows = pool();
+    const initial = toSelected(rows.filter((r) => !r.hasImage).slice(0, 180));
+    const a = enforceImageQuota(initial, rows, 12, NO_SEEN, NO_PREVIOUS, () => 0.3);
+    const b = enforceImageQuota(initial, rows, 12, NO_SEEN, NO_PREVIOUS, () => 0.3);
+    expect(a.selected.map((q) => q.questionId)).toEqual(b.selected.map((q) => q.questionId));
   });
 });
