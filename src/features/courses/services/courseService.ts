@@ -278,6 +278,11 @@ export interface PublicCurriculumModule {
  * placeholder-only course (e.g. a module named as a draft, with no lessons
  * authored) never surfaces on the public storefront - the caller renders
  * an honest "curriculum coming soon" state instead.
+ *
+ * Called with the server-side admin client (the product page is public and
+ * the underlying tables are RLS-limited to authenticated users), so RLS is
+ * NOT a backstop here: every query below must keep its is_published filter
+ * and select only ids/titles/order - never content or video columns.
  */
 export async function getPublicCurriculumOutline(supabase: SupabaseClient, courseSlug: string): Promise<PublicCurriculumModule[]> {
   const { data: course } = await supabase.from("courses").select("id").eq("slug", courseSlug).eq("is_published", true).maybeSingle();

@@ -1,4 +1,6 @@
 import { describe, it, expect } from "vitest";
+import fs from "node:fs";
+import path from "node:path";
 import { getPublicCurriculumOutline, getReadyAssessmentIds, getAssessmentAttemptStatus, isModuleQuizUnlocked } from "./courseService";
 
 function buildSupabaseMock(config: {
@@ -54,6 +56,47 @@ describe("getPublicCurriculumOutline", () => {
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe("module-real");
     expect(result[0].lessons).toHaveLength(1);
+  });
+});
+
+describe("getPublicCurriculumOutline - safe when called with the RLS-bypassing admin client", () => {
+  it("filters every query to published rows and selects titles only (no content or video columns)", async () => {
+    const calls: { table: string; select: string; eqs: [string, unknown][] }[] = [];
+    const supabase = {
+      from: (table: string) => ({
+        select: (cols: string) => {
+          const call = { table, select: cols, eqs: [] as [string, unknown][] };
+          calls.push(call);
+          const chain: Record<string, unknown> = {
+            eq: (col: string, val: unknown) => { call.eqs.push([col, val]); return chain; },
+            in: () => chain,
+            maybeSingle: async () => ({ data: { id: "course-1" }, error: null }),
+            order: async () => ({
+              data: table === "modules"
+                ? [{ id: "m1", title_en: "Module 1", title_ar: "الوحدة 1", order_index: 0 }]
+                : [{ id: "l1", module_id: "m1", title_en: "Lesson 1", title_ar: "الدرس 1", order_index: 0 }],
+              error: null,
+            }),
+          };
+          return chain;
+        },
+      }),
+    };
+
+    const result = await getPublicCurriculumOutline(supabase as never, "pmp");
+    expect(result).toEqual([{ id: "m1", titleEn: "Module 1", titleAr: "الوحدة 1", lessons: [{ id: "l1", titleEn: "Lesson 1", titleAr: "الدرس 1" }] }]);
+
+    for (const call of calls) {
+      expect(call.eqs, call.table).toContainEqual(["is_published", true]);
+      expect(call.select, call.table).not.toMatch(/content|video|bunny|body|notes/i);
+    }
+    expect(calls.map((c) => c.table)).toEqual(["courses", "modules", "lessons"]);
+  });
+
+  it("is read with the admin client on the public product page, since anonymous RLS returns nothing", () => {
+    const src = fs.readFileSync(path.resolve(__dirname, "../../../app/(en)/(academy)/courses/[courseSlug]/page.tsx"), "utf8");
+    expect(src).toContain("getPublicCurriculumOutline(supabaseAdmin, courseSlug)");
+    expect(src).not.toContain("getPublicCurriculumOutline(supabase,");
   });
 });
 

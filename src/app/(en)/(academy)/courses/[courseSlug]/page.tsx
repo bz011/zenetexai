@@ -8,6 +8,7 @@ import ProductDetailContent from "./ProductDetailContent";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd, courseJsonLd } from "@/lib/structuredData";
 import { createSupabaseServer } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
 interface Props {
   params: Promise<{ courseSlug: string }>;
@@ -55,9 +56,16 @@ export default async function ProductDetailPage({ params }: Props) {
   const courseCapability = product.capabilities.find((c) => c.startsWith("course:"));
   const courseSlug = courseCapability ? courseCapability.split(":")[1] : null;
 
+  // The course/module/lesson tables are readable only by the `authenticated`
+  // role (migration 006), so a logged-out visitor's own client always got an
+  // empty outline and the page showed "curriculum coming soon". The outline
+  // is public, titles-only data that getPublicCurriculumOutline already
+  // restricts to published rows, so it reads with the server-side admin
+  // client instead of loosening RLS (which would also expose lesson
+  // content and video references to anonymous REST callers).
   const [ownedCapabilities, curriculum] = await Promise.all([
     user ? getUserCapabilities(supabase, user.id) : Promise.resolve(new Set<string>()),
-    courseSlug ? getPublicCurriculumOutline(supabase, courseSlug) : Promise.resolve([]),
+    courseSlug ? getPublicCurriculumOutline(supabaseAdmin, courseSlug) : Promise.resolve([]),
   ]);
 
   const alreadyOwned = product.capabilities.length > 0 && product.capabilities.every((c) => ownedCapabilities.has(c));
