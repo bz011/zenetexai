@@ -42,13 +42,23 @@ const ar: HeroCopy = {
 export const heroCopy = { en, ar };
 
 /**
- * Card placement on the desktop stage, as percentages of the stage box (the
- * card's centre). Mirrored automatically in RTL via logical inset properties.
+ * Desktop stage layout, as percentages of the stage box. `x`/`y` is the card
+ * centre; `from` is where its connector leaves the card (its inner edge) and
+ * `to` where it meets the brain. Symmetric: one card above the brain and two
+ * on each side, all the same size. Mirrored automatically in RTL.
  */
 export const HERO_CARD_POSITIONS: Record<HeroCardId, { x: number; y: number }> = {
-  pmp: { x: 30, y: 9 },
-  simulator: { x: 72, y: 12 },
-  agents: { x: 17, y: 37 },
-  ml: { x: 83, y: 48 },
-  data: { x: 27, y: 85 },
+  pmp: { x: 50, y: 8 },
+  agents: { x: 13.5, y: 37 },
+  data: { x: 13.5, y: 67 },
+  simulator: { x: 86.5, y: 37 },
+  ml: { x: 86.5, y: 67 },
+};
+
+export const HERO_CARD_LINKS: Record<HeroCardId, { from: { x: number; y: number }; to: { x: number; y: number } }> = {
+  pmp: { from: { x: 50, y: 19 }, to: { x: 50, y: 27 } },
+  agents: { from: { x: 27, y: 37 }, to: { x: 30, y: 37 } },
+  data: { from: { x: 27, y: 67 }, to: { x: 39, y: 49 } },
+  simulator: { from: { x: 73, y: 37 }, to: { x: 70, y: 37 } },
+  ml: { from: { x: 73, y: 67 }, to: { x: 61, y: 49 } },
 };

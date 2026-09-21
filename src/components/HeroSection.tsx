@@ -10,7 +10,7 @@ export default function HeroSection() {
   const h = t.hero;
 
   return (
-    <section className="relative overflow-hidden px-6 pb-14 pt-20 md:pb-20 md:pt-32 lg:flex lg:min-h-[calc(100svh-4rem)] lg:items-center">
+    <section className="relative overflow-hidden px-6 pb-14 pt-20 md:pb-20 md:pt-32 lg:flex lg:min-h-[calc(100svh-4rem)] lg:items-center lg:pb-16 lg:pt-24">
       <BrainNetworkDefs />
 
       {/* ── Backgrounds ─────────────────────────────────────────────────── */}
@@ -37,7 +37,7 @@ export default function HeroSection() {
       <BrainNetworkUse className="pointer-events-none absolute left-1/2 top-16 h-[420px] w-[420px] -translate-x-1/2 opacity-[0.24] lg:hidden" />
 
       {/* ── Content ─────────────────────────────────────────────────────── */}
-      <div className="container-page relative grid items-center gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-6">
+      <div className="container-page relative grid items-center gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-6" style={{ maxWidth: 1360 }}>
         <div className="mx-auto max-w-[720px] text-center lg:mx-0 lg:text-start">
 
           {/* Badge */}
@@ -47,7 +47,7 @@ export default function HeroSection() {
           </div>
 
           {/* Headline */}
-          <h1 className="animate-fade-up delay-100 text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[52px] xl:text-[60px]">
+          <h1 className="animate-fade-up delay-100 text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[52px] min-[1360px]:text-[60px]">
             {h.headline1}
             <br />
             <span className="gradient-text">{h.headline2}</span>
