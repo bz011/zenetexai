@@ -14,11 +14,15 @@ export interface HeroCard { id: HeroCardId; href: string; title: string; desc: s
 
 interface HeroCopy {
   cardsLabel: string;
+  pauseLabel: string;
+  playLabel: string;
   cards: HeroCard[];
 }
 
 const en: HeroCopy = {
   cardsLabel: "Featured programs and services",
+  pauseLabel: "Pause background animation",
+  playLabel: "Play background animation",
   cards: [
     { id: "pmp", href: "/courses/pmp-mastery-program", title: "PMP Mastery Program", desc: "Structured PMP exam preparation" },
     { id: "simulator", href: "/courses/pmp-exam-simulator", title: "PMP Exam Simulator", desc: "Full mock exams and Practice Mode" },
@@ -30,6 +34,8 @@ const en: HeroCopy = {
 
 const ar: HeroCopy = {
   cardsLabel: "البرامج والخدمات المميزة",
+  pauseLabel: "إيقاف الحركة الخلفية مؤقتاً",
+  playLabel: "تشغيل الحركة الخلفية",
   cards: [
     { id: "pmp", href: "/courses/pmp-mastery-program", title: "برنامج احتراف PMP", desc: "تحضير منظم لاختبار PMP" },
     { id: "simulator", href: "/courses/pmp-exam-simulator", title: "محاكي اختبار PMP", desc: "اختبارات تجريبية كاملة ووضع تدريب" },
@@ -42,23 +48,15 @@ const ar: HeroCopy = {
 export const heroCopy = { en, ar };
 
 /**
- * Desktop stage layout, as percentages of the stage box. `x`/`y` is the card
- * centre; `from` is where its connector leaves the card (its inner edge) and
- * `to` where it meets the brain. Symmetric: one card above the brain and two
- * on each side, all the same size. Mirrored automatically in RTL.
+ * Desktop stage layout, as percentages of the stage box (aspect 10:9; the
+ * cinematic video fills its lower ~93 %, the brain sits at x 25-75 %, y 14-63 %).
+ * `x`/`y` is the card centre. One card above the brain, two on each side, all
+ * the same size, clear of the brain. Mirrored automatically in RTL.
  */
 export const HERO_CARD_POSITIONS: Record<HeroCardId, { x: number; y: number }> = {
-  pmp: { x: 50, y: 8 },
-  agents: { x: 13.5, y: 37 },
-  data: { x: 13.5, y: 67 },
-  simulator: { x: 86.5, y: 37 },
-  ml: { x: 86.5, y: 67 },
-};
-
-export const HERO_CARD_LINKS: Record<HeroCardId, { from: { x: number; y: number }; to: { x: number; y: number } }> = {
-  pmp: { from: { x: 50, y: 19 }, to: { x: 50, y: 27 } },
-  agents: { from: { x: 27, y: 37 }, to: { x: 30, y: 37 } },
-  data: { from: { x: 27, y: 67 }, to: { x: 39, y: 49 } },
-  simulator: { from: { x: 73, y: 37 }, to: { x: 70, y: 37 } },
-  ml: { from: { x: 73, y: 67 }, to: { x: 61, y: 49 } },
+  pmp: { x: 50, y: 5.5 },
+  agents: { x: 11, y: 30 },
+  data: { x: 11, y: 55 },
+  simulator: { x: 89, y: 30 },
+  ml: { x: 89, y: 55 },
 };

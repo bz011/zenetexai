@@ -3,7 +3,6 @@
 import LocaleLink from "@/components/LocaleLink";
 import { useLang } from "@/lib/LanguageContext";
 import HeroStage from "@/components/hero/HeroStage";
-import { BrainNetworkDefs, BrainNetworkUse } from "@/components/hero/BrainNetworkSvg";
 
 export default function HeroSection() {
   const { t } = useLang();
@@ -11,8 +10,6 @@ export default function HeroSection() {
 
   return (
     <section className="relative overflow-hidden px-6 pb-14 pt-20 md:pb-20 md:pt-32 lg:flex lg:min-h-[calc(100svh-4rem)] lg:items-center lg:pb-16 lg:pt-24">
-      <BrainNetworkDefs />
-
       {/* ── Backgrounds ─────────────────────────────────────────────────── */}
       <div className="pointer-events-none absolute inset-0">
         {/* Primary glow — large, centered */}
@@ -33,11 +30,8 @@ export default function HeroSection() {
         }}
       />
 
-      {/* Mobile / tablet: the static network sits softly behind the headline. */}
-      <BrainNetworkUse className="pointer-events-none absolute left-1/2 top-16 h-[420px] w-[420px] -translate-x-1/2 opacity-[0.24] lg:hidden" />
-
       {/* ── Content ─────────────────────────────────────────────────────── */}
-      <div className="container-page relative grid items-center gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-6" style={{ maxWidth: 1360 }}>
+      <div className="container-page relative z-[1] grid items-center gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-6" style={{ maxWidth: 1360 }}>
         <div className="mx-auto max-w-[720px] text-center lg:mx-0 lg:text-start">
 
           {/* Badge */}

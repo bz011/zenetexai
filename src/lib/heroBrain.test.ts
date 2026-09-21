@@ -11,8 +11,7 @@ vi.mock("next/link", () => ({
 }));
 
 import { LanguageProvider } from "./LanguageContext";
-import { buildBrainNetwork } from "./brainShape";
-import { HERO_CARD_LINKS, HERO_CARD_POSITIONS, heroCopy } from "./heroCopy";
+import { HERO_CARD_POSITIONS, heroCopy } from "./heroCopy";
 import { localizeHref } from "./i18nRoutes";
 import HeroSection from "@/components/HeroSection";
 
@@ -24,41 +23,6 @@ function render(pathname: string) {
   mockPathname = pathname;
   return renderToString(createElement(LanguageProvider, null, createElement(HeroSection)));
 }
-
-describe("brain network shape", () => {
-  const net = buildBrainNetwork(900, 7, 3);
-
-  it("is deterministic, so the server poster and the client scene are identical", () => {
-    const again = buildBrainNetwork(900, 7, 3);
-    expect(again.positions).toEqual(net.positions);
-    expect(again.edges).toEqual(net.edges);
-  });
-
-  it("has the expected size and only valid, unique, non-degenerate links", () => {
-    expect(net.positions.length / 3).toBe(900);
-    expect(net.edges.length / 2).toBeGreaterThan(1000);
-    const seen = new Set<string>();
-    for (let e = 0; e < net.edges.length; e += 2) {
-      const a = net.edges[e], b = net.edges[e + 1];
-      expect(a).not.toBe(b);
-      expect(a).toBeLessThan(900);
-      expect(b).toBeLessThan(900);
-      const k = `${a}-${b}`;
-      expect(seen.has(k)).toBe(false);
-      seen.add(k);
-    }
-  });
-
-  it("fits the unit sphere and is roughly balanced left and right (two hemispheres)", () => {
-    let left = 0, right = 0;
-    for (let i = 0; i < net.positions.length; i += 3) {
-      expect(Math.hypot(net.positions[i], net.positions[i + 1], net.positions[i + 2])).toBeLessThanOrEqual(1.0001);
-      if (net.positions[i] < 0) left++;
-      else right++;
-    }
-    expect(Math.abs(left - right) / 900).toBeLessThan(0.12);
-  });
-});
 
 describe("hero service cards", () => {
   it("has the same five cards, in the same order and with the same routes, in English and Arabic", () => {
@@ -95,7 +59,7 @@ describe("hero service cards", () => {
 });
 
 describe("hero server-rendered HTML", () => {
-  it("English: headline, both existing CTAs and all five real links are in the initial HTML, with no canvas and only the one decorative poster image", () => {
+  it("English: headline, both existing CTAs and all five real links are in the initial HTML, with a decorative poster image and no video, canvas or 3D", () => {
     const html = render("/");
     expect(html).toContain("Practical AI.");
     expect(html).toContain('href="/contact"');
@@ -107,10 +71,10 @@ describe("hero server-rendered HTML", () => {
     }
     expect(html).toContain(`aria-label="${heroCopy.en.cardsLabel}"`);
     expect(html).not.toContain("<canvas");
+    expect(html).not.toContain("<video");
     expect(html.match(/<img/g)).toHaveLength(1);
-    expect(html).toMatch(/<img src="\/hero\/brain-poster\.webp" alt=""/);
-    expect(html).not.toMatch(/<picture|url\((?!#)/);
-    expect(html.match(/id="zx-brain-net"/g)).toHaveLength(1);
+    expect(html).toContain('<source media="(min-width: 1024px)" srcSet="/hero/brain-poster.webp"');
+    expect(html).toMatch(/<img src="\/hero\/brain-poster-sm\.webp" alt=""/);
     expect(html).not.toMatch(/[؀-ۿ]/);
   });
 
@@ -122,8 +86,8 @@ describe("hero server-rendered HTML", () => {
     }
     expect(html).toContain('href="/ar/services"');
     for (const c of heroCopy.en.cards) expect(html).not.toContain(c.desc);
-    expect(html.match(/id="zx-brain-net"/g)).toHaveLength(1);
     expect(html).not.toContain("<canvas");
+    expect(html).not.toContain("<video");
   });
 
   it("keeps the existing homepage metadata untouched", () => {
@@ -134,15 +98,16 @@ describe("hero server-rendered HTML", () => {
 });
 
 describe("hero stage layout (desktop)", () => {
-  // Card box in stage percentages: width from HeroStage (27%), height about 20% of the stage.
-  const W = 27, H = 20;
+  // Card box in stage percentages: width from HeroStage (25%), height about 17% of the stage.
+  const W = 25, H = 17;
   const rect = (id: keyof typeof HERO_CARD_POSITIONS) => {
     const { x, y } = HERO_CARD_POSITIONS[id];
-    return { l: x - W / 2, r: x + W / 2, t: y - H / 2, b: y + H / 2 };
+    const w = id === "pmp" ? 36 : W; // the top card is wider (36 %) because the space above the brain is wide
+    return { l: x - w / 2, r: x + w / 2, t: y - H / 2, b: y + H / 2 };
   };
   const ids = Object.keys(HERO_CARD_POSITIONS) as (keyof typeof HERO_CARD_POSITIONS)[];
 
-  it("is symmetric: one card above the brain and two on each side, all the same size", () => {
+  it("is symmetric: one card above the brain and two on each side, all the same height", () => {
     expect(HERO_CARD_POSITIONS.pmp.x).toBe(50);
     expect(HERO_CARD_POSITIONS.agents.x + HERO_CARD_POSITIONS.simulator.x).toBe(100);
     expect(HERO_CARD_POSITIONS.data.x + HERO_CARD_POSITIONS.ml.x).toBe(100);
@@ -153,9 +118,9 @@ describe("hero stage layout (desktop)", () => {
   it("keeps every card inside the stage and no two cards overlapping", () => {
     for (const id of ids) {
       const c = rect(id);
-      expect(c.l, id).toBeGreaterThanOrEqual(0);
-      expect(c.r, id).toBeLessThanOrEqual(100);
-      expect(c.t, id).toBeGreaterThanOrEqual(-4); // the top card may sit a few px above the stage box, into empty hero space
+      expect(c.l, id).toBeGreaterThanOrEqual(-3); // side cards may reach up to 3 % into the grid gap
+      expect(c.r, id).toBeLessThanOrEqual(103);
+      expect(c.t, id).toBeGreaterThanOrEqual(-4);
     }
     for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
       const a = rect(ids[i]), b = rect(ids[j]);
@@ -164,96 +129,56 @@ describe("hero stage layout (desktop)", () => {
     }
   });
 
-  it("leaves the brain's central column clear: side cards stay outside it and the top card stays above it", () => {
+  it("leaves the brain (x 25-75 %, from y 14 %) clear: side cards stay outside its columns and the top card stays above it", () => {
     for (const id of ["agents", "data", "simulator", "ml"] as const) {
       const c = rect(id);
-      expect(c.r <= 33 || c.l >= 67, id).toBe(true);
+      expect(c.r <= 26 || c.l >= 74, id).toBe(true);
     }
-    expect(rect("pmp").b).toBeLessThanOrEqual(26);
-  });
-
-  it("aims every connector from the card's inner edge toward the brain", () => {
-    for (const id of ids) {
-      const { from, to } = HERO_CARD_LINKS[id];
-      const centre = HERO_CARD_POSITIONS[id];
-      expect(Math.abs(to.x - 50), id).toBeLessThanOrEqual(Math.abs(from.x - 50) + 0.01);
-      expect(Math.abs(from.x - centre.x) + Math.abs(from.y - centre.y), id).toBeGreaterThan(0);
-    }
+    expect(rect("pmp").b).toBeLessThanOrEqual(16);
   });
 });
 
-describe("static poster fallback", () => {
-  it("is a small, decorative, lazy-loaded image captured from the scene, used only on desktop-sized screens", () => {
-    const file = path.join(ROOT, "public/hero/brain-poster.webp");
-    expect(fs.existsSync(file)).toBe(true);
-    expect(fs.statSync(file).size).toBeLessThan(90 * 1024);
-    const stage = read("src/components/hero/HeroStage.tsx");
-    expect(stage).toContain('src="/hero/brain-poster.webp"');
-    expect(stage).toContain('alt=""');
-    expect(stage).toContain('loading="lazy"');
-    expect(stage).toContain('width={751}');
-    expect(stage).toMatch(/hidden[^"]*lg:block/);
-  });
-
-  it("mobile and tablet keep the lightweight inline SVG backdrop instead", () => {
-    expect(read("src/components/HeroSection.tsx")).toContain("lg:hidden");
-    expect(read("src/components/HeroSection.tsx")).toContain("<BrainNetworkUse");
-  });
-});
-
-describe("3D scene safeguards", () => {
+describe("approved cinematic video", () => {
   const stage = read("src/components/hero/HeroStage.tsx");
-  const scene = read("src/components/hero/brainScene.ts");
+  const kb = (f: string) => fs.statSync(path.join(ROOT, f)).size / 1024;
 
-  it("loads three.js only on demand, and only from the scene module", () => {
-    expect(stage).toContain('import("@/components/hero/brainScene")');
-    expect(stage).not.toMatch(/from "three"/);
-    for (const f of ["src/components/HeroSection.tsx", "src/components/hero/HeroStage.tsx", "src/components/hero/BrainNetworkSvg.tsx", "src/lib/brainShape.ts"]) {
-      expect(read(f), f).not.toMatch(/from "three"/);
-    }
-    expect(scene).toContain('from "three"');
+  it("ships the approved loop as WebM and MP4 plus two stills, all modest in size", () => {
+    expect(kb("public/hero/brain-loop.webm")).toBeLessThan(1024);
+    expect(kb("public/hero/brain-loop.mp4")).toBeLessThan(1400);
+    expect(kb("public/hero/brain-poster.webp")).toBeLessThan(160);
+    expect(kb("public/hero/brain-poster-sm.webp")).toBeLessThan(70);
   });
 
-  it("only starts on desktop-sized screens with WebGL and no reduced-motion preference, and has a static fallback", () => {
+  it("plays muted, looping and inline, with WebM first and MP4 as fallback, and is hidden from assistive tech", () => {
+    for (const s of ["autoPlay", "muted", "loop", "playsInline", 'aria-hidden="true"', "tabIndex={-1}"]) expect(stage, s).toContain(s);
+    expect(stage.indexOf("brain-loop.webm")).toBeLessThan(stage.indexOf("brain-loop.mp4"));
+    expect(stage).not.toContain("controls");
+  });
+
+  it("only renders (and so only downloads) the video on desktop-sized screens without reduced motion or data saver", () => {
     expect(stage).toContain("(min-width: 1024px)");
     expect(stage).toContain("(prefers-reduced-motion: reduce)");
-    expect(stage).toContain("webglAvailable()");
-    expect(stage).toContain(".catch(");
-    expect(stage).toContain("/hero/brain-poster.webp");
+    expect(stage).toContain("saveData");
+    expect(stage).toContain("{videoOn && (");
   });
 
-  it("pauses off-screen and in hidden tabs, caps the frame rate and pixel ratio, and releases GPU resources", () => {
-    for (const s of ["IntersectionObserver", "visibilitychange", "MAX_FPS", "FALLBACK_FPS", "Math.min(window.devicePixelRatio || 1, 1.5)", "renderer.dispose()", "forceContextLoss()", "webglcontextlost", "cancelAnimationFrame"]) {
-      expect(scene, s).toContain(s);
-    }
+  it("uses a small poster on phones and the large one from lg up, through one <picture>", () => {
+    expect(stage).toContain('media="(min-width: 1024px)" srcSet="/hero/brain-poster.webp"');
+    expect(stage).toContain('src="/hero/brain-poster-sm.webp"');
+    expect(stage).toContain("width={620}");
+    expect(stage).toContain("aspect-[1240/1040]");
   });
 
-  it("adds only the three package (no React Three Fiber or other scene libraries)", () => {
-    const pkg = JSON.parse(read("package.json"));
-    expect(pkg.dependencies.three).toBeDefined();
-    for (const bad of ["@react-three/fiber", "@react-three/drei", "gsap", "framer-motion", "postprocessing"]) {
-      expect(pkg.dependencies[bad], bad).toBeUndefined();
-    }
+  it("pauses off-screen and in hidden tabs, and gives visitors a labelled pause control", () => {
+    for (const s of ["IntersectionObserver", "visibilitychange", "aria-pressed", "pauseLabel", "playLabel"]) expect(stage, s).toContain(s);
+    expect(heroCopy.ar.pauseLabel).toMatch(/[؀-ۿ]/);
   });
 
-  it("builds the brain from the procedural surface mesh and the project's own gyri map (no external model or loader)", () => {
-    expect(scene).toContain("buildBrainMesh");
-    expect(scene).toContain('"/hero/gyri.png"');
-    expect(scene).not.toMatch(/GLTFLoader|OBJLoader|FBXLoader|\.glb|\.gltf/);
-    const gyri = path.join(ROOT, "public/hero/gyri.png");
-    expect(fs.existsSync(gyri)).toBe(true);
-    expect(fs.statSync(gyri).size).toBeLessThan(64 * 1024);
-  });
-
-  it("uses bloom from the three package itself, and switches it off (with the resolution) on weak devices", () => {
-    expect(scene).toContain("three/examples/jsm/postprocessing/UnrealBloomPass.js");
-    expect(scene).toContain("useBloom = false");
-    expect(scene).toContain('host.dataset.bloom = "off"');
-    expect(scene).toContain("renderer.setPixelRatio(1)");
-  });
-
-  it("card labels are real DOM text, never drawn into the 3D scene", () => {
-    expect(scene).not.toMatch(/fillText|TextGeometry|title|desc/);
+  it("keeps the service cards as real links and contains no canvas or three.js", () => {
     expect(stage).toContain("<LocaleLink");
+    expect(stage).not.toMatch(/three|<canvas|WebGL/i);
+    const pkg = JSON.parse(read("package.json"));
+    expect(pkg.dependencies.three).toBeUndefined();
+    expect(exists("src/components/hero/brainScene.ts")).toBe(false);
   });
 });
