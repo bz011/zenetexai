@@ -202,8 +202,8 @@ describe("Arabic URLs: sitemap, hreflang, metadata", () => {
 
   it("uses a dedicated Arabic root layout that server-renders lang=ar dir=rtl", () => {
     const src = fs.readFileSync(path.join(ROOT, "src/app/(ar)/layout.tsx"), "utf8");
-    expect(src).toContain('<html lang="ar" dir="rtl">');
+    expect(src).toMatch(/<html lang="ar" dir="rtl"[^>]*>/);
     const en = fs.readFileSync(path.join(ROOT, "src/app/(en)/layout.tsx"), "utf8");
-    expect(en).toContain('<html lang="en" dir="ltr">');
+    expect(en).toMatch(/<html lang="en" dir="ltr"[^>]*>/);
   });
 });

@@ -32,6 +32,10 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
 
   // The simulator page has its own benefit-led sales sections (SimulatorSalesSections) in place of the generic overview / "what's included" blocks.
   const isSimulator = product.slug === "pmp-exam-simulator";
+  // Mastery page: on mobile the existing pricing / login / purchase panel is shown
+  // right after the intro instead of below the whole curriculum (same component,
+  // just reordered by CSS - no second purchase action).
+  const isMastery = product.slug === "pmp-mastery-program";
   const hasCourse = product.capabilities.includes("course:pmp");
   const hasPractice = product.capabilities.includes("practice:pmp");
   const hasMockExam = product.capabilities.includes("mock_exam:pmp");
@@ -43,7 +47,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
   ].filter((v): v is string => !!v);
 
   return (
-    <div dir={lang === "ar" ? "rtl" : "ltr"} className={`relative min-h-screen overflow-hidden px-6 ${isSimulator ? "ux-page py-16 md:py-24" : "py-24"}`}>
+    <div dir={lang === "ar" ? "rtl" : "ltr"} className="ux-page relative min-h-screen overflow-hidden px-6 py-16 md:py-24">
       <div className="pointer-events-none absolute left-1/2 top-0 h-[350px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/[0.08] blur-[100px]" />
 
       <div className="container-page relative max-w-3xl">
@@ -53,7 +57,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
           <>
             <span className="label">{product.type}</span>
             <h1 className="mt-3 text-3xl font-bold text-white">{title}</h1>
-            {description && <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-slate-400">{description}</p>}
+            {description && <p className="mt-3 max-w-xl text-body leading-relaxed text-slate-400">{description}</p>}
           </>
         )}
 
@@ -63,8 +67,8 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
 
             {description && !isSimulator && (
               <section>
-                <h2 className="text-[15px] font-semibold text-white">{p.overview_heading}</h2>
-                <p className="mt-2 text-[14px] leading-relaxed text-slate-400">{description}</p>
+                <h2 className="text-body font-semibold text-white">{p.overview_heading}</h2>
+                <p className="mt-2 text-body leading-relaxed text-slate-400">{description}</p>
               </section>
             )}
 
@@ -73,7 +77,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
                 the other. Descriptive anchor text, not exact-match keyword
                 stuffing; keyed on product.slug like the sections below. */}
             {product.slug === "pmp-mastery-program" && (
-              <p className="text-[13px] leading-relaxed text-slate-500">
+              <p className="text-small leading-relaxed text-slate-400">
                 {lang === "ar" ? (
                   <>تريد التدرّب على الامتحان فقط؟ اطّلع على{" "}
                     <Link href="/courses/pmp-exam-simulator" className="text-indigo-400 transition-colors hover:text-indigo-300">محاكي اختبار PMP</Link>.</>
@@ -84,7 +88,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
               </p>
             )}
             {product.slug === "pmp-exam-simulator" && (
-              <p className="text-[13px] leading-relaxed text-slate-500">
+              <p className="text-small leading-relaxed text-slate-400">
                 {lang === "ar" ? (
                   <>تريد دورة كاملة أيضاً؟ اطّلع على{" "}
                     <Link href="/courses/pmp-mastery-program" className="text-indigo-400 transition-colors hover:text-indigo-300">برنامج احتراف PMP</Link>.</>
@@ -99,10 +103,10 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
                 below - real curriculum structure only, no invented claims. */}
             {product.slug === "pmp-mastery-program" && (
               <section>
-                <h2 className="text-[15px] font-semibold text-white">{p.learn_heading}</h2>
+                <h2 className="text-body font-semibold text-white">{p.learn_heading}</h2>
                 <ul className="mt-3 space-y-2">
                   {p.learn_points.map((point) => (
-                    <li key={point} className="flex items-start gap-2 text-[13px] leading-relaxed text-slate-300">
+                    <li key={point} className="flex items-start gap-2 text-small leading-relaxed text-slate-300">
                       <span className="mt-0.5 text-indigo-400">✓</span> <span>{point}</span>
                     </li>
                   ))}
@@ -115,7 +119,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
                 also carries course:pmp but is a different page/offer. */}
             {product.slug === "pmp-mastery-program" && (
               <section>
-                <h2 className="text-[15px] font-semibold text-white">{p.instructor.heading}</h2>
+                <h2 className="text-body font-semibold text-white">{p.instructor.heading}</h2>
                 <div className="mt-3 card p-5">
                   <div className="flex flex-col items-center gap-4 text-center md:flex-row md:items-start md:text-start">
                     <div
@@ -125,10 +129,10 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
                       {p.instructor.name.charAt(0)}
                     </div>
                     <div>
-                      <h3 className="text-[14px] font-semibold text-white">{p.instructor.name}</h3>
-                      <p className="mt-1 text-[12px] font-medium text-indigo-400">{p.instructor.credentials}</p>
-                      <p className="mt-0.5 text-[12px] text-slate-500">{p.instructor.role}</p>
-                      <p className="mt-3 text-[13px] leading-relaxed text-slate-400">{p.instructor.bio}</p>
+                      <h3 className="text-body font-semibold text-white">{p.instructor.name}</h3>
+                      <p className="mt-1 text-small font-medium text-indigo-400">{p.instructor.credentials}</p>
+                      <p className="mt-0.5 text-small text-slate-400">{p.instructor.role}</p>
+                      <p className="mt-3 text-small leading-relaxed text-slate-400">{p.instructor.bio}</p>
                     </div>
                   </div>
                 </div>
@@ -137,15 +141,15 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
 
             {capabilityLabels.length > 0 && !isSimulator && (
               <section>
-                <h2 className="text-[15px] font-semibold text-white">{p.included_heading}</h2>
+                <h2 className="text-body font-semibold text-white">{p.included_heading}</h2>
                 <ul className="mt-3 space-y-2">
                   {capabilityLabels.map((label) => (
-                    <li key={label} className="flex items-center gap-2 text-[13px] text-slate-300">
+                    <li key={label} className="flex items-center gap-2 text-small text-slate-300">
                       <span className="text-emerald-400">✓</span> {label}
                     </li>
                   ))}
                   {totalLessons > 0 && (
-                    <li className="flex items-center gap-2 text-[13px] text-slate-300">
+                    <li className="flex items-center gap-2 text-small text-slate-300">
                       <span className="text-emerald-400">✓</span>{" "}
                       {p.included_structure_label.replace("{modules}", String(curriculum.length)).replace("{lessons}", String(totalLessons))}
                     </li>
@@ -156,14 +160,14 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
 
             {courseSlug && (
               <section>
-                <h2 className="text-[15px] font-semibold text-white">{p.curriculum_heading}</h2>
+                <h2 className="text-body font-semibold text-white">{p.curriculum_heading}</h2>
                 {curriculum.length === 0 ? (
-                  <p className="mt-3 text-[13px] text-slate-500">{p.curriculum_empty}</p>
+                  <p className="mt-3 text-small text-slate-400">{p.curriculum_empty}</p>
                 ) : (
                   <div className="mt-3 space-y-4">
                     {curriculum.map((mod, mi) => (
                       <div key={mod.id} className="card p-5">
-                        <h3 className="text-[14px] font-semibold text-white">
+                        <h3 className="text-body font-semibold text-white">
                           {mi + 1}. {lang === "ar" && mod.titleAr ? mod.titleAr : mod.titleEn}
                         </h3>
                         <ul className="mt-2 space-y-1">
@@ -172,13 +176,13 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
                               <li key={lesson.id}>
                                 <Link
                                   href={`/courses/${courseSlug}/lessons/${lesson.id}`}
-                                  className="block text-[13px] text-indigo-400 hover:text-indigo-300"
+                                  className="block text-small text-indigo-400 hover:text-indigo-300"
                                 >
                                   {lang === "ar" && lesson.titleAr ? lesson.titleAr : lesson.titleEn}
                                 </Link>
                               </li>
                             ) : (
-                              <li key={lesson.id} className="text-[13px] text-slate-500">
+                              <li key={lesson.id} className="text-small text-slate-400">
                                 {lang === "ar" && lesson.titleAr ? lesson.titleAr : lesson.titleEn}
                               </li>
                             )
@@ -192,23 +196,23 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
             )}
           </div>
 
-          <aside id="purchase" className="card h-fit space-y-5 p-6">
+          <aside id="purchase" className={`card h-fit space-y-5 p-6 ${isMastery ? "order-first md:order-none" : ""}`}>
             <div>
-              <h2 className="text-[13px] font-semibold text-slate-400">{p.pricing_heading}</h2>
+              <h2 className="text-small font-semibold text-slate-400">{p.pricing_heading}</h2>
               {price ? (
                 isFreeNow ? (
                   <div className="mt-2">
-                    <span className="mb-2 inline-block rounded-full bg-amber-500/[0.15] px-2.5 py-0.5 text-[11px] font-semibold text-amber-400">
+                    <span className="mb-2 inline-block rounded-full bg-amber-500/[0.15] px-2.5 py-0.5 text-caption font-semibold text-amber-400">
                       {c.launch_offer_badge}
                     </span>
                     {price.regularAmountMinorUnits !== null && (
-                      <p className="text-[13px] text-slate-500 line-through">
+                      <p className="text-small text-slate-400 line-through">
                         {p.regular_price_label}: {formatMoney(price.regularAmountMinorUnits, price.currency)}
                       </p>
                     )}
                     <p className="mt-1 text-2xl font-bold text-emerald-400">{c.free_badge}</p>
                     {price.promotionValidUntil && (
-                      <p className="mt-1 text-[12px] text-slate-500">
+                      <p className="mt-1 text-small text-slate-400">
                         {p.promo_ends_label}: {new Date(price.promotionValidUntil).toLocaleDateString(lang === "ar" ? "ar" : "en-US")}
                       </p>
                     )}
@@ -217,10 +221,10 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
                   <p className="mt-2 text-2xl font-bold text-white">{formatMoney(price.effectiveAmountMinorUnits, price.currency)}</p>
                 )
               ) : (
-                <p className="mt-2 text-[13px] text-slate-500">—</p>
+                <p className="mt-2 text-small text-slate-400">—</p>
               )}
               {price?.accessDurationDays && (
-                <p className="mt-1 text-[12px] text-slate-500">
+                <p className="mt-1 text-small text-slate-400">
                   {c.access_duration.replace("{n}", String(Math.round(price.accessDurationDays / 30)))}
                 </p>
               )}
@@ -229,7 +233,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
             <div className="border-t border-white/[0.06] pt-5">
               {!isAuthenticated ? (
                 <div className="space-y-3">
-                  <p className="text-[13px] text-slate-400">{p.login_prompt}</p>
+                  <p className="text-small text-slate-400">{p.login_prompt}</p>
                   <div className="flex gap-3">
                     <Link href={`/login?redirectTo=${pathForLang(`/courses/${product.slug}`, lang)}`} className="btn-primary flex-1 text-center">
                       {p.login_cta}
@@ -241,22 +245,22 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
                 </div>
               ) : alreadyOwned ? (
                 <div className="space-y-2">
-                  <p className="text-[13px] font-medium text-emerald-400">{c.owned_badge} ✓</p>
+                  <p className="text-small font-medium text-emerald-400">{c.owned_badge} ✓</p>
                   {hasCourse && courseSlug && curriculum.length > 0 && (
                     <Link
                       href={`/courses/${courseSlug}/lessons/${curriculum[0].lessons[0].id}`}
-                      className="btn-primary block px-5 py-2.5 text-center text-[13px]"
+                      className="btn-primary block px-5 py-2.5 text-center text-small"
                     >
                       {c.continue_learning}
                     </Link>
                   )}
                   {hasPractice && (
-                    <Link href="/pmp/practice" className="btn-secondary block px-5 py-2.5 text-center text-[13px]">
+                    <Link href="/pmp/practice" className="btn-secondary block px-5 py-2.5 text-center text-small">
                       {t.commerce.dashboard.open_practice}
                     </Link>
                   )}
                   {hasMockExam && (
-                    <Link href="/pmp/mock-exam" className="btn-secondary block px-5 py-2.5 text-center text-[13px]">
+                    <Link href="/pmp/mock-exam" className="btn-secondary block px-5 py-2.5 text-center text-small">
                       {t.commerce.dashboard.open_mock_exam}
                     </Link>
                   )}
@@ -266,7 +270,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
               ) : price ? (
                 <BuyNowButton productSlug={product.slug} />
               ) : (
-                <p className="text-[13px] text-slate-400">{c.opening_soon}</p>
+                <p className="text-small text-slate-400">{c.opening_soon}</p>
               )}
             </div>
           </aside>

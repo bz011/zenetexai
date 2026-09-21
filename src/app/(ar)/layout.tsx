@@ -21,8 +21,8 @@ export const metadata: Metadata = {
  */
 export default function ArabicRootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ar" dir="rtl">
-      <body style={{ backgroundColor: "var(--bg)" }} className={`${arabicFont.variable} text-slate-200 antialiased`}>
+    <html lang="ar" dir="rtl" className={arabicFont.variable}>
+      <body style={{ backgroundColor: "var(--bg)" }} className="text-slate-200 antialiased">
         <JsonLd data={organizationJsonLd()} />
         <JsonLd data={websiteJsonLd()} />
         <Providers>{children}</Providers>

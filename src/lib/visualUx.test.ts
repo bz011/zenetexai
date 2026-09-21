@@ -38,6 +38,7 @@ const SCOPED_FILES = [
   "src/features/commerce/components/SimulatorSalesSections.tsx",
   "src/components/RelatedLinkRow.tsx",
   "src/components/visuals/Visuals.tsx",
+  "src/app/(en)/(academy)/courses/[courseSlug]/ProductDetailContent.tsx",
 ];
 
 describe("responsive type scale and spacing on the public pages", () => {
@@ -68,9 +69,14 @@ describe("responsive type scale and spacing on the public pages", () => {
 
   it("wires the Arabic web font into both root layouts and the RTL font stack", () => {
     expect(read("src/lib/fonts.ts")).toContain("Noto_Sans_Arabic");
-    expect(read("src/app/(ar)/layout.tsx")).toContain("arabicFont.variable");
-    expect(read("src/app/(en)/layout.tsx")).toContain("arabicFont.variable");
     expect(read("src/app/globals.css")).toContain("var(--font-arabic)");
+    // The RTL font-family rule matches <html dir="rtl">, so the font variable
+    // must be defined on <html> itself. On <body> it is undefined where the
+    // rule applies, the declaration is invalid, and Arabic falls back to Times.
+    expect(read("src/app/(ar)/layout.tsx")).toMatch(/<html lang="ar" dir="rtl" className=\{arabicFont\.variable\}>/);
+    expect(read("src/app/(en)/layout.tsx")).toMatch(/<html lang="en" dir="ltr" className=\{arabicFont\.variable\}>/);
+    expect(read("src/app/(ar)/layout.tsx")).not.toMatch(/<body[^>]*arabicFont/);
+    expect(read("src/app/(en)/layout.tsx")).not.toMatch(/<body[^>]*arabicFont/);
   });
 
   it("keeps the exam runner and other app screens out of the opt-in marketing scope", () => {

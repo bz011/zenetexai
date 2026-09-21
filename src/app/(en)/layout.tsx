@@ -31,8 +31,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" dir="ltr">
-      <body style={{ backgroundColor: "var(--bg)" }} className={`${arabicFont.variable} text-slate-200 antialiased`}>
+    <html lang="en" dir="ltr" className={arabicFont.variable}>
+      <body style={{ backgroundColor: "var(--bg)" }} className="text-slate-200 antialiased">
         <JsonLd data={organizationJsonLd()} />
         <JsonLd data={websiteJsonLd()} />
         <Providers>{children}</Providers>

@@ -161,7 +161,7 @@
      their existing density. */
   .ux-page .btn-primary,
   .ux-page .btn-secondary {
-    @apply min-h-[2.75rem] px-6 py-3 text-[0.9375rem];
+    @apply min-h-[2.75rem] px-4 py-3 text-[0.9375rem] sm:px-6;
   }
   .ux-page .label {
     @apply text-xs;
