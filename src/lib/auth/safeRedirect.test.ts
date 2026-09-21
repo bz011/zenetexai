@@ -40,4 +40,24 @@ describe("resolveSafeRedirect", () => {
   it("a query string appended to an allow-listed path can never change where it points - it only ever rides along on our own path", () => {
     expect(resolveSafeRedirect("/dashboard?next=https://evil.com")).toBe("/dashboard?next=https://evil.com");
   });
+
+  it("returns a visitor to the PMP Exam Simulator page they started from, in either language", () => {
+    expect(resolveSafeRedirect("/courses/pmp-exam-simulator")).toBe("/courses/pmp-exam-simulator");
+    expect(resolveSafeRedirect("/ar/courses/pmp-exam-simulator")).toBe("/ar/courses/pmp-exam-simulator");
+  });
+
+  it("allow-lists only those exact product paths - no prefix, sibling, traversal or off-site variants", () => {
+    for (const bad of [
+      "/ar/courses/pmp-mastery-program",
+      "/ar/courses/pmp-exam-simulator/../../admin",
+      "/ar/courses/pmp-exam-simulator.evil.com",
+      "/ar/courses/pmp-exam-simulator/extra",
+      "/ar",
+      "/ar/dashboard",
+      "//evil.com/ar/courses/pmp-exam-simulator",
+      "https://evil.com/ar/courses/pmp-exam-simulator",
+    ]) {
+      expect(resolveSafeRedirect(bad), bad).toBe("/dashboard");
+    }
+  });
 });

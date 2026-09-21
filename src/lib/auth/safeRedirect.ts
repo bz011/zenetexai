@@ -26,6 +26,11 @@ const ALLOWED_REDIRECTS = new Set<string>([
   "/reset-password",
   "/checkout/success",
   "/checkout/cancel",
+  // PMP Exam Simulator product page and its Arabic twin: the page's own
+  // "Log in" link returns the visitor to the exact page they started from.
+  // Listed individually (exact match) - never a "/courses/" or "/ar/" prefix.
+  "/courses/pmp-exam-simulator",
+  "/ar/courses/pmp-exam-simulator",
 ]);
 
 const DEFAULT_REDIRECT = "/dashboard";

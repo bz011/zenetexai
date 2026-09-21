@@ -8,6 +8,7 @@ import { formatMoney } from "@/features/commerce/utils/money";
 import EnrollFreeButton from "@/features/commerce/components/EnrollFreeButton";
 import BuyNowButton from "@/features/commerce/components/BuyNowButton";
 import { SimulatorHero, SimulatorDetails } from "@/features/commerce/components/SimulatorSalesSections";
+import { pathForLang } from "@/lib/i18nRoutes";
 
 interface Props {
   product: ProductWithPricing;
@@ -230,7 +231,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
                 <div className="space-y-3">
                   <p className="text-[13px] text-slate-400">{p.login_prompt}</p>
                   <div className="flex gap-3">
-                    <Link href={`/login?redirectTo=/courses/${product.slug}`} className="btn-primary flex-1 text-center">
+                    <Link href={`/login?redirectTo=${pathForLang(`/courses/${product.slug}`, lang)}`} className="btn-primary flex-1 text-center">
                       {p.login_cta}
                     </Link>
                     <Link href="/signup" className="btn-secondary flex-1 text-center">

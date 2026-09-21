@@ -158,4 +158,18 @@ describe("rendered product page", () => {
     const html = render("/ar/courses/pmp-exam-simulator", () => createElement(SimulatorDetails));
     expect(html).toContain(simulatorPageCopy.ar.compare_h2);
   });
+
+  it("sends the Log In link back to the same page: Arabic URL -> Arabic product page, English -> English, other products unchanged", () => {
+    const ar = page("/ar/courses/pmp-exam-simulator", product());
+    expect(ar).toContain('href="/login?redirectTo=/ar/courses/pmp-exam-simulator"');
+    const en = page("/courses/pmp-exam-simulator", product());
+    expect(en).toContain('href="/login?redirectTo=/courses/pmp-exam-simulator"');
+    const mastery = page("/courses/pmp-mastery-program", product({ slug: "pmp-mastery-program", type: "course", capabilities: ["course:pmp"] }));
+    expect(mastery).toContain('href="/login?redirectTo=/courses/pmp-mastery-program"');
+  });
+
+  it("the return target the Arabic page asks for is one the login allow-list actually accepts", async () => {
+    const { resolveSafeRedirect } = await import("@/lib/auth/safeRedirect");
+    expect(resolveSafeRedirect("/ar/courses/pmp-exam-simulator")).toBe("/ar/courses/pmp-exam-simulator");
+  });
 });
