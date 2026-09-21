@@ -108,14 +108,23 @@ const CONTENT: Record<Variant, Block> = {
   },
 };
 
-export default function PmpDiscoverabilitySection({ variant, arabicOnly = false }: { variant: Variant; arabicOnly?: boolean }) {
+/**
+ * Default renders both languages side by side (kept for callers that want it);
+ * `englishOnly` / `arabicOnly` render a single language, with its own FAQ
+ * structured data, links and disclaimer. Each language's page uses its own
+ * single-language mode, since both languages now have their own URL.
+ */
+export default function PmpDiscoverabilitySection({ variant, arabicOnly = false, englishOnly = false }: { variant: Variant; arabicOnly?: boolean; englishOnly?: boolean }) {
   const c = CONTENT[variant];
+  const showEn = !arabicOnly;
+  const showAr = !englishOnly;
+  const both = showEn && showAr;
   return (
     <section id={c.id} className="ux-page border-t border-white/[0.06] px-6 py-14 md:py-20">
-      {!arabicOnly && <JsonLd data={faqJsonLd(c.faq, "en")} />}
-      <JsonLd data={faqJsonLd(c.faqAr, "ar")} />
-      <div className={`container-page grid gap-10 ${arabicOnly ? "" : "lg:grid-cols-2"}`}>
-        {!arabicOnly && (
+      {showEn && <JsonLd data={faqJsonLd(c.faq, "en")} />}
+      {showAr && <JsonLd data={faqJsonLd(c.faqAr, "ar")} />}
+      <div className={`container-page grid gap-10 ${both ? "lg:grid-cols-2" : ""}`}>
+        {showEn && (
         <div lang="en" dir="ltr">
           <h2 className="text-2xl font-bold text-white md:text-3xl">{c.h2En}</h2>
           {c.pEn.map((p) => (
@@ -135,6 +144,7 @@ export default function PmpDiscoverabilitySection({ variant, arabicOnly = false 
         </div>
         )}
 
+        {showAr && (
         <div lang="ar" dir="rtl">
           <h2 className="text-2xl font-bold text-white md:text-3xl">{c.h2Ar}</h2>
           {c.pAr.map((p) => (
@@ -152,19 +162,21 @@ export default function PmpDiscoverabilitySection({ variant, arabicOnly = false 
             ))}
           </div>
         </div>
+        )}
       </div>
 
       <div className="container-page mt-10">
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center">
           {c.links.map((l) => (
             <Link key={l.href} href={l.href} className="text-small font-medium text-indigo-400 transition-colors hover:text-indigo-300">
-              {arabicOnly ? <span lang="ar">{l.ar}</span> : <>{l.en} · <span lang="ar">{l.ar}</span></>}
+              {englishOnly ? l.en : arabicOnly ? <span lang="ar">{l.ar}</span> : <>{l.en} · <span lang="ar">{l.ar}</span></>}
             </Link>
           ))}
         </div>
         <p className="mt-6 text-center text-caption text-slate-400">
-          {!arabicOnly && "PMP is a registered mark of Project Management Institute, Inc. ZentexAI is an independent training provider. · "}
-          <span lang="ar">PMP علامة مسجلة لمعهد إدارة المشاريع (PMI). ZentexAI جهة تدريب مستقلة.</span>
+          {showEn && "PMP is a registered mark of Project Management Institute, Inc. ZentexAI is an independent training provider."}
+          {both && " · "}
+          {showAr && <span lang="ar">PMP علامة مسجلة لمعهد إدارة المشاريع (PMI). ZentexAI جهة تدريب مستقلة.</span>}
         </p>
       </div>
     </section>

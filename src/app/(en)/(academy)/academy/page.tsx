@@ -22,7 +22,7 @@ export default function AcademyPage() {
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Academy", path: "/academy" }])} />
       <AcademyContent />
-      <PmpDiscoverabilitySection variant="course" />
+      <PmpDiscoverabilitySection variant="course" englishOnly />
     </>
   );
 }

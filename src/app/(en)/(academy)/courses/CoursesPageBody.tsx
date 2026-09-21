@@ -29,7 +29,7 @@ export default async function CoursesPageBody({ lang }: { lang: "en" | "ar" }) {
     <>
       <JsonLd data={breadcrumbJsonLd(crumbs)} />
       <CoursesContent products={products} ownedCapabilities={Array.from(ownedCapabilities)} />
-      <PmpDiscoverabilitySection variant="simulator" arabicOnly={lang === "ar"} />
+      <PmpDiscoverabilitySection variant="simulator" arabicOnly={lang === "ar"} englishOnly={lang === "en"} />
     </>
   );
 }
