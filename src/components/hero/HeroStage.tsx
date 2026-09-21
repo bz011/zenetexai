@@ -14,6 +14,10 @@ const ICONS: Record<HeroCardId, ReactElement> = {
   ml: <path d="M6 7a2 2 0 100-4 2 2 0 000 4zm12 0a2 2 0 100-4 2 2 0 000 4zM12 21a2 2 0 100-4 2 2 0 000 4zM6 7l6 10M18 7l-6 10M6 5h12" />,
 };
 
+// Everything in the scene fades out well inside the frame; this only hides any residual bloom at the very edge.
+const EDGE_FADE = "linear-gradient(to right, transparent, #000 7%, #000 93%, transparent), linear-gradient(to bottom, transparent, #000 7%, #000 93%, transparent)";
+const MASK_STYLE = { maskImage: EDGE_FADE, WebkitMaskImage: EDGE_FADE, maskComposite: "intersect", WebkitMaskComposite: "source-in" } as const;
+
 function webglAvailable(): boolean {
   try {
     const c = document.createElement("canvas");
@@ -119,24 +123,26 @@ export default function HeroStage() {
 
   return (
     <div ref={stageRef} onPointerMove={onPointerMove} onPointerLeave={() => handleRef.current?.setPointer(0, 0)} className="relative w-full lg:aspect-[4/3]">
-      {/* Poster: what every visitor sees first; kept for mobile, reduced motion and no-WebGL. */}
-      <div className={`pointer-events-none absolute inset-0 hidden transition-opacity duration-700 lg:block ${sceneReady ? "opacity-0" : "opacity-100"}`}>
-        {/* A frame captured from the 3D scene itself, so the fallback matches what the animation shows. Decorative. */}
+      {/* Poster: what every visitor sees first; kept for reduced motion and no-WebGL. A frame captured from the scene itself. */}
+      <div className={`pointer-events-none absolute inset-0 hidden transition-opacity duration-700 lg:block ${sceneReady ? "opacity-0" : "opacity-100"}`} style={MASK_STYLE}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/hero/brain-poster.webp" alt="" width={751} height={563} loading="lazy" decoding="async" aria-hidden="true" className="absolute inset-0 h-full w-full object-contain" />
+        <img src="/hero/brain-poster.webp" alt="" width={751} height={563} loading="lazy" decoding="async" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" />
       </div>
-      <div ref={hostRef} className="pointer-events-none absolute inset-0 hidden lg:block" data-hero-3d-host />
+      <div ref={hostRef} className="pointer-events-none absolute inset-0 hidden lg:block" style={MASK_STYLE} data-hero-3d-host />
 
-      {/* Connectors from each card toward the brain (desktop only, decorative). */}
+      {/* Orbits around the brain and a short connector from each card (desktop only, decorative). */}
       <svg aria-hidden="true" focusable="false" viewBox="0 0 100 100" preserveAspectRatio="none" className="pointer-events-none absolute inset-0 hidden h-full w-full rtl:-scale-x-100 lg:block">
+        <ellipse cx="50" cy="50" rx="41" ry="30" fill="none" stroke="rgba(125,211,252,0.13)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+        <ellipse cx="50" cy="52" rx="33" ry="22" fill="none" stroke="rgba(125,211,252,0.09)" strokeWidth="1" strokeDasharray="2 3" vectorEffect="non-scaling-stroke" />
         {(Object.keys(HERO_CARD_LINKS) as HeroCardId[]).map((id) => {
           const { from, to } = HERO_CARD_LINKS[id];
           const on = active === id;
           const cx = (from.x + to.x) / 2, cy = from.y + (to.y - from.y) * 0.15;
           return (
             <g key={id}>
-              <path d={`M${from.x} ${from.y} Q${cx} ${cy} ${to.x} ${to.y}`} fill="none" stroke={on ? "rgba(125,211,252,0.85)" : "rgba(125,211,252,0.22)"} strokeWidth={on ? 1.5 : 1} vectorEffect="non-scaling-stroke" style={{ transition: "stroke 200ms" }} />
-              <circle cx={to.x} cy={to.y} r="0.8" fill={on ? "#7dd3fc" : "rgba(125,211,252,0.5)"} />
+              <path d={`M${from.x} ${from.y} Q${cx} ${cy} ${to.x} ${to.y}`} fill="none" stroke={on ? "rgba(125,211,252,0.9)" : "rgba(125,211,252,0.3)"} strokeWidth={on ? 1.5 : 1} vectorEffect="non-scaling-stroke" style={{ transition: "stroke 200ms" }} />
+              <circle cx={to.x} cy={to.y} r="0.9" fill={on ? "#bae6fd" : "rgba(125,211,252,0.7)"} />
+              <circle cx={to.x} cy={to.y} r="1.8" fill="none" stroke={on ? "rgba(186,230,253,0.7)" : "rgba(125,211,252,0.25)"} strokeWidth="1" vectorEffect="non-scaling-stroke" />
             </g>
           );
         })}
@@ -157,16 +163,16 @@ export default function HeroStage() {
                 onMouseLeave={() => setActive(null)}
                 onFocus={() => setActive(card.id)}
                 onBlur={() => setActive(null)}
-                className="group relative flex h-full items-start gap-2.5 rounded-2xl border border-sky-400/25 bg-slate-950/60 p-3 backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-300/60 hover:bg-slate-900/70 hover:shadow-[0_0_28px_rgba(56,189,248,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                className="group relative flex h-full items-start gap-2.5 rounded-2xl border border-sky-300/20 bg-gradient-to-br from-slate-900/85 to-slate-950/75 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_10px_30px_rgba(2,6,23,0.55)] backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-sky-300/55 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_0_32px_rgba(56,189,248,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
               >
-                <span aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sky-400/10 text-sky-300">
+                <span aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-sky-400/35 to-indigo-500/25 text-sky-100 ring-1 ring-sky-300/30 shadow-[0_0_14px_rgba(56,189,248,0.35)]">
                   <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{ICONS[card.id]}</svg>
                 </span>
                 <span className="min-w-0 flex-1 pe-4">
                   <span className="block text-small font-semibold leading-snug text-white">{card.title}</span>
                   <span className="mt-0.5 block text-small leading-snug text-slate-300 lg:hidden min-[1360px]:block">{card.desc}</span>
                 </span>
-                <svg aria-hidden="true" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="absolute end-2.5 top-3 shrink-0 text-sky-300 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5 motion-reduce:transition-none">
+                <svg aria-hidden="true" viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="absolute end-2.5 top-3 shrink-0 text-sky-200 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5 motion-reduce:transition-none">
                   <path d="M4 10h11m-4-4l4 4-4 4" />
                 </svg>
               </LocaleLink>

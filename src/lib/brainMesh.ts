@@ -1,16 +1,27 @@
 /**
- * Procedural brain surface for the hero scene: two folded cerebral hemispheres
- * (lateral fissure, temporal lobes, sulci carved along noise contours), a
- * striated cerebellum and a brainstem. Pure and deterministic (seeded noise,
- * no three.js, no external model or texture), so it is testable and there is
- * no asset licence to track. Each part returns positions, triangle indices and
- * a per-vertex `fold` value (0 = deep in a sulcus, 1 = crest of a gyrus) that
- * the shader uses to light the surface.
+ * Procedural brain surface for the hero scene, driven by a tileable "gyri"
+ * height map (public/hero/gyri.png - a reaction-diffusion labyrinth pattern
+ * generated offline for this project, so there is no external model or
+ * licence). Two cerebral hemispheres separated by a narrow longitudinal
+ * fissure, each with frontal fullness, an occipital taper, a temporal lobe
+ * and a lateral fissure, plus a striated cerebellum and a brainstem. Pure
+ * and deterministic: the same height field always yields the same mesh.
+ *
+ * The height field is sampled tri-planarly in object space; the GPU shader
+ * samples the same map the same way for fine bump shading, so lighting and
+ * silhouette agree.
  */
+
+export interface HeightField {
+  size: number;
+  /** size*size values in 0..1 (1 = gyrus crest, 0 = sulcus floor), row-major, tileable. */
+  data: Float32Array;
+}
 
 export interface BrainPart {
   positions: Float32Array;
   indices: Uint32Array;
+  /** Per-vertex 0 (sulcus) .. 1 (crest). */
   folds: Float32Array;
 }
 
@@ -20,60 +31,41 @@ export interface BrainMesh {
   stem: BrainPart;
 }
 
-// ── seeded value helpers ────────────────────────────────────────────────────
-
-function mulberry32(seed: number): () => number {
-  let a = seed | 0;
-  return () => {
-    a = (a + 0x6d2b79f5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-/** Improved Perlin noise, permutation table seeded for determinism. Output about -1..1. */
-function makeNoise(seed: number) {
-  const rand = mulberry32(seed);
-  const perm = new Uint8Array(512);
-  const base = Array.from({ length: 256 }, (_, i) => i);
-  for (let i = 255; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [base[i], base[j]] = [base[j], base[i]];
-  }
-  for (let i = 0; i < 512; i++) perm[i] = base[i & 255];
-  const fade = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
-  const lerp = (a: number, b: number, t: number) => a + t * (b - a);
-  const grad = (h: number, x: number, y: number, z: number) => {
-    const hh = h & 15;
-    const u = hh < 8 ? x : y;
-    const v = hh < 4 ? y : hh === 12 || hh === 14 ? x : z;
-    return ((hh & 1) === 0 ? u : -u) + ((hh & 2) === 0 ? v : -v);
-  };
-  return (x: number, y: number, z: number): number => {
-    const X = Math.floor(x) & 255, Y = Math.floor(y) & 255, Z = Math.floor(z) & 255;
-    x -= Math.floor(x); y -= Math.floor(y); z -= Math.floor(z);
-    const u = fade(x), v = fade(y), w = fade(z);
-    const A = perm[X] + Y, AA = perm[A] + Z, AB = perm[A + 1] + Z;
-    const B = perm[X + 1] + Y, BA = perm[B] + Z, BB = perm[B + 1] + Z;
-    return lerp(
-      lerp(lerp(grad(perm[AA], x, y, z), grad(perm[BA], x - 1, y, z), u), lerp(grad(perm[AB], x, y - 1, z), grad(perm[BB], x - 1, y - 1, z), u), v),
-      lerp(lerp(grad(perm[AA + 1], x, y, z - 1), grad(perm[BA + 1], x - 1, y, z - 1), u), lerp(grad(perm[AB + 1], x, y - 1, z - 1), grad(perm[BB + 1], x - 1, y - 1, z - 1), u), v),
-      w
-    );
-  };
-}
+/** Object-space units per texture tile; the shader must use the same value. */
+export const GYRI_TILE_SCALE = 0.21;
+/** Radial displacement amplitude of the gyri (fraction of local radius). */
+export const GYRI_AMPLITUDE = 0.1;
 
 const smooth = (a: number, b: number, x: number) => {
   const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
   return t * t * (3 - 2 * t);
 };
 
+export function sampleField(field: HeightField, u: number, v: number): number {
+  const n = field.size;
+  const fu = ((u % 1) + 1) % 1 * n, fv = ((v % 1) + 1) % 1 * n;
+  const x0 = Math.floor(fu), y0 = Math.floor(fv);
+  const tx = fu - x0, ty = fv - y0;
+  const x1 = (x0 + 1) % n, y1 = (y0 + 1) % n;
+  const d = field.data;
+  const a = d[y0 * n + x0], b = d[y0 * n + x1], c = d[y1 * n + x0], e = d[y1 * n + x1];
+  return (a * (1 - tx) + b * tx) * (1 - ty) + (c * (1 - tx) + e * tx) * ty;
+}
+
+/** Tri-planar sample: blends the three axis projections by the normal, exactly as the GPU shader does. */
+export function sampleTriplanar(field: HeightField, x: number, y: number, z: number, nx: number, ny: number, nz: number): number {
+  let wx = Math.abs(nx) ** 4, wy = Math.abs(ny) ** 4, wz = Math.abs(nz) ** 4;
+  const sum = wx + wy + wz || 1;
+  wx /= sum; wy /= sum; wz /= sum;
+  const s = GYRI_TILE_SCALE;
+  return sampleField(field, y * s, z * s) * wx + sampleField(field, x * s, z * s) * wy + sampleField(field, x * s, y * s) * wz;
+}
+
 // ── icosphere ───────────────────────────────────────────────────────────────
 
 function icosphere(detail: number): { dirs: Float32Array; indices: Uint32Array } {
   const t = (1 + Math.sqrt(5)) / 2;
-  let verts: number[] = [
+  const verts: number[] = [
     -1, t, 0, 1, t, 0, -1, -t, 0, 1, -t, 0, 0, -1, t, 0, 1, t, 0, -1, -t, 0, 1, -t,
     t, 0, -1, t, 0, 1, -t, 0, -1, -t, 0, 1,
   ];
@@ -111,55 +103,57 @@ function icosphere(detail: number): { dirs: Float32Array; indices: Uint32Array }
 
 // ── cerebral hemisphere ─────────────────────────────────────────────────────
 
-function hemisphere(side: 1 | -1, detail: number, noise: (x: number, y: number, z: number) => number): BrainPart {
+function hemisphere(side: 1 | -1, detail: number, field: HeightField): BrainPart {
   const { dirs, indices } = icosphere(detail);
   const count = dirs.length / 3;
   const positions = new Float32Array(count * 3);
   const folds = new Float32Array(count);
-  const R = { x: 0.52, y: 0.6, z: 0.97 };
-  const centre = { x: side * 0.33, y: 0.06 };
-  const off = side * 0.37; // small left/right asymmetry, as in a real brain
+  const R = { x: 0.6, y: 0.66, z: 1.0 };
+  const cx = side * 0.28;
+  const FISSURE = 0.045; // half-width of the longitudinal fissure
 
   for (let i = 0; i < count; i++) {
-    let dx = dirs[i * 3], dy = dirs[i * 3 + 1], dz = dirs[i * 3 + 2];
-    const lateral = dx * side; // > 0 on the outer surface, < 0 on the medial wall
-    if (lateral < 0) dx *= 0.14; // flat medial wall
+    const dx = dirs[i * 3], dy = dirs[i * 3 + 1], dz = dirs[i * 3 + 2];
+    const lateral = dx * side;
 
-    // Overall lobe shape.
+    // Overall lobe proportions.
+    let s = 1 + 0.06 * smooth(0.3, 0.95, dz); // frontal fullness
     let sy = 1;
-    if (dy < -0.2) sy = 0.74 + 0.26 * smooth(-1, -0.2, dy); // gently flattened underside
-    if (dz < -0.35) sy *= 1 - 0.2 * smooth(-0.35, -0.95, dz); // occipital taper
-    let s = 1 + 0.05 * smooth(0.35, 0.95, dz); // frontal fullness
+    if (dy < -0.25) sy = 0.7 + 0.3 * smooth(-1, -0.25, dy); // flatter underside
+    if (dz < -0.4) s *= 1 - 0.14 * smooth(-0.4, -1, dz) * smooth(-0.2, 0.6, dy); // occipital taper, top only
+    if (dy > 0.5) s *= 1 - 0.03 * smooth(0.5, 1, dy); // slightly flattened crown
 
-    // Temporal lobe: a bulge low on the lateral surface, toward the front.
-    const tx = side * 0.8, ty = -0.55, tz = 0.32, tn = Math.hypot(tx, ty, tz);
+    // Temporal lobe: bulge low on the lateral surface, toward the front.
+    const tx = side * 0.78, ty = -0.6, tz = 0.3, tn = Math.hypot(tx, ty, tz);
     const cosT = (dx * tx + dy * ty + dz * tz) / tn;
-    s += 0.24 * Math.exp(-(1 - cosT) / 0.075) * smooth(0.1, 0.5, lateral);
+    s += 0.22 * Math.exp(-(1 - cosT) / 0.08) * smooth(0.05, 0.5, lateral);
 
-    // Lateral (Sylvian) fissure and central sulcus.
-    const lat = smooth(0.28, 0.7, lateral);
-    const sylvian = Math.abs(dy - (0.13 - 0.3 * dz)) / 1.044;
-    s -= 0.12 * Math.exp(-((sylvian / 0.05) ** 2)) * lat * smooth(-0.55, 0.05, -dz + 0.5);
-    const central = Math.abs(dz - (0.1 - 0.24 * (dy - 0.3))) / 1.03;
-    s -= 0.04 * Math.exp(-((central / 0.045) ** 2)) * smooth(0.15, 0.55, dy) * smooth(0.0, 0.4, lateral);
+    // Lateral (Sylvian) fissure: a groove sloping up toward the back.
+    const lat = smooth(0.25, 0.7, lateral);
+    const syl = Math.abs(dy - (0.05 - 0.28 * dz)) / 1.04;
+    s -= 0.11 * Math.exp(-((syl / 0.055) ** 2)) * lat * smooth(-0.9, -0.1, dz) * smooth(0.9, 0.1, dz);
 
-    // Gyri: sulci are the zero-contours of a domain-warped noise field.
-    const px = dx * 1.6 + off, py = dy * 1.6, pz = dz * 1.6;
-    const wx = px + 0.55 * noise(px * 1.3 + 7.1, py * 1.3, pz * 1.3);
-    const wy = py + 0.55 * noise(px * 1.3, py * 1.3 + 3.7, pz * 1.3);
-    const wz = pz + 0.55 * noise(px * 1.3, py * 1.3, pz * 1.3 + 9.3);
-    const n1 = noise(wx * 2.7, wy * 2.7, wz * 2.7);
-    const n2 = noise(wx * 5.8 + 11.3, wy * 5.8, wz * 5.8);
-    const sulcus1 = Math.exp(-((n1 / 0.11) ** 2));
-    const sulcus2 = Math.exp(-((n2 / 0.14) ** 2)) * 0.55;
-    const foldWeight = smooth(0.02, 0.32, lateral); // keep the medial wall smooth
-    const sulcus = Math.min(1, sulcus1 + sulcus2) * foldWeight;
-    s *= 1 - 0.085 * sulcus;
+    let x = cx + dx * R.x * s;
+    let y = 0.05 + dy * R.y * sy * s;
+    let z = dz * R.z * s;
+    // Rounded valley either side of the longitudinal fissure, so the two hemispheres read from above.
+    y -= 0.075 * (1 - smooth(0.02, 0.32, lateral)) * smooth(-0.3, 0.5, dy);
 
-    positions[i * 3] = centre.x + dx * R.x * s;
-    positions[i * 3 + 1] = centre.y + dy * R.y * sy * s;
-    positions[i * 3 + 2] = dz * R.z * s;
-    folds[i] = 1 - sulcus;
+    // Medial wall: everything past the fissure plane is folded flat onto it (soft-clamped).
+    const m = side * x - FISSURE;
+    const k = 0.09;
+    const soft = m > k ? m : m < -k ? 0 : ((m + k) * (m + k)) / (4 * k);
+    x = side * (FISSURE + soft);
+    const onWall = 1 - smooth(-0.05, 0.12, m);
+
+    // Gyri: tri-planar sample of the height map in normalised object space.
+    let fold = sampleTriplanar(field, x, y, z, dx, dy, dz);
+    fold = fold * (1 - onWall) + 0.7 * onWall; // medial wall stays smooth
+    const disp = 1 + GYRI_AMPLITUDE * (fold - 0.7);
+    positions[i * 3] = cx + (x - cx) * disp;
+    positions[i * 3 + 1] = 0.05 + (y - 0.05) * disp;
+    positions[i * 3 + 2] = z * disp;
+    folds[i] = fold;
   }
   return { positions, indices, folds };
 }
@@ -173,27 +167,26 @@ function cerebellum(detail: number): BrainPart {
   const folds = new Float32Array(count);
   for (let i = 0; i < count; i++) {
     const dx = dirs[i * 3], dy = dirs[i * 3 + 1], dz = dirs[i * 3 + 2];
-    const y0 = -0.46 + dy * 0.2;
-    const stripe = 0.5 + 0.5 * Math.sin(y0 * 78 + dx * 1.5);
-    const s = 1 - 0.028 * stripe;
-    const flat = dy < 0 ? 0.7 : 1;
-    positions[i * 3] = dx * 0.4 * s;
-    positions[i * 3 + 1] = -0.46 + dy * 0.2 * flat * s;
-    positions[i * 3 + 2] = -0.68 + dz * 0.28 * s;
-    folds[i] = 0.25 + 0.4 * (1 - stripe);
+    const stripe = 0.5 + 0.5 * Math.sin(dy * 42 + dx * 2);
+    const s = 1 - 0.03 * stripe;
+    const flat = dy < 0 ? 0.75 : 1;
+    positions[i * 3] = dx * 0.46 * s;
+    positions[i * 3 + 1] = -0.5 + dy * 0.21 * flat * s;
+    positions[i * 3 + 2] = -0.62 + dz * 0.3 * s;
+    folds[i] = 0.3 + 0.5 * (1 - stripe);
   }
   return { positions, indices, folds };
 }
 
 function stem(rings = 28, segments = 20): BrainPart {
   const positions = new Float32Array((rings + 1) * (segments + 1) * 3);
-  const folds = new Float32Array((rings + 1) * (segments + 1)).fill(0.5);
+  const folds = new Float32Array((rings + 1) * (segments + 1)).fill(0.55);
   const indices: number[] = [];
   for (let r = 0; r <= rings; r++) {
     const t = r / rings;
-    const y = -0.4 - t * 0.46;
-    const radius = 0.115 - 0.04 * t + 0.02 * Math.sin(t * Math.PI);
-    const z = -0.14 - t * 0.1;
+    const y = -0.38 - t * 0.5;
+    const radius = 0.13 - 0.045 * t + 0.02 * Math.sin(t * Math.PI);
+    const z = -0.12 - t * 0.12;
     for (let s = 0; s <= segments; s++) {
       const a = (s / segments) * Math.PI * 2;
       const idx = (r * (segments + 1) + s) * 3;
@@ -212,11 +205,23 @@ function stem(rings = 28, segments = 20): BrainPart {
 }
 
 /** detail 6 is the hero quality (about 41k vertices per hemisphere); lower values are for tests and previews. */
-export function buildBrainMesh(detail = 6, seed = 11): BrainMesh {
-  const noise = makeNoise(seed);
+export function buildBrainMesh(field: HeightField, detail = 6): BrainMesh {
   return {
-    hemispheres: [hemisphere(-1, detail, noise), hemisphere(1, detail, noise)],
+    hemispheres: [hemisphere(-1, detail, field), hemisphere(1, detail, field)],
     cerebellum: cerebellum(Math.max(3, detail - 2)),
     stem: stem(),
   };
+}
+
+/** A synthetic, tileable labyrinth-like field for tests and previews (the real one is the shipped PNG). */
+export function syntheticField(size = 64): HeightField {
+  const data = new Float32Array(size * size);
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = (x / size) * Math.PI * 2, v = (y / size) * Math.PI * 2;
+      const w = Math.sin(3 * u + 2 * Math.sin(2 * v)) * Math.cos(2 * v + Math.sin(3 * u));
+      data[y * size + x] = 0.12 + 0.88 * Math.sqrt(Math.min(1, Math.max(0, (w + 0.35) / 0.9)));
+    }
+  }
+  return { size, data };
 }

@@ -236,9 +236,20 @@ describe("3D scene safeguards", () => {
     }
   });
 
-  it("builds the brain from the procedural surface mesh (no external model, texture or loader)", () => {
+  it("builds the brain from the procedural surface mesh and the project's own gyri map (no external model or loader)", () => {
     expect(scene).toContain("buildBrainMesh");
-    expect(scene).not.toMatch(/GLTFLoader|TextureLoader|OBJLoader|FBXLoader|\.glb|\.gltf/);
+    expect(scene).toContain('"/hero/gyri.png"');
+    expect(scene).not.toMatch(/GLTFLoader|OBJLoader|FBXLoader|\.glb|\.gltf/);
+    const gyri = path.join(ROOT, "public/hero/gyri.png");
+    expect(fs.existsSync(gyri)).toBe(true);
+    expect(fs.statSync(gyri).size).toBeLessThan(64 * 1024);
+  });
+
+  it("uses bloom from the three package itself, and switches it off (with the resolution) on weak devices", () => {
+    expect(scene).toContain("three/examples/jsm/postprocessing/UnrealBloomPass.js");
+    expect(scene).toContain("useBloom = false");
+    expect(scene).toContain('host.dataset.bloom = "off"');
+    expect(scene).toContain("renderer.setPixelRatio(1)");
   });
 
   it("card labels are real DOM text, never drawn into the 3D scene", () => {

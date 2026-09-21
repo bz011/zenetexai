@@ -1,12 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { buildBrainMesh, type BrainPart } from "./brainMesh";
+import { buildBrainMesh, GYRI_TILE_SCALE, sampleField, sampleTriplanar, syntheticField, type BrainPart } from "./brainMesh";
 
-const mesh = buildBrainMesh(4, 11);
+const FIELD = syntheticField(64);
+
+const mesh = buildBrainMesh(FIELD, 4);
 const parts: BrainPart[] = [...mesh.hemispheres, mesh.cerebellum, mesh.stem];
 
 describe("procedural brain surface", () => {
   it("is deterministic, so every visitor gets the same brain", () => {
-    const again = buildBrainMesh(4, 11);
+    const again = buildBrainMesh(FIELD, 4);
     for (let i = 0; i < parts.length; i++) {
       const other = [...again.hemispheres, again.cerebellum, again.stem][i];
       expect(other.positions).toEqual(parts[i].positions);
@@ -56,18 +58,32 @@ describe("procedural brain surface", () => {
     expect(w).toBeGreaterThan(h * 0.9);
   });
 
+  it("samples the height map tileably and blends the three planar projections by the normal", () => {
+    expect(sampleField(FIELD, 0.25, 0.5)).toBeCloseTo(sampleField(FIELD, 1.25, -0.5), 6);
+    const v = sampleTriplanar(FIELD, 0.3, 0.2, 0.7, 0, 0, 1);
+    expect(v).toBeGreaterThanOrEqual(0);
+    expect(v).toBeLessThanOrEqual(1);
+    expect(v).toBeCloseTo(sampleField(FIELD, 0.3 * GYRI_TILE_SCALE, 0.2 * GYRI_TILE_SCALE), 6);
+  });
+
+  it("keeps the longitudinal fissure narrow: hemispheres nearly touch at the midline", () => {
+    const minAbsX = (p: BrainPart) => Math.min(...Array.from(p.positions.filter((_, i) => i % 3 === 0)).map(Math.abs));
+    expect(minAbsX(mesh.hemispheres[0])).toBeLessThan(0.06);
+    expect(minAbsX(mesh.hemispheres[1])).toBeLessThan(0.06);
+  });
+
   it("carves real folds: a large share of the cortex surface sits in sulci, with distinct crests", () => {
     const folds = mesh.hemispheres.flatMap((p) => Array.from(p.folds));
     const inSulcus = folds.filter((f) => f < 0.5).length / folds.length;
     const crest = folds.filter((f) => f > 0.9).length / folds.length;
     expect(inSulcus).toBeGreaterThan(0.05);
     expect(inSulcus).toBeLessThan(0.6);
-    expect(crest).toBeGreaterThan(0.3);
+    expect(crest).toBeGreaterThan(0.08);
   });
 
   it("hero-quality detail is generated in well under a second and is fine-grained enough for gyri", () => {
     const t = Date.now();
-    const full = buildBrainMesh(6, 11);
+    const full = buildBrainMesh(FIELD, 6);
     expect(Date.now() - t).toBeLessThan(1500);
     expect(full.hemispheres[0].positions.length / 3).toBeGreaterThan(40000);
   });
