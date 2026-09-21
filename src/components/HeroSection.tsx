@@ -8,7 +8,7 @@ export default function HeroSection() {
   const h = t.hero;
 
   return (
-    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pb-24 pt-32 text-center">
+    <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pb-16 pt-28 text-center md:pb-24 md:pt-32">
 
       {/* ── Backgrounds ─────────────────────────────────────────────────── */}
       <div className="pointer-events-none absolute inset-0">
@@ -36,33 +36,33 @@ export default function HeroSection() {
         {/* Badge */}
         <div className="animate-fade-up mb-8 inline-flex items-center gap-2.5 rounded-full border border-indigo-500/[0.22] bg-indigo-500/[0.07] px-4 py-1.5">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-indigo-400" />
-          <span className="label text-[10px] text-indigo-300/90">{h.badge}</span>
+          <span className="label text-caption text-indigo-300/90">{h.badge}</span>
         </div>
 
         {/* Headline */}
-        <h1 className="animate-fade-up delay-100 text-5xl font-bold leading-[1.08] tracking-tight text-white md:text-6xl lg:text-[76px]">
+        <h1 className="animate-fade-up delay-100 text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-[76px]">
           {h.headline1}
           <br />
           <span className="gradient-text">{h.headline2}</span>
         </h1>
 
         {/* Subheading */}
-        <p className="animate-fade-up delay-200 mx-auto mt-7 max-w-[540px] text-[17px] leading-[1.75] text-slate-400">
+        <p className="animate-fade-up delay-200 mx-auto mt-7 max-w-[540px] text-lead leading-[1.75] text-slate-400">
           {h.sub}
         </p>
 
         {/* CTAs */}
         <div className="animate-fade-up delay-300 mt-10 flex flex-wrap justify-center gap-3">
-          <Link href="/contact" className="btn-primary px-8 py-3.5 text-[14px]">
+          <Link href="/contact" className="btn-primary px-8 py-3.5 text-small">
             {h.cta_primary}
           </Link>
-          <Link href="/services" className="btn-secondary px-8 py-3.5 text-[14px]">
+          <Link href="/services" className="btn-secondary px-8 py-3.5 text-small">
             {h.cta_secondary}
           </Link>
         </div>
 
         {/* Region note */}
-        <p className="animate-fade-up delay-400 mt-9 text-[12px] text-slate-600">
+        <p className="animate-fade-up delay-400 mt-9 text-small text-slate-400">
           {h.region_note}
         </p>
       </div>

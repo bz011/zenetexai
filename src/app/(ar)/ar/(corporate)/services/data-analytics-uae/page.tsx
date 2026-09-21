@@ -18,7 +18,7 @@ export default function Page() {
         serviceDescription="أُطر مؤشرات الأداء وتدقيق البيانات ونمذجتها ولوحات المعلومات وأتمتة التقارير للشركات في الإمارات."
         faq={translations.ar.dataAnalytics.faq}
       />
-      <ServiceLandingContent copyKey="dataAnalytics" />
+      <ServiceLandingContent copyKey="dataAnalytics" visual="analyticsFlow" />
     </>
   );
 }

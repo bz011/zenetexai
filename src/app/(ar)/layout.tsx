@@ -4,6 +4,7 @@ import Providers from "@/components/Providers";
 import JsonLd from "@/components/JsonLd";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/structuredData";
 import { BRAND } from "@/lib/branding";
+import { arabicFont } from "@/lib/fonts";
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://zentexai.com";
 
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 export default function ArabicRootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ar" dir="rtl">
-      <body style={{ backgroundColor: "var(--bg)" }} className="text-slate-200 antialiased">
+      <body style={{ backgroundColor: "var(--bg)" }} className={`${arabicFont.variable} text-slate-200 antialiased`}>
         <JsonLd data={organizationJsonLd()} />
         <JsonLd data={websiteJsonLd()} />
         <Providers>{children}</Providers>

@@ -37,7 +37,7 @@ export default function DataAnalyticsPage() {
         })}
       />
       <JsonLd data={faqJsonLd(dataAnalyticsCopy.en.faq)} />
-      <ServiceLandingContent copyKey="dataAnalytics" />
+      <ServiceLandingContent copyKey="dataAnalytics" visual="analyticsFlow" />
     </>
   );
 }

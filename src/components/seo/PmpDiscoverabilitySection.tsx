@@ -111,7 +111,7 @@ const CONTENT: Record<Variant, Block> = {
 export default function PmpDiscoverabilitySection({ variant, arabicOnly = false }: { variant: Variant; arabicOnly?: boolean }) {
   const c = CONTENT[variant];
   return (
-    <section id={c.id} className="border-t border-white/[0.06] px-6 py-20">
+    <section id={c.id} className="ux-page border-t border-white/[0.06] px-6 py-14 md:py-20">
       {!arabicOnly && <JsonLd data={faqJsonLd(c.faq, "en")} />}
       <JsonLd data={faqJsonLd(c.faqAr, "ar")} />
       <div className={`container-page grid gap-10 ${arabicOnly ? "" : "lg:grid-cols-2"}`}>
@@ -119,16 +119,16 @@ export default function PmpDiscoverabilitySection({ variant, arabicOnly = false 
         <div lang="en" dir="ltr">
           <h2 className="text-2xl font-bold text-white md:text-3xl">{c.h2En}</h2>
           {c.pEn.map((p) => (
-            <p key={p} className="mt-4 text-[15px] leading-relaxed text-slate-400">{p}</p>
+            <p key={p} className="mt-4 text-body leading-relaxed text-slate-400">{p}</p>
           ))}
-          <ul className="mt-5 list-disc space-y-2 pl-5 text-[14px] leading-relaxed text-slate-400">
+          <ul className="mt-5 list-disc space-y-2 pl-5 text-body leading-relaxed text-slate-400">
             {c.bulletsEn.map((b) => <li key={b}>{b}</li>)}
           </ul>
           <div className="mt-8 space-y-5">
             {c.faq.map((f) => (
               <div key={f.q}>
-                <h3 className="text-[15px] font-semibold text-white">{f.q}</h3>
-                <p className="mt-1.5 text-[14px] leading-relaxed text-slate-400">{f.a}</p>
+                <h3 className="text-body font-semibold text-white">{f.q}</h3>
+                <p className="mt-1.5 text-body leading-relaxed text-slate-400">{f.a}</p>
               </div>
             ))}
           </div>
@@ -138,16 +138,16 @@ export default function PmpDiscoverabilitySection({ variant, arabicOnly = false 
         <div lang="ar" dir="rtl">
           <h2 className="text-2xl font-bold text-white md:text-3xl">{c.h2Ar}</h2>
           {c.pAr.map((p) => (
-            <p key={p} className="mt-4 text-[15px] leading-relaxed text-slate-400">{p}</p>
+            <p key={p} className="mt-4 text-body leading-relaxed text-slate-400">{p}</p>
           ))}
-          <ul className="mt-5 list-disc space-y-2 pr-5 text-[14px] leading-relaxed text-slate-400">
+          <ul className="mt-5 list-disc space-y-2 pr-5 text-body leading-relaxed text-slate-400">
             {c.bulletsAr.map((b) => <li key={b}>{b}</li>)}
           </ul>
           <div className="mt-8 space-y-5">
             {c.faqAr.map((f) => (
               <div key={f.q}>
-                <h3 className="text-[15px] font-semibold text-white">{f.q}</h3>
-                <p className="mt-1.5 text-[14px] leading-relaxed text-slate-400">{f.a}</p>
+                <h3 className="text-body font-semibold text-white">{f.q}</h3>
+                <p className="mt-1.5 text-body leading-relaxed text-slate-400">{f.a}</p>
               </div>
             ))}
           </div>
@@ -157,12 +157,12 @@ export default function PmpDiscoverabilitySection({ variant, arabicOnly = false 
       <div className="container-page mt-10">
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center">
           {c.links.map((l) => (
-            <Link key={l.href} href={l.href} className="text-[13px] font-medium text-indigo-400 transition-colors hover:text-indigo-300">
+            <Link key={l.href} href={l.href} className="text-small font-medium text-indigo-400 transition-colors hover:text-indigo-300">
               {arabicOnly ? <span lang="ar">{l.ar}</span> : <>{l.en} · <span lang="ar">{l.ar}</span></>}
             </Link>
           ))}
         </div>
-        <p className="mt-6 text-center text-[11px] text-slate-600">
+        <p className="mt-6 text-center text-caption text-slate-400">
           {!arabicOnly && "PMP is a registered mark of Project Management Institute, Inc. ZentexAI is an independent training provider. · "}
           <span lang="ar">PMP علامة مسجلة لمعهد إدارة المشاريع (PMI). ZentexAI جهة تدريب مستقلة.</span>
         </p>

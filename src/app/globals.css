@@ -31,6 +31,7 @@
     --surface: rgba(255,255,255,0.03);
     --border: rgba(255,255,255,0.07);
     --border-hover: rgba(255,255,255,0.14);
+    --type-scale: 1;
   }
 
   html {
@@ -47,7 +48,8 @@
 
   /* Arabic typography */
   [dir="rtl"] {
-    font-family: "Segoe UI", "Helvetica Neue", Arial,
+    --type-scale: 1.06;
+    font-family: var(--font-arabic), "Segoe UI", "Helvetica Neue", Arial,
       "Noto Sans Arabic", "Cairo", "Tajawal", sans-serif;
     letter-spacing: 0;
   }
@@ -151,6 +153,28 @@
   /* ── Ghost link ── */
   .btn-ghost {
     @apply text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300;
+  }
+
+  /* ── Marketing-page readability (opt-in via .ux-page on a page root) ──
+     Larger touch-friendly buttons, a readable eyebrow label, and looser
+     Arabic line height. Scoped so exam runners and other app screens keep
+     their existing density. */
+  .ux-page .btn-primary,
+  .ux-page .btn-secondary {
+    @apply min-h-[2.75rem] px-6 py-3 text-[0.9375rem];
+  }
+  .ux-page .label {
+    @apply text-xs;
+  }
+  [dir="rtl"] .ux-page .label {
+    font-size: 0.8125rem;
+  }
+  [dir="rtl"] .ux-page .leading-relaxed {
+    line-height: 1.9;
+  }
+  [dir="rtl"] .ux-page h1,
+  [dir="rtl"] .ux-page h2 {
+    line-height: 1.4;
   }
 
   /* ── RTL helper ── */

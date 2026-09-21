@@ -18,7 +18,7 @@ export default function Page() {
         serviceDescription="لوحات معلومات ونماذج بيانات Power BI وإعداد التحديث والوصول ومراجعة التقارير والتدريب للشركات في الإمارات."
         faq={translations.ar.powerBi.faq}
       />
-      <ServiceLandingContent copyKey="powerBi" />
+      <ServiceLandingContent copyKey="powerBi" visual="dashboardSketch" />
     </>
   );
 }
