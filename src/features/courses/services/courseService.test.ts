@@ -94,7 +94,7 @@ describe("getPublicCurriculumOutline - safe when called with the RLS-bypassing a
   });
 
   it("is read with the admin client on the public product page, since anonymous RLS returns nothing", () => {
-    const src = fs.readFileSync(path.resolve(__dirname, "../../../app/(en)/(academy)/courses/[courseSlug]/page.tsx"), "utf8");
+    const src = fs.readFileSync(path.resolve(__dirname, "../../../app/(en)/(academy)/courses/[courseSlug]/ProductPageBody.tsx"), "utf8");
     expect(src).toContain("getPublicCurriculumOutline(supabaseAdmin, courseSlug)");
     expect(src).not.toContain("getPublicCurriculumOutline(supabase,");
   });

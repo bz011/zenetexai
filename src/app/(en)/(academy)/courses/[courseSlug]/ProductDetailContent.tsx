@@ -7,6 +7,7 @@ import type { PublicCurriculumModule } from "@/features/courses/services/courseS
 import { formatMoney } from "@/features/commerce/utils/money";
 import EnrollFreeButton from "@/features/commerce/components/EnrollFreeButton";
 import BuyNowButton from "@/features/commerce/components/BuyNowButton";
+import { SimulatorHero, SimulatorDetails } from "@/features/commerce/components/SimulatorSalesSections";
 
 interface Props {
   product: ProductWithPricing;
@@ -28,6 +29,8 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
 
   const totalLessons = curriculum.reduce((sum, mod) => sum + mod.lessons.length, 0);
 
+  // The simulator page has its own benefit-led sales sections (SimulatorSalesSections) in place of the generic overview / "what's included" blocks.
+  const isSimulator = product.slug === "pmp-exam-simulator";
   const hasCourse = product.capabilities.includes("course:pmp");
   const hasPractice = product.capabilities.includes("practice:pmp");
   const hasMockExam = product.capabilities.includes("mock_exam:pmp");
@@ -43,13 +46,21 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
       <div className="pointer-events-none absolute left-1/2 top-0 h-[350px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/[0.08] blur-[100px]" />
 
       <div className="container-page relative max-w-3xl">
-        <span className="label">{product.type}</span>
-        <h1 className="mt-3 text-3xl font-bold text-white">{title}</h1>
-        {description && <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-slate-400">{description}</p>}
+        {isSimulator ? (
+          <SimulatorHero product={product} />
+        ) : (
+          <>
+            <span className="label">{product.type}</span>
+            <h1 className="mt-3 text-3xl font-bold text-white">{title}</h1>
+            {description && <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-slate-400">{description}</p>}
+          </>
+        )}
 
         <div className="mt-8 grid gap-6 md:grid-cols-[1fr_320px]">
           <div className="space-y-8">
-            {description && (
+            {isSimulator && <SimulatorDetails />}
+
+            {description && !isSimulator && (
               <section>
                 <h2 className="text-[15px] font-semibold text-white">{p.overview_heading}</h2>
                 <p className="mt-2 text-[14px] leading-relaxed text-slate-400">{description}</p>
@@ -123,7 +134,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
               </section>
             )}
 
-            {capabilityLabels.length > 0 && (
+            {capabilityLabels.length > 0 && !isSimulator && (
               <section>
                 <h2 className="text-[15px] font-semibold text-white">{p.included_heading}</h2>
                 <ul className="mt-3 space-y-2">
@@ -180,7 +191,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
             )}
           </div>
 
-          <aside className="card h-fit space-y-5 p-6">
+          <aside id="purchase" className="card h-fit space-y-5 p-6">
             <div>
               <h2 className="text-[13px] font-semibold text-slate-400">{p.pricing_heading}</h2>
               {price ? (

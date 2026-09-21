@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { alternatesFor, toArabicPath, type SiteLang } from "./i18nRoutes";
+import { simulatorMetadataText } from "./simulatorPageCopy";
 
 /** Arabic <title>/<meta description> for each page that has an Arabic URL. Keyed by the page's ENGLISH path. */
 export const ARABIC_SEO: Record<string, { title: string; description: string }> = {
@@ -18,6 +19,7 @@ export const ARABIC_SEO: Record<string, { title: string; description: string }> 
     description:
       "تصفّح محاكي اختبار PMP وبرنامج PMP Mastery من أكاديمية ZentexAI: أسئلة تدريب بالعربية والإنجليزية، ووضع تدريب قابل للتصفية، واختبارات تجريبية كاملة بوقت محدد.",
   },
+  "/courses/pmp-exam-simulator": simulatorMetadataText("ar"),
   "/services": {
     title: "حلول الذكاء الاصطناعي والأتمتة والاستشارات للشركات في الإمارات — ZentexAI",
     description:

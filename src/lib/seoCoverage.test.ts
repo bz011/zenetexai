@@ -2,7 +2,20 @@ import { describe, it, expect, vi } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 
-vi.mock("@/lib/supabase/admin", () => ({ supabaseAdmin: { from: () => ({ select: () => ({ eq: async () => ({ data: [] }) }) }) } }));
+vi.mock("@/lib/supabase/admin", () => ({
+  supabaseAdmin: {
+    from: () => ({
+      select: () => ({
+        eq: async () => ({
+          data: [
+            { slug: "pmp-exam-simulator", updated_at: null },
+            { slug: "pmp-mastery-program", updated_at: null },
+          ],
+        }),
+      }),
+    }),
+  },
+}));
 vi.mock("@/lib/posts", () => ({ fetchPublishedPosts: async () => [] }));
 
 import sitemap from "@/app/sitemap";
@@ -126,7 +139,7 @@ import { ARABIC_SEO, arabicMetadata } from "./arabicSeo";
 
 function arabicPageFile(enPath: string): string {
   const rel = enPath === "/" ? "" : enPath;
-  const group = enPath === "/academy" || enPath === "/courses" ? "(academy)" : "(corporate)";
+  const group = enPath === "/academy" || enPath.startsWith("/courses") ? "(academy)" : "(corporate)";
   return path.join(ROOT, "src/app/(ar)/ar", group, rel, "page.tsx");
 }
 
@@ -180,6 +193,7 @@ describe("Arabic URLs: sitemap, hreflang, metadata", () => {
       const enFile = p === "/" ? "src/app/(en)/(corporate)/page.tsx"
         : p === "/academy" ? "src/app/(en)/(academy)/academy/page.tsx"
         : p === "/courses" ? "src/app/(en)/(academy)/courses/page.tsx"
+        : p.startsWith("/courses/") ? "src/app/(en)/(academy)/courses/[courseSlug]/page.tsx"
         : `src/app/(en)/(corporate)${p}/page.tsx`;
       const src = fs.readFileSync(path.join(ROOT, enFile), "utf8");
       expect(src, enFile).toContain("alternatesFor(");

@@ -33,7 +33,13 @@ describe("ProductCard on /ar/courses", () => {
     expect(html).toContain("محاكي اختبار PMP");
     expect(html).toContain("وصف بالعربية");
     expect(html).not.toContain("English description");
-    expect(html).toContain('href="/courses/pmp-exam-simulator"');
+    // The simulator has a dedicated Arabic page, so Arabic readers are linked to it.
+    expect(html).toContain('href="/ar/courses/pmp-exam-simulator"');
+  });
+
+  it("links to the English product page for products with no Arabic version", () => {
+    const html = render("/ar/courses", product({ slug: "pmp-mastery-program", type: "course" }));
+    expect(html).toContain('href="/courses/pmp-mastery-program"');
   });
 
   it("falls back safely to the English text when the Arabic fields are empty", () => {

@@ -95,5 +95,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("[sitemap] failed to load posts:", (err as Error).message);
   }
 
-  return [...staticEntries, ...productEntries, ...postEntries];
+  return [...staticEntries, ...withArabicVersions(productEntries), ...postEntries];
 }

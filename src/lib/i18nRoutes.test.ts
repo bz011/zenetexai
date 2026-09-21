@@ -43,6 +43,8 @@ describe("i18nRoutes", () => {
     expect(resolveRouteLocale("/about").mirrored).toBe(false);
     expect(resolveRouteLocale("/pmp/mock-exam/abc").mirrored).toBe(false);
     expect(resolveRouteLocale("/courses/pmp-mastery-program").mirrored).toBe(false);
+    expect(resolveRouteLocale("/ar/courses/pmp-exam-simulator")).toEqual({ mirrored: true, locale: "ar", enPath: "/courses/pmp-exam-simulator" });
+    expect(resolveRouteLocale("/ar/courses/pmp-mastery-program").mirrored).toBe(false);
     expect(resolveRouteLocale("/ar/about").mirrored).toBe(false);
   });
 

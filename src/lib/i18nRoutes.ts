@@ -17,6 +17,8 @@ export const ARABIC_EQUIVALENT_PATHS = [
   "/",
   "/academy",
   "/courses",
+  // PMP Exam Simulator product page (dedicated Arabic sales page).
+  "/courses/pmp-exam-simulator",
   "/services",
   "/services/ai-agents-automation-uae",
   "/services/whatsapp-automation-uae",
