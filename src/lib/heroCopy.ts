@@ -1,5 +1,5 @@
 /**
- * Labels for the homepage hero's service cards. Titles are the site's own
+ * Labels for the homepage hero's service navigation. Titles are the site's own
  * product / service names; the one-line descriptions restate what each
  * destination page already says. No statistics, results, guarantees or
  * customer claims (none of the reference image's numbers are used).
@@ -48,15 +48,9 @@ const ar: HeroCopy = {
 export const heroCopy = { en, ar };
 
 /**
- * Desktop stage layout, as percentages of the stage box (aspect 10:9; the
- * cinematic video fills its lower ~93 %, the brain sits at x 25-75 %, y 14-63 %).
- * `x`/`y` is the card centre. One card above the brain, two on each side, all
- * the same size, clear of the brain. Mirrored automatically in RTL.
+ * The hero's slim service navigation lists only the destinations the sections
+ * further down the homepage do not already link to (AI Agents & Automation and
+ * Machine Learning are linked from the Core Services cards), so no link is
+ * duplicated on the page.
  */
-export const HERO_CARD_POSITIONS: Record<HeroCardId, { x: number; y: number }> = {
-  pmp: { x: 50, y: 5.5 },
-  agents: { x: 11, y: 30 },
-  data: { x: 11, y: 55 },
-  simulator: { x: 89, y: 30 },
-  ml: { x: 89, y: 55 },
-};
+export const HERO_NAV_IDS: HeroCardId[] = ["pmp", "simulator", "data"];

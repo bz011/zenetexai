@@ -11,7 +11,7 @@ vi.mock("next/link", () => ({
 }));
 
 import { LanguageProvider } from "./LanguageContext";
-import { HERO_CARD_POSITIONS, heroCopy } from "./heroCopy";
+import { HERO_NAV_IDS, heroCopy } from "./heroCopy";
 import { localizeHref } from "./i18nRoutes";
 import HeroSection from "@/components/HeroSection";
 
@@ -28,7 +28,7 @@ describe("hero service cards", () => {
   it("has the same five cards, in the same order and with the same routes, in English and Arabic", () => {
     expect(heroCopy.ar.cards.map((c) => [c.id, c.href])).toEqual(heroCopy.en.cards.map((c) => [c.id, c.href]));
     expect(heroCopy.en.cards.map((c) => c.id)).toEqual(["pmp", "simulator", "agents", "data", "ml"]);
-    expect(Object.keys(HERO_CARD_POSITIONS).sort()).toEqual(heroCopy.en.cards.map((c) => c.id).sort());
+    expect(HERO_NAV_IDS).toEqual(["pmp", "simulator", "data"]);
     for (const c of heroCopy.ar.cards) expect(c.title + c.desc).toMatch(/[؀-ۿ]/);
   });
 
@@ -64,11 +64,13 @@ describe("hero server-rendered HTML", () => {
     expect(html).toContain("Practical AI.");
     expect(html).toContain('href="/contact"');
     expect(html).toContain('href="/services"');
-    for (const c of heroCopy.en.cards) {
+    for (const c of heroCopy.en.cards.filter((x) => HERO_NAV_IDS.includes(x.id))) {
       expect(html, c.href).toContain(`href="${c.href}"`);
       expect(html, c.title).toContain(c.title.replace(/&/g, "&amp;"));
       expect(html, c.desc).toContain(c.desc);
     }
+    // The two destinations the Core Services section below already links to are not repeated in the hero.
+    for (const c of heroCopy.en.cards.filter((x) => !HERO_NAV_IDS.includes(x.id))) expect(html, c.href).not.toContain(`href="${c.href}"`);
     expect(html).toContain(`aria-label="${heroCopy.en.cardsLabel}"`);
     expect(html).not.toContain("<canvas");
     expect(html).not.toContain("<video");
@@ -80,7 +82,7 @@ describe("hero server-rendered HTML", () => {
 
   it("Arabic: same structure with Arabic labels and Arabic URLs, and no English card text", () => {
     const html = render("/ar");
-    for (const c of heroCopy.ar.cards) {
+    for (const c of heroCopy.ar.cards.filter((x) => HERO_NAV_IDS.includes(x.id))) {
       expect(html, c.title).toContain(c.title);
       expect(html, c.href).toContain(`href="${localizeHref(c.href, "ar")}"`);
     }
@@ -97,49 +99,26 @@ describe("hero server-rendered HTML", () => {
   });
 });
 
-describe("hero stage layout (desktop)", () => {
-  // Card box in stage percentages: width from HeroStage (25%), height about 17% of the stage.
-  const W = 25, H = 17;
-  const rect = (id: keyof typeof HERO_CARD_POSITIONS) => {
-    const { x, y } = HERO_CARD_POSITIONS[id];
-    const w = id === "pmp" ? 36 : W; // the top card is wider (36 %) because the space above the brain is wide
-    return { l: x - w / 2, r: x + w / 2, t: y - H / 2, b: y + H / 2 };
-  };
-  const ids = Object.keys(HERO_CARD_POSITIONS) as (keyof typeof HERO_CARD_POSITIONS)[];
+describe("hero service navigation", () => {
+  const trans = read("src/lib/translations.ts");
+  const nav = read("src/components/hero/HeroServiceNav.tsx");
 
-  it("is symmetric: one card above the brain and two on each side, all the same height", () => {
-    expect(HERO_CARD_POSITIONS.pmp.x).toBe(50);
-    expect(HERO_CARD_POSITIONS.agents.x + HERO_CARD_POSITIONS.simulator.x).toBe(100);
-    expect(HERO_CARD_POSITIONS.data.x + HERO_CARD_POSITIONS.ml.x).toBe(100);
-    expect(HERO_CARD_POSITIONS.agents.y).toBe(HERO_CARD_POSITIONS.simulator.y);
-    expect(HERO_CARD_POSITIONS.data.y).toBe(HERO_CARD_POSITIONS.ml.y);
+  it("lists only destinations the rest of the homepage does not link to, so nothing is duplicated", () => {
+    const below = heroCopy.en.cards.filter((c) => !HERO_NAV_IDS.includes(c.id));
+    expect(below.map((c) => c.id)).toEqual(["agents", "ml"]);
+    for (const c of below) expect(trans, c.href).toContain(`learnMoreHref: "${c.href}"`); // linked from the Core Services cards
+    for (const c of heroCopy.en.cards.filter((x) => HERO_NAV_IDS.includes(x.id))) expect(trans, c.href).not.toContain(`learnMoreHref: "${c.href}"`);
   });
 
-  it("keeps every card inside the stage and no two cards overlapping", () => {
-    for (const id of ids) {
-      const c = rect(id);
-      expect(c.l, id).toBeGreaterThanOrEqual(-3); // side cards may reach up to 3 % into the grid gap
-      expect(c.r, id).toBeLessThanOrEqual(103);
-      expect(c.t, id).toBeGreaterThanOrEqual(-4);
-    }
-    for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
-      const a = rect(ids[i]), b = rect(ids[j]);
-      const overlap = !(a.r <= b.l || a.l >= b.r || a.b <= b.t || a.t >= b.b);
-      expect(overlap, `${ids[i]} vs ${ids[j]}`).toBe(false);
-    }
-  });
-
-  it("leaves the brain (x 25-75 %, from y 14 %) clear: side cards stay outside its columns and the top card stays above it", () => {
-    for (const id of ["agents", "data", "simulator", "ml"] as const) {
-      const c = rect(id);
-      expect(c.r <= 26 || c.l >= 74, id).toBe(true);
-    }
-    expect(rect("pmp").b).toBeLessThanOrEqual(16);
+  it("is a real <nav> of real links (LocaleLink), no floating cards, no absolute positioning", () => {
+    expect(nav).toContain("<nav aria-label=");
+    expect(nav).toContain("<LocaleLink");
+    expect(nav).not.toMatch(/absolute|HERO_CARD_POSITIONS/);
   });
 });
 
 describe("approved cinematic video", () => {
-  const stage = read("src/components/hero/HeroStage.tsx");
+  const stage = read("src/components/hero/HeroMedia.tsx");
   const kb = (f: string) => fs.statSync(path.join(ROOT, f)).size / 1024;
 
   it("ships the approved loop as WebM and MP4 plus two stills, all modest in size", () => {
@@ -167,6 +146,8 @@ describe("approved cinematic video", () => {
     expect(stage).toContain('src="/hero/brain-poster-sm.webp"');
     expect(stage).toContain("width={620}");
     expect(stage).toContain("aspect-[1240/1040]");
+    expect(stage).toContain("maskComposite"); // edge-less blend, not a box
+    expect(stage).toContain("mixBlendMode: \"lighten\"");
   });
 
   it("pauses off-screen and in hidden tabs, and gives visitors a labelled pause control", () => {
@@ -174,8 +155,31 @@ describe("approved cinematic video", () => {
     expect(heroCopy.ar.pauseLabel).toMatch(/[؀-ۿ]/);
   });
 
-  it("keeps the service cards as real links and contains no canvas or three.js", () => {
-    expect(stage).toContain("<LocaleLink");
+  it("makes sure the muted attribute exists (React only sets the property) and handles a refused autoplay by keeping the still", () => {
+    expect(stage).toContain("el.defaultMuted = true");
+    expect(stage).toContain("el.muted = true");
+    expect(stage).toContain('"NotAllowedError"');
+    expect(stage).toContain("setBlocked(true)");
+    expect(stage).toContain("\"blocked\"");
+    expect(stage).toContain('type=\'video/webm; codecs="vp9"\'');
+  });
+
+  it("keeps the last frame when paused, and only fades the video in once it is really playing", () => {
+    expect(stage).toContain('started ? "opacity-100" : "opacity-0"');
+    expect(stage).toContain('addEventListener("playing", onStarted)');
+  });
+
+  it("the pause control is discreet (hidden until the stage is hovered or the control is focused) but stays in the tab order", () => {
+    const btn = stage.slice(stage.indexOf("<button"), stage.indexOf("</button>"));
+    expect(btn).toContain("opacity-0");
+    expect(btn).toContain("focus-visible:opacity-100");
+    expect(btn).toContain("group-hover:opacity-70");
+    expect(btn).not.toMatch(/sr-only|hidden lg:flex[^"]*invisible|tabIndex|display:\s*none/);
+    expect(btn).toContain("aria-label");
+    expect(stage).toContain("{videoOn && started && (");
+  });
+
+  it("contains no canvas or three.js", () => {
     expect(stage).not.toMatch(/three|<canvas|WebGL/i);
     const pkg = JSON.parse(read("package.json"));
     expect(pkg.dependencies.three).toBeUndefined();
