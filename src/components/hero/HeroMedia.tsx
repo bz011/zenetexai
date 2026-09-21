@@ -5,10 +5,10 @@ import { useLang } from "@/lib/LanguageContext";
 import { heroCopy } from "@/lib/heroCopy";
 
 // The clip's own border is near-black navy with blue city haze, a few levels off the page colour. Wide, eased fades on the
-// sides and top (and a short one on the dark floor at the bottom) make every edge fully transparent, so nothing reads as a
-// box, while the brain and the pedestal stay in the solid core; "lighten" blending lets the page show through the dark parts.
+// sides and top (and a short one on the dark floor at the bottom) make every edge fully transparent, so the scene melts
+// into the hero background and nothing reads as a box.
 const EDGE_FADE = "linear-gradient(to right, transparent, rgba(0,0,0,.12) 4%, rgba(0,0,0,.4) 9%, rgba(0,0,0,.75) 14%, rgba(0,0,0,.95) 19%, #000 24%, #000 80%, rgba(0,0,0,.95) 84%, rgba(0,0,0,.75) 88%, rgba(0,0,0,.4) 92%, rgba(0,0,0,.12) 96%, transparent), linear-gradient(to bottom, transparent, rgba(0,0,0,.2) 4%, rgba(0,0,0,.6) 8%, rgba(0,0,0,.92) 13%, #000 18%, #000 92%, rgba(0,0,0,.5) 96.5%, transparent)";
-const MEDIA_STYLE = { maskImage: EDGE_FADE, WebkitMaskImage: EDGE_FADE, maskComposite: "intersect", WebkitMaskComposite: "source-in", mixBlendMode: "lighten" } as const;
+const MEDIA_STYLE = { maskImage: EDGE_FADE, WebkitMaskImage: EDGE_FADE, maskComposite: "intersect", WebkitMaskComposite: "source-in" } as const;
 
 type SaveDataNav = Navigator & { connection?: { saveData?: boolean; effectiveType?: string } };
 
@@ -125,11 +125,18 @@ export default function HeroMedia() {
   return (
     <div
       ref={stageRef}
-      className="group pointer-events-none relative mx-auto mt-2 aspect-[1240/1040] w-full max-w-[440px] lg:pointer-events-auto lg:mx-0 lg:mt-0 lg:ms-auto lg:-me-[6%] lg:w-[min(118%,calc((100svh-15rem)*1.19))] lg:min-w-[34rem] lg:max-w-none"
+      className="pointer-events-none relative mx-auto mt-4 aspect-[1240/1040] w-full max-w-[560px] lg:absolute lg:inset-x-0 lg:bottom-[7rem] lg:top-[4.5rem] lg:mx-0 lg:mt-0 lg:aspect-auto lg:max-w-none"
       data-hero-state={state}
       data-hero-media
     >
-      <div className="pointer-events-none absolute inset-0" style={MEDIA_STYLE}>
+      {/* Desktop only: an ambient glow and a soft dark wash behind the text column, both feathered so no vertical seam appears. */}
+      <div aria-hidden="true" className="absolute top-1/2 hidden aspect-[1.5] h-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/[0.13] blur-[120px] [inset-inline-start:78%] xl:[inset-inline-start:69%] rtl:translate-x-1/2 lg:block" />
+
+      <div
+        className="absolute inset-0 lg:inset-auto lg:top-1/2 lg:h-[94%] xl:h-[100%] lg:w-auto lg:aspect-[1240/1040] lg:-translate-x-1/2 lg:-translate-y-1/2 lg:[inset-inline-start:78%] xl:[inset-inline-start:69%] lg:rtl:translate-x-1/2"
+        style={MEDIA_STYLE}
+        data-hero-art
+      >
         <picture>
           <source media="(min-width: 1024px)" srcSet="/hero/brain-poster.webp" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -156,13 +163,15 @@ export default function HeroMedia() {
         )}
       </div>
 
+      <div aria-hidden="true" className="absolute inset-y-0 hidden w-[68%] [-webkit-mask-image:linear-gradient(to_bottom,transparent,#000_22%,#000_78%,transparent)] [mask-image:linear-gradient(to_bottom,transparent,#000_22%,#000_78%,transparent)] bg-[linear-gradient(to_right,rgba(6,11,24,.95),rgba(6,11,24,.72)_38%,transparent)] [inset-inline-start:0] rtl:bg-[linear-gradient(to_left,rgba(6,11,24,.95),rgba(6,11,24,.72)_38%,transparent)] lg:block" />
+
       {videoOn && started && (
         <button
           type="button"
           onClick={() => setUserPaused((p) => !p)}
           aria-label={userPaused ? copy.playLabel : copy.pauseLabel}
           aria-pressed={userPaused}
-          className="pointer-events-auto absolute bottom-[7%] end-[10%] z-20 hidden h-8 w-8 items-center justify-center rounded-full border border-sky-300/20 bg-slate-950/40 text-sky-100/70 opacity-0 backdrop-blur-sm transition-opacity duration-200 hover:text-white focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 group-hover:opacity-70 group-hover:hover:opacity-100 lg:flex"
+          className="pointer-events-auto absolute bottom-20 z-20 hidden h-8 w-8 items-center justify-center rounded-full border border-sky-300/20 bg-slate-950/40 text-sky-100/70 opacity-0 backdrop-blur-sm transition-opacity duration-200 [inset-inline-end:1.5rem] hover:text-white focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 group-hover/hero:opacity-70 group-hover/hero:hover:opacity-100 lg:flex"
         >
           <svg aria-hidden="true" viewBox="0 0 20 20" width="12" height="12" fill="currentColor">
             {userPaused ? <path d="M6 4l10 6-10 6V4z" /> : <path d="M5 4h3.5v12H5zM11.5 4H15v12h-3.5z" />}

@@ -17,13 +17,13 @@ export default function HeroServiceNav() {
   const copy = heroCopy[lang];
   const items = copy.cards.filter((c) => HERO_NAV_IDS.includes(c.id));
   return (
-    <nav aria-label={copy.cardsLabel} className="relative mt-8 lg:mt-2">
-      <ul className="grid gap-3 md:grid-cols-3 md:gap-0 md:rounded-2xl md:border md:border-white/[0.08] md:bg-slate-950/40 md:backdrop-blur-md md:[&>li+li]:border-s md:[&>li+li]:border-white/[0.08]">
+    <nav aria-label={copy.cardsLabel} className="relative z-10 mt-8 lg:mt-6">
+      <ul className="mx-auto grid max-w-[640px] gap-3 lg:mx-0 lg:max-w-none lg:grid-cols-3 lg:gap-0 lg:rounded-2xl lg:border lg:border-white/[0.08] lg:bg-slate-950/40 lg:backdrop-blur-md lg:[&>li+li]:border-s lg:[&>li+li]:border-white/[0.08]">
         {items.map((card) => (
           <li key={card.id}>
             <LocaleLink
               href={card.href}
-              className="group flex h-full items-center gap-3.5 rounded-2xl border border-white/[0.08] bg-slate-950/40 p-4 transition-colors hover:bg-sky-400/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 md:rounded-none md:border-0 md:bg-transparent md:px-6 md:py-5 md:first:rounded-s-2xl md:last:rounded-e-2xl"
+              className="group flex h-full items-center gap-3.5 rounded-2xl border border-white/[0.08] bg-slate-950/40 p-4 transition-colors hover:bg-sky-400/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 lg:rounded-none lg:border-0 lg:bg-transparent lg:px-6 lg:py-5 lg:first:rounded-s-2xl lg:last:rounded-e-2xl"
             >
               <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400/30 to-indigo-500/20 text-sky-100 ring-1 ring-sky-300/25">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{ICONS[card.id]}</svg>

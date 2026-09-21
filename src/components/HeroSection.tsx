@@ -10,7 +10,7 @@ export default function HeroSection() {
   const h = t.hero;
 
   return (
-    <section className="relative overflow-hidden px-6 pb-14 pt-20 md:pb-20 md:pt-32 lg:flex lg:min-h-[calc(100svh-4rem)] lg:items-center lg:pb-10 lg:pt-16">
+    <section className="group/hero relative overflow-hidden px-6 pb-10 pt-20 md:pb-14 md:pt-28 lg:flex lg:min-h-[calc(100svh-4rem)] lg:flex-col lg:justify-center lg:pb-6 lg:pt-16">
       {/* ── Backgrounds ─────────────────────────────────────────────────── */}
       <div className="pointer-events-none absolute inset-0">
         {/* Primary glow — large, centered */}
@@ -32,8 +32,7 @@ export default function HeroSection() {
       />
 
       {/* ── Content ─────────────────────────────────────────────────────── */}
-      <div className="container-page relative z-[1]" style={{ maxWidth: 1360 }}>
-       <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-0">
+      <div className="container-page" style={{ maxWidth: 1360 }}>
         <div className="relative z-10 mx-auto max-w-[720px] text-center lg:mx-0 lg:max-w-[560px] lg:text-start">
 
           {/* Badge */}
@@ -71,7 +70,6 @@ export default function HeroSection() {
         </div>
 
         <HeroMedia />
-       </div>
         <HeroServiceNav />
       </div>
 

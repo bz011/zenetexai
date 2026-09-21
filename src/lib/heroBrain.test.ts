@@ -147,7 +147,8 @@ describe("approved cinematic video", () => {
     expect(stage).toContain("width={620}");
     expect(stage).toContain("aspect-[1240/1040]");
     expect(stage).toContain("maskComposite"); // edge-less blend, not a box
-    expect(stage).toContain("mixBlendMode: \"lighten\"");
+    expect(stage).not.toContain("mixBlendMode"); // no blend mode: avoids compositing quirks that can affect the fixed header/logo
+    expect(stage).toContain("lg:absolute lg:inset-x-0"); // full-width background layer behind the text, not a column
   });
 
   it("pauses off-screen and in hidden tabs, and gives visitors a labelled pause control", () => {
@@ -173,7 +174,7 @@ describe("approved cinematic video", () => {
     const btn = stage.slice(stage.indexOf("<button"), stage.indexOf("</button>"));
     expect(btn).toContain("opacity-0");
     expect(btn).toContain("focus-visible:opacity-100");
-    expect(btn).toContain("group-hover:opacity-70");
+    expect(btn).toContain("group-hover/hero:opacity-70");
     expect(btn).not.toMatch(/sr-only|hidden lg:flex[^"]*invisible|tabIndex|display:\s*none/);
     expect(btn).toContain("aria-label");
     expect(stage).toContain("{videoOn && started && (");
