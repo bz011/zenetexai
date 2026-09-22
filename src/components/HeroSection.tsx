@@ -42,14 +42,14 @@ export default function HeroSection() {
           </div>
 
           {/* Headline */}
-          <h1 className="animate-fade-up delay-100 text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[52px] min-[1360px]:text-[60px]">
+          <h1 className="animate-fade-up delay-100 [filter:drop-shadow(0_0_14px_rgba(6,11,24,.85))] text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[52px] min-[1360px]:text-[60px]">
             {h.headline1}
             <br />
             <span className="gradient-text">{h.headline2}</span>
           </h1>
 
           {/* Subheading */}
-          <p className="animate-fade-up delay-200 mx-auto mt-7 max-w-[540px] text-lead leading-[1.75] text-slate-400 lg:mx-0">
+          <p className="animate-fade-up delay-200 [text-shadow:0_0_16px_rgba(6,11,24,.95),0_1px_2px_rgba(6,11,24,.8)] mx-auto mt-7 max-w-[540px] text-lead leading-[1.75] text-slate-400 lg:mx-0">
             {h.sub}
           </p>
 
@@ -64,7 +64,7 @@ export default function HeroSection() {
           </div>
 
           {/* Region note */}
-          <p className="animate-fade-up delay-400 mt-6 text-small lg:mt-9 text-slate-400">
+          <p className="animate-fade-up delay-400 [text-shadow:0_0_14px_rgba(6,11,24,.95),0_1px_2px_rgba(6,11,24,.8)] mt-6 text-small lg:mt-9 text-slate-400">
             {h.region_note}
           </p>
         </div>

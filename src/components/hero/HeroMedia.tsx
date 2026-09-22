@@ -4,19 +4,18 @@ import { useCallback, useEffect, useRef, useState, type ReactElement } from "rea
 import { useLang } from "@/lib/LanguageContext";
 import { heroCopy } from "@/lib/heroCopy";
 
-// The clip's own border is near-black navy with blue city haze, a few levels off the page colour. Wide, eased fades on the
-// sides and top (and a short one on the dark floor at the bottom) make every edge fully transparent, so the scene melts
-// into the hero background and nothing reads as a box.
-const EDGE_FADE = "linear-gradient(to right, transparent, rgba(0,0,0,.12) 4%, rgba(0,0,0,.4) 9%, rgba(0,0,0,.75) 14%, rgba(0,0,0,.95) 19%, #000 24%, #000 80%, rgba(0,0,0,.95) 84%, rgba(0,0,0,.75) 88%, rgba(0,0,0,.4) 92%, rgba(0,0,0,.12) 96%, transparent), linear-gradient(to bottom, transparent, rgba(0,0,0,.2) 4%, rgba(0,0,0,.6) 8%, rgba(0,0,0,.92) 13%, #000 18%, #000 92%, rgba(0,0,0,.5) 96.5%, transparent)";
-const MEDIA_STYLE = { maskImage: EDGE_FADE, WebkitMaskImage: EDGE_FADE, maskComposite: "intersect", WebkitMaskComposite: "source-in" } as const;
+// Desktop: the scene is the hero background, edge to edge, so it needs no mask. Phones get a still of the same scene whose
+// edges dissolve into the page (fade classes below, switched off from lg up).
+const MOBILE_FADE =
+  "[mask-image:linear-gradient(to_right,transparent,#000_12%,#000_88%,transparent),linear-gradient(to_bottom,transparent,#000_14%,#000_86%,transparent)] [mask-composite:intersect] [-webkit-mask-image:linear-gradient(to_right,transparent,#000_12%,#000_88%,transparent),linear-gradient(to_bottom,transparent,#000_14%,#000_86%,transparent)] [-webkit-mask-composite:source-in] lg:[mask-image:none] lg:[-webkit-mask-image:none]";
 
 type SaveDataNav = Navigator & { connection?: { saveData?: boolean; effectiveType?: string } };
 
 /**
- * The hero's cinematic brain: a pre-rendered, looping, muted video laid into the
- * hero background (no box: an elliptical fade and lighten blending). The poster image is what every visitor sees first; the video is only
- * fetched on desktop-sized screens, without a reduced-motion preference and
- * without data-saver, so phones and reduced-motion users never download it.
+ * The hero's background scene: a pre-rendered, looping, muted video of the approved
+ * brain and pedestal over a full-width city skyline, laid edge to edge behind the
+ * real HTML text. Phones get a still of the same scene. The video is only fetched
+ * on desktop-sized screens without reduced motion or data-saver.
  */
 export default function HeroMedia() {
   const { lang } = useLang();
@@ -125,22 +124,16 @@ export default function HeroMedia() {
   return (
     <div
       ref={stageRef}
-      className="pointer-events-none relative mx-auto mt-4 aspect-[1240/1040] w-full max-w-[560px] lg:absolute lg:inset-x-0 lg:bottom-[7rem] lg:top-[4.5rem] lg:mx-0 lg:mt-0 lg:aspect-auto lg:max-w-none"
+      className="pointer-events-none relative mx-auto mt-4 aspect-[800/514] w-full max-w-[600px] lg:absolute lg:inset-0 lg:mx-0 lg:mt-0 lg:aspect-auto lg:max-w-none"
       data-hero-state={state}
       data-hero-media
     >
-      {/* Desktop only: an ambient glow and a soft dark wash behind the text column, both feathered so no vertical seam appears. */}
-      <div aria-hidden="true" className="absolute top-1/2 hidden aspect-[1.5] h-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/[0.13] blur-[120px] [inset-inline-start:78%] xl:[inset-inline-start:69%] rtl:translate-x-1/2 lg:block" />
-
-      <div
-        className="absolute inset-0 lg:inset-auto lg:top-1/2 lg:h-[94%] xl:h-[100%] lg:w-auto lg:aspect-[1240/1040] lg:-translate-x-1/2 lg:-translate-y-1/2 lg:[inset-inline-start:78%] xl:[inset-inline-start:69%] lg:rtl:translate-x-1/2"
-        style={MEDIA_STYLE}
-        data-hero-art
-      >
+      <div className={`absolute inset-0 rtl:-scale-x-100 ${MOBILE_FADE}`} data-hero-art>
+       <div className="absolute inset-0 lg:origin-[0%_12%] xl:scale-[1.2]">
         <picture>
-          <source media="(min-width: 1024px)" srcSet="/hero/brain-poster.webp" />
+          <source media="(min-width: 1024px)" srcSet="/hero/brain-scene-poster.webp" />
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/hero/brain-poster-sm.webp" alt="" width={620} height={520} decoding="async" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover" data-hero-poster />
+          <img src="/hero/brain-scene-poster-sm.webp" alt="" width={800} height={514} decoding="async" aria-hidden="true" className="absolute inset-0 h-full w-full object-cover lg:object-[0%_35%] xl:object-[60%_35%]" data-hero-poster />
         </picture>
         {videoOn && (
           <video
@@ -154,16 +147,18 @@ export default function HeroMedia() {
             disableRemotePlayback
             tabIndex={-1}
             aria-hidden="true"
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${started ? "opacity-100" : "opacity-0"}`}
+            className={`absolute inset-0 h-full w-full object-cover lg:object-[0%_35%] xl:object-[60%_35%] transition-opacity duration-500 ${started ? "opacity-100" : "opacity-0"}`}
             data-hero-video
           >
-            <source src="/hero/brain-loop.webm" type='video/webm; codecs="vp9"' />
-            <source src="/hero/brain-loop.mp4" type="video/mp4" />
+            <source src="/hero/brain-scene.webm" type='video/webm; codecs="vp9"' />
+            <source src="/hero/brain-scene.mp4" type="video/mp4" />
           </video>
         )}
+       </div>
       </div>
 
-      <div aria-hidden="true" className="absolute inset-y-0 hidden w-[68%] [-webkit-mask-image:linear-gradient(to_bottom,transparent,#000_22%,#000_78%,transparent)] [mask-image:linear-gradient(to_bottom,transparent,#000_22%,#000_78%,transparent)] bg-[linear-gradient(to_right,rgba(6,11,24,.95),rgba(6,11,24,.72)_38%,transparent)] [inset-inline-start:0] rtl:bg-[linear-gradient(to_left,rgba(6,11,24,.95),rgba(6,11,24,.72)_38%,transparent)] lg:block" />
+      {/* Soft dark wash behind the text column (desktop): keeps the copy readable while the towers stay visible through it. */}
+      <div aria-hidden="true" className="absolute inset-y-0 hidden w-[66%] bg-[linear-gradient(to_right,rgba(6,11,24,.44),rgba(6,11,24,.35)_46%,rgba(6,11,24,.1)_74%,transparent)] [inset-inline-start:0] rtl:bg-[linear-gradient(to_left,rgba(6,11,24,.44),rgba(6,11,24,.35)_46%,rgba(6,11,24,.1)_74%,transparent)] lg:block" />
 
       {videoOn && started && (
         <button
@@ -171,7 +166,7 @@ export default function HeroMedia() {
           onClick={() => setUserPaused((p) => !p)}
           aria-label={userPaused ? copy.playLabel : copy.pauseLabel}
           aria-pressed={userPaused}
-          className="pointer-events-auto absolute bottom-20 z-20 hidden h-8 w-8 items-center justify-center rounded-full border border-sky-300/20 bg-slate-950/40 text-sky-100/70 opacity-0 backdrop-blur-sm transition-opacity duration-200 [inset-inline-end:1.5rem] hover:text-white focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 group-hover/hero:opacity-70 group-hover/hero:hover:opacity-100 lg:flex"
+          className="pointer-events-auto absolute bottom-48 z-20 hidden h-8 w-8 items-center justify-center rounded-full border border-sky-300/20 bg-slate-950/40 text-sky-100/70 opacity-0 backdrop-blur-sm transition-opacity duration-200 [inset-inline-end:1.5rem] hover:text-white focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 group-hover/hero:opacity-70 group-hover/hero:hover:opacity-100 lg:flex"
         >
           <svg aria-hidden="true" viewBox="0 0 20 20" width="12" height="12" fill="currentColor">
             {userPaused ? <path d="M6 4l10 6-10 6V4z" /> : <path d="M5 4h3.5v12H5zM11.5 4H15v12h-3.5z" />}

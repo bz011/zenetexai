@@ -75,8 +75,8 @@ describe("hero server-rendered HTML", () => {
     expect(html).not.toContain("<canvas");
     expect(html).not.toContain("<video");
     expect(html.match(/<img/g)).toHaveLength(1);
-    expect(html).toContain('<source media="(min-width: 1024px)" srcSet="/hero/brain-poster.webp"');
-    expect(html).toMatch(/<img src="\/hero\/brain-poster-sm\.webp" alt=""/);
+    expect(html).toContain('<source media="(min-width: 1024px)" srcSet="/hero/brain-scene-poster.webp"');
+    expect(html).toMatch(/<img src="\/hero\/brain-scene-poster-sm\.webp" alt=""/);
     expect(html).not.toMatch(/[؀-ۿ]/);
   });
 
@@ -122,15 +122,15 @@ describe("approved cinematic video", () => {
   const kb = (f: string) => fs.statSync(path.join(ROOT, f)).size / 1024;
 
   it("ships the approved loop as WebM and MP4 plus two stills, all modest in size", () => {
-    expect(kb("public/hero/brain-loop.webm")).toBeLessThan(1024);
-    expect(kb("public/hero/brain-loop.mp4")).toBeLessThan(1400);
-    expect(kb("public/hero/brain-poster.webp")).toBeLessThan(160);
-    expect(kb("public/hero/brain-poster-sm.webp")).toBeLessThan(70);
+    expect(kb("public/hero/brain-scene.webm")).toBeLessThan(1200);
+    expect(kb("public/hero/brain-scene.mp4")).toBeLessThan(1400);
+    expect(kb("public/hero/brain-scene-poster.webp")).toBeLessThan(200);
+    expect(kb("public/hero/brain-scene-poster-sm.webp")).toBeLessThan(90);
   });
 
   it("plays muted, looping and inline, with WebM first and MP4 as fallback, and is hidden from assistive tech", () => {
     for (const s of ["autoPlay", "muted", "loop", "playsInline", 'aria-hidden="true"', "tabIndex={-1}"]) expect(stage, s).toContain(s);
-    expect(stage.indexOf("brain-loop.webm")).toBeLessThan(stage.indexOf("brain-loop.mp4"));
+    expect(stage.indexOf("brain-scene.webm")).toBeLessThan(stage.indexOf("brain-scene.mp4"));
     expect(stage).not.toContain("controls");
   });
 
@@ -142,13 +142,13 @@ describe("approved cinematic video", () => {
   });
 
   it("uses a small poster on phones and the large one from lg up, through one <picture>", () => {
-    expect(stage).toContain('media="(min-width: 1024px)" srcSet="/hero/brain-poster.webp"');
-    expect(stage).toContain('src="/hero/brain-poster-sm.webp"');
-    expect(stage).toContain("width={620}");
-    expect(stage).toContain("aspect-[1240/1040]");
-    expect(stage).toContain("maskComposite"); // edge-less blend, not a box
+    expect(stage).toContain('media="(min-width: 1024px)" srcSet="/hero/brain-scene-poster.webp"');
+    expect(stage).toContain('src="/hero/brain-scene-poster-sm.webp"');
+    expect(stage).toContain("width={800}");
+    expect(stage).toContain("aspect-[800/514]");
+    expect(stage).toContain("MOBILE_FADE"); // phones: the still dissolves into the page; desktop: edge-to-edge, no box
     expect(stage).not.toContain("mixBlendMode"); // no blend mode: avoids compositing quirks that can affect the fixed header/logo
-    expect(stage).toContain("lg:absolute lg:inset-x-0"); // full-width background layer behind the text, not a column
+    expect(stage).toContain("lg:absolute lg:inset-0"); // full-width background layer behind the text, not a column
   });
 
   it("pauses off-screen and in hidden tabs, and gives visitors a labelled pause control", () => {
