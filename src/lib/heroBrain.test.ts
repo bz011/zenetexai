@@ -76,7 +76,9 @@ describe("hero server-rendered HTML", () => {
     expect(html).not.toContain("<video");
     expect(html.match(/<img/g)).toHaveLength(1);
     expect(html).toContain('<source media="(min-width: 1024px)" srcSet="/hero/brain-scene-poster.webp"');
-    expect(html).toMatch(/<img src="\/hero\/brain-scene-poster-sm\.webp" alt=""/);
+    // No unconditional <img src>: below 1024px no <source> matches, so nothing is fetched on phones/tablets.
+    expect(html).toMatch(/<img[^>]*alt=""/);
+    expect(html).not.toMatch(/<img[^>]*\ssrc="/);
     expect(html).not.toMatch(/[؀-ۿ]/);
   });
 
@@ -121,11 +123,10 @@ describe("approved cinematic video", () => {
   const stage = read("src/components/hero/HeroMedia.tsx");
   const kb = (f: string) => fs.statSync(path.join(ROOT, f)).size / 1024;
 
-  it("ships the approved loop as WebM and MP4 plus two stills, all modest in size", () => {
+  it("ships the approved loop as WebM, MP4 and a still, all modest in size", () => {
     expect(kb("public/hero/brain-scene.webm")).toBeLessThan(1200);
     expect(kb("public/hero/brain-scene.mp4")).toBeLessThan(1400);
     expect(kb("public/hero/brain-scene-poster.webp")).toBeLessThan(200);
-    expect(kb("public/hero/brain-scene-poster-sm.webp")).toBeLessThan(90);
   });
 
   it("plays muted, looping and inline, with WebM first and MP4 as fallback, and is hidden from assistive tech", () => {
@@ -141,14 +142,15 @@ describe("approved cinematic video", () => {
     expect(stage).toContain("{videoOn && (");
   });
 
-  it("uses a small poster on phones and the large one from lg up, through one <picture>", () => {
+  it("owner decision: no brain visual at all below 1024px - hidden, no reserved space, and (no unconditional <img src>) nothing fetched", () => {
     expect(stage).toContain('media="(min-width: 1024px)" srcSet="/hero/brain-scene-poster.webp"');
-    expect(stage).toContain('src="/hero/brain-scene-poster-sm.webp"');
-    expect(stage).toContain("width={800}");
-    expect(stage).toContain("aspect-[800/514]");
-    expect(stage).toContain("MOBILE_FADE"); // phones: the still dissolves into the page; desktop: edge-to-edge, no box
+    expect(stage).not.toMatch(/<img[^>]*\ssrc="\/hero/); // only a <source>; the <img> itself carries no src, so <1024px nothing loads
+    expect(stage).toContain("hidden pointer-events-none lg:absolute lg:inset-0 lg:block"); // display:none below lg - no box, no layout space
     expect(stage).not.toContain("mixBlendMode"); // no blend mode: avoids compositing quirks that can affect the fixed header/logo
-    expect(stage).toContain("lg:absolute lg:inset-0"); // full-width background layer behind the text, not a column
+  });
+
+  it("the pause control cannot render below 1024px, because it is nested inside the lg-only wrapper and also gated on desktop-only video state", () => {
+    expect(stage.indexOf("hidden pointer-events-none lg:absolute lg:inset-0 lg:block")).toBeLessThan(stage.indexOf("<button"));
   });
 
   it("pauses off-screen and in hidden tabs, and gives visitors a labelled pause control", () => {
@@ -175,7 +177,7 @@ describe("approved cinematic video", () => {
     expect(btn).toContain("opacity-0");
     expect(btn).toContain("focus-visible:opacity-100");
     expect(btn).toContain("group-hover/hero:opacity-70");
-    expect(btn).not.toMatch(/sr-only|hidden lg:flex[^"]*invisible|tabIndex|display:\s*none/);
+    expect(btn).not.toMatch(/sr-only|tabIndex|display:\s*none/);
     expect(btn).toContain("aria-label");
     expect(stage).toContain("{videoOn && started && (");
   });

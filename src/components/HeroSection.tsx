@@ -19,6 +19,9 @@ export default function HeroSection() {
         <div className="absolute left-1/2 top-[120px] h-[350px] w-[560px] -translate-x-1/2 lg:top-[20%] rounded-full bg-violet-600/[0.07] blur-[110px]" />
         {/* Subtle warm accent — bottom-right edge */}
         <div className="absolute bottom-0 right-0 h-[280px] w-[400px] rounded-full bg-indigo-500/[0.05] blur-[100px]" />
+
+        {/* Mobile / tablet only: a clean navy gradient stands in for the desktop-only brain scene, so the header/text still sit on a considered background instead of flat black. */}
+        <div className="absolute inset-x-0 top-0 h-[620px] lg:hidden bg-[radial-gradient(ellipse_140%_55%_at_50%_-8%,rgba(37,99,235,.20),transparent_65%),linear-gradient(to_bottom,#0c1428,rgba(9,14,28,.85)_55%,transparent)]" />
       </div>
 
       {/* Grid overlay */}
