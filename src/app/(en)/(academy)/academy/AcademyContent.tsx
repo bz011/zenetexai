@@ -2,12 +2,27 @@
 
 import Link from "@/components/LocaleLink";
 import { useLang } from "@/lib/LanguageContext";
+import AcademyHeroVisual from "@/components/academy/AcademyHeroVisual";
 
 const PROGRAM_HREF: Record<string, string> = {
   "pmp-mastery": "/courses/pmp-mastery-program",
   "pmp-simulator": "/courses/pmp-exam-simulator",
   "future-programs": "/contact",
 };
+
+/** Colors the literal "ZentexAI" inside the (real, translated) heading like the logo wordmark - no new copy. */
+function renderAcademyHeadline(text: string) {
+  const i = text.indexOf("ZentexAI");
+  if (i === -1) return text;
+  return (
+    <>
+      {text.slice(0, i)}
+      {text.slice(i, i + 6)}
+      <span className="text-indigo-600">{text.slice(i + 6, i + 8)}</span>
+      {text.slice(i + 8)}
+    </>
+  );
+}
 
 export default function AcademyContent() {
   const { t } = useLang();
@@ -17,25 +32,34 @@ export default function AcademyContent() {
   return (
     <div className="min-h-screen ux-page">
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-white/[0.06] px-6 pb-16 md:pb-24 pt-28 md:pt-36">
-        <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/[0.1] blur-[120px]" />
-        <div className="container-page relative text-center">
-          <span className="label">{ac.hero_eyebrow}</span>
-          <h1 className="mt-3 text-4xl font-bold text-white md:text-5xl lg:text-6xl">{ac.hero_h1}</h1>
-          <p className="mx-auto mt-5 max-w-lg text-lead leading-relaxed text-slate-400">{ac.hero_sub}</p>
-          <div className="mt-8 flex justify-center gap-3">
-            <Link href="/courses" className="btn-primary">{ac.hero_btn1}</Link>
-            <Link href="#programs" className="btn-secondary">{ac.hero_btn2}</Link>
+      <section className="relative overflow-hidden px-6 pb-14 pt-16 md:pb-20 md:pt-24 lg:pb-28 lg:pt-28">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 h-[560px] w-[720px] -translate-y-1/4 rounded-full bg-violet-600/[0.1] blur-[120px] [inset-inline-end:-8%] rtl:[inset-inline-end:auto] rtl:[inset-inline-start:-8%]"
+        />
+        <div className="container-page relative grid items-center gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:gap-14">
+          <div className="mx-auto max-w-xl text-center lg:mx-0 lg:text-start">
+            <span className="label">{ac.hero_eyebrow}</span>
+            <h1 className="mt-4 text-4xl font-bold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-[56px]">
+              {renderAcademyHeadline(ac.hero_h1)}
+            </h1>
+            <p className="mx-auto mt-5 max-w-md text-lead leading-relaxed text-slate-400 lg:mx-0">{ac.hero_sub}</p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+              <Link href="/courses" className="btn-primary px-6 py-3 text-[14px]">{ac.hero_btn1}</Link>
+              <Link href="#programs" className="btn-secondary px-6 py-3 text-[14px]">{ac.hero_btn2}</Link>
+            </div>
           </div>
+
+          <AcademyHeroVisual caption={ac.programs[0].title} />
         </div>
       </section>
 
       {/* Features */}
-      <section className="border-b border-white/[0.06] px-6 py-12 md:py-16">
+      <section className="border-t border-white/[0.06] px-6 py-14 md:py-20">
         <div className="container-page">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {ac.features.map((f) => (
-              <div key={f.title} className="card p-5">
+              <div key={f.title} className="card p-6">
                 <div className="mb-3 h-px w-8 bg-gradient-to-r from-indigo-500 to-violet-500" />
                 <h3 className="text-body font-semibold text-white">{f.title}</h3>
                 <p className="mt-1.5 text-small leading-relaxed text-slate-400">{f.desc}</p>
