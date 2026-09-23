@@ -1,40 +1,35 @@
 interface Props {
-  caption: string;
   className?: string;
 }
 
 /**
- * The Academy hero's product visual: a plain laptop mockup (CSS chrome, no
- * photo asset for the laptop itself) framing a real screenshot of the
- * lesson player (public/academy/lesson-player.webp) - an owner-provided,
- * authentic capture of /courses/[slug]/lessons/[lessonId], cropped to the
- * screen's 16:10 shape without stretching. Not a fabricated interface.
+ * The Academy hero's product visual: a large, minimal browser-style frame
+ * (thin top bar, no fake URL text) around the real lesson-player screenshot
+ * (public/academy/lesson-player.webp - an owner-provided, authentic capture
+ * of /courses/[slug]/lessons/[lessonId]). No device bezel eating into the
+ * image, no invented UI - the real interface is the visual.
  */
 export default function AcademyHeroVisual({ className = "" }: Props) {
   return (
-    <div className={`relative mx-auto w-full max-w-[300px] sm:max-w-[380px] lg:max-w-[560px] ${className}`}>
-      <div aria-hidden="true" className="absolute inset-0 -z-10 scale-125 rounded-[50%] bg-[radial-gradient(ellipse_at_center,rgba(79,70,229,0.16),transparent_70%)] blur-2xl" />
-
-      {/* Screen */}
-      <div className="relative rounded-[7%] bg-gradient-to-b from-slate-700 to-slate-800 p-[3%] shadow-[0_35px_70px_-25px_rgba(15,23,42,0.35)]">
-        <div aria-hidden="true" className="absolute left-1/2 top-[1.6%] h-[5px] w-[5px] -translate-x-1/2 rounded-full bg-slate-600" />
-        <div className="aspect-[16/10] w-full overflow-hidden rounded-[4%] bg-white">
+    <div className={`mx-auto w-full max-w-5xl ${className}`}>
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_40px_80px_-40px_rgba(15,23,42,0.3)]">
+        <div aria-hidden="true" className="flex items-center gap-1.5 border-b border-slate-200 bg-slate-50 px-4 py-2.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
+          <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
+          <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
+        </div>
+        <div className="aspect-[16/10] w-full">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/academy/lesson-player.webp"
-            alt=""
-            aria-hidden="true"
+            alt="The ZentexAI Academy lesson player, showing a PMP Mastery Program video lesson and the course curriculum sidebar"
             width={1400}
             height={875}
             decoding="async"
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover object-top"
           />
         </div>
       </div>
-
-      {/* Base / hinge - plain flow, directly under the bezel (no absolute positioning to fight). */}
-      <div aria-hidden="true" className="mx-auto -mt-px h-3 w-[92%] rounded-b-xl bg-gradient-to-b from-slate-300 to-slate-400 shadow-[0_10px_24px_-8px_rgba(15,23,42,0.28)]" />
-      <div aria-hidden="true" className="mx-auto mt-[3px] h-[5px] w-[34%] rounded-b-full bg-slate-400/70" />
     </div>
   );
 }
