@@ -27,7 +27,7 @@ vi.mock("@/lib/upstashRateLimit", () => ({
   getHashedClientIp: () => "hashed-test-ip",
 }));
 
-const { startZiinaCheckout, verifyAndFulfillZiinaPurchase } = await import("./checkoutService");
+const { startZiinaCheckout, verifyAndFulfillZiinaPurchase, reconcilePurchase } = await import("./checkoutService");
 
 type Op = "select" | "insert" | "update" | null;
 
@@ -309,64 +309,67 @@ describe("startZiinaCheckout", () => {
   });
 });
 
+const BASE_PURCHASE = {
+  id: "purchase-1",
+  user_id: USER_ID,
+  product_id: PRODUCT_ID,
+  price_id: "price-1",
+  status: "pending",
+  amount_minor_units: 35000,
+  currency: "AED",
+  provider_reference: "ziina-intent-1",
+  // Every purchase this app has ever created was made while Ziina is in
+  // test mode - matches reality (see ZIINA_TEST_MODE, ziinaClient.ts).
+  is_test_payment: true,
+};
+
+/** Shared by every describe block below (verifyAndFulfillZiinaPurchase AND
+ * reconcilePurchase - the same underlying logic, reached via the browser
+ * flow's ownership-checked wrapper or directly, as the webhook/cron do). */
+function mockPurchaseFlow(opts: {
+  purchase?: Record<string, unknown> | null;
+  productSlug?: string;
+  onPurchaseUpdate?: (payload: unknown, filters: Record<string, unknown>) => void;
+  entitlementInsertResult?: { data: unknown; error: unknown };
+  onEntitlementInsert?: (payload: unknown) => void;
+  accessDurationDays?: number | null;
+  existingActiveExpiresAt?: string | null;
+  /** The purchase OWNER's profile role, as it is RIGHT NOW at verification
+   * time (not necessarily what it was when the purchase was created) -
+   * defaults to "admin" so every pre-existing test in this block, none of
+   * which is about the staff-only-test-entitlement rule, keeps
+   * representing a legitimate staff-owned test purchase unchanged. */
+  ownerRole?: string | null;
+}) {
+  const purchaseRow = opts.purchase === undefined ? BASE_PURCHASE : opts.purchase;
+  mockAdminTables({
+    purchases: (op, payload, filters) => {
+      if (op === "select") return { data: purchaseRow, error: null };
+      if (op === "update") {
+        opts.onPurchaseUpdate?.(payload, filters);
+        return { data: { id: BASE_PURCHASE.id }, error: null };
+      }
+      throw new Error(`unexpected purchases op ${op}`);
+    },
+    products: () => ({ data: { slug: opts.productSlug ?? "pmp-exam-simulator" }, error: null }),
+    prices: () => ({ data: { access_duration_days: opts.accessDurationDays ?? 365 }, error: null }),
+    profiles: () => ({ data: opts.ownerRole === null ? null : { role: opts.ownerRole ?? "admin" }, error: null }),
+    entitlements: (op, payload) => {
+      if (op === "select") return { data: { expires_at: opts.existingActiveExpiresAt ?? null }, error: null };
+      if (op === "insert") {
+        opts.onEntitlementInsert?.(payload);
+        return opts.entitlementInsertResult ?? { data: { expires_at: "2027-01-01T00:00:00.000Z" }, error: null };
+      }
+      throw new Error(`unexpected entitlements op ${op}`);
+    },
+  });
+}
+
 describe("verifyAndFulfillZiinaPurchase", () => {
   beforeEach(() => {
     adminFromMock.mockReset();
     getIntentMock.mockReset();
   });
-
-  const BASE_PURCHASE = {
-    id: "purchase-1",
-    user_id: USER_ID,
-    product_id: PRODUCT_ID,
-    price_id: "price-1",
-    status: "pending",
-    amount_minor_units: 35000,
-    currency: "AED",
-    provider_reference: "ziina-intent-1",
-    // Every purchase this app has ever created was made while Ziina is in
-    // test mode - matches reality (see ZIINA_TEST_MODE, ziinaClient.ts).
-    is_test_payment: true,
-  };
-
-  function mockPurchaseFlow(opts: {
-    purchase?: Record<string, unknown> | null;
-    productSlug?: string;
-    onPurchaseUpdate?: (payload: unknown, filters: Record<string, unknown>) => void;
-    entitlementInsertResult?: { data: unknown; error: unknown };
-    onEntitlementInsert?: (payload: unknown) => void;
-    accessDurationDays?: number | null;
-    existingActiveExpiresAt?: string | null;
-    /** The purchase OWNER's profile role, as it is RIGHT NOW at verification
-     * time (not necessarily what it was when the purchase was created) -
-     * defaults to "admin" so every pre-existing test in this block, none of
-     * which is about the staff-only-test-entitlement rule, keeps
-     * representing a legitimate staff-owned test purchase unchanged. */
-    ownerRole?: string | null;
-  }) {
-    const purchaseRow = opts.purchase === undefined ? BASE_PURCHASE : opts.purchase;
-    mockAdminTables({
-      purchases: (op, payload, filters) => {
-        if (op === "select") return { data: purchaseRow, error: null };
-        if (op === "update") {
-          opts.onPurchaseUpdate?.(payload, filters);
-          return { data: { id: BASE_PURCHASE.id }, error: null };
-        }
-        throw new Error(`unexpected purchases op ${op}`);
-      },
-      products: () => ({ data: { slug: opts.productSlug ?? "pmp-exam-simulator" }, error: null }),
-      prices: () => ({ data: { access_duration_days: opts.accessDurationDays ?? 365 }, error: null }),
-      profiles: () => ({ data: opts.ownerRole === null ? null : { role: opts.ownerRole ?? "admin" }, error: null }),
-      entitlements: (op, payload) => {
-        if (op === "select") return { data: { expires_at: opts.existingActiveExpiresAt ?? null }, error: null };
-        if (op === "insert") {
-          opts.onEntitlementInsert?.(payload);
-          return opts.entitlementInsertResult ?? { data: { expires_at: "2027-01-01T00:00:00.000Z" }, error: null };
-        }
-        throw new Error(`unexpected entitlements op ${op}`);
-      },
-    });
-  }
 
   it("returns not_found for an unknown purchase id and never calls Ziina", async () => {
     mockPurchaseFlow({ purchase: null });
@@ -596,6 +599,95 @@ describe("verifyAndFulfillZiinaPurchase", () => {
 
     expect(result.status).toBe("failed");
     expect(entitlementInsertCalled).toBe(false);
+  });
+});
+
+// --- reconcilePurchase: the one authoritative function the webhook
+// (src/app/api/webhooks/ziina/route.ts) and the reconciliation cron
+// (src/app/api/cron/reconcile-purchases/route.ts) call directly, with no
+// browser session / caller-supplied identity at all - unlike
+// verifyAndFulfillZiinaPurchase above, there is no ownership check to test
+// here (there is no "owner" asserted by either caller), only the
+// reconciliation logic itself under conditions unique to those two callers:
+// a failing Ziina API call, and two reconciliation attempts racing each
+// other for the very same purchase. ---
+describe("reconcilePurchase (shared by the webhook and the reconciliation cron)", () => {
+  beforeEach(() => {
+    adminFromMock.mockReset();
+    getIntentMock.mockReset();
+  });
+
+  it("returns not_found for an unknown purchase id, with no caller identity required at all", async () => {
+    mockPurchaseFlow({ purchase: null });
+
+    const result = await reconcilePurchase("missing");
+
+    expect(result.status).toBe("not_found");
+    expect(getIntentMock).not.toHaveBeenCalled();
+  });
+
+  it("treats a Ziina API failure (network error, 5xx, timeout) as still-pending rather than failed - a transient outage must never terminally fail a real purchase", async () => {
+    let purchaseUpdateCalled = false;
+    mockPurchaseFlow({ onPurchaseUpdate: () => (purchaseUpdateCalled = true) });
+    getIntentMock.mockRejectedValue(new Error("Ziina API unavailable"));
+
+    const result = await reconcilePurchase("purchase-1");
+
+    expect(result.status).toBe("pending");
+    expect(purchaseUpdateCalled).toBe(false);
+  });
+
+  it("stays idempotent when called again after the webhook (or the success page) already completed the purchase - no second Ziina call, no second grant", async () => {
+    let entitlementInsertCalled = false;
+    mockPurchaseFlow({
+      purchase: { ...BASE_PURCHASE, status: "completed" },
+      existingActiveExpiresAt: "2027-06-01T00:00:00.000Z",
+      onEntitlementInsert: () => (entitlementInsertCalled = true),
+    });
+
+    const result = await reconcilePurchase("purchase-1");
+
+    expect(result).toEqual({ status: "completed", expiresAt: "2027-06-01T00:00:00.000Z", productSlug: "pmp-exam-simulator" });
+    expect(getIntentMock).not.toHaveBeenCalled();
+    expect(entitlementInsertCalled).toBe(false);
+  });
+
+  it("is safe under two concurrent reconciliation attempts for the same pending purchase (e.g. the webhook and the cron sweep firing at the same time): exactly one entitlement is ever granted", async () => {
+    let claimAttempts = 0;
+    let entitlementInsertCount = 0;
+    mockAdminTables({
+      purchases: (op, payload) => {
+        if (op === "select") return { data: BASE_PURCHASE, error: null };
+        if (op === "update") {
+          const isCompletionClaim = (payload as { status?: string }).status === "completed";
+          if (!isCompletionClaim) return { data: null, error: null };
+          claimAttempts += 1;
+          // Simulates the real conditional `UPDATE ... WHERE status =
+          // 'pending'` compare-and-swap: only the first concurrent claim
+          // actually finds a still-'pending' row to flip.
+          return claimAttempts === 1 ? { data: { id: BASE_PURCHASE.id }, error: null } : { data: null, error: null };
+        }
+        throw new Error(`unexpected purchases op ${op}`);
+      },
+      products: () => ({ data: { slug: "pmp-exam-simulator" }, error: null }),
+      prices: () => ({ data: { access_duration_days: 365 }, error: null }),
+      profiles: () => ({ data: { role: "admin" }, error: null }),
+      entitlements: (op) => {
+        if (op === "select") return { data: { expires_at: "2027-01-01T00:00:00.000Z" }, error: null };
+        if (op === "insert") {
+          entitlementInsertCount += 1;
+          return { data: { expires_at: "2027-01-01T00:00:00.000Z" }, error: null };
+        }
+        throw new Error(`unexpected entitlements op ${op}`);
+      },
+    });
+    getIntentMock.mockResolvedValue({ id: "ziina-intent-1", status: "completed", amount: 35000, currency_code: "AED" });
+
+    const [first, second] = await Promise.all([reconcilePurchase("purchase-1"), reconcilePurchase("purchase-1")]);
+
+    expect(first.status).toBe("completed");
+    expect(second.status).toBe("completed");
+    expect(entitlementInsertCount).toBe(1);
   });
 });
 
