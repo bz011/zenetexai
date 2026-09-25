@@ -10,11 +10,10 @@
  *  - The client sends only a product slug / a purchase id it was handed by
  *    us. It never sends an amount, currency, or "paid" claim - the price is
  *    always re-resolved here from `prices`, server-side.
- *  - Reaching /checkout/success proves nothing by itself. Both the success
- *    and cancel pages call verifyAndFulfillZiinaPurchase(), which always
- *    re-fetches the Payment Intent from Ziina and only grants access when
- *    Ziina's own `status` is "completed" and the amount/currency it charged
- *    match what we told it to charge.
+ *  - Reaching /checkout/success proves nothing by itself. reconcilePurchase()
+ *    always re-fetches the Payment Intent from Ziina and only grants access
+ *    when Ziina's own `status` is "completed" and the amount/currency it
+ *    charged match what we told it to charge.
  *  - Writes to `purchases`/`entitlements` use supabaseAdmin (service role)
  *    because, by design (migration 019), authenticated users have no
  *    INSERT/UPDATE policy on either table - only a trusted server path may
@@ -23,7 +22,25 @@
  *  - Idempotent: a purchase already 'completed' short-circuits without
  *    calling Ziina again or granting a second entitlement; the actual
  *    completion write is a conditional `UPDATE ... WHERE status = 'pending'`
- *    so a replayed/concurrent success-page hit can win the race at most once.
+ *    so a replayed/concurrent hit from any of the three callers below can
+ *    win the race at most once.
+ *
+ * Stabilization sprint (payment reliability): the success page is no longer
+ * the only way a purchase ever gets reconciled. reconcilePurchase() below is
+ * the one authoritative function, reused by THREE independent triggers so
+ * no business rule is duplicated between them:
+ *   1. /checkout/success and /checkout/cancel (verifyAndFulfillZiinaPurchase
+ *      wraps it with a browser-session ownership check - see that function)
+ *      - fast path, best UX when the redirect back from Ziina succeeds.
+ *   2. The Ziina webhook (src/app/api/webhooks/ziina/route.ts) - catches the
+ *      case where Ziina completes the payment but the customer's browser
+ *      never makes it back to us (closed tab, crashed, flaky redirect).
+ *   3. The reconciliation cron (src/app/api/cron/reconcile-purchases/route.ts)
+ *      - the actual safety net: periodically re-checks any purchase still
+ *      'pending' after a threshold, so a missed webhook delivery or a
+ *      customer who abandons the tab before either of the above ever fires
+ *      still gets fixed automatically. See that route for why this, not (1)
+ *      or (2), is the mechanism this system's reliability actually rests on.
  */
 
 import { revalidatePath } from "next/cache";
@@ -218,12 +235,22 @@ async function getActiveEntitlementExpiry(userId: string, productId: string): Pr
 }
 
 /**
- * Called from both /checkout/success and /checkout/cancel with the same
- * purchase id - which URL the browser landed on is only a UI hint; the
- * actual grant decision always comes from Ziina's live status, never from
- * which page the request is on.
+ * The one authoritative place any code path (the success/cancel pages, the
+ * Ziina webhook, and the stale-purchase reconciliation job) reconciles a
+ * purchase against Ziina's real state and grants access. Never trusts
+ * anything about the purchase's status except what is re-derived here on
+ * every call: the browser landing on a "success" URL, a webhook payload
+ * claiming "completed", and a cron sweep noticing an old "pending" row are
+ * all just DIFFERENT REASONS to run the exact same check - none of them by
+ * itself is evidence of payment. No caller-supplied user id is accepted
+ * here on purpose: this function's only input is our own purchase id, and
+ * who it belongs to is read from the purchase row itself, never asserted
+ * by whichever caller happened to trigger reconciliation (the webhook and
+ * cron job have no "current user" at all - see verifyAndFulfillZiinaPurchase
+ * below for the one caller that does, and where that identity is actually
+ * checked).
  */
-export async function verifyAndFulfillZiinaPurchase(purchaseId: string, userId: string): Promise<CheckoutVerificationResult> {
+export async function reconcilePurchase(purchaseId: string): Promise<CheckoutVerificationResult> {
   const { data: purchaseData, error } = await supabaseAdmin
     .from("purchases")
     .select("id, user_id, product_id, price_id, status, amount_minor_units, currency, provider_reference, is_test_payment")
@@ -232,8 +259,6 @@ export async function verifyAndFulfillZiinaPurchase(purchaseId: string, userId: 
 
   if (error || !purchaseData) return { status: "not_found" };
   const purchase = purchaseData as PurchaseRow;
-
-  if (purchase.user_id !== userId) return { status: "forbidden" };
 
   const productSlug = await getProductSlug(purchase.product_id);
 
@@ -360,4 +385,27 @@ export async function verifyAndFulfillZiinaPurchase(purchaseId: string, userId: 
   revalidatePath("/pmp/mock-exam");
 
   return { status: "completed", expiresAt: (insertedEntitlement as { expires_at: string | null }).expires_at, productSlug };
+}
+
+/**
+ * Called from /checkout/success and /checkout/cancel with the same purchase
+ * id - which URL the browser landed on is only a UI hint; the actual grant
+ * decision always comes from reconcilePurchase() above, never from which
+ * page the request is on. This wrapper adds exactly one thing
+ * reconcilePurchase() cannot do itself: confirming the browser session
+ * asking about this purchase is actually the one it belongs to, BEFORE
+ * doing any Ziina call or returning any status/expiry - a lightweight,
+ * separate lookup so a logged-in user who is handed (or guesses) someone
+ * else's ?purchase_id= can never trigger reconciliation of, or learn
+ * anything about, a purchase that isn't theirs. The webhook and
+ * reconciliation job call reconcilePurchase() directly instead, since
+ * neither has (or should trust) a browser session to check against.
+ */
+export async function verifyAndFulfillZiinaPurchase(purchaseId: string, userId: string): Promise<CheckoutVerificationResult> {
+  const { data: ownerRow, error } = await supabaseAdmin.from("purchases").select("user_id").eq("id", purchaseId).maybeSingle();
+
+  if (error || !ownerRow) return { status: "not_found" };
+  if ((ownerRow as { user_id: string }).user_id !== userId) return { status: "forbidden" };
+
+  return reconcilePurchase(purchaseId);
 }
