@@ -32,9 +32,48 @@ describe("resolveSafeRedirect", () => {
     expect(resolveSafeRedirect("//evil.com/dashboard")).toBe("/dashboard");
   });
 
-  it("still rejects a path-traversal attempt against an allow-listed path (exact-match only, no prefix matching)", () => {
+  it("normalizes a path-traversal segment via the real URL parser before validating - it can only ever collapse to another same-origin path, never off-site", () => {
+    // "/dashboard/../../evil" normalizes to "/evil", which isn't a known app
+    // path, so it still safely falls back.
     expect(resolveSafeRedirect("/dashboard/../../evil")).toBe("/dashboard");
-    expect(resolveSafeRedirect("/checkout/success/../../admin")).toBe("/dashboard");
+    // "/checkout/success/../../admin" normalizes to "/admin" - already an
+    // allow-listed, same-origin destination in its own right, so landing
+    // there is correct (not a bypass): traversal cannot escape the host.
+    expect(resolveSafeRedirect("/checkout/success/../../admin")).toBe("/admin");
+  });
+
+  // Regression test for a stabilization-sprint bug: the old exact-match
+  // allow-list covered only 8 static paths, so a logged-out visitor who
+  // followed a link to any dynamic protected route (a lesson, an assessment,
+  // the certificate page, a mock-exam/practice attempt, most /admin
+  // sub-pages) was silently dumped on /dashboard after logging in instead of
+  // back where they started. These must now all be preserved.
+  it("preserves the real destination for every dynamic protected route the app actually links to", () => {
+    for (const path of [
+      "/courses/pmp-mastery-program",
+      "/courses/pmp-mastery-program/lessons/lesson-123",
+      "/courses/pmp-mastery-program/assessments/assessment-456",
+      "/courses/pmp-mastery-program/assessments/assessment-456/history",
+      "/certificate",
+      "/pmp/mock-exam",
+      "/pmp/mock-exam/attempt-789",
+      "/pmp/mock-exam/attempt-789/results",
+      "/pmp/practice",
+      "/pmp/practice/session-321",
+      "/pmp/practice/history",
+      "/admin/courses",
+      "/admin/courses/course-1",
+      "/admin/ai-generation/coverage",
+    ]) {
+      expect(resolveSafeRedirect(path), path).toBe(path);
+    }
+  });
+
+  it("still rejects an off-site or non-app destination even when it looks like it starts with a known prefix", () => {
+    expect(resolveSafeRedirect("/coursesevil.com")).toBe("/dashboard"); // prefix boundary: not "/courses" or "/courses/..."
+    expect(resolveSafeRedirect("https://evil.com/courses/x")).toBe("/dashboard");
+    expect(resolveSafeRedirect("//evil.com/courses/x")).toBe("/dashboard");
+    expect(resolveSafeRedirect("javascript:alert(1)")).toBe("/dashboard");
   });
 
   it("a query string appended to an allow-listed path can never change where it points - it only ever rides along on our own path", () => {
