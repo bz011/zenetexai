@@ -5,9 +5,17 @@
  * the Ziina webhook both miss: a customer whose browser never returns AND
  * whose webhook delivery was delayed, dropped, or never configured.
  *
+ * DEFERRED (2026-09-25): implemented and tested, but not yet scheduled in
+ * production - vercel.json currently has no cron entry for this route, and
+ * this route's own CRON_SECRET check fails closed (503) if invoked without
+ * it configured, so its absence cannot break or block the live checkout
+ * flow. Re-adding the cron entry (and setting CRON_SECRET) is part of a
+ * later payment-hardening phase (see docs/STABILIZATION.md, "Future
+ * payment-hardening task").
+ *
  * Protected by a bearer secret (CRON_SECRET) rather than the webhook's HMAC
- * scheme, since this endpoint is invoked by our own scheduler
- * (see vercel.json), not by Ziina.
+ * scheme, since this endpoint is meant to be invoked by our own scheduler
+ * (see vercel.json, once re-added), not by Ziina.
  *
  * Safe to invoke concurrently or more than once for the same stale purchase:
  * every purchase is reconciled through reconcilePurchase(), whose pending ->

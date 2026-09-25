@@ -1,6 +1,14 @@
 /**
  * Ziina payment webhook receiver.
  *
+ * DEFERRED (2026-09-25): implemented and tested, but NOT registered with
+ * Ziina in production yet - intentionally deferred to a later payment-
+ * hardening phase (see docs/STABILIZATION.md, "Future payment-hardening
+ * task"). Until that webhook is registered, Ziina will never actually call
+ * this route, and this route's own ZIINA_WEBHOOK_SECRET check fails closed
+ * (503) if invoked without it configured - so its absence cannot break or
+ * block the live checkout flow (checkoutService.ts's success/cancel path).
+ *
  * Per Ziina's official docs (docs.ziina.com/api-reference/webhook): a webhook
  * URL + secret is registered once via POST /webhook (a manual, one-time owner
  * action in the Ziina dashboard/API - not something this app does at

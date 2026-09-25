@@ -31,7 +31,9 @@
  * no business rule is duplicated between them:
  *   1. /checkout/success and /checkout/cancel (verifyAndFulfillZiinaPurchase
  *      wraps it with a browser-session ownership check - see that function)
- *      - fast path, best UX when the redirect back from Ziina succeeds.
+ *      - fast path, best UX when the redirect back from Ziina succeeds. This
+ *      is the ONLY one of the three currently live in production - see (2)
+ *      and (3) below.
  *   2. The Ziina webhook (src/app/api/webhooks/ziina/route.ts) - catches the
  *      case where Ziina completes the payment but the customer's browser
  *      never makes it back to us (closed tab, crashed, flaky redirect).
@@ -41,6 +43,18 @@
  *      customer who abandons the tab before either of the above ever fires
  *      still gets fixed automatically. See that route for why this, not (1)
  *      or (2), is the mechanism this system's reliability actually rests on.
+ *
+ * DEFERRED (2026-09-25): (2) and (3) are fully implemented and tested but
+ * intentionally NOT active in production yet - a later payment-hardening
+ * phase will register the Ziina webhook and re-enable the cron schedule
+ * (see docs/STABILIZATION.md, "Future payment-hardening task"). Neither
+ * ZIINA_WEBHOOK_SECRET nor CRON_SECRET is required for the checkout flow
+ * above to work correctly right now: both routes fail closed (503, no
+ * effect on anything else) when their secret is unset, and vercel.json
+ * currently has no cron entry, so Vercel never even calls (3). Until
+ * activation, a purchase whose browser never returns to (1) has no other
+ * path to completion - the bilingual "don't close this page" notice on
+ * BuyNowButton is the interim mitigation (see docs/STABILIZATION.md).
  */
 
 import { revalidatePath } from "next/cache";
