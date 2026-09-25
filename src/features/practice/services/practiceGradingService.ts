@@ -122,7 +122,15 @@ export async function submitPracticeSession(
   const totalQuestions = sessionQuestions.length;
   const score = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
 
-  const { error: updateError } = await supabase
+  // Atomically claim the transition out of "active": the initial status
+  // check above is read-then-write, not compare-and-swap, so on its own it
+  // cannot stop two genuinely concurrent submits (e.g. a flaky-network retry
+  // racing the original request) both reaching this point. Requiring the row
+  // to still be "active" here - the same idiom already used for the Ziina
+  // purchase claim in checkoutService.ts - means only one of them actually
+  // writes the terminal status; the loser reports the already-graded outcome
+  // instead of a second, possibly-conflicting write.
+  const { data: claimed, error: updateError } = await supabase
     .from("practice_sessions")
     .update({
       status: reason === "expired" ? "expired" : "completed",
@@ -133,10 +141,18 @@ export async function submitPracticeSession(
       unanswered_count: unansweredCount,
       remaining_seconds: 0,
     })
-    .eq("id", sessionId);
+    .eq("id", sessionId)
+    .eq("status", "active")
+    .select("id")
+    .maybeSingle();
 
   if (updateError) {
     return { success: false, error: updateError.message };
+  }
+
+  if (!claimed) {
+    // Lost the race - another concurrent submit already graded this session.
+    return { success: true, alreadyGraded: true };
   }
 
   return { success: true };

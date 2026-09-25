@@ -7,6 +7,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { computeStudyStreak, isModuleComplete } from "@/features/courses/services/progressUtils";
+import { getOwnedLearningResources } from "@/features/commerce/services/entitlementService";
 import type { ContinueLearningInfo, DashboardStats } from "@/features/courses/types/course";
 
 export async function getResumePointer(supabase: SupabaseClient, userId: string): Promise<ContinueLearningInfo | null> {
@@ -41,7 +42,21 @@ export async function getResumePointer(supabase: SupabaseClient, userId: string)
 }
 
 export async function getDashboardStats(supabase: SupabaseClient, userId: string): Promise<DashboardStats> {
-  const { data: courses } = await supabase.from("courses").select("id").eq("is_published", true);
+  // Stabilization sprint fix: this previously queried every published course
+  // platform-wide, not just the ones this student owns. With a single
+  // published course that coincidence was invisible; the moment a second
+  // course ships, a student enrolled only in course A would have their
+  // "Learning Progress" silently diluted by course B's lesson count even
+  // though they've never opened it. Scope to owned course products, the
+  // same entitlement source LessonDetailContent/CourseCurriculumSidebar's
+  // per-course progress already implicitly relies on via page-level access
+  // control.
+  const owned = await getOwnedLearningResources(supabase, userId);
+  const ownedCourseSlugs = owned.filter((r) => r.productType === "course").map((r) => r.productSlug);
+
+  const { data: courses } = ownedCourseSlugs.length
+    ? await supabase.from("courses").select("id").eq("is_published", true).in("slug", ownedCourseSlugs)
+    : { data: [] as { id: string }[] };
   const courseIds = ((courses ?? []) as { id: string }[]).map((c) => c.id);
 
   const { data: modules } = courseIds.length

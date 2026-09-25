@@ -32,6 +32,8 @@ function configureAdmin(config: AdminConfig) {
 interface SupabaseConfig {
   attemptRow: { id: string; status: string; user_id: string } | null;
   attemptQuestionRows: { id: string; question_id: string | null; response: unknown }[];
+  /** Simulates a concurrent submit winning the race: the final claim update matches zero rows. */
+  loseRace?: boolean;
 }
 
 function buildSupabaseMock(config: SupabaseConfig) {
@@ -47,10 +49,17 @@ function buildSupabaseMock(config: SupabaseConfig) {
           }),
         }),
         update: (payload: Record<string, unknown>) => ({
-          eq: async () => {
-            attemptUpdateCalls.push(payload);
-            return { error: null };
-          },
+          eq: () => ({
+            in: () => ({
+              select: () => ({
+                maybeSingle: async () => {
+                  attemptUpdateCalls.push(payload);
+                  if (config.loseRace) return { data: null, error: null };
+                  return { data: { id: config.attemptRow?.id ?? "attempt-1" }, error: null };
+                },
+              }),
+            }),
+          }),
         }),
       };
     }
@@ -364,5 +373,24 @@ describe("submitMockExamAttempt", () => {
 
     await submitMockExamAttempt(supabase as never, "attempt-1", "user-1");
     expect(supabase.attemptUpdateCalls[0]).toMatchObject({ correct_count: 2, incorrect_count: 0 });
+  });
+
+  // Regression test for a stabilization-sprint bug: the terminal-status write
+  // used to be a plain `.eq("id", attemptId)` update with no compare-and-swap
+  // guard, so two genuinely concurrent submits for the same attempt (e.g. a
+  // flaky-network retry racing the original request) could both pass the
+  // initial status check and both write a (possibly conflicting) terminal
+  // status. Fixed by requiring the row to still be active/on_break at write
+  // time; the loser must report alreadyGraded rather than a bare success
+  // that didn't actually happen.
+  it("reports alreadyGraded, not a fresh success, when a concurrent submit wins the race to grade this attempt", async () => {
+    const supabase = buildSupabaseMock({
+      attemptRow: { id: "attempt-1", status: "active", user_id: "user-1" },
+      attemptQuestionRows: [],
+      loseRace: true,
+    });
+
+    const result = await submitMockExamAttempt(supabase as never, "attempt-1", "user-1");
+    expect(result).toEqual({ success: true, alreadyGraded: true });
   });
 });

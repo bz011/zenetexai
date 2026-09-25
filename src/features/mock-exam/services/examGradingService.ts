@@ -210,7 +210,15 @@ export async function submitMockExamAttempt(
   const totalQuestions = attemptQuestions.length;
   const score = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
 
-  const { error: updateError } = await supabase
+  // Atomically claim the transition out of "active"/"on_break": the initial
+  // status check above is read-then-write, not compare-and-swap, so it alone
+  // cannot stop two genuinely concurrent submits (e.g. a flaky-network retry
+  // racing the original request) both reaching this point. Requiring the row
+  // to still be in a pre-completion status here - the same idiom already
+  // used for the Ziina purchase claim in checkoutService.ts - means only one
+  // of them actually writes the terminal status; the loser reports the
+  // already-graded outcome instead of a second, possibly-conflicting write.
+  const { data: claimed, error: updateError } = await supabase
     .from("mock_exam_attempts")
     .update({
       status: reason === "expired" ? "expired" : "completed",
@@ -220,10 +228,18 @@ export async function submitMockExamAttempt(
       incorrect_count: incorrectCount,
       unanswered_count: unansweredCount,
     })
-    .eq("id", attemptId);
+    .eq("id", attemptId)
+    .in("status", ["active", "on_break"])
+    .select("id")
+    .maybeSingle();
 
   if (updateError) {
     return { success: false, error: updateError.message };
+  }
+
+  if (!claimed) {
+    // Lost the race - another concurrent submit already graded this attempt.
+    return { success: true, alreadyGraded: true };
   }
 
   return { success: true };

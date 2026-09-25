@@ -10,20 +10,26 @@
  * Target sourcing, documented so it can be audited/tuned (same transparency
  * precedent as qualityGate.ts's WEIGHTS and similarity/index.ts's
  * SIMILARITY_THRESHOLDS):
- *   - DOMAIN_TARGETS come from PMI's published PMP Exam Content Outline
- *     (People 42% / Process 50% / Business Environment 8%) - this is the one
- *     dimension with an official, numeric PMI target.
- *   - APPROACH_TARGETS reflect PMI's commonly-stated guidance that roughly
- *     half the exam represents predictive approaches and half represents
- *     agile/hybrid approaches - PMI does not publish an exact per-approach
- *     percentage, so this is an approximation, not an official figure.
- *   - DIFFICULTY_TARGETS and interaction-type minimums are platform-defined
- *     authoring guidelines (skew toward moderate/difficult, ensure every
- *     interaction type has real coverage) - PMI publishes no target here at
- *     all.
+ *   - DOMAIN_TARGETS and APPROACH_TARGETS are read live from
+ *     getActiveBlueprint() (examBlueprint.ts) - the same single source of
+ *     truth Mock Exam generation itself uses - rather than a second,
+ *     independently-hardcoded copy. Functional stabilization sprint fix:
+ *     this file previously hardcoded the SUPERSEDED 2021 ECO figures
+ *     (People 42% / Process 50% / Business Environment 8%) even after the
+ *     2026 ECO update changed the actual generation target to People 33% /
+ *     Process 41% / Business Environment 26% - meaning this dashboard was
+ *     silently steering content authors toward the wrong domain, in the one
+ *     dimension blueprintEngine.ts treats as highest fallback priority.
+ *   - DIFFICULTY_TARGETS likewise now mirrors the blueprint's own
+ *     difficultyWeights (platform policy, not PMI-published either way) so
+ *     this tool can never recommend a different difficulty mix than the one
+ *     Mock Exam generation actually needs.
+ *   - Interaction-type minimums remain a platform-defined authoring
+ *     guideline; PMI publishes no target here at all.
  */
 
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getActiveBlueprint } from "@/features/mock-exam/config/examBlueprint";
 
 export interface DimensionBreakdown {
   value: string;
@@ -46,27 +52,16 @@ export interface CoverageReport {
 const TOLERANCE_PCT = 5;
 export const INTERACTION_TYPE_MIN_SHARE_PCT = 5;
 
-/** Official PMI ECO domain weighting. */
-const DOMAIN_TARGETS: Record<string, number> = {
-  People: 42,
-  Process: 50,
-  "Business Environment": 8,
-};
+const ACTIVE_BLUEPRINT = getActiveBlueprint();
+
+/** Official PMI ECO domain weighting for the currently active exam blueprint. */
+export const DOMAIN_TARGETS: Record<string, number> = ACTIVE_BLUEPRINT.domainWeights;
 
 /** Approximate - see header comment. */
-const APPROACH_TARGETS: Record<string, number> = {
-  Predictive: 50,
-  Agile: 25,
-  Hybrid: 25,
-};
+export const APPROACH_TARGETS: Record<string, number> = ACTIVE_BLUEPRINT.approachWeights;
 
 /** Platform-defined authoring guideline - not PMI-official. */
-const DIFFICULTY_TARGETS: Record<string, number> = {
-  Easy: 10,
-  Moderate: 40,
-  Difficult: 35,
-  Expert: 15,
-};
+export const DIFFICULTY_TARGETS: Record<string, number> = ACTIVE_BLUEPRINT.difficultyWeights;
 
 const ALL_INTERACTION_TYPES = ["standard", "graphic_based", "drag_and_drop", "hotspot", "matching"];
 

@@ -13,6 +13,8 @@ interface MockConfig {
   sessionRow: { id: string; status: string; user_id: string } | null;
   sessionQuestionRows: { id: string; question_id: string | null; response: unknown }[];
   questionMetaRows: { question_id: string; interaction_type: string }[];
+  /** Simulates a concurrent submit winning the race: the final claim update matches zero rows. */
+  loseRace?: boolean;
 }
 
 function buildSupabaseMock(config: MockConfig) {
@@ -28,10 +30,17 @@ function buildSupabaseMock(config: MockConfig) {
           }),
         }),
         update: (payload: Record<string, unknown>) => ({
-          eq: async () => {
-            sessionUpdateCalls.push(payload);
-            return { error: null };
-          },
+          eq: () => ({
+            eq: () => ({
+              select: () => ({
+                maybeSingle: async () => {
+                  sessionUpdateCalls.push(payload);
+                  if (config.loseRace) return { data: null, error: null };
+                  return { data: { id: config.sessionRow?.id ?? "session-1" }, error: null };
+                },
+              }),
+            }),
+          }),
         }),
       };
     }
@@ -205,5 +214,24 @@ describe("submitPracticeSession", () => {
     await submitPracticeSession(supabase as never, "session-1", "user-1", "expired");
 
     expect(supabase.sessionUpdateCalls[0]).toMatchObject({ status: "expired" });
+  });
+
+  // Regression test for a stabilization-sprint bug: the terminal-status write
+  // used to be a plain `.eq("id", sessionId)` update with no compare-and-swap
+  // guard, so two genuinely concurrent submits for the same session could
+  // both pass the initial status check and both write a (possibly
+  // conflicting) terminal status. Fixed by requiring the row to still be
+  // "active" at write time; the loser must report alreadyGraded rather than
+  // a bare success that didn't actually happen.
+  it("reports alreadyGraded, not a fresh success, when a concurrent submit wins the race to grade this session", async () => {
+    const supabase = buildSupabaseMock({
+      sessionRow: { id: "session-1", status: "active", user_id: "user-1" },
+      sessionQuestionRows: [],
+      questionMetaRows: [],
+      loseRace: true,
+    });
+
+    const result = await submitPracticeSession(supabase as never, "session-1", "user-1");
+    expect(result).toEqual({ success: true, alreadyGraded: true });
   });
 });

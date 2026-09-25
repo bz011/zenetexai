@@ -4,8 +4,35 @@ import {
   buildBreakdown,
   domainRecommendations,
   interactionTypeRecommendations,
+  DOMAIN_TARGETS,
+  APPROACH_TARGETS,
+  DIFFICULTY_TARGETS,
   type DimensionBreakdown,
 } from "./coverageIntelligenceService";
+import { getActiveBlueprint } from "@/features/mock-exam/config/examBlueprint";
+
+// Regression test for a stabilization-sprint bug: this file used to hardcode
+// its own copy of the PMI domain/approach weights, which drifted out of sync
+// when the exam blueprint moved from the 2021 to the 2026 ECO (people
+// 42%->33%, process 50%->41%, business environment 8%->26%) - the coverage
+// dashboard kept recommending against the stale 2021 figures. These targets
+// must always be read live from the same blueprint Mock Exam generation
+// itself uses, never a second hardcoded copy.
+describe("coverage targets stay in sync with the active exam blueprint", () => {
+  const blueprint = getActiveBlueprint();
+
+  it("domain targets match the active blueprint's official PMI domain weights", () => {
+    expect(DOMAIN_TARGETS).toEqual(blueprint.domainWeights);
+  });
+
+  it("approach targets match the active blueprint's approach weights", () => {
+    expect(APPROACH_TARGETS).toEqual(blueprint.approachWeights);
+  });
+
+  it("difficulty targets match the active blueprint's difficulty weights", () => {
+    expect(DIFFICULTY_TARGETS).toEqual(blueprint.difficultyWeights);
+  });
+});
 
 describe("classifyGap", () => {
   it("returns ok when there is no defined target", () => {
