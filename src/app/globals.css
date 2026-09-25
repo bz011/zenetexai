@@ -186,17 +186,26 @@
      Scoped re-theme for the authenticated student experience (dashboard,
      courses, Practice Mode, Mock Exam) - white surfaces, dark navy/slate
      text, restrained blue accents. The public marketing site and admin
-     pages keep the dark brand identity untouched; Header/Footer stay dark
-     everywhere (including on Academy pages) per the approved design
-     decision - this scope only ever wraps page CONTENT, never AppShell.
-     Overrides the same semantic classes (.card/.label/.btn-*) and the
-     concrete raw-utility color classes actually used by the pages this
-     scope wraps, rather than inventing a parallel class vocabulary - so
-     existing components render correctly in light mode with zero changes
-     to their own markup. */
+     pages keep the dark brand identity untouched. AcademyShell.tsx wraps
+     AcademyHeader + page content + AcademyFooter all inside this scope -
+     both are natively light-authored components, not the dark corporate
+     Header/Footer reused. Overrides the same semantic classes (.card/
+     .label/.btn-*) and the concrete raw-utility color classes actually used
+     by the pages this scope wraps, rather than inventing a parallel class
+     vocabulary - so existing components render correctly in light mode
+     with zero changes to their own markup.
+
+     --academy-header-h / --academy-workspace-bar-h: the real rendered
+     heights of AcademyHeader.tsx's sticky bar and the lesson workspace bar
+     (LessonDetailContent.tsx), named here once so every sticky-offset
+     consumer derives from the same two numbers instead of each hardcoding
+     its own pixel guess that can silently drift out of sync if either bar's
+     height ever changes. */
   .academy-shell {
     background-color: #ffffff;
     color: #0f172a;
+    --academy-header-h: 57px;
+    --academy-workspace-bar-h: 56px;
   }
   .academy-shell [class*="blur-["] {
     opacity: 0.35;

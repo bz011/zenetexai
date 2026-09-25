@@ -85,7 +85,7 @@ export default function LessonDetailContent({
       {/* Compact in-page workspace bar - the global AcademyHeader above this
           already carries branding + EN/AR + Dashboard, so this stays slim:
           just where-am-I (course + back link) and progress. */}
-      <div className="sticky top-[57px] z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div className="sticky top-[var(--academy-header-h)] z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="container-page flex items-center justify-between gap-4 py-3">
           <div className="flex min-w-0 items-center gap-3">
             <Link
@@ -187,7 +187,7 @@ export default function LessonDetailContent({
           {/* Desktop curriculum sidebar - independently scrollable, sticky
               under the workspace bar. Hidden below lg (see mobile drawer above). */}
           <aside className="hidden lg:block">
-            <div className="sticky top-[113px]">{sidebar}</div>
+            <div className="sticky top-[calc(var(--academy-header-h)_+_var(--academy-workspace-bar-h))]">{sidebar}</div>
           </aside>
         </div>
       </div>
