@@ -35,6 +35,10 @@ export default function BuyNowButton({ productSlug }: { productSlug: string }) {
       >
         {isPending ? c.redirecting_to_payment : c.buy_now}
       </button>
+      {/* Shown before the customer ever leaves for Ziina's hosted checkout,
+          not just while isPending - the point is to set the expectation
+          up front, not to react after the fact. */}
+      <p className="mt-2 text-[12px] leading-relaxed text-slate-500">{c.payment_stay_on_page_notice}</p>
       {error && <p className="mt-2 text-[13px] text-red-400">{error}</p>}
     </div>
   );

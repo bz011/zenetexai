@@ -307,6 +307,7 @@ export interface Translations {
       view_details: string; enroll_free: string; enrolling: string; continue_learning: string;
       owned_badge: string; opening_soon: string; access_duration: string; free_badge: string;
       launch_offer_badge: string; buy_now: string; redirecting_to_payment: string;
+      payment_stay_on_page_notice: string;
     };
     product: {
       overview_heading: string; curriculum_heading: string; curriculum_empty: string;
@@ -1150,6 +1151,7 @@ const en: Translations = {
       launch_offer_badge: "Launch Offer",
       buy_now: "Buy Now",
       redirecting_to_payment: "Redirecting to payment...",
+      payment_stay_on_page_notice: "Please don't close the payment page or your browser until your payment is complete and you're returned to ZentexAI with your access confirmed.",
     },
     product: {
       overview_heading: "Overview",
@@ -2068,6 +2070,7 @@ const ar: Translations = {
       launch_offer_badge: "عرض الإطلاق",
       buy_now: "اشترِ الآن",
       redirecting_to_payment: "جارٍ التحويل إلى صفحة الدفع...",
+      payment_stay_on_page_notice: "يرجى عدم إغلاق صفحة الدفع أو المتصفح حتى تكتمل عملية الدفع وتعود إلى ZentexAI ويتم تأكيد تفعيل وصولك.",
     },
     product: {
       overview_heading: "نظرة عامة",
