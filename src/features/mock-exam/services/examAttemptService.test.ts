@@ -146,6 +146,8 @@ function buildRetakeSupabaseMock(config: {
   originalRow: OriginalAttemptRow | null;
   questionRows: RetakeQuestionRow[];
   rpcResult?: { success: boolean; attempt_id?: string; error?: string };
+  /** The attempt id findActiveMockExamAttemptId() should resolve to, if the RPC reports the migration 030 unique-violation. */
+  activeAttemptId?: string | null;
 }) {
   const rpcCalls: { name: string; args: Record<string, unknown> }[] = [];
 
@@ -155,11 +157,20 @@ function buildRetakeSupabaseMock(config: {
         return {
           select: () => ({
             eq: (_col: string, _id: string) => ({
+              // Ownership check (retakeMockExamAttempt): .eq("id",...).eq("user_id",...).maybeSingle()
               eq: (col: string, value: string) => ({
                 maybeSingle: async () => {
                   if (col === "user_id" && value !== config.actualOwnerId) return { data: null, error: null };
                   return { data: config.originalRow, error: null };
                 },
+              }),
+              // Active-attempt lookup (findActiveMockExamAttemptId): .eq("user_id",...).in("status",[...]).order().limit().maybeSingle()
+              in: () => ({
+                order: () => ({
+                  limit: () => ({
+                    maybeSingle: async () => ({ data: config.activeAttemptId ? { id: config.activeAttemptId } : null, error: null }),
+                  }),
+                }),
               }),
             }),
           }),
@@ -261,6 +272,43 @@ describe("retakeMockExamAttempt security and fidelity", () => {
     const result = await retakeMockExamAttempt("original-1");
     expect(result.success).toBe(false);
     expect(result.error).toBe("not_all_questions_approved");
+  });
+
+  // --- Migration 030 (mock_exam_attempts(user_id) WHERE status IN
+  // ('active','on_break')): create_mock_exam_attempt() wraps its body in
+  // EXCEPTION WHEN OTHERS, so a lost race surfaces as a normal
+  // {success:false, error: SQLERRM} RPC response, not a thrown exception -
+  // this is exactly what a double click, two open tabs, or a retried
+  // request produces. The user should transparently resume whichever
+  // request won, never see a raw database error. ---
+  it("resolves a lost single-active-attempt race (migration 030 unique-violation) to the winning concurrent attempt instead of surfacing a raw DB error", async () => {
+    const supabase = buildRetakeSupabaseMock({
+      actualOwnerId: "user-1",
+      originalRow: ORIGINAL_ROW,
+      questionRows: THREE_QUESTIONS,
+      rpcResult: { success: false, error: 'duplicate key value violates unique constraint "idx_mock_exam_attempts_one_active_per_user"' },
+      activeAttemptId: "winning-attempt-id",
+    });
+    requireUserMock.mockResolvedValue({ supabase, user: { id: "user-1" } });
+
+    const result = await retakeMockExamAttempt("original-1");
+
+    expect(result).toEqual({ success: true, attemptId: "winning-attempt-id" });
+  });
+
+  it("still surfaces a genuine, unrelated unique-violation as a failure if no active attempt can actually be found for this user (defensive fallback)", async () => {
+    const supabase = buildRetakeSupabaseMock({
+      actualOwnerId: "user-1",
+      originalRow: ORIGINAL_ROW,
+      questionRows: THREE_QUESTIONS,
+      rpcResult: { success: false, error: 'duplicate key value violates unique constraint "idx_mock_exam_attempts_one_active_per_user"' },
+      activeAttemptId: null,
+    });
+    requireUserMock.mockResolvedValue({ supabase, user: { id: "user-1" } });
+
+    const result = await retakeMockExamAttempt("original-1");
+
+    expect(result.success).toBe(false);
   });
 });
 

@@ -57,6 +57,38 @@ export async function findActiveMockExamAttemptId(): Promise<string | null> {
   return (data as { id: string } | null)?.id ?? null;
 }
 
+/** Name of the partial unique index from migration 030 (mock_exam_attempts(user_id) WHERE status IN ('active','on_break')) - matched by substring against SQLERRM, since create_mock_exam_attempt() converts a caught exception into {success:false, error: SQLERRM} rather than throwing. */
+const ONE_ACTIVE_ATTEMPT_CONSTRAINT = "idx_mock_exam_attempts_one_active_per_user";
+
+/**
+ * Shared by createMockExamAttempt() and retakeMockExamAttempt(): both call
+ * create_mock_exam_attempt_gated(), so both can lose the same race (double
+ * click, two tabs, a retried request) against the migration 030 unique
+ * index. That is not a real failure - it means some other concurrent
+ * request for this same user already won and is now the active attempt - so
+ * this resolves it the same way the Start page's own "resume" flow would,
+ * instead of surfacing a raw database error to the user.
+ */
+async function resolveCreateAttemptResult(
+  result: { success: boolean; attempt_id?: string; error?: string } | undefined,
+  capabilityErrorMessage: string,
+  genericErrorMessage: string
+): Promise<CreateMockExamAttemptResult> {
+  if (result?.success) {
+    return { success: true, attemptId: result.attempt_id };
+  }
+  if (result?.error?.includes(ONE_ACTIVE_ATTEMPT_CONSTRAINT)) {
+    const existingId = await findActiveMockExamAttemptId();
+    if (existingId) {
+      return { success: true, attemptId: existingId };
+    }
+  }
+  if (result?.error === "capability_required") {
+    return { success: false, error: capabilityErrorMessage };
+  }
+  return { success: false, error: result?.error ?? genericErrorMessage };
+}
+
 /**
  * Runs the full blueprint engine end to end and persists the result via
  * create_mock_exam_attempt. This is the only place a Mock Exam's 180
@@ -204,14 +236,7 @@ export async function createMockExamAttempt(): Promise<CreateMockExamAttemptResu
   }
 
   const result = data as { success: boolean; attempt_id?: string; error?: string };
-  if (!result?.success) {
-    if (result?.error === "capability_required") {
-      return { success: false, error: "PMP Exam Simulator access is required to start the Mock Exam." };
-    }
-    return { success: false, error: result?.error ?? "Failed to create Mock Exam attempt" };
-  }
-
-  return { success: true, attemptId: result.attempt_id };
+  return resolveCreateAttemptResult(result, "PMP Exam Simulator access is required to start the Mock Exam.", "Failed to create Mock Exam attempt");
 }
 
 /**
@@ -284,14 +309,7 @@ export async function retakeMockExamAttempt(originalAttemptId: string): Promise<
     return { success: false, error: error.message };
   }
   const result = data as { success: boolean; attempt_id?: string; error?: string };
-  if (!result?.success) {
-    if (result?.error === "capability_required") {
-      return { success: false, error: "PMP Exam Simulator access is required to retake the Mock Exam." };
-    }
-    return { success: false, error: result?.error ?? "Failed to create retake attempt" };
-  }
-
-  return { success: true, attemptId: result.attempt_id };
+  return resolveCreateAttemptResult(result, "PMP Exam Simulator access is required to retake the Mock Exam.", "Failed to create retake attempt");
 }
 
 interface AttemptRow {
