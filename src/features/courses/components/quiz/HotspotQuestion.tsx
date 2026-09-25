@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useLang } from "@/lib/LanguageContext";
 import type { QuizQuestion, QuizSubmitAnswer } from "@/features/courses/types/course";
 import { getQuestionImagePublicUrl } from "@/lib/supabase/imageUrls";
 
@@ -19,6 +20,7 @@ interface Props {
  * The correct region itself is never sent to the client — only the image.
  */
 export default function HotspotQuestion({ question, value, onChange }: Props) {
+  const { t, lang } = useLang();
   const imgRef = useRef<HTMLImageElement>(null);
   const [marker, setMarker] = useState<{ xPct: number; yPct: number } | null>(value?.hotspotClick ?? null);
 
@@ -36,7 +38,7 @@ export default function HotspotQuestion({ question, value, onChange }: Props) {
 
   const image = question.images[0];
   if (!image) {
-    return <p className="text-[13px] text-slate-500">No image available for this question.</p>;
+    return <p className="text-[13px] text-slate-500">{t.assessment.runner.noImageAvailable}</p>;
   }
 
   return (
@@ -59,7 +61,7 @@ export default function HotspotQuestion({ question, value, onChange }: Props) {
       <img
         ref={imgRef}
         src={getQuestionImagePublicUrl(image.imagePath)}
-        alt={image.altEn ?? ""}
+        alt={(lang === "ar" && image.altAr) || image.altEn || ""}
         onClick={handleClick}
         className="h-auto w-full cursor-crosshair rounded-xl border border-white/[0.08]"
       />

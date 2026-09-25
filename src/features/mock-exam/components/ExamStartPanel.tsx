@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useLang } from "@/lib/LanguageContext";
 import { createMockExamAttempt } from "@/features/mock-exam/services/examAttemptService";
 import { getActiveBlueprint } from "@/features/mock-exam/config/examBlueprint";
 
@@ -11,6 +12,8 @@ interface Props {
 
 export default function ExamStartPanel({ activeAttemptId }: Props) {
   const router = useRouter();
+  const { t } = useLang();
+  const k = t.examStart;
   const blueprint = getActiveBlueprint();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +27,7 @@ export default function ExamStartPanel({ activeAttemptId }: Props) {
     startTransition(async () => {
       const result = await createMockExamAttempt();
       if (!result.success || !result.attemptId) {
-        setError(result.error ?? "Failed to start Mock Exam");
+        setError(result.error ?? k.failedToStart);
         return;
       }
       router.push(`/pmp/mock-exam/${result.attemptId}`);
@@ -35,17 +38,17 @@ export default function ExamStartPanel({ activeAttemptId }: Props) {
     <div className="rounded-2xl border border-slate-200 bg-white p-6">
       <div className="grid gap-3 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">Questions</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">{k.questions}</p>
           <p className="mt-1 text-xl font-bold text-slate-900">{blueprint.totalQuestions}</p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">Time Allowed</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">{k.timeAllowed}</p>
           <p className="mt-1 text-xl font-bold text-slate-900">
             {hours}h {minutes > 0 ? `${minutes}m` : ""}
           </p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">Scheduled Breaks</p>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">{k.scheduledBreaks}</p>
           <p className="mt-1 text-xl font-bold text-slate-900">
             {breakMinutes.length} × {breakMinutes[0] ?? 0}m
           </p>
@@ -53,12 +56,9 @@ export default function ExamStartPanel({ activeAttemptId }: Props) {
       </div>
 
       <div className="mt-6 space-y-2 text-[13px] leading-relaxed text-slate-600">
-        <p>
-          This is a full-length, timed simulation of the PMP exam ({blueprint.sections.length} sections of {blueprint.sections[0]?.questionCount ?? 0}{" "}
-          questions each). Once started, your question set is fixed and will not change if you refresh or return later.
-        </p>
-        <p>You may flag questions for review and move freely within a section. Once you take a scheduled break, that section is sealed for review.</p>
-        <p>The exam auto-submits if time runs out, and your answers are autosaved as you go - if you lose connection, resume where you left off.</p>
+        <p>{k.description1.replace("{sections}", String(blueprint.sections.length)).replace("{count}", String(blueprint.sections[0]?.questionCount ?? 0))}</p>
+        <p>{k.description2}</p>
+        <p>{k.description3}</p>
       </div>
 
       {error && <p className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700">{error}</p>}
@@ -69,7 +69,7 @@ export default function ExamStartPanel({ activeAttemptId }: Props) {
             onClick={() => router.push(`/pmp/mock-exam/${activeAttemptId}`)}
             className="btn-primary w-full py-3 text-[14px]"
           >
-            Resume In-Progress Exam
+            {k.resumeInProgress}
           </button>
         ) : (
           <button
@@ -77,7 +77,7 @@ export default function ExamStartPanel({ activeAttemptId }: Props) {
             disabled={isPending}
             className="btn-primary w-full py-3 text-[14px]"
           >
-            {isPending ? "Preparing your exam..." : "Begin Mock Exam"}
+            {isPending ? k.preparingExam : k.beginExam}
           </button>
         )}
       </div>

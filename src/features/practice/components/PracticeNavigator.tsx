@@ -1,6 +1,7 @@
 "use client";
 
 import { useLang } from "@/lib/LanguageContext";
+import { tf } from "@/lib/translations";
 
 interface Props {
   total: number;
@@ -25,7 +26,10 @@ export default function PracticeNavigator({ total, currentIndex, answeredIndexes
           return (
             <button
               key={i}
+              type="button"
               onClick={() => onJump(i)}
+              aria-current={isCurrent ? "true" : undefined}
+              aria-label={`${tf(nv.questionPosition, { n: i + 1 })}: ${isAnswered ? nv.answered : nv.unanswered}${isFlagged ? `, ${nv.flagged}` : ""}`}
               className={`relative flex aspect-square min-h-8 min-w-8 items-center justify-center rounded-lg text-[11px] font-semibold transition-colors ${
                 isCurrent
                   ? "bg-indigo-500 text-[#fff]"

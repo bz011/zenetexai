@@ -53,4 +53,23 @@ describe("ProductCard on /ar/courses", () => {
     expect(html).toContain("PMP Exam Simulator");
     expect(html).not.toContain("محاكي اختبار PMP");
   });
+
+  // Regression test for a stabilization-sprint RTL bug: the strikethrough
+  // regular-price span used a physical `mr-1.5` (margin-right), which stays
+  // on the visual right in Arabic instead of flipping to sit before the
+  // price text in reading order. Fixed to the logical `me-1.5` (margin-
+  // inline-end), which the browser mirrors automatically per direction.
+  it("uses a logical (direction-aware) margin on the strikethrough price, not a physical one", () => {
+    const withPromo = product({
+      price: {
+        currency: "AED",
+        effectiveAmountMinorUnits: 0,
+        regularAmountMinorUnits: 29900,
+        isPromotionActive: true,
+      } as never,
+    });
+    const html = render("/ar/courses", withPromo);
+    expect(html).toContain("me-1.5");
+    expect(html).not.toContain("mr-1.5");
+  });
 });

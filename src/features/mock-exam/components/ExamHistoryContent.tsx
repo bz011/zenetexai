@@ -12,24 +12,6 @@ interface Props {
   groups: MockExamHistoryGroup[];
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
-}
-
-function formatDuration(seconds: number): string {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.round((seconds % 3600) / 60);
-  return h > 0 ? `${h}h ${m}m` : `${m}m`;
-}
-
-const STATUS_LABEL: Record<MockExamHistoryEntry["status"], string> = {
-  active: "In progress",
-  on_break: "On break",
-  completed: "Completed",
-  expired: "Time expired",
-  abandoned: "Abandoned",
-};
-
 const STATUS_CLS: Record<MockExamHistoryEntry["status"], string> = {
   active: "bg-indigo-50 text-indigo-700 border border-indigo-200",
   on_break: "bg-indigo-50 text-indigo-700 border border-indigo-200",
@@ -40,11 +22,22 @@ const STATUS_CLS: Record<MockExamHistoryEntry["status"], string> = {
 
 export default function ExamHistoryContent({ groups }: Props) {
   const router = useRouter();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const h = t.assessment.history;
+  const statusLabel = t.assessment.statusLabel;
   const [retaking, startRetake] = useTransition();
   const [retakingId, setRetakingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  function formatDate(iso: string): string {
+    return new Date(iso).toLocaleString(lang === "ar" ? "ar" : "en-US", { dateStyle: "medium", timeStyle: "short" });
+  }
+
+  function formatDuration(seconds: number): string {
+    const hrs = Math.floor(seconds / 3600);
+    const m = Math.round((seconds % 3600) / 60);
+    return hrs > 0 ? `${hrs}h ${m}m` : `${m}m`;
+  }
 
   // Exam numbers are assigned by ORIGINAL creation order (stable identity),
   // independent of the recency-first display order groups already come in.
@@ -60,7 +53,7 @@ export default function ExamHistoryContent({ groups }: Props) {
     startRetake(async () => {
       const result = await retakeMockExamAttempt(attemptId);
       if (!result.success || !result.attemptId) {
-        setError(result.error ?? "Failed to start retake");
+        setError(result.error ?? t.examStart.failedToRetake);
         setRetakingId(null);
         return;
       }
@@ -74,7 +67,7 @@ export default function ExamHistoryContent({ groups }: Props) {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-indigo-600">PMP</span>
-            <h1 className="mt-3 text-2xl font-bold text-slate-900">Mock Exam {h.title}</h1>
+            <h1 className="mt-3 text-2xl font-bold text-slate-900">{h.examHistoryTitle}</h1>
           </div>
           <Link href="/pmp/mock-exam" className="btn-primary px-5 py-2.5 text-[13px]">
             {t.assessment.results.startNewExam}
@@ -95,7 +88,7 @@ export default function ExamHistoryContent({ groups }: Props) {
           ) : (
             groups.map((group) => (
               <div key={group.rootAttemptId} className="rounded-xl border border-slate-200 bg-white p-5">
-                <p className="mb-3 text-[13px] font-semibold text-slate-900">Mock Exam #{examNumberByRoot.get(group.rootAttemptId)}</p>
+                <p className="mb-3 text-[13px] font-semibold text-slate-900">{h.examLabel.replace("{n}", String(examNumberByRoot.get(group.rootAttemptId)))}</p>
                 <div className="space-y-2">
                   {group.attempts.map((entry, i) => {
                     const isTerminal = entry.status === "completed" || entry.status === "expired";
@@ -110,7 +103,7 @@ export default function ExamHistoryContent({ groups }: Props) {
                         </div>
                         <div className="flex items-center gap-3">
                           {entry.score !== null && <span className="text-[14px] font-semibold text-slate-900">{entry.score}%</span>}
-                          <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${STATUS_CLS[entry.status]}`}>{STATUS_LABEL[entry.status]}</span>
+                          <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${STATUS_CLS[entry.status]}`}>{statusLabel[entry.status]}</span>
                           {entry.status === "active" || entry.status === "on_break" ? (
                             <Link href={`/pmp/mock-exam/${entry.id}`} className="btn-primary px-4 py-2 text-[12px]">
                               {h.resume}

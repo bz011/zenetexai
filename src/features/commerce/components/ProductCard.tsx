@@ -39,7 +39,7 @@ export default function ProductCard({ product, owned }: { product: ProductWithPr
           isFreeNow ? (
             <span className="text-[13px] font-semibold">
               {price.regularAmountMinorUnits !== null && (
-                <span className="mr-1.5 text-slate-500 line-through">{formatMoney(price.regularAmountMinorUnits, price.currency)}</span>
+                <span className="me-1.5 text-slate-500 line-through">{formatMoney(price.regularAmountMinorUnits, price.currency)}</span>
               )}
               <span className="text-emerald-400">{c.free_badge}</span>
             </span>

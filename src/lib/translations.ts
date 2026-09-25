@@ -36,10 +36,10 @@ export interface Translations {
       previous: string; next: string; finishSection: string;
       submitExam: string; submitPractice: string; submitting: string;
       submitConfirmTitle: string; submitConfirmBody: string; keepGoing: string; submitAnyway: string;
-      saveWarning: string; noQuestionAvailable: string;
+      saveWarning: string; noQuestionAvailable: string; noImageAvailable: string;
     };
     navigator: {
-      questions: string; sectionQuestions: string; answered: string; unanswered: string; flagged: string; sealedNote: string;
+      questions: string; sectionQuestions: string; questionPosition: string; answered: string; unanswered: string; flagged: string; sealedNote: string;
     };
     breakScreen: {
       scheduledBreak: string; clockPaused: string; resumeNow: string; resuming: string;
@@ -64,7 +64,36 @@ export interface Translations {
     history: {
       title: string; attempt: string; retake: string; noAttemptsYet: string; startPrompt: string;
       resume: string; results: string; comparePerformance: string; previousScore: string; currentScore: string;
+      examHistoryTitle: string; examLabel: string;
     };
+    statusLabel: {
+      active: string; on_break: string; completed: string; expired: string; abandoned: string;
+    };
+  };
+  examStart: {
+    questions: string; timeAllowed: string; scheduledBreaks: string;
+    description1: string; description2: string; description3: string;
+    resumeInProgress: string; beginExam: string; preparingExam: string; failedToStart: string; failedToRetake: string;
+  };
+  practiceConfig: {
+    questionCount: string; domain: string; approach: string; difficulty: string; questionType: string; language: string;
+    all: string;
+    domains: { people: string; process: string; businessEnvironment: string };
+    approaches: { predictive: string; agile: string; hybrid: string; mixed: string };
+    difficulties: { easy: string; moderate: string; difficult: string; expert: string };
+    questionTypes: {
+      all: string; singleChoice: string; multipleResponse: string; matching: string;
+      dragAndDrop: string; hotspot: string; graphicBased: string;
+    };
+    languages: { english: string; arabic: string; bilingual: string };
+    timedPractice: string; perQuestion60: string; perQuestion78: string; customDuration: string; minutesPlaceholder: string;
+    checkingEligible: string; questionsAvailable: string; needMore: string;
+    startPractice: string; starting: string; failedToStart: string;
+  };
+  practiceHistory: {
+    eyebrow: string; title: string; noSessionsYet: string; startPrompt: string; startPracticing: string;
+    untimed: string; minutesShort: string; questionsCount: string; allQuestions: string;
+    resume: string; results: string; previous: string; next: string; pageOf: string;
   };
   footer: { tagline: string; rights: string };
   shared: {
@@ -349,10 +378,10 @@ const en: Translations = {
       submitExam: "Submit Exam", submitPractice: "Submit Practice", submitting: "Submitting...",
       submitConfirmTitle: "Submit with unanswered questions?", submitConfirmBody: "You have {count} unanswered question(s). Unanswered questions count as incorrect.",
       keepGoing: "Keep going", submitAnyway: "Submit anyway",
-      saveWarning: "Your last answer may not have saved - check your connection.", noQuestionAvailable: "This question is no longer available. Use the navigator to continue with another question.",
+      saveWarning: "Your last answer may not have saved - check your connection.", noQuestionAvailable: "This question is no longer available. Use the navigator to continue with another question.", noImageAvailable: "No image available for this question.",
     },
     navigator: {
-      questions: "Questions", sectionQuestions: "Section {n} Questions", answered: "Answered", unanswered: "Unanswered", flagged: "Flagged",
+      questions: "Questions", sectionQuestions: "Section {n} Questions", questionPosition: "Question {n}", answered: "Answered", unanswered: "Unanswered", flagged: "Flagged",
       sealedNote: "Completed sections are sealed and cannot be reviewed again.",
     },
     breakScreen: {
@@ -381,7 +410,42 @@ const en: Translations = {
     history: {
       title: "History", attempt: "Attempt", retake: "Retake", noAttemptsYet: "No attempts yet", startPrompt: "Start one to see your history and scores here.",
       resume: "Resume", results: "Results", comparePerformance: "Performance Comparison", previousScore: "Previous score", currentScore: "Current score",
+      examHistoryTitle: "Mock Exam History", examLabel: "Mock Exam #{n}",
     },
+    statusLabel: {
+      active: "In progress", on_break: "On break", completed: "Completed", expired: "Time expired", abandoned: "Abandoned",
+    },
+  },
+  examStart: {
+    questions: "Questions", timeAllowed: "Time Allowed", scheduledBreaks: "Scheduled Breaks",
+    description1: "This is a full-length, timed simulation of the PMP exam ({sections} sections of {count} questions each). Once started, your question set is fixed and will not change if you refresh or return later.",
+    description2: "You may flag questions for review and move freely within a section. Once you take a scheduled break, that section is sealed for review.",
+    description3: "The exam auto-submits if time runs out, and your answers are autosaved as you go - if you lose connection, resume where you left off.",
+    resumeInProgress: "Resume In-Progress Exam", beginExam: "Begin Mock Exam", preparingExam: "Preparing your exam...",
+    failedToStart: "Failed to start Mock Exam", failedToRetake: "Failed to start retake",
+  },
+  practiceConfig: {
+    questionCount: "Number of questions", domain: "Domain", approach: "Approach", difficulty: "Difficulty",
+    questionType: "Question type", language: "Language", all: "All",
+    domains: { people: "People", process: "Process", businessEnvironment: "Business Environment" },
+    approaches: { predictive: "Predictive", agile: "Agile", hybrid: "Hybrid", mixed: "Mixed" },
+    difficulties: { easy: "Easy", moderate: "Moderate", difficult: "Difficult", expert: "Expert" },
+    questionTypes: {
+      all: "All", singleChoice: "Single choice", multipleResponse: "Multiple response", matching: "Matching",
+      dragAndDrop: "Drag and drop", hotspot: "Hotspot", graphicBased: "Graphic/scenario",
+    },
+    languages: { english: "English", arabic: "Arabic", bilingual: "Bilingual" },
+    timedPractice: "Timed practice", perQuestion60: "1 minute / question", perQuestion78: "1.3 minutes / question",
+    customDuration: "Custom total duration", minutesPlaceholder: "Minutes",
+    checkingEligible: "Checking eligible questions...", questionsAvailable: "{n} question(s) available with these filters",
+    needMore: " — need {n}",
+    startPractice: "Start Practice", starting: "Starting...", failedToStart: "Failed to start practice session",
+  },
+  practiceHistory: {
+    eyebrow: "PMP", title: "Practice History", noSessionsYet: "No practice sessions yet",
+    startPrompt: "Start a practice session to see your history and scores here.", startPracticing: "Start Practicing",
+    untimed: "Untimed", minutesShort: "{n} min", questionsCount: "{n} questions", allQuestions: "All questions",
+    resume: "Resume", results: "Results", previous: "← Previous", next: "Next →", pageOf: "Page {a} of {b}",
   },
   footer: {
     tagline: "AI solutions, project management consulting, and professional learning — for the MENA region.",
@@ -1231,10 +1295,10 @@ const ar: Translations = {
       submitExam: "تسليم الامتحان", submitPractice: "تسليم التدريب", submitting: "جارٍ التسليم...",
       submitConfirmTitle: "هل تريد التسليم مع وجود أسئلة غير مجابة؟", submitConfirmBody: "لديك {count} سؤال غير مجاب. تُحتسب الأسئلة غير المجابة كإجابات خاطئة.",
       keepGoing: "متابعة", submitAnyway: "تسليم على أي حال",
-      saveWarning: "قد لا تكون إجابتك الأخيرة قد حُفظت - تحقق من اتصالك.", noQuestionAvailable: "هذا السؤال لم يعد متاحًا. استخدم لوحة التنقل للمتابعة بسؤال آخر.",
+      saveWarning: "قد لا تكون إجابتك الأخيرة قد حُفظت - تحقق من اتصالك.", noQuestionAvailable: "هذا السؤال لم يعد متاحًا. استخدم لوحة التنقل للمتابعة بسؤال آخر.", noImageAvailable: "لا توجد صورة متاحة لهذا السؤال.",
     },
     navigator: {
-      questions: "الأسئلة", sectionQuestions: "أسئلة القسم {n}", answered: "مجاب عنها", unanswered: "غير مجابة", flagged: "مُعلَّمة",
+      questions: "الأسئلة", sectionQuestions: "أسئلة القسم {n}", questionPosition: "السؤال {n}", answered: "مجاب عنها", unanswered: "غير مجابة", flagged: "مُعلَّمة",
       sealedNote: "الأقسام المكتملة مغلقة ولا يمكن مراجعتها مرة أخرى.",
     },
     breakScreen: {
@@ -1263,7 +1327,42 @@ const ar: Translations = {
     history: {
       title: "السجل", attempt: "محاولة", retake: "إعادة", noAttemptsYet: "لا توجد محاولات بعد", startPrompt: "ابدأ محاولة لترى سجلك ونتائجك هنا.",
       resume: "استئناف", results: "النتائج", comparePerformance: "مقارنة الأداء", previousScore: "النتيجة السابقة", currentScore: "النتيجة الحالية",
+      examHistoryTitle: "سجل الامتحان التجريبي", examLabel: "الامتحان التجريبي رقم {n}",
     },
+    statusLabel: {
+      active: "قيد التقدم", on_break: "في استراحة", completed: "مكتمل", expired: "انتهى الوقت", abandoned: "متروك",
+    },
+  },
+  examStart: {
+    questions: "الأسئلة", timeAllowed: "الوقت المتاح", scheduledBreaks: "الاستراحات المجدولة",
+    description1: "هذا محاكاة كاملة وموقّتة لامتحان PMP ({sections} أقسام، كل قسم {count} سؤالاً). بعد البدء، تكون مجموعة أسئلتك ثابتة ولن تتغير إذا أعدت تحميل الصفحة أو عدت لاحقاً.",
+    description2: "يمكنك تمييز الأسئلة للمراجعة والتنقل بحرية داخل القسم. بمجرد أخذ استراحة مجدولة، يُغلق ذلك القسم أمام المراجعة.",
+    description3: "يُرسَل الامتحان تلقائياً عند انتهاء الوقت، ويتم حفظ إجاباتك تلقائياً أثناء التقدم - إذا انقطع اتصالك، تابع من حيث توقفت.",
+    resumeInProgress: "استئناف الامتحان الجاري", beginExam: "بدء الامتحان التجريبي", preparingExam: "جارٍ تجهيز امتحانك...",
+    failedToStart: "تعذّر بدء الامتحان التجريبي", failedToRetake: "تعذّر بدء الإعادة",
+  },
+  practiceConfig: {
+    questionCount: "عدد الأسئلة", domain: "المجال", approach: "المنهجية", difficulty: "مستوى الصعوبة",
+    questionType: "نوع السؤال", language: "اللغة", all: "الكل",
+    domains: { people: "الأشخاص", process: "العمليات", businessEnvironment: "بيئة الأعمال" },
+    approaches: { predictive: "تنبؤي", agile: "رشيق", hybrid: "هجين", mixed: "مختلط" },
+    difficulties: { easy: "سهل", moderate: "متوسط", difficult: "صعب", expert: "خبير" },
+    questionTypes: {
+      all: "الكل", singleChoice: "اختيار واحد", multipleResponse: "اختيار متعدد", matching: "مطابقة",
+      dragAndDrop: "السحب والإفلات", hotspot: "تحديد على الصورة", graphicBased: "سيناريو مصوّر",
+    },
+    languages: { english: "الإنجليزية", arabic: "العربية", bilingual: "ثنائية اللغة" },
+    timedPractice: "تدريب موقّت", perQuestion60: "دقيقة واحدة / سؤال", perQuestion78: "1.3 دقيقة / سؤال",
+    customDuration: "مدة إجمالية مخصصة", minutesPlaceholder: "الدقائق",
+    checkingEligible: "جارٍ التحقق من الأسئلة المتاحة...", questionsAvailable: "{n} سؤالاً متاحاً بهذه الفلاتر",
+    needMore: " — يلزم {n}",
+    startPractice: "ابدأ التدريب", starting: "جارٍ البدء...", failedToStart: "تعذّر بدء جلسة التدريب",
+  },
+  practiceHistory: {
+    eyebrow: "PMP", title: "سجل التدريب", noSessionsYet: "لا توجد جلسات تدريب بعد",
+    startPrompt: "ابدأ جلسة تدريب لترى سجلك ونتائجك هنا.", startPracticing: "ابدأ التدريب",
+    untimed: "غير موقّت", minutesShort: "{n} دقيقة", questionsCount: "{n} سؤالاً", allQuestions: "كل الأسئلة",
+    resume: "استئناف", results: "النتائج", previous: "← السابق", next: "التالي →", pageOf: "صفحة {a} من {b}",
   },
   footer: {
     tagline: "حلول ذكاء اصطناعي، استشارات إدارة مشاريع، وتعليم احترافي — لمنطقة الشرق الأوسط وشمال أفريقيا.",
