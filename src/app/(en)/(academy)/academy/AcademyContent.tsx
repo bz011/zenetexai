@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "@/components/LocaleLink";
+import LessonPlayerShowcase from "@/components/academy/LessonPlayerShowcase";
+import Section from "@/components/ui/Section";
+import SectionHeader from "@/components/ui/SectionHeader";
 import { useLang } from "@/lib/LanguageContext";
 
 const PROGRAM_HREF: Record<string, string> = {
@@ -15,91 +18,76 @@ export default function AcademyContent() {
   const s = t.shared;
 
   return (
-    <div className="min-h-screen ux-page">
-      {/* Hero */}
-      <section className="relative overflow-hidden border-b border-white/[0.06] px-6 pb-16 md:pb-24 pt-28 md:pt-36">
-        <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/[0.1] blur-[120px]" />
-        <div className="container-page relative text-center">
-          <span className="label">{ac.hero_eyebrow}</span>
-          <h1 className="mt-3 text-4xl font-bold text-white md:text-5xl lg:text-6xl">{ac.hero_h1}</h1>
-          <p className="mx-auto mt-5 max-w-lg text-lead leading-relaxed text-slate-400">{ac.hero_sub}</p>
-          <div className="mt-8 flex justify-center gap-3">
-            <Link href="/courses" className="btn-primary">{ac.hero_btn1}</Link>
-            <Link href="#programs" className="btn-secondary">{ac.hero_btn2}</Link>
+    <div>
+      {/* Hero: copy + the real lesson player. Copy is visible at first paint (no entrance animation). */}
+      <section aria-labelledby="academy-title">
+        <div className="container-page grid items-center gap-10 pb-14 pt-10 md:pb-20 md:pt-14 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14">
+          <div>
+            <p className="label">{ac.hero_eyebrow}</p>
+            <h1 id="academy-title" className="mt-4 text-display text-ink">{ac.hero_h1}</h1>
+            <p className="mt-6 max-w-lg text-lead text-ink-2">{ac.hero_sub}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/courses" className="btn-primary">{ac.hero_btn1}</Link>
+              <Link href="#programs" className="btn-secondary">{ac.hero_btn2}</Link>
+            </div>
           </div>
+          <LessonPlayerShowcase />
         </div>
       </section>
 
-      {/* Features */}
-      <section className="border-b border-white/[0.06] px-6 py-12 md:py-16">
-        <div className="container-page">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {ac.features.map((f) => (
-              <div key={f.title} className="card p-5">
-                <div className="mb-3 h-px w-8 bg-gradient-to-r from-indigo-500 to-violet-500" />
-                <h3 className="text-body font-semibold text-white">{f.title}</h3>
-                <p className="mt-1.5 text-small leading-relaxed text-slate-400">{f.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Why the Academy: statements separated by hairlines, not boxes */}
+      <Section bordered tight aria-label={ac.hero_h1}>
+        <ul className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+          {ac.features.map((f) => (
+            <li key={f.title} className="border-t border-line-strong pt-4">
+              <h2 className="text-h4 text-ink">{f.title}</h2>
+              <p className="mt-2 text-small text-ink-2">{f.desc}</p>
+            </li>
+          ))}
+        </ul>
+      </Section>
 
-      {/* Programs */}
-      <section id="programs" className="px-6 py-16 md:py-24">
-        <div className="container-page">
-          <div className="mb-10">
-            <span className="label">{ac.programs_eyebrow}</span>
-            <h2 className="mt-2 text-2xl font-bold text-white md:text-3xl">{ac.programs_h2}</h2>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {ac.programs.map((program) => {
-              const isAvailable = program.status === s.available || program.status === "Available";
-              return (
-                <div
-                  key={program.id}
-                  className={`card card-hover flex flex-col p-6 ${isAvailable ? "" : "opacity-70"}`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="label text-caption">{program.tag}</span>
-                    <span
-                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-caption font-semibold ${
-                        isAvailable ? "bg-emerald-500/[0.12] text-emerald-400" : "bg-white/[0.05] text-slate-400"
-                      }`}
-                    >
-                      {program.status}
-                    </span>
+      {/* Programs: an index, each row with its status */}
+      <Section id="programs" bordered aria-labelledby="programs-title">
+        <SectionHeader eyebrow={ac.programs_eyebrow} title={ac.programs_h2} id="programs-title" />
+        <ul className="divide-y divide-line border-y border-line">
+          {ac.programs.map((program) => {
+            const isAvailable = program.status === s.available || program.status === "Available";
+            const href = PROGRAM_HREF[program.id] ?? "/contact";
+            return (
+              <li key={program.id}>
+                <div className="grid gap-x-8 gap-y-2 py-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1.7fr)_auto] md:items-start">
+                  <div>
+                    <p className="text-caption font-semibold uppercase tracking-[0.1em] text-ink-3">{program.tag}</p>
+                    <h3 className={`mt-1 text-h3 ${isAvailable ? "text-ink" : "text-ink-2"}`}>{program.title}</h3>
+                    <span className={`badge mt-2 ${isAvailable ? "badge-positive" : ""}`}>{program.status}</span>
                   </div>
-
-                  <h3 className="mt-3 text-body font-semibold text-white">{program.title}</h3>
-                  <p className="mt-2 flex-1 text-small leading-relaxed text-slate-400">{program.desc}</p>
-
-                  <div className="mt-5 flex items-center justify-between border-t border-white/[0.06] pt-4">
-                    <span className="text-small text-slate-400">{program.duration ?? ""}</span>
-                    {isAvailable && (
-                      <Link href={PROGRAM_HREF[program.id] ?? "/contact"} className="btn-ghost text-small">
-                        {s.learn_more}
-                      </Link>
-                    )}
+                  <div>
+                    <p className="text-body text-ink-2">{program.desc}</p>
+                    {program.duration && <p className="mt-2 text-caption text-ink-3">{program.duration}</p>}
+                  </div>
+                  <div className="md:pt-1">
+                    <Link href={href} className="btn-ghost">
+                      {isAvailable ? s.learn_more : s.contact_us}
+                    </Link>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+              </li>
+            );
+          })}
+        </ul>
+      </Section>
 
-      {/* Bottom CTA */}
-      <section className="border-t border-white/[0.06] bg-white/[0.015] px-6 py-14 md:py-20 text-center">
-        <div className="container-page">
-          <h2 className="text-2xl font-bold text-white">{ac.bottom_h2}</h2>
-          <p className="mx-auto mt-3 max-w-md text-body text-slate-400">{ac.bottom_p}</p>
-          <div className="mt-7">
+      {/* Closing action */}
+      <Section bordered tight raised>
+        <div className="mx-auto max-w-xl text-center">
+          <h2 className="text-h3 text-ink">{ac.bottom_h2}</h2>
+          <p className="mt-3 text-body text-ink-2">{ac.bottom_p}</p>
+          <div className="mt-6">
             <Link href="/contact" className="btn-primary">{ac.bottom_btn}</Link>
           </div>
         </div>
-      </section>
+      </Section>
     </div>
   );
 }

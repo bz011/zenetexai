@@ -1,6 +1,8 @@
 import Link from "@/components/LocaleLink";
 import JsonLd from "@/components/JsonLd";
 import { faqJsonLd } from "@/lib/structuredData";
+import Accordion from "@/components/ui/Accordion";
+import Section from "@/components/ui/Section";
 
 /**
  * Server-rendered, bilingual (English + Arabic) informational block for the
@@ -119,66 +121,55 @@ export default function PmpDiscoverabilitySection({ variant, arabicOnly = false,
   const showEn = !arabicOnly;
   const showAr = !englishOnly;
   const both = showEn && showAr;
+  // Native <details> accordion: every answer stays in the DOM, so crawlers and
+  // AI retrieval read the full text, while people get a scannable page.
+  const items = (faq: { q: string; a: string }[], prefix: string) => faq.map((f, i) => ({ id: `${prefix}-${i}`, question: f.q, answer: f.a }));
   return (
-    <section id={c.id} className="ux-page border-t border-white/[0.06] px-6 py-14 md:py-20">
+    <Section id={c.id} bordered>
       {showEn && <JsonLd data={faqJsonLd(c.faq, "en")} />}
       {showAr && <JsonLd data={faqJsonLd(c.faqAr, "ar")} />}
-      <div className={`container-page grid gap-10 ${both ? "lg:grid-cols-2" : ""}`}>
+      <div className={`grid gap-12 ${both ? "lg:grid-cols-2" : ""}`}>
         {showEn && (
-        <div lang="en" dir="ltr">
-          <h2 className="text-2xl font-bold text-white md:text-3xl">{c.h2En}</h2>
-          {c.pEn.map((p) => (
-            <p key={p} className="mt-4 text-body leading-relaxed text-slate-400">{p}</p>
-          ))}
-          <ul className="mt-5 list-disc space-y-2 pl-5 text-body leading-relaxed text-slate-400">
-            {c.bulletsEn.map((b) => <li key={b}>{b}</li>)}
-          </ul>
-          <div className="mt-8 space-y-5">
-            {c.faq.map((f) => (
-              <div key={f.q}>
-                <h3 className="text-body font-semibold text-white">{f.q}</h3>
-                <p className="mt-1.5 text-body leading-relaxed text-slate-400">{f.a}</p>
-              </div>
+          <div lang="en" dir="ltr" className="max-w-3xl">
+            <h2 className="text-h2 text-ink">{c.h2En}</h2>
+            {c.pEn.map((p) => (
+              <p key={p} className="mt-4 text-body text-ink-2">{p}</p>
             ))}
+            <ul className="mt-5 list-disc space-y-2 ps-5 text-body text-ink-2">
+              {c.bulletsEn.map((b) => <li key={b}>{b}</li>)}
+            </ul>
+            <Accordion className="mt-8" items={items(c.faq, `${c.id}-en`)} />
           </div>
-        </div>
         )}
 
         {showAr && (
-        <div lang="ar" dir="rtl">
-          <h2 className="text-2xl font-bold text-white md:text-3xl">{c.h2Ar}</h2>
-          {c.pAr.map((p) => (
-            <p key={p} className="mt-4 text-body leading-relaxed text-slate-400">{p}</p>
-          ))}
-          <ul className="mt-5 list-disc space-y-2 pr-5 text-body leading-relaxed text-slate-400">
-            {c.bulletsAr.map((b) => <li key={b}>{b}</li>)}
-          </ul>
-          <div className="mt-8 space-y-5">
-            {c.faqAr.map((f) => (
-              <div key={f.q}>
-                <h3 className="text-body font-semibold text-white">{f.q}</h3>
-                <p className="mt-1.5 text-body leading-relaxed text-slate-400">{f.a}</p>
-              </div>
+          <div lang="ar" dir="rtl" className="max-w-3xl">
+            <h2 className="text-h2 text-ink">{c.h2Ar}</h2>
+            {c.pAr.map((p) => (
+              <p key={p} className="mt-4 text-body text-ink-2">{p}</p>
             ))}
+            <ul className="mt-5 list-disc space-y-2 ps-5 text-body text-ink-2">
+              {c.bulletsAr.map((b) => <li key={b}>{b}</li>)}
+            </ul>
+            <Accordion className="mt-8" items={items(c.faqAr, `${c.id}-ar`)} />
           </div>
-        </div>
         )}
       </div>
 
-      <div className="container-page mt-10">
-        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-center">
+      <div className="mt-10">
+        <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-1 text-center">
           {c.links.map((l) => (
-            <Link key={l.href} href={l.href} className="text-small font-medium text-indigo-400 transition-colors hover:text-indigo-300">
+            <Link key={l.href} href={l.href} className="btn-ghost">
               {englishOnly ? l.en : arabicOnly ? <span lang="ar">{l.ar}</span> : <>{l.en} · <span lang="ar">{l.ar}</span></>}
             </Link>
           ))}
         </div>
-        <p className="mt-6 text-center text-caption text-slate-400">
+        <p className="mt-6 text-center text-caption text-ink-3">
           {showEn && "PMP is a registered mark of Project Management Institute, Inc. ZentexAI is an independent training provider."}
           {both && " · "}
           {showAr && <span lang="ar">PMP علامة مسجلة لمعهد إدارة المشاريع (PMI). ZentexAI جهة تدريب مستقلة.</span>}
         </p>
       </div>
-    </section>
+    </Section>
   );
 }
