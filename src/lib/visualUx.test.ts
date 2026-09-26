@@ -12,7 +12,10 @@ vi.mock("next/link", () => ({
 
 import { LanguageProvider } from "./LanguageContext";
 import { visualCopy } from "./visualCopy";
-import { AgentContextDiagram, DashboardSketch, FlowVisual, SimulatorLoopVisual } from "@/components/visuals/Visuals";
+import { SimulatorLoopVisual } from "@/components/visuals/Visuals";
+import AgentFlowSection from "@/components/flow/AgentFlowSection";
+import MechanismFlow from "@/components/flow/MechanismFlow";
+import { mechanismCopy } from "./mechanismCopy";
 import ServiceLandingContent from "@/components/ServiceLandingContent";
 
 const ROOT = path.resolve(__dirname, "../..");
@@ -91,26 +94,49 @@ describe("diagram copy", () => {
 
   it("has English and Arabic with identical structure and no empty strings", () => {
     const shape = (v: typeof en) => ({
-      agentSteps: v.agent.steps.length, agentIn: v.agent.inputs.length, agentSys: v.agent.systems.length,
-      ml: v.mlFlow.steps.length, an: v.analyticsFlow.steps.length, sim: v.simulatorLoop.steps.length,
+      agentSteps: v.agent.steps.length, agentIn: v.agent.inputs.length, agentSys: v.agent.systems.length, sim: v.simulatorLoop.steps.length,
     });
     expect(shape(ar)).toEqual(shape(en));
     expect(JSON.stringify(ar)).not.toMatch(/:\s*""/);
     expect(JSON.stringify(en)).not.toMatch(/:\s*""/);
+    for (const kind of Object.keys(mechanismCopy.en) as (keyof typeof mechanismCopy.en)[]) {
+      const e = mechanismCopy.en[kind];
+      const a = mechanismCopy.ar[kind];
+      expect(a.stages.length, kind).toBe(e.stages.length);
+      expect(a.gates.length, kind).toBe(e.stages.length - 1);
+      expect(e.gates.length, kind).toBe(e.stages.length - 1);
+      expect(JSON.stringify(a), kind).not.toMatch(/:\s*""/);
+    }
   });
 
   it("makes no result, scale, client, testimonial or guarantee claims", () => {
-    const text = JSON.stringify(en);
+    const text = JSON.stringify(en) + JSON.stringify(mechanismCopy.en);
     for (const re of [/\d+\s*%/, /\bROI\b/i, /guarantee/i, /testimonial/i, /case stud/i, /trusted by/i, /award/i, /certified|partner\b/i, /\b\d+x\b/i]) {
       expect(text, String(re)).not.toMatch(re);
     }
   });
 
-  it("labels the dashboard as a layout sketch with no real data or client work", () => {
-    expect(en.dashboardSketch.chip).toMatch(/no real data/i);
-    expect(en.dashboardSketch.sub).toMatch(/no client work/i);
-    expect(ar.dashboardSketch.chip).toContain("دون بيانات حقيقية");
-    expect(ar.dashboardSketch.sub).toContain("دون أي عمل لعميل");
+  it("shows no fabricated dashboard or chart: the Power BI mechanism describes a process, not UI", () => {
+    const pb = JSON.stringify(mechanismCopy.en.powerBi);
+    expect(pb).not.toMatch(/sketch|mock-?up|sample data|placeholder/i);
+    expect(mechanismCopy.en.powerBi.stages.map((s) => s.title)).toEqual(["Sources", "Semantic model", "Measures", "Report", "Refresh and governance"]);
+  });
+
+  it("the mechanisms follow the approved flows", () => {
+    expect(mechanismCopy.en.analytics.stages.map((s) => s.title)).toEqual(["Sources", "Validation and transformation", "Analysis and model", "Insight", "Decision"]);
+    expect(mechanismCopy.en.ml.stages.map((s) => s.title)).toEqual(["Data", "Baseline", "Candidate models", "Evaluation", "Decision and monitoring"]);
+  });
+
+  it("each mechanism restates wording the service page already publishes", () => {
+    const pages = read("src/lib/translations.ts") + read("src/lib/serviceLandingCopy.ts");
+    for (const phrase of [
+      "We establish a simple baseline first", // ML: baseline first
+      "metrics tied to the business outcome", // ML: evaluation
+      "We agree on written definitions for each KPI", // analytics: definitions
+      "reconcile the figures against source systems", // analytics/Power BI: reconciliation
+      "documented measures", // Power BI: measures
+      "row-level security", // Power BI: governance
+    ]) expect(pages, phrase).toContain(phrase);
   });
 
   it("the agent diagram restates only behaviour the AI Agents page already describes", () => {
@@ -122,18 +148,19 @@ describe("diagram copy", () => {
 
 describe("rendered diagrams (server HTML)", () => {
   it("English URL renders English; Arabic URL renders the Arabic diagram in the initial HTML", () => {
-    const enHtml = render("/services/ai-agents-automation-uae", () => createElement(AgentContextDiagram));
+    const enHtml = render("/services/ai-agents-automation-uae", () => createElement(AgentFlowSection));
     expect(enHtml).toContain(visualCopy.en.agent.heading);
-    const arHtml = render("/ar/services/ai-agents-automation-uae", () => createElement(AgentContextDiagram));
+    const arHtml = render("/ar/services/ai-agents-automation-uae", () => createElement(AgentFlowSection));
     expect(arHtml).toContain(visualCopy.ar.agent.heading);
     expect(arHtml).not.toContain(visualCopy.en.agent.heading);
   });
 
   it("diagrams are text-only HTML/SVG: accessible group labels, no raster images, no unresolved placeholders", () => {
     for (const [p, el] of [
-      ["/services/machine-learning-uae", () => createElement(FlowVisual, { kind: "mlFlow" })],
-      ["/ar/services/data-analytics-uae", () => createElement(FlowVisual, { kind: "analyticsFlow" })],
-      ["/services/power-bi-consulting-uae", () => createElement(DashboardSketch)],
+      ["/services/machine-learning-uae", () => createElement(MechanismFlow, { kind: "ml" })],
+      ["/ar/services/data-analytics-uae", () => createElement(MechanismFlow, { kind: "analytics" })],
+      ["/services/power-bi-consulting-uae", () => createElement(MechanismFlow, { kind: "powerBi" })],
+      ["/services/ai-agents-automation-uae", () => createElement(AgentFlowSection)],
       ["/ar/courses/pmp-exam-simulator", () => createElement(SimulatorLoopVisual)],
     ] as const) {
       const html = render(p, el);
@@ -144,6 +171,18 @@ describe("rendered diagrams (server HTML)", () => {
     }
   });
 
+  it("every mechanism renders all its stages and gates as readable HTML text, in both languages", () => {
+    for (const [lang, path] of [["en", "/services/machine-learning-uae"], ["ar", "/ar/services/machine-learning-uae"]] as const) {
+      for (const kind of ["analytics", "powerBi", "ml"] as const) {
+        const html = render(path, () => createElement(MechanismFlow, { kind }));
+        const c = mechanismCopy[lang][kind];
+        for (const st of c.stages) expect(html, `${lang}/${kind}/${st.title}`).toContain(st.title);
+        for (const g of c.gates) expect(html, `${lang}/${kind}/${g}`).toContain(g);
+        expect(html).toContain("<ol");
+      }
+    }
+  });
+
   it("the simulator loop shows the exam structure from the blueprint, in both languages", () => {
     const en = render("/courses/pmp-exam-simulator", () => createElement(SimulatorLoopVisual));
     expect(en).toContain("180 questions in 4 hours");
@@ -151,21 +190,21 @@ describe("rendered diagrams (server HTML)", () => {
     expect(ar).toContain("180 سؤالاً في 4 ساعات");
   });
 
-  it("the shared landing template shows the analytics flow / dashboard sketch only when asked, in both languages", () => {
-    const withSketch = render("/ar/services/power-bi-consulting-uae", () => createElement(ServiceLandingContent, { copyKey: "powerBi", visual: "dashboardSketch" }));
-    expect(withSketch).toContain(visualCopy.ar.dashboardSketch.chip);
-    const withFlow = render("/services/data-analytics-uae", () => createElement(ServiceLandingContent, { copyKey: "dataAnalytics", visual: "analyticsFlow" }));
-    expect(withFlow).toContain(visualCopy.en.analyticsFlow.heading);
+  it("the shared landing template shows a mechanism only when asked, in both languages", () => {
+    const withMech = render("/ar/services/power-bi-consulting-uae", () => createElement(ServiceLandingContent, { copyKey: "powerBi", mechanism: "powerBi" }));
+    expect(withMech).toContain(mechanismCopy.ar.powerBi.heading);
+    const withFlow = render("/services/data-analytics-uae", () => createElement(ServiceLandingContent, { copyKey: "dataAnalytics", mechanism: "analytics" }));
+    expect(withFlow).toContain(mechanismCopy.en.analytics.heading);
     const bare = render("/services/data-analytics-uae", () => createElement(ServiceLandingContent, { copyKey: "dataAnalytics" }));
-    expect(bare).not.toContain(visualCopy.en.analyticsFlow.heading);
+    expect(bare).not.toContain(mechanismCopy.en.analytics.heading);
   });
 
-  it("passes the visual choice on the real English and Arabic pages", () => {
+  it("passes the mechanism choice on the real English and Arabic pages", () => {
     for (const base of ["src/app/(en)/(corporate)/services", "src/app/(ar)/ar/(corporate)/services"]) {
-      expect(read(`${base}/data-analytics-uae/page.tsx`)).toContain('visual="analyticsFlow"');
-      expect(read(`${base}/power-bi-consulting-uae/page.tsx`)).toContain('visual="dashboardSketch"');
+      expect(read(`${base}/data-analytics-uae/page.tsx`)).toContain('mechanism="analytics"');
+      expect(read(`${base}/power-bi-consulting-uae/page.tsx`)).toContain('mechanism="powerBi"');
     }
-    expect(read("src/app/(en)/(corporate)/services/ai-agents-automation-uae/AiAgentsAutomationContent.tsx")).toContain("<AgentContextDiagram />");
-    expect(read("src/app/(en)/(corporate)/services/machine-learning-uae/MachineLearningContent.tsx")).toContain('<FlowVisual kind="mlFlow" />');
+    expect(read("src/app/(en)/(corporate)/services/ai-agents-automation-uae/AiAgentsAutomationContent.tsx")).toContain("<AgentFlowSection />");
+    expect(read("src/app/(en)/(corporate)/services/machine-learning-uae/MachineLearningContent.tsx")).toContain('<MechanismSection kind="ml" />');
   });
 });

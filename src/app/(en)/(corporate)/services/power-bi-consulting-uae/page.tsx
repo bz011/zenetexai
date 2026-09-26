@@ -31,7 +31,7 @@ export default function PowerBiConsultingPage() {
         })}
       />
       <JsonLd data={faqJsonLd(powerBiCopy.en.faq)} />
-      <ServiceLandingContent copyKey="powerBi" visual="dashboardSketch" />
+      <ServiceLandingContent copyKey="powerBi" mechanism="powerBi" />
     </>
   );
 }

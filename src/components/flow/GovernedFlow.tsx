@@ -1,7 +1,7 @@
 "use client";
 
-import { forwardRef, useCallback, useEffect, useRef } from "react";
-import { animateSequence } from "motion/mini";
+import { forwardRef, useCallback, useRef } from "react";
+import { FX, useFlowPlayback } from "@/components/flow/useFlowPlayback";
 import { useLang } from "@/lib/LanguageContext";
 import { visualCopy } from "@/lib/visualCopy";
 import { flowCopy } from "@/lib/flowCopy";
@@ -41,29 +41,6 @@ const ROWS: RowSpec[] = [
   { kind: "gate", key: "result" },
   { kind: "systems", key: "systems" },
 ];
-
-// Storytelling timeline: one narrative pass, once. Each transition is <= 240ms;
-// the whole pass (9 rows) is ~2s and is skipped entirely for reduced motion.
-const STEP_S = 0.18;
-const START_S = 0.4;
-const EASE = [0.22, 1, 0.36, 1] as const;
-
-/** Idle -> done transforms/opacities for each animated part. `done` is also the reduced-motion state. */
-const FX = {
-  rail: { idle: { transform: "scaleY(0)" }, done: { transform: "scaleY(1)" } },
-  dot: { idle: { transform: "scale(0)" }, done: { transform: "scale(1)" } },
-  gate: { idle: { opacity: "0" }, done: { opacity: "1" } },
-  branch: { idle: { opacity: "0" }, done: { opacity: "1" } },
-  tick: { idle: { transform: "scaleY(0.25)", opacity: "0.35" }, done: { transform: "scaleY(1)", opacity: "1" } },
-} as const;
-type FxName = keyof typeof FX;
-
-function setState(root: HTMLElement, state: "idle" | "done") {
-  root.querySelectorAll<HTMLElement | SVGElement>("[data-fx]").forEach((el) => {
-    const name = el.getAttribute("data-fx") as FxName;
-    Object.assign(el.style, FX[name][state]);
-  });
-}
 
 function Rail({ first, last, gate, row }: { first: boolean; last: boolean; gate: boolean; row: number }) {
   // Spans the whole row and stretches vertically only (viewBox is 28px wide,
@@ -114,57 +91,7 @@ const GovernedFlow = forwardRef<HTMLElement, { showReplay?: boolean; className?:
     },
     [forwardedRef]
   );
-  const controls = useRef<{ stop: () => void } | null>(null);
-  const reducedRef = useRef(false);
-
-  const play = useCallback(() => {
-    const root = ref.current;
-    if (!root) return;
-    controls.current?.stop();
-    if (reducedRef.current) {
-      // Reduced motion: resolve immediately to the final, understandable state.
-      setState(root, "done");
-      return;
-    }
-    setState(root, "idle");
-    const sequence: unknown[] = [];
-    root.querySelectorAll<HTMLElement | SVGElement>("[data-fx]").forEach((el) => {
-      const name = el.getAttribute("data-fx") as FxName;
-      const row = Number(el.getAttribute("data-row") ?? 0);
-      const at = START_S + row * STEP_S;
-      const to = FX[name].done;
-      const keyframes: Record<string, unknown[]> = {};
-      for (const key of Object.keys(to) as (keyof typeof to)[]) {
-        keyframes[key] = [(FX[name].idle as Record<string, string>)[key], (to as Record<string, string>)[key]];
-      }
-      sequence.push([el, keyframes, { duration: name === "rail" ? 0.24 : 0.2, ease: EASE, at }]);
-    });
-    controls.current = animateSequence(sequence as never);
-  }, []);
-
-  useEffect(() => {
-    reducedRef.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const root = ref.current;
-    if (!root) return;
-    if (!("IntersectionObserver" in window)) {
-      setState(root, "done");
-      return;
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          observer.disconnect();
-          play();
-        }
-      },
-      { threshold: 0.3 }
-    );
-    observer.observe(root);
-    return () => {
-      observer.disconnect();
-      controls.current?.stop();
-    };
-  }, [play]);
+  const { play } = useFlowPlayback(ref);
 
   return (
     <figure ref={setRef} role="group" aria-label={c.label} className={`mechanism relative p-5 md:p-6 ${className}`}>

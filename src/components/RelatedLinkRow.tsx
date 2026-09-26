@@ -11,8 +11,8 @@ interface RelatedItem {
 }
 
 const STYLES = {
-  muted: "text-small text-slate-400 transition-colors hover:text-slate-200",
-  accent: "text-small font-medium text-indigo-400 transition-colors hover:text-indigo-300",
+  muted: "text-small text-ink-2 transition-colors hover:text-ink",
+  accent: "text-small font-medium text-accent-fg transition-colors hover:text-accent-fg",
 };
 
 export default function RelatedLinkRow({ items, variant = "muted" }: { items: RelatedItem[]; variant?: keyof typeof STYLES }) {

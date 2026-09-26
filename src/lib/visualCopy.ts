@@ -3,12 +3,11 @@
  *
  * Every statement restates something the same page (or the implemented
  * product) already says: the AI-agent diagram uses the agent behaviour
- * described on the AI Agents page, the ML diagram the page's own
- * "learns patterns -> prediction -> decision" and baseline explanation, the
- * analytics diagram the data-analytics process, and the simulator loop the
- * verified Practice Mode / mock exam / review / retake features. Nothing
- * here is a client result, a metric, or a claim of scale. The dashboard is
- * a layout sketch and says so.
+ * described on the AI Agents page (rendered by flow/GovernedFlow), and the
+ * simulator loop the verified Practice Mode / mock exam / review / retake
+ * features. The ML, analytics and Power BI mechanisms live in
+ * lib/mechanismCopy.ts. Nothing here is a client result, a metric, or a claim
+ * of scale.
  *
  * Placeholders {questions} {hours} are filled from the exam blueprint.
  */
@@ -25,16 +24,8 @@ export interface AgentCopy {
   audit: string;
 }
 
-export interface SketchCopy {
-  eyebrow: string; heading: string; sub: string; label: string; chip: string;
-  metric: string; trend: string; breakdown: string; filters: string;
-}
-
 interface VisualCopy {
   agent: AgentCopy;
-  mlFlow: FlowCopy;
-  analyticsFlow: FlowCopy;
-  dashboardSketch: SketchCopy;
   simulatorLoop: FlowCopy;
 }
 
@@ -58,43 +49,6 @@ const en: VisualCopy = {
     human_title: "Your team",
     human: "Anything outside the agent's permissions is handed over with full context.",
     audit: "Every decision and action is logged, so you can review what happened and why.",
-  },
-  mlFlow: {
-    eyebrow: "How It Works",
-    heading: "From Historical Data to a Business Decision",
-    sub: "Machine learning learns patterns from past examples to produce a prediction or a score. A person or workflow then acts on it.",
-    label: "Diagram: historical data, pattern learning, a prediction or score, then a business decision.",
-    steps: [
-      { title: "Historical data", desc: "Records of past outcomes, such as orders, tickets or transactions" },
-      { title: "Pattern learning", desc: "A model learns what usually leads to each outcome" },
-      { title: "Prediction or score", desc: "A forecast, a classification or a flag for unusual activity" },
-      { title: "Business decision", desc: "Your team or workflow acts on the result" },
-    ],
-    note: "Before anything goes live, the model is compared with a simple baseline, so its value is measured against something real.",
-  },
-  analyticsFlow: {
-    eyebrow: "How It Works",
-    heading: "From Scattered Data to Decisions",
-    sub: "Analytics work turns the data you already have into agreed numbers your team can act on.",
-    label: "Diagram: your data sources, audit and modelling, agreed KPIs, then dashboards and reports that support decisions.",
-    steps: [
-      { title: "Your data sources", desc: "Spreadsheets, system exports and reports" },
-      { title: "Audit and model", desc: "Sources reviewed, cleaned and structured consistently" },
-      { title: "Agreed KPIs", desc: "Written definitions everyone reads the same way" },
-      { title: "Dashboards and reports", desc: "Interactive views and scheduled reports your team uses to decide" },
-    ],
-    note: "An illustrative process. The exact scope is agreed before work starts.",
-  },
-  dashboardSketch: {
-    eyebrow: "The Deliverable",
-    heading: "How a Management Dashboard Is Organised",
-    sub: "A layout sketch of a typical management dashboard. It shows structure only, with no real data and no client work.",
-    label: "Layout sketch of a management dashboard with headline metric tiles, a trend chart, a category breakdown and filters. Structure only, no real data.",
-    chip: "Layout sketch, no real data",
-    metric: "Headline metric",
-    trend: "Trend over time",
-    breakdown: "Breakdown by category",
-    filters: "Filters, for example date or region",
   },
   simulatorLoop: {
     eyebrow: "How Preparation Works",
@@ -130,43 +84,6 @@ const ar: VisualCopy = {
     human_title: "فريقك",
     human: "يُحال أي أمر يخرج عن صلاحيات الوكيل إلى الفريق مع السياق الكامل.",
     audit: "يُسجَّل كل قرار وإجراء، لتراجع ما حدث ولماذا.",
-  },
-  mlFlow: {
-    eyebrow: "كيف يعمل",
-    heading: "من البيانات التاريخية إلى قرار العمل",
-    sub: "يتعلم تعلّم الآلة الأنماط من أمثلة سابقة لينتج تنبؤاً أو درجة. ثم يتصرف شخص أو سير عمل بناءً عليها.",
-    label: "مخطط: بيانات تاريخية، ثم تعلّم الأنماط، ثم تنبؤ أو درجة، ثم قرار عمل.",
-    steps: [
-      { title: "بيانات تاريخية", desc: "سجلات لنتائج سابقة، مثل الطلبات أو التذاكر أو المعاملات" },
-      { title: "تعلّم الأنماط", desc: "يتعلم النموذج ما يؤدي عادة إلى كل نتيجة" },
-      { title: "تنبؤ أو درجة", desc: "توقع أو تصنيف أو إشارة إلى نشاط غير معتاد" },
-      { title: "قرار العمل", desc: "يتصرف فريقك أو سير العمل بناءً على النتيجة" },
-    ],
-    note: "قبل الإطلاق، يُقارن النموذج بخط أساس بسيط، لتُقاس قيمته مقابل شيء حقيقي.",
-  },
-  analyticsFlow: {
-    eyebrow: "كيف يعمل",
-    heading: "من البيانات المتفرقة إلى القرارات",
-    sub: "يحوّل عمل التحليل البيانات التي تملكها إلى أرقام متفق عليها يتصرف فريقك بناءً عليها.",
-    label: "مخطط: مصادر بياناتك، ثم التدقيق والنمذجة، ثم مؤشرات أداء متفق عليها، ثم لوحات معلومات وتقارير تدعم القرارات.",
-    steps: [
-      { title: "مصادر بياناتك", desc: "جداول بيانات وتصديرات الأنظمة والتقارير" },
-      { title: "التدقيق والنمذجة", desc: "مراجعة المصادر وتنظيفها وهيكلتها بشكل متسق" },
-      { title: "مؤشرات أداء متفق عليها", desc: "تعريفات مكتوبة يقرؤها الجميع بالطريقة نفسها" },
-      { title: "لوحات المعلومات والتقارير", desc: "عروض تفاعلية وتقارير مجدولة يستخدمها فريقك لاتخاذ القرار" },
-    ],
-    note: "عملية توضيحية. يُتفق على النطاق الدقيق قبل بدء العمل.",
-  },
-  dashboardSketch: {
-    eyebrow: "المخرج",
-    heading: "كيف تُنظَّم لوحة المعلومات الإدارية",
-    sub: "رسم تخطيطي لتخطيط لوحة معلومات إدارية نموذجية. يعرض البنية فقط، دون بيانات حقيقية ودون أي عمل لعميل.",
-    label: "رسم تخطيطي للوحة معلومات إدارية يضم بطاقات مؤشرات رئيسية ومخطط اتجاه وتفصيلاً حسب الفئة ومرشحات. البنية فقط، دون بيانات حقيقية.",
-    chip: "رسم تخطيطي، دون بيانات حقيقية",
-    metric: "مؤشر رئيسي",
-    trend: "الاتجاه عبر الزمن",
-    breakdown: "التفصيل حسب الفئة",
-    filters: "المرشحات، مثل التاريخ أو المنطقة",
   },
   simulatorLoop: {
     eyebrow: "كيف يتم التحضير",

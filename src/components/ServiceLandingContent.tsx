@@ -3,46 +3,36 @@
 import Link from "@/components/LocaleLink";
 import { useLang } from "@/lib/LanguageContext";
 import type { ServiceLandingCopy } from "@/lib/serviceLandingCopy";
-import { DashboardSketch, FlowVisual } from "@/components/visuals/Visuals";
+import { MechanismSection } from "@/components/flow/MechanismFlow";
+import type { MechanismKind } from "@/lib/mechanismCopy";
+import PageHero from "@/components/ui/PageHero";
 
 type Key = "dataAnalytics" | "powerBi";
 
-export default function ServiceLandingContent({ copyKey, visual }: { copyKey: Key; visual?: "analyticsFlow" | "dashboardSketch" }) {
+export default function ServiceLandingContent({ copyKey, mechanism }: { copyKey: Key; mechanism?: MechanismKind }) {
   const { t } = useLang();
   const c: ServiceLandingCopy = t[copyKey];
 
   return (
     <div className="min-h-screen ux-page">
-      <section className="relative overflow-hidden border-b border-white/[0.06] px-6 pb-16 md:pb-24 pt-28 md:pt-36">
-        <div className="pointer-events-none absolute left-1/2 top-0 h-[400px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/[0.1] blur-[120px]" />
-        <div className="container-page relative text-center">
-          <span className="label">{c.hero_eyebrow}</span>
-          <h1 className="mx-auto mt-3 max-w-3xl text-4xl font-bold text-white md:text-5xl lg:text-6xl">{c.hero_h1}</h1>
-          <p className="mx-auto mt-5 max-w-xl text-lead leading-relaxed text-slate-400">{c.hero_sub}</p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href="/contact" className="btn-primary">{c.hero_cta1}</Link>
-            <Link href="#deliverables" className="btn-secondary">{c.hero_cta2}</Link>
-          </div>
-        </div>
-      </section>
+      <PageHero eyebrow={c.hero_eyebrow} title={c.hero_h1} sub={c.hero_sub} actions={<><Link href="/contact" className="btn-primary">{c.hero_cta1}</Link><Link href="#deliverables" className="btn-secondary">{c.hero_cta2}</Link></>} />
 
-      {visual === "analyticsFlow" && <FlowVisual kind="analyticsFlow" />}
-      {visual === "dashboardSketch" && <DashboardSketch />}
+      {mechanism && <MechanismSection kind={mechanism} />}
 
       <section className="px-6 py-16 md:py-24">
         <div className="container-page">
           <div className="mb-10 max-w-2xl">
             <span className="label">{c.audience_eyebrow}</span>
-            <h2 className="mt-3 text-2xl font-bold text-white md:text-3xl">{c.audience_h2}</h2>
-            <p className="mt-3 text-body leading-relaxed text-slate-400">{c.audience_sub}</p>
+            <h2 className="mt-3 text-h2 text-ink">{c.audience_h2}</h2>
+            <p className="mt-3 text-body leading-relaxed text-ink-2">{c.audience_sub}</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {c.audience.map((a) => (
-              <div key={a.title} className="flex items-start gap-3 rounded-xl border border-white/[0.07] bg-white/[0.03] p-5">
-                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+              <div key={a.title} className="flex items-start gap-3 rounded-card border border-line bg-surface-1 p-5">
+                <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-positive" />
                 <div>
-                  <h3 className="text-body font-semibold text-white">{a.title}</h3>
-                  <p className="mt-1 text-small leading-relaxed text-slate-400">{a.desc}</p>
+                  <h3 className="text-body font-semibold text-ink">{a.title}</h3>
+                  <p className="mt-1 text-small leading-relaxed text-ink-2">{a.desc}</p>
                 </div>
               </div>
             ))}
@@ -50,18 +40,18 @@ export default function ServiceLandingContent({ copyKey, visual }: { copyKey: Ke
         </div>
       </section>
 
-      <section id="deliverables" className="border-t border-white/[0.06] bg-white/[0.015] px-6 py-16 md:py-24">
+      <section id="deliverables" className="border-t border-line bg-surface-1/50 px-6 py-16 md:py-24">
         <div className="container-page">
           <div className="mb-10 max-w-2xl">
             <span className="label">{c.deliverables_eyebrow}</span>
-            <h2 className="mt-3 text-2xl font-bold text-white md:text-3xl">{c.deliverables_h2}</h2>
-            <p className="mt-3 text-body leading-relaxed text-slate-400">{c.deliverables_sub}</p>
+            <h2 className="mt-3 text-h2 text-ink">{c.deliverables_h2}</h2>
+            <p className="mt-3 text-body leading-relaxed text-ink-2">{c.deliverables_sub}</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {c.deliverables.map((d) => (
               <div key={d.title} className="card card-hover p-6">
-                <h3 className="text-body font-semibold text-white">{d.title}</h3>
-                <p className="mt-2 text-small leading-relaxed text-slate-400">{d.desc}</p>
+                <h3 className="text-body font-semibold text-ink">{d.title}</h3>
+                <p className="mt-2 text-small leading-relaxed text-ink-2">{d.desc}</p>
               </div>
             ))}
           </div>
@@ -72,33 +62,33 @@ export default function ServiceLandingContent({ copyKey, visual }: { copyKey: Ke
         <div className="container-page">
           <div className="mb-10 max-w-2xl">
             <span className="label">{c.usecases_eyebrow}</span>
-            <h2 className="mt-3 text-2xl font-bold text-white md:text-3xl">{c.usecases_h2}</h2>
-            <p className="mt-3 text-body leading-relaxed text-slate-400">{c.usecases_sub}</p>
+            <h2 className="mt-3 text-h2 text-ink">{c.usecases_h2}</h2>
+            <p className="mt-3 text-body leading-relaxed text-ink-2">{c.usecases_sub}</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {c.usecases.map((u) => (
               <div key={u.title} className="card p-6">
-                <h3 className="text-body font-semibold text-white">{u.title}</h3>
-                <p className="mt-2 text-small leading-relaxed text-slate-400">{u.desc}</p>
+                <h3 className="text-body font-semibold text-ink">{u.title}</h3>
+                <p className="mt-2 text-small leading-relaxed text-ink-2">{u.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="border-t border-white/[0.06] bg-white/[0.015] px-6 py-16 md:py-24">
+      <section className="border-t border-line bg-surface-1/50 px-6 py-16 md:py-24">
         <div className="container-page">
           <div className="mb-12 text-center">
             <span className="label">{c.process_eyebrow}</span>
-            <h2 className="mx-auto mt-3 max-w-2xl text-2xl font-bold text-white md:text-3xl">{c.process_h2}</h2>
-            <p className="mx-auto mt-3 max-w-lg text-body leading-relaxed text-slate-400">{c.process_sub}</p>
+            <h2 className="mx-auto mt-3 max-w-2xl text-h2 text-ink">{c.process_h2}</h2>
+            <p className="mx-auto mt-3 max-w-lg text-body leading-relaxed text-ink-2">{c.process_sub}</p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {c.process.map((p) => (
               <div key={p.step} className="card p-5">
-                <div className="mb-2.5 text-2xl font-black text-violet-500/30">{p.step}</div>
-                <h3 className="text-body font-semibold text-white">{p.title}</h3>
-                <p className="mt-1.5 text-small leading-relaxed text-slate-400">{p.desc}</p>
+                <div className="mb-2.5 text-2xl font-black text-accent/50">{p.step}</div>
+                <h3 className="text-body font-semibold text-ink">{p.title}</h3>
+                <p className="mt-1.5 text-small leading-relaxed text-ink-2">{p.desc}</p>
               </div>
             ))}
           </div>
@@ -109,41 +99,41 @@ export default function ServiceLandingContent({ copyKey, visual }: { copyKey: Ke
         <div className="container-page max-w-3xl">
           <div className="mb-12 text-center">
             <span className="label">{c.faq_eyebrow}</span>
-            <h2 className="mt-3 text-2xl font-bold text-white md:text-3xl">{c.faq_h2}</h2>
+            <h2 className="mt-3 text-h2 text-ink">{c.faq_h2}</h2>
           </div>
           <div className="space-y-4">
             {c.faq.map((item) => (
               <div key={item.q} className="card p-6">
-                <h3 className="text-body font-semibold text-white">{item.q}</h3>
-                <p className="mt-2 text-body leading-relaxed text-slate-400">{item.a}</p>
+                <h3 className="text-body font-semibold text-ink">{item.q}</h3>
+                <p className="mt-2 text-body leading-relaxed text-ink-2">{item.a}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="border-t border-white/[0.06] bg-white/[0.015] px-6 py-14 md:py-20">
+      <section className="border-t border-line bg-surface-1/50 px-6 py-14 md:py-20">
         <div className="container-page">
           <div className="mb-8 text-center">
             <span className="label">{c.related_eyebrow}</span>
-            <h2 className="mt-3 text-xl font-bold text-white">{c.related_h2}</h2>
+            <h2 className="mt-3 text-xl font-bold text-ink">{c.related_h2}</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {c.related.map((r) => (
               <Link key={r.href} href={r.href} className="card card-hover block p-5">
-                <h3 className="text-body font-semibold text-white">{r.title}</h3>
-                <p className="mt-1.5 text-small leading-relaxed text-slate-400">{r.desc}</p>
+                <h3 className="text-body font-semibold text-ink">{r.title}</h3>
+                <p className="mt-1.5 text-small leading-relaxed text-ink-2">{r.desc}</p>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="border-t border-white/[0.06] px-6 py-16 md:py-24 text-center">
+      <section className="border-t border-line px-6 py-16 md:py-24 text-center">
         <div className="container-page">
           <div className="mx-auto max-w-xl">
-            <h2 className="text-2xl font-bold text-white md:text-3xl">{c.cta_h2}</h2>
-            <p className="mx-auto mt-3 max-w-md text-body text-slate-400">{c.cta_sub}</p>
+            <h2 className="text-h2 text-ink">{c.cta_h2}</h2>
+            <p className="mx-auto mt-3 max-w-md text-body text-ink-2">{c.cta_sub}</p>
             <div className="mt-7 flex justify-center">
               <Link href="/contact" className="btn-primary">{c.cta_btn}</Link>
             </div>
