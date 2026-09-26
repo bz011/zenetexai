@@ -31,7 +31,6 @@
     "react-dom": "^18",
     "react-markdown": "^10.1.0",
     "three": "^0.186.1",
-    "xlsx": "^0.18.5",
     "zod": "^3.23.5"
   },
   "devDependencies": {
@@ -44,6 +43,12 @@
     "tailwindcss": "^3.4.1",
     "tsx": "^4.19.0",
     "typescript": "^5",
-    "vitest": "^2.1.4"
+    "vitest": "^2.1.4",
+    "xlsx": "^0.18.5"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "^8.5.23"
+    }
   }
 }
