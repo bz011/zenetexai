@@ -3,7 +3,7 @@
 import Link from "@/components/LocaleLink";
 import { useLang } from "@/lib/LanguageContext";
 import { homeCopy } from "@/lib/homeCopy";
-import GovernedFlow from "@/components/flow/GovernedFlow";
+import FlowStage from "@/components/flow/FlowStage";
 import CTASection from "@/components/CTASection";
 import Section from "@/components/ui/Section";
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -66,7 +66,7 @@ export default function HomeContent({ latestPosts }: Props) {
             </dl>
           </div>
 
-          <GovernedFlow />
+          <FlowStage />
         </div>
       </section>
 

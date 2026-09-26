@@ -122,6 +122,20 @@
     @apply rounded-card border border-line bg-surface-1;
   }
 
+  /* Optional 3D layer (see components/flow3d): once its first frame has been
+     drawn, the 2D rails/markers it replaces fade out. The HTML text is never
+     touched, and if the layer is absent or fails these rules never apply. */
+  .mechanism .flow-2d {
+    transition: opacity 300ms;
+  }
+  .mechanism[data-flow3d="on"] .flow-2d,
+  .mechanism[data-flow3d="on"] [data-fx="branch"] {
+    opacity: 0;
+  }
+  .mechanism[data-flow3d="on"] [data-flow="handoff"] {
+    border-color: transparent;
+  }
+
   /* ── Buttons ── */
   .btn-primary {
     @apply inline-flex min-h-[2.75rem] items-center justify-center gap-2 rounded-inner bg-accent

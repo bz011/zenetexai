@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { forwardRef, useCallback, useEffect, useRef } from "react";
 import { animateSequence } from "motion/mini";
 import { useLang } from "@/lib/LanguageContext";
 import { visualCopy } from "@/lib/visualCopy";
@@ -71,7 +71,7 @@ function Rail({ first, last, gate, row }: { first: boolean; last: boolean; gate:
   const top = first ? 10 : 0;
   const bottom = last ? 10 : 100;
   return (
-    <svg aria-hidden="true" className="absolute inset-y-0 start-0 h-full w-7 overflow-visible" viewBox="0 0 28 100" preserveAspectRatio="none">
+    <svg aria-hidden="true" className="flow-2d absolute inset-y-0 start-0 h-full w-7 overflow-visible" viewBox="0 0 28 100" preserveAspectRatio="none">
       <rect x="13" y={top} width="2" height={bottom - top} className="fill-line-strong" />
       <rect
         data-fx="rail"
@@ -95,17 +95,25 @@ function Rail({ first, last, gate, row }: { first: boolean; last: boolean; gate:
 
 function Node({ row }: { row: number }) {
   return (
-    <span aria-hidden="true" className="absolute start-[7px] top-[4px] flex h-3.5 w-3.5 items-center justify-center rounded-full border-2 border-line-strong bg-surface-1">
+    <span aria-hidden="true" className="flow-2d absolute start-[7px] top-[4px] flex h-3.5 w-3.5 items-center justify-center rounded-full border-2 border-line-strong bg-surface-1">
       <span data-fx="dot" data-row={row} className="h-1.5 w-1.5 rounded-full bg-accent" style={{ transform: FX.dot.idle.transform }} />
     </span>
   );
 }
 
-export default function GovernedFlow({ showReplay = false, className = "" }: { showReplay?: boolean; className?: string }) {
+const GovernedFlow = forwardRef<HTMLElement, { showReplay?: boolean; className?: string }>(function GovernedFlow({ showReplay = false, className = "" }, forwardedRef) {
   const { lang } = useLang();
   const c = visualCopy[lang].agent;
   const f = flowCopy[lang];
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLElement | null>(null);
+  const setRef = useCallback(
+    (node: HTMLElement | null) => {
+      ref.current = node;
+      if (typeof forwardedRef === "function") forwardedRef(node);
+      else if (forwardedRef) forwardedRef.current = node;
+    },
+    [forwardedRef]
+  );
   const controls = useRef<{ stop: () => void } | null>(null);
   const reducedRef = useRef(false);
 
@@ -159,8 +167,8 @@ export default function GovernedFlow({ showReplay = false, className = "" }: { s
   }, [play]);
 
   return (
-    <figure ref={ref} role="group" aria-label={c.label} className={`mechanism p-5 md:p-6 ${className}`}>
-      <div className="flex items-center justify-between gap-4">
+    <figure ref={setRef} role="group" aria-label={c.label} className={`mechanism relative p-5 md:p-6 ${className}`}>
+      <div className="relative z-[1] flex items-center justify-between gap-4">
         <h2 className="label">{f.title}</h2>
         {showReplay && (
           <button type="button" onClick={play} className="hidden text-caption font-medium text-ink-3 underline-offset-4 hover:text-ink hover:underline motion-safe:inline">
@@ -169,12 +177,12 @@ export default function GovernedFlow({ showReplay = false, className = "" }: { s
         )}
       </div>
 
-      <ol className="mt-4">
+      <ol className="relative z-[1] mt-4">
         {ROWS.map((row, i) => {
           const isGate = row.kind === "gate";
           const last = i === ROWS.length - 1;
           return (
-            <li key={row.key} className={`relative ps-10 ${isGate ? "py-1.5" : last ? "pb-0" : "pb-3"}`}>
+            <li key={row.key} data-flow-row={i} data-kind={row.kind} data-role={row.kind === "stage" && row.key === "1" ? "decide" : undefined} className={`relative ps-10 ${isGate ? "py-1.5" : last ? "pb-0" : "pb-3"}`}>
               <Rail first={i === 0} last={last} gate={isGate} row={i} />
               {!isGate && <Node row={i} />}
 
@@ -194,7 +202,7 @@ export default function GovernedFlow({ showReplay = false, className = "" }: { s
                   </h3>
                   <p className="mt-0.5 text-small leading-snug text-ink-2">{c.steps[Number(row.key)].desc}</p>
                   {row.key === "1" && (
-                    <div className="relative mt-2.5 rounded-inner border border-dashed border-line-strong px-3 py-2">
+                    <div data-flow="handoff" className="relative mt-2.5 rounded-inner border border-dashed border-line-strong px-3 py-2">
                       <span
                         aria-hidden="true"
                         data-fx="branch"
@@ -220,7 +228,7 @@ export default function GovernedFlow({ showReplay = false, className = "" }: { s
         })}
       </ol>
 
-      <div className="mt-4 border-t border-line pt-3.5">
+      <div className="relative z-[1] mt-4 border-t border-line pt-3.5">
         <div className="flex items-center gap-3">
           <p className="text-caption font-semibold uppercase tracking-[0.1em] text-ink-2">{f.auditTitle}</p>
           <div aria-hidden="true" className="flex flex-1 items-center gap-1">
@@ -239,4 +247,6 @@ export default function GovernedFlow({ showReplay = false, className = "" }: { s
       </div>
     </figure>
   );
-}
+});
+
+export default GovernedFlow;
