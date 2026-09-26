@@ -1,15 +1,18 @@
 import { Manrope, Noto_Sans_Arabic } from "next/font/google";
 
 /**
- * Self-hosted by Next at build time (no runtime request to Google Fonts,
- * no layout shift) - used for the logo wordmark/tagline specifically, per
- * the approved brand typography. Scoped via manrope.className, not applied
- * globally - this sprint is about the logo, not a site-wide font change.
+ * Brand typeface (Latin). Self-hosted by Next at build time - no runtime
+ * request to Google Fonts. Loaded as ONE variable font file (no explicit
+ * weights) so the logo wordmark and every site heading (600-800) share a
+ * single ~25 KB download instead of one file per weight. Exposed both as a
+ * className (logo wordmark) and as the --font-heading CSS variable (all
+ * h1-h4 via globals.css and the `font-heading` utility). Arabic falls back
+ * to Noto Sans Arabic per glyph (see tailwind.config.ts fontFamily.heading).
  */
 export const manrope = Manrope({
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
   display: "swap",
+  variable: "--font-heading",
 });
 
 /**

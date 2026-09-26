@@ -1,0 +1,113 @@
+/*
+ * ZentexAI semantic design tokens - the single source of truth for colour.
+ *
+ * Every value is an "R G B" triple so Tailwind can apply opacity
+ * (`bg-surface-1/60`, `border-line/50`). The SAME token names carry dark
+ * values by default (corporate site) and light values under `.academy-shell`
+ * (ZentexAI Academy) / `[data-theme="light"]`, so a component written with
+ * semantic classes (bg-surface-1, text-ink-2, border-line ...) is correct in
+ * both themes with no per-theme overrides.
+ *
+ * Brand source: the logo palette - navy #0F172A, blue #2563EB, cyan #06B6D4
+ * (see src/components/brand/Logo.tsx). Blue is the primary accent; cyan is a
+ * secondary accent for graphics and system states. They are accents, not a
+ * licence for gradients.
+ *
+ * Contrast is enforced by tests/designTokens.contrast.test.ts, which parses
+ * this file and asserts WCAG AA for every text/background pair used in the UI.
+ */
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --surface-0: 6 11 24;      /* page */
+  --surface-1: 12 20 38;     /* raised: cards, panels */
+  --surface-2: 19 30 54;     /* inset / hover */
+
+  /* Hairlines */
+  --line: 35 48 76;
+  --line-strong: 52 68 104;
+
+  /* Text */
+  --ink: 241 245 249;        /* primary */
+  --ink-2: 174 187 208;      /* secondary */
+  --ink-3: 139 154 179;      /* muted (still AA on every surface) */
+
+  /* Accent: logo blue. --accent is a FILL (buttons); --accent-fg is accent used as text/icon */
+  --accent: 37 99 235;
+  --accent-hover: 29 78 216;
+  --accent-fg: 96 165 250;
+  --on-accent: 255 255 255;
+
+  /* Secondary accent: logo cyan (graphics, active system states) */
+  --accent-2: 6 182 212;
+  --accent-2-fg: 34 211 238;
+
+  /* Status */
+  --positive: 52 211 153;
+  --caution: 251 191 36;
+  --danger: 248 113 113;
+
+  --focus: 96 165 250;
+
+  /* Radius family: cards, inner elements, pills */
+  --radius-card: 0.75rem;
+  --radius-inner: 0.5rem;
+
+  /* Elevation only where it means something (menus, media frames) */
+  --shadow-elev: 0 12px 32px -12px rgb(0 0 0 / 0.55);
+
+  /* Layout */
+  --gutter: 1.25rem;
+  --content-max: 72rem;
+
+  /* Legacy alias kept for code that still reads var(--bg) */
+  --bg: rgb(var(--surface-0));
+}
+
+/* Light theme: ZentexAI Academy. Same names, light values. */
+.academy-shell,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --surface-0: 255 255 255;
+  --surface-1: 248 250 252;
+  --surface-2: 241 245 249;
+
+  --line: 226 232 240;
+  --line-strong: 203 213 225;
+
+  --ink: 15 23 42;
+  --ink-2: 51 65 85;
+  --ink-3: 82 98 122;
+
+  --accent: 37 99 235;
+  --accent-hover: 29 78 216;
+  --accent-fg: 29 78 216;
+  --on-accent: 255 255 255;
+
+  --accent-2: 8 145 178;
+  --accent-2-fg: 14 116 144;
+
+  --positive: 4 120 87;
+  --caution: 180 83 9;
+  --danger: 185 28 28;
+
+  --focus: 37 99 235;
+
+  --shadow-elev: 0 12px 32px -14px rgb(15 23 42 / 0.28);
+}
+
+@media (min-width: 640px) {
+  :root {
+    --gutter: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 2rem;
+  }
+}

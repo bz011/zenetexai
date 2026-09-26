@@ -73,8 +73,8 @@ describe("responsive type scale and spacing on the public pages", () => {
     // The RTL font-family rule matches <html dir="rtl">, so the font variable
     // must be defined on <html> itself. On <body> it is undefined where the
     // rule applies, the declaration is invalid, and Arabic falls back to Times.
-    expect(read("src/app/(ar)/layout.tsx")).toMatch(/<html lang="ar" dir="rtl" className=\{arabicFont\.variable\}>/);
-    expect(read("src/app/(en)/layout.tsx")).toMatch(/<html lang="en" dir="ltr" className=\{arabicFont\.variable\}>/);
+    expect(read("src/app/(ar)/layout.tsx")).toMatch(/<html lang="ar" dir="rtl" className=\{`\$\{arabicFont\.variable\} \$\{manrope\.variable\}`\}>/);
+    expect(read("src/app/(en)/layout.tsx")).toMatch(/<html lang="en" dir="ltr" className=\{`\$\{arabicFont\.variable\} \$\{manrope\.variable\}`\}>/);
     expect(read("src/app/(ar)/layout.tsx")).not.toMatch(/<body[^>]*arabicFont/);
     expect(read("src/app/(en)/layout.tsx")).not.toMatch(/<body[^>]*arabicFont/);
   });

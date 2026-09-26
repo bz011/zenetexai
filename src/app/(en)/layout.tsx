@@ -4,7 +4,7 @@ import Providers from "@/components/Providers";
 import JsonLd from "@/components/JsonLd";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/structuredData";
 import { BRAND } from "@/lib/branding";
-import { arabicFont } from "@/lib/fonts";
+import { arabicFont, manrope } from "@/lib/fonts";
 
 const title = `${BRAND.name} — AI Solutions, Consulting & Professional Learning`;
 const description = `${BRAND.tagline} Featuring the PMP Mastery Program.`;
@@ -31,8 +31,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" dir="ltr" className={arabicFont.variable}>
-      <body style={{ backgroundColor: "var(--bg)" }} className="text-slate-200 antialiased">
+    <html lang="en" dir="ltr" className={`${arabicFont.variable} ${manrope.variable}`}>
+      <body style={{ backgroundColor: "var(--bg)" }} className="text-ink antialiased">
         <JsonLd data={organizationJsonLd()} />
         <JsonLd data={websiteJsonLd()} />
         <Providers>{children}</Providers>

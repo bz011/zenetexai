@@ -1,18 +1,10 @@
+@import "../styles/tokens.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ─── Keyframes ──────────────────────────────────────────────────────────── */
-
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
 
 @keyframes zentex-logo-shimmer-sweep {
   0%   { transform: translateX(0);      opacity: 0; }
@@ -27,23 +19,30 @@
 
 @layer base {
   :root {
-    --bg: #060B18;
-    --surface: rgba(255,255,255,0.03);
-    --border: rgba(255,255,255,0.07);
-    --border-hover: rgba(255,255,255,0.14);
     --type-scale: 1;
   }
 
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: var(--bg);
-    color: #e2e8f0;
+    background-color: rgb(var(--surface-0));
+    color: rgb(var(--ink));
   }
 
   ::selection {
-    background: rgba(99, 102, 241, 0.35);
-    color: #fff;
+    background: rgb(var(--accent) / 0.35);
+    color: rgb(var(--ink));
+  }
+
+  /* One heading face for the whole site (Manrope; Noto Sans Arabic per glyph). */
+  h1, h2, h3, h4 {
+    @apply font-heading;
+  }
+
+  /* Keyboard focus: one visible, AA-contrast ring everywhere. */
+  :focus-visible {
+    outline: 2px solid rgb(var(--focus));
+    outline-offset: 2px;
   }
 
   /* Arabic typography */
@@ -54,12 +53,114 @@
     letter-spacing: 0;
   }
 
-  [dir="rtl"] .gradient-text {
-    background-image: linear-gradient(to left, #a78bfa, #818cf8, #6366f1);
+  /* Negative tracking is a Latin display technique; it harms Arabic joining. */
+  [dir="rtl"] :is(.text-display, .text-h1, .text-h2, .text-h3, .text-h4) {
+    letter-spacing: 0;
   }
 
   [dir="rtl"] .label {
     letter-spacing: 0.02em;
+  }
+
+  /* Motion safety net (WCAG 2.3.3): every animation/transition collapses to
+     its end state for users who ask for reduced motion. Components that need
+     more (e.g. a diagram that should show its final, understandable state)
+     read the preference themselves; this guarantees nothing is missed. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      animation-delay: 0ms !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ─── Components ─────────────────────────────────────────────────────────── */
+
+@layer components {
+
+  /* ── Layout ── */
+  .container-page {
+    margin-inline: auto;
+    width: 100%;
+    max-width: var(--content-max);
+    padding-inline: var(--gutter);
+  }
+
+  /* Two section rhythms only. */
+  .section       { @apply py-16 md:py-24; }
+  .section-tight { @apply py-12 md:py-16; }
+
+  /* ── Surfaces: hairline border, one radius family, no lift-on-hover ── */
+  .card {
+    @apply rounded-card border border-line bg-surface-1 transition-colors duration-150;
+  }
+  .card-hover {
+    @apply hover:border-line-strong hover:bg-surface-2;
+  }
+
+  /* Product / media frame: real UI or imagery, with the only shadow in the system. */
+  .media-frame {
+    @apply overflow-hidden rounded-card border border-line-strong bg-surface-1 shadow-elev;
+  }
+
+  /* Container for a mechanism / flow diagram. */
+  .mechanism {
+    @apply rounded-card border border-line bg-surface-1;
+  }
+
+  /* ── Buttons ── */
+  .btn-primary {
+    @apply inline-flex min-h-[2.75rem] items-center justify-center gap-2 rounded-inner bg-accent
+           px-5 py-2.5 text-sm font-semibold text-accent-on
+           transition-colors duration-150
+           hover:bg-accent-hover
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex min-h-[2.75rem] items-center justify-center gap-2 rounded-inner
+           border border-line-strong bg-transparent px-5 py-2.5 text-sm font-semibold text-ink
+           transition-colors duration-150
+           hover:border-ink-3 hover:bg-surface-2
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  /* Compact variant for dense bars (headers). Still >= 40px tall. */
+  .btn-sm {
+    @apply min-h-[2.5rem] px-4 py-2 text-[13px];
+  }
+
+  /* Text link / tertiary action. */
+  .btn-ghost {
+    @apply inline-flex min-h-[2.75rem] items-center gap-1.5 text-sm font-medium text-accent-fg
+           underline-offset-4 transition-colors hover:underline;
+  }
+
+  /* ── Type helpers ── */
+  .label {
+    @apply text-xs font-semibold uppercase tracking-[0.12em] text-accent-fg;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-1
+           px-2.5 py-0.5 text-caption font-medium text-ink-2;
+  }
+  .badge-accent   { @apply border-accent/40 bg-accent/10 text-accent-fg; }
+  .badge-positive { @apply border-positive/40 bg-positive/10 text-positive; }
+
+  /* ── Skip link (first focusable element on every page) ── */
+  .skip-link {
+    @apply absolute z-[100] rounded-inner bg-accent px-4 py-2.5 text-sm font-semibold text-accent-on;
+    inset-inline-start: 1rem;
+    top: -4rem;
+  }
+  .skip-link:focus {
+    top: 1rem;
   }
 }
 
@@ -67,36 +168,8 @@
 
 @layer utilities {
 
-  /* ── Animation helpers ── */
-  .animate-fade-up {
-    animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  .animate-fade-in {
-    animation: fade-in 0.5s ease-out both;
-  }
-
-  /* Stagger delays — apply alongside animate-fade-up */
-  .delay-100 { animation-delay: 100ms; }
-  .delay-150 { animation-delay: 150ms; }
-  .delay-200 { animation-delay: 200ms; }
-  .delay-300 { animation-delay: 300ms; }
-  .delay-400 { animation-delay: 400ms; }
-  .delay-500 { animation-delay: 500ms; }
-  .delay-600 { animation-delay: 600ms; }
-
-  /* Respect reduced-motion preference */
-  @media (prefers-reduced-motion: reduce) {
-    .animate-fade-up,
-    .animate-fade-in {
-      animation: none;
-    }
-  }
-
-  /* ── Logo shimmer ──
-     Opt-in only: the animation rule exists solely inside the
-     no-preference branch, so prefers-reduced-motion users never receive
-     it at all (no override needed - GPU-friendly transform/opacity only,
-     duration ~1.75s, repeats every 7s). */
+  /* Logo shimmer - opt-in only: the animation rule exists solely inside the
+     no-preference branch, so prefers-reduced-motion users never receive it. */
   @media (prefers-reduced-motion: no-preference) {
     .zentex-logo-shimmer {
       animation: zentex-logo-shimmer-sweep 7s ease-in-out infinite;
@@ -104,71 +177,12 @@
     }
   }
 
-  /* ── Card ── */
-  .card {
-    @apply rounded-2xl border border-white/[0.07] bg-white/[0.03] transition-all duration-200;
-  }
-  /* Lift + border brighten on hover */
-  .card-hover {
-    @apply hover:-translate-y-1 hover:border-white/[0.16] hover:bg-white/[0.055]
-           hover:shadow-[0_8px_30px_rgba(0,0,0,0.35)];
+  /* ── RTL helper ── */
+  .ms-auto-rtl {
+    margin-inline-start: auto;
   }
 
-  /* ── Container ── */
-  .container-page {
-    @apply mx-auto max-w-6xl px-6;
-  }
-
-  /* ── Eyebrow label ── */
-  .label {
-    @apply text-[11px] font-semibold tracking-[0.15em] uppercase text-indigo-400;
-  }
-
-  /* ── Gradient headline ── */
-  .gradient-text {
-    @apply bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent;
-  }
-
-  /* ── Primary button — scale + glow on hover ── */
-  .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600
-           px-5 py-2.5 text-sm font-semibold text-white
-           shadow-[0_0_20px_rgba(99,102,241,0.22)]
-           transition-all duration-150
-           hover:scale-[1.03] hover:bg-indigo-500
-           hover:shadow-[0_0_32px_rgba(99,102,241,0.4)]
-           active:scale-[0.98]
-           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100;
-  }
-
-  /* ── Secondary button — subtle scale on hover ── */
-  .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl
-           border border-white/[0.14] px-5 py-2.5 text-sm font-semibold text-white/90
-           transition-all duration-150
-           hover:scale-[1.03] hover:border-white/[0.28] hover:bg-white/[0.07]
-           active:scale-[0.98];
-  }
-
-  /* ── Ghost link ── */
-  .btn-ghost {
-    @apply text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300;
-  }
-
-  /* ── Marketing-page readability (opt-in via .ux-page on a page root) ──
-     Larger touch-friendly buttons, a readable eyebrow label, and looser
-     Arabic line height. Scoped so exam runners and other app screens keep
-     their existing density. */
-  .ux-page .btn-primary,
-  .ux-page .btn-secondary {
-    @apply min-h-[2.75rem] px-4 py-3 text-[0.9375rem] sm:px-6;
-  }
-  .ux-page .label {
-    @apply text-xs;
-  }
-  [dir="rtl"] .ux-page .label {
-    font-size: 0.8125rem;
-  }
+  /* Marketing-page opt-in kept for existing pages: looser Arabic line height. */
   [dir="rtl"] .ux-page .leading-relaxed {
     line-height: 1.9;
   }
@@ -177,33 +191,26 @@
     line-height: 1.4;
   }
 
-  /* ── RTL helper ── */
-  .ms-auto-rtl {
-    margin-inline-start: auto;
-  }
-
   /* ── Academy Light ──
-     Scoped re-theme for the authenticated student experience (dashboard,
-     courses, Practice Mode, Mock Exam) - white surfaces, dark navy/slate
-     text, restrained blue accents. The public marketing site and admin
-     pages keep the dark brand identity untouched. AcademyShell.tsx wraps
-     AcademyHeader + page content + AcademyFooter all inside this scope -
-     both are natively light-authored components, not the dark corporate
-     Header/Footer reused. Overrides the same semantic classes (.card/
-     .label/.btn-*) and the concrete raw-utility color classes actually used
-     by the pages this scope wraps, rather than inventing a parallel class
-     vocabulary - so existing components render correctly in light mode
-     with zero changes to their own markup.
+     The Academy is the same component system on light token values: the
+     `.academy-shell` scope in tokens.css flips --surface-*, --ink-*, --line*,
+     --accent*, so anything written with semantic classes (bg-surface-1,
+     text-ink-2, border-line, .card, .btn-*) is correct with no overrides here.
 
-     --academy-header-h / --academy-workspace-bar-h: the real rendered
-     heights of AcademyHeader.tsx's sticky bar and the lesson workspace bar
-     (LessonDetailContent.tsx), named here once so every sticky-offset
-     consumer derives from the same two numbers instead of each hardcoding
-     its own pixel guess that can silently drift out of sync if either bar's
-     height ever changes. */
+     What follows is a COMPATIBILITY LAYER, not the design: the authenticated
+     student screens (dashboard, lesson player, practice, mock exam) were
+     written before the token system with raw dark-theme utilities
+     (text-white, text-slate-*, bg-white/[..], border-white/[..]). Instead of
+     hard-coded hex, each remap now points at a semantic token, so the light
+     values live in exactly one place. Delete a rule here as the screens that
+     need it are migrated to semantic classes.
+
+     --academy-header-h / --academy-workspace-bar-h: the real rendered heights
+     of the sticky Academy header and the lesson workspace bar, named once so
+     every sticky-offset consumer derives from the same two numbers. */
   .academy-shell {
-    background-color: #ffffff;
-    color: #0f172a;
+    background-color: rgb(var(--surface-0));
+    color: rgb(var(--ink));
     --academy-header-h: 57px;
     --academy-workspace-bar-h: 56px;
   }
@@ -211,80 +218,49 @@
     opacity: 0.35;
   }
 
-  .academy-shell .text-white { color: #0f172a; }
-  .academy-shell .text-slate-300 { color: #334155; }
-  .academy-shell .text-slate-400 { color: #475569; }
-  .academy-shell .text-slate-500 { color: #64748b; }
-  .academy-shell .text-slate-600 { color: #64748b; }
-  .academy-shell .text-indigo-400 { color: #4f46e5; }
-  .academy-shell .text-emerald-400 { color: #059669; }
-  .academy-shell .text-red-400 { color: #dc2626; }
-  .academy-shell .text-amber-400 { color: #d97706; }
+  /* legacy text */
+  .academy-shell .text-white { color: rgb(var(--ink)); }
+  .academy-shell .text-slate-200,
+  .academy-shell .text-slate-300,
+  .academy-shell .text-slate-400 { color: rgb(var(--ink-2)); }
+  .academy-shell .text-slate-500,
+  .academy-shell .text-slate-600 { color: rgb(var(--ink-3)); }
+  .academy-shell .text-indigo-300,
+  .academy-shell .text-indigo-400 { color: rgb(var(--accent-fg)); }
+  .academy-shell .text-emerald-400 { color: rgb(var(--positive)); }
+  .academy-shell .text-red-400 { color: rgb(var(--danger)); }
+  .academy-shell .text-amber-400 { color: rgb(var(--caution)); }
+  .academy-shell .placeholder-slate-600::placeholder { color: rgb(var(--ink-3)); }
 
+  /* legacy translucent-white surfaces -> surface tokens */
   .academy-shell .bg-white\/\[0\.015\],
   .academy-shell .bg-white\/\[0\.02\],
   .academy-shell .bg-white\/\[0\.03\],
   .academy-shell .bg-white\/\[0\.04\],
-  .academy-shell .bg-white\/\[0\.05\] { background-color: #f8fafc; }
+  .academy-shell .bg-white\/\[0\.05\] { background-color: rgb(var(--surface-1)); }
   .academy-shell .bg-white\/\[0\.06\],
   .academy-shell .bg-white\/\[0\.07\],
-  .academy-shell .bg-white\/\[0\.08\] { background-color: #f1f5f9; }
+  .academy-shell .bg-white\/\[0\.08\],
   .academy-shell .bg-white\/\[0\.09\],
   .academy-shell .bg-white\/\[0\.1\],
-  .academy-shell .bg-white\/\[0\.12\] { background-color: #e8edf3; }
+  .academy-shell .bg-white\/\[0\.12\] { background-color: rgb(var(--surface-2)); }
   .academy-shell .bg-white\/\[0\.15\],
   .academy-shell .bg-white\/\[0\.18\],
-  .academy-shell .bg-white\/\[0\.2\] { background-color: #e2e8f0; }
+  .academy-shell .bg-white\/\[0\.2\] { background-color: rgb(var(--line)); }
 
   .academy-shell .hover\:bg-white\/\[0\.03\]:hover,
   .academy-shell .hover\:bg-white\/\[0\.04\]:hover,
-  .academy-shell .hover\:bg-white\/\[0\.055\]:hover { background-color: #f1f5f9; }
+  .academy-shell .hover\:bg-white\/\[0\.055\]:hover,
   .academy-shell .hover\:bg-white\/\[0\.06\]:hover,
   .academy-shell .hover\:bg-white\/\[0\.07\]:hover,
-  .academy-shell .hover\:bg-white\/\[0\.1\]:hover { background-color: #e8edf3; }
+  .academy-shell .hover\:bg-white\/\[0\.1\]:hover { background-color: rgb(var(--surface-2)); }
 
+  /* legacy hairlines -> line tokens */
   .academy-shell .border-white\/\[0\.06\],
   .academy-shell .border-white\/\[0\.07\],
-  .academy-shell .border-white\/\[0\.08\] { border-color: #e2e8f0; }
+  .academy-shell .border-white\/\[0\.08\] { border-color: rgb(var(--line)); }
   .academy-shell .border-white\/\[0\.09\],
-  .academy-shell .border-white\/\[0\.14\] { border-color: #cbd5e1; }
+  .academy-shell .border-white\/\[0\.14\] { border-color: rgb(var(--line-strong)); }
   .academy-shell .hover\:border-white\/\[0\.16\]:hover,
-  .academy-shell .hover\:border-white\/\[0\.28\]:hover { border-color: #94a3b8; }
-
-  .academy-shell .card {
-    background-color: #ffffff;
-    border-color: #e2e8f0;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  }
-  .academy-shell .card-hover:hover {
-    background-color: #f8fafc;
-    border-color: #cbd5e1;
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
-  }
-  .academy-shell .label {
-    color: #4f46e5;
-  }
-  .academy-shell .btn-primary {
-    background-color: #4f46e5;
-    box-shadow: none;
-    color: #fff;
-  }
-  .academy-shell .btn-primary:hover {
-    background-color: #4338ca;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.22);
-  }
-  .academy-shell .btn-secondary {
-    border-color: #cbd5e1;
-    color: #0f172a;
-  }
-  .academy-shell .btn-secondary:hover {
-    border-color: #94a3b8;
-    background-color: #f8fafc;
-  }
-  .academy-shell .btn-ghost {
-    color: #4f46e5;
-  }
-  .academy-shell .btn-ghost:hover {
-    color: #4338ca;
-  }
+  .academy-shell .hover\:border-white\/\[0\.28\]:hover { border-color: rgb(var(--ink-3)); }
 }
