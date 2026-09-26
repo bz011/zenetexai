@@ -74,7 +74,7 @@ export default function ServicesContent() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {sv.process.map((p) => (
               <div key={p.step} className="card p-6">
-                <div className="mb-3 text-3xl font-black text-accent/50">{p.step}</div>
+                <div className="mb-3 text-3xl font-black text-accent-fg">{p.step}</div>
                 <h3 className="text-body font-semibold text-ink">{p.title}</h3>
                 <p className="mt-1.5 text-small leading-relaxed text-ink-2">{p.desc}</p>
               </div>

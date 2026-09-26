@@ -10,7 +10,7 @@ import { resetPasswordSchema, fieldErrorsFrom } from "@/lib/validators/authValid
 import { mapAuthError, mapValidationError } from "@/lib/auth/authErrors";
 
 const inputCls =
-  "w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-[14px] text-white placeholder-slate-600 outline-none transition-all focus:border-indigo-500/60 focus:bg-white/[0.06] focus:ring-2 focus:ring-indigo-500/15";
+  "w-full rounded-card border border-line-strong bg-surface-1 px-4 py-3 text-[14px] text-ink placeholder:text-ink-3 outline-none transition-all focus:border-accent-fg focus:bg-surface-2 focus:ring-2 focus:ring-accent/25";
 
 export default function ResetPasswordContent() {
   const { t } = useLang();
@@ -68,35 +68,34 @@ export default function ResetPasswordContent() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-24">
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/[0.08] blur-[120px]" />
 
       <div className="relative w-full max-w-sm">
         <div className="mb-8 text-center">
-          <Link href="/" className="text-[18px] font-bold text-white">
-            ZENTEX<span className="text-indigo-400">AI</span>
+          <Link href="/" className="text-[18px] font-bold text-ink">
+            ZENTEX<span className="text-accent-fg">AI</span>
           </Link>
-          <p className="mt-2 text-[14px] text-slate-500">{rp.tagline}</p>
+          <p className="mt-2 text-[14px] text-ink-3">{rp.tagline}</p>
         </div>
 
         <div className="card p-7">
           {checkingSession ? (
             <div className="flex justify-center py-6">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-500/20 border-t-indigo-500" />
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-accent/20 border-t-accent" />
             </div>
           ) : done ? (
             <div className="text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-positive/40 bg-positive/10 text-positive">
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 className="mt-5 text-lg font-semibold text-white">{rp.success_title}</h2>
-              <p className="mt-2 text-[14px] leading-relaxed text-slate-400">{rp.success_sub}</p>
+              <h2 className="mt-5 text-lg font-semibold text-ink">{rp.success_title}</h2>
+              <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{rp.success_sub}</p>
             </div>
           ) : !hasSession ? (
             <div className="text-center">
-              <h2 className="text-lg font-semibold text-white">{rp.invalid_link_title}</h2>
-              <p className="mt-2 text-[14px] leading-relaxed text-slate-400">{rp.invalid_link_sub}</p>
+              <h2 className="text-lg font-semibold text-ink">{rp.invalid_link_title}</h2>
+              <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{rp.invalid_link_sub}</p>
               <Link href="/forgot-password" className="btn-primary mt-6 inline-flex px-5 py-2.5 text-[13px]">
                 {rp.request_new_link}
               </Link>
@@ -104,7 +103,7 @@ export default function ResetPasswordContent() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
               <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-slate-400">{rp.password}</label>
+                <label className="mb-1.5 block text-[13px] font-medium text-ink-2">{rp.password}</label>
                 <input
                   type="password"
                   autoComplete="new-password"
@@ -114,13 +113,13 @@ export default function ResetPasswordContent() {
                   onChange={(e) => setPassword(e.target.value)}
                 />
                 {fieldErrors.password && (
-                  <p className="mt-1.5 text-[12px] text-red-400">
+                  <p className="mt-1.5 text-[12px] text-danger">
                     {mapValidationError(fieldErrors.password, t)}
                   </p>
                 )}
               </div>
               <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-slate-400">{rp.confirm_password}</label>
+                <label className="mb-1.5 block text-[13px] font-medium text-ink-2">{rp.confirm_password}</label>
                 <input
                   type="password"
                   autoComplete="new-password"
@@ -130,14 +129,14 @@ export default function ResetPasswordContent() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
                 {fieldErrors.confirmPassword && (
-                  <p className="mt-1.5 text-[12px] text-red-400">
+                  <p className="mt-1.5 text-[12px] text-danger">
                     {mapValidationError(fieldErrors.confirmPassword, t)}
                   </p>
                 )}
               </div>
 
               {formError && (
-                <p className="rounded-xl border border-red-500/20 bg-red-500/[0.08] px-4 py-3 text-[13px] text-red-400">
+                <p className="rounded-card border border-danger/40 bg-danger/10 px-4 py-3 text-[13px] text-danger">
                   {formError}
                 </p>
               )}

@@ -86,7 +86,7 @@ export default function ServiceLandingContent({ copyKey, mechanism }: { copyKey:
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {c.process.map((p) => (
               <div key={p.step} className="card p-5">
-                <div className="mb-2.5 text-2xl font-black text-accent/50">{p.step}</div>
+                <div className="mb-2.5 text-2xl font-black text-accent-fg">{p.step}</div>
                 <h3 className="text-body font-semibold text-ink">{p.title}</h3>
                 <p className="mt-1.5 text-small leading-relaxed text-ink-2">{p.desc}</p>
               </div>

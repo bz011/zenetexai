@@ -9,7 +9,7 @@ import { signupSchema, fieldErrorsFrom } from "@/lib/validators/authValidators";
 import { mapAuthError, mapValidationError } from "@/lib/auth/authErrors";
 
 const inputCls =
-  "w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-[14px] text-white placeholder-slate-600 outline-none transition-all focus:border-indigo-500/60 focus:bg-white/[0.06] focus:ring-2 focus:ring-indigo-500/15";
+  "w-full rounded-card border border-line-strong bg-surface-1 px-4 py-3 text-[14px] text-ink placeholder:text-ink-3 outline-none transition-all focus:border-accent-fg focus:bg-surface-2 focus:ring-2 focus:ring-accent/25";
 
 export default function SignupContent() {
   const { t } = useLang();
@@ -76,21 +76,20 @@ export default function SignupContent() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-24">
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/[0.08] blur-[120px]" />
 
       <div className="relative w-full max-w-sm">
         <div className="mb-8 text-center">
-          <Link href="/" className="text-[18px] font-bold text-white">
-            ZENTEX<span className="text-indigo-400">AI</span>
+          <Link href="/" className="text-[18px] font-bold text-ink">
+            ZENTEX<span className="text-accent-fg">AI</span>
           </Link>
-          <p className="mt-2 text-[14px] text-slate-500">{su.tagline}</p>
+          <p className="mt-2 text-[14px] text-ink-3">{su.tagline}</p>
         </div>
 
         <div className="card p-7">
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-slate-400">{su.first_name}</label>
+                <label className="mb-1.5 block text-[13px] font-medium text-ink-2">{su.first_name}</label>
                 <input
                   type="text"
                   autoComplete="given-name"
@@ -99,13 +98,13 @@ export default function SignupContent() {
                   onChange={(e) => setFirstName(e.target.value)}
                 />
                 {fieldErrors.firstName && (
-                  <p className="mt-1.5 text-[12px] text-red-400">
+                  <p className="mt-1.5 text-[12px] text-danger">
                     {mapValidationError(fieldErrors.firstName, t)}
                   </p>
                 )}
               </div>
               <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-slate-400">{su.last_name}</label>
+                <label className="mb-1.5 block text-[13px] font-medium text-ink-2">{su.last_name}</label>
                 <input
                   type="text"
                   autoComplete="family-name"
@@ -114,7 +113,7 @@ export default function SignupContent() {
                   onChange={(e) => setLastName(e.target.value)}
                 />
                 {fieldErrors.lastName && (
-                  <p className="mt-1.5 text-[12px] text-red-400">
+                  <p className="mt-1.5 text-[12px] text-danger">
                     {mapValidationError(fieldErrors.lastName, t)}
                   </p>
                 )}
@@ -122,7 +121,7 @@ export default function SignupContent() {
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-slate-400">{su.email}</label>
+              <label className="mb-1.5 block text-[13px] font-medium text-ink-2">{su.email}</label>
               <input
                 type="email"
                 autoComplete="email"
@@ -132,14 +131,14 @@ export default function SignupContent() {
                 onChange={(e) => setEmail(e.target.value)}
               />
               {fieldErrors.email && (
-                <p className="mt-1.5 text-[12px] text-red-400">
+                <p className="mt-1.5 text-[12px] text-danger">
                   {mapValidationError(fieldErrors.email, t)}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-slate-400">{su.password}</label>
+              <label className="mb-1.5 block text-[13px] font-medium text-ink-2">{su.password}</label>
               <input
                 type="password"
                 autoComplete="new-password"
@@ -149,16 +148,16 @@ export default function SignupContent() {
                 onChange={(e) => setPassword(e.target.value)}
               />
               {fieldErrors.password ? (
-                <p className="mt-1.5 text-[12px] text-red-400">
+                <p className="mt-1.5 text-[12px] text-danger">
                   {mapValidationError(fieldErrors.password, t)}
                 </p>
               ) : (
-                <p className="mt-1.5 text-[12px] text-slate-600">{su.password_hint}</p>
+                <p className="mt-1.5 text-[12px] text-ink-3">{su.password_hint}</p>
               )}
             </div>
 
             <div>
-              <label className="mb-1.5 block text-[13px] font-medium text-slate-400">{su.confirm_password}</label>
+              <label className="mb-1.5 block text-[13px] font-medium text-ink-2">{su.confirm_password}</label>
               <input
                 type="password"
                 autoComplete="new-password"
@@ -168,14 +167,14 @@ export default function SignupContent() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
               {fieldErrors.confirmPassword && (
-                <p className="mt-1.5 text-[12px] text-red-400">
+                <p className="mt-1.5 text-[12px] text-danger">
                   {mapValidationError(fieldErrors.confirmPassword, t)}
                 </p>
               )}
             </div>
 
             {formError && (
-              <p className="rounded-xl border border-red-500/20 bg-red-500/[0.08] px-4 py-3 text-[13px] text-red-400">
+              <p className="rounded-card border border-danger/40 bg-danger/10 px-4 py-3 text-[13px] text-danger">
                 {formError}
               </p>
             )}
@@ -186,9 +185,9 @@ export default function SignupContent() {
           </form>
         </div>
 
-        <p className="mt-5 text-center text-[13px] text-slate-500">
+        <p className="mt-5 text-center text-[13px] text-ink-3">
           {su.have_account}{" "}
-          <Link href="/login" className="text-indigo-400 hover:text-indigo-300 transition-colors">
+          <Link href="/login" className="text-accent-fg hover:underline underline-offset-4 transition-colors">
             {su.sign_in}
           </Link>
         </p>

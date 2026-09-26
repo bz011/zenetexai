@@ -78,21 +78,20 @@ export default async function BlogPostPage(
           inLanguage: arabic ? "ar" : "en",
         })}
       />
-      <div className="pointer-events-none absolute left-1/2 top-0 h-[350px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/[0.08] blur-[100px]" />
 
       <article
         lang={arabic ? "ar" : "en"}
         dir={arabic ? "rtl" : "ltr"}
         className="container-page relative px-6 pb-24 pt-36"
       >
-        <Link href="/blog" className="mb-8 inline-flex items-center gap-1.5 text-[13px] text-slate-500 hover:text-slate-300 transition-colors">
+        <Link href="/blog" className="mb-8 inline-flex items-center gap-1.5 text-[13px] text-ink-3 hover:text-ink-2 transition-colors">
           {arabic ? "→ العودة إلى المدونة" : "← Back to Blog"}
         </Link>
 
-        <header className="mb-12 border-b border-white/[0.06] pb-10">
+        <header className="mb-12 border-b border-line pb-10">
           <p className="label mb-3">{arabic ? "المدونة" : "Blog"}</p>
-          <h1 className="text-3xl font-bold text-white md:text-4xl leading-tight">{post.title}</h1>
-          <p className="mt-4 text-[13px] text-slate-500">{arabic ? `نُشر بتاريخ ${publishedDate}` : `Published ${publishedDate}`}</p>
+          <h1 className="text-h2 text-ink leading-tight">{post.title}</h1>
+          <p className="mt-4 text-[13px] text-ink-3">{arabic ? `نُشر بتاريخ ${publishedDate}` : `Published ${publishedDate}`}</p>
         </header>
 
         <MarkdownBody content={post.body} />

@@ -7,7 +7,7 @@
 export default function PageLoading() {
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500/20 border-t-indigo-500" />
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-accent/20 border-t-accent" />
     </div>
   );
 }

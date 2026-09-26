@@ -8,7 +8,7 @@ import { forgotPasswordSchema, fieldErrorsFrom } from "@/lib/validators/authVali
 import { mapAuthError, mapValidationError } from "@/lib/auth/authErrors";
 
 const inputCls =
-  "w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-[14px] text-white placeholder-slate-600 outline-none transition-all focus:border-indigo-500/60 focus:bg-white/[0.06] focus:ring-2 focus:ring-indigo-500/15";
+  "w-full rounded-card border border-line-strong bg-surface-1 px-4 py-3 text-[14px] text-ink placeholder:text-ink-3 outline-none transition-all focus:border-accent-fg focus:bg-surface-2 focus:ring-2 focus:ring-accent/25";
 
 export default function ForgotPasswordContent() {
   const { t } = useLang();
@@ -45,32 +45,31 @@ export default function ForgotPasswordContent() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-24">
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/[0.08] blur-[120px]" />
 
       <div className="relative w-full max-w-sm">
         <div className="mb-8 text-center">
-          <Link href="/" className="text-[18px] font-bold text-white">
-            ZENTEX<span className="text-indigo-400">AI</span>
+          <Link href="/" className="text-[18px] font-bold text-ink">
+            ZENTEX<span className="text-accent-fg">AI</span>
           </Link>
-          <p className="mt-2 text-[14px] text-slate-500">{fp.tagline}</p>
+          <p className="mt-2 text-[14px] text-ink-3">{fp.tagline}</p>
         </div>
 
         <div className="card p-7">
           {sent ? (
             <div className="text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-positive/40 bg-positive/10 text-positive">
                 <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h2 className="mt-5 text-lg font-semibold text-white">{fp.success_title}</h2>
-              <p className="mt-2 text-[14px] leading-relaxed text-slate-400">{fp.success_sub}</p>
+              <h2 className="mt-5 text-lg font-semibold text-ink">{fp.success_title}</h2>
+              <p className="mt-2 text-[14px] leading-relaxed text-ink-2">{fp.success_sub}</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-              <p className="text-[13px] leading-relaxed text-slate-400">{fp.sub}</p>
+              <p className="text-[13px] leading-relaxed text-ink-2">{fp.sub}</p>
               <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-slate-400">{fp.email}</label>
+                <label className="mb-1.5 block text-[13px] font-medium text-ink-2">{fp.email}</label>
                 <input
                   type="email"
                   autoComplete="email"
@@ -80,14 +79,14 @@ export default function ForgotPasswordContent() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 {fieldErrors.email && (
-                  <p className="mt-1.5 text-[12px] text-red-400">
+                  <p className="mt-1.5 text-[12px] text-danger">
                     {mapValidationError(fieldErrors.email, t)}
                   </p>
                 )}
               </div>
 
               {formError && (
-                <p className="rounded-xl border border-red-500/20 bg-red-500/[0.08] px-4 py-3 text-[13px] text-red-400">
+                <p className="rounded-card border border-danger/40 bg-danger/10 px-4 py-3 text-[13px] text-danger">
                   {formError}
                 </p>
               )}
@@ -99,8 +98,8 @@ export default function ForgotPasswordContent() {
           )}
         </div>
 
-        <p className="mt-5 text-center text-[13px] text-slate-500">
-          <Link href="/login" className="text-indigo-400 hover:text-indigo-300 transition-colors">
+        <p className="mt-5 text-center text-[13px] text-ink-3">
+          <Link href="/login" className="text-accent-fg hover:underline underline-offset-4 transition-colors">
             {fp.back_to_login}
           </Link>
         </p>
