@@ -19,6 +19,7 @@ vi.mock("@/lib/supabase/admin", () => ({
 vi.mock("@/lib/posts", () => ({ fetchPublishedPosts: async () => [] }));
 
 import sitemap from "@/app/sitemap";
+import { classifyRoute } from "@/lib/auth/routeAccess";
 import robots from "@/app/robots";
 import translations from "./translations";
 import { dataAnalyticsCopy, powerBiCopy } from "./serviceLandingCopy";
@@ -53,8 +54,7 @@ describe("SEO coverage", () => {
   });
 
   it("allows every service landing page through middleware's default-deny gate", () => {
-    const mw = fs.readFileSync(path.join(ROOT, "src/middleware.ts"), "utf8");
-    for (const p of SERVICE_PATHS) expect(mw).toContain(`"${p}"`);
+    for (const p of SERVICE_PATHS) expect(classifyRoute(p), p).toBe("public");
   });
 
   it("has a real page.tsx for every service path and every internal related link", () => {
@@ -68,18 +68,16 @@ describe("SEO coverage", () => {
     }
   });
 
-  it("gives each new page a unique title, description, and its own canonical path", () => {
+  it("gives each service page a unique title, description, and its own canonical path", async () => {
     const seen = new Set<string>();
     for (const p of SERVICE_PATHS) {
-      const src = fs.readFileSync(pageFile(p), "utf8");
-      const title = /const title =\s*"([^"]+)"/.exec(src)?.[1];
-      const desc = /const description =\s*"([^"]+)"/.exec(src)?.[1];
+      const { metadata } = (await import(`@/app/(en)/(corporate)${p}/page`)) as { metadata: import("next").Metadata };
+      const title = String(metadata.title);
       expect(title, p).toBeTruthy();
-      expect(desc, p).toBeTruthy();
-      expect(src).toContain(`const PATH = "${p}"`);
-      expect(src).toContain('alternates: alternatesFor(PATH, "en")');
-      expect(seen.has(title!)).toBe(false);
-      seen.add(title!);
+      expect(metadata.description, p).toBeTruthy();
+      expect((metadata.alternates as { canonical: string }).canonical, p).toBe(p);
+      expect(seen.has(title)).toBe(false);
+      seen.add(title);
     }
   });
 });
@@ -188,15 +186,20 @@ describe("Arabic URLs: sitemap, hreflang, metadata", () => {
     }
   });
 
-  it("gives the English pages the same hreflang set as their Arabic twins", () => {
+  it("gives the English pages the same hreflang set as their Arabic twins", async () => {
+    const staticPages: Record<string, () => Promise<{ metadata: import("next").Metadata }>> = {
+      "/": () => import("@/app/(en)/(corporate)/page"),
+      "/academy": () => import("@/app/(en)/(academy)/academy/page"),
+      "/courses": () => import("@/app/(en)/(academy)/courses/page"),
+      "/services": () => import("@/app/(en)/(corporate)/services/page"),
+    };
     for (const p of ARABIC_EQUIVALENT_PATHS) {
-      const enFile = p === "/" ? "src/app/(en)/(corporate)/page.tsx"
-        : p === "/academy" ? "src/app/(en)/(academy)/academy/page.tsx"
-        : p === "/courses" ? "src/app/(en)/(academy)/courses/page.tsx"
-        : p.startsWith("/courses/") ? "src/app/(en)/(academy)/courses/[courseSlug]/page.tsx"
-        : `src/app/(en)/(corporate)${p}/page.tsx`;
-      const src = fs.readFileSync(path.join(ROOT, enFile), "utf8");
-      expect(src, enFile).toContain("alternatesFor(");
+      if (p.startsWith("/courses/")) continue; // product page: metadata is data-driven (covered by its own test)
+      const load = staticPages[p] ?? (() => import(`@/app/(en)/(corporate)${p}/page`));
+      const { metadata } = await load();
+      const alt = metadata.alternates as { canonical: string; languages: Record<string, string> };
+      expect(alt.canonical, p).toBe(p);
+      expect(alt.languages, p).toEqual({ en: p, ar: toArabicPath(p), "x-default": p });
     }
   });
 

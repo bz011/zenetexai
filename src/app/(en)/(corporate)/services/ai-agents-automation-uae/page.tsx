@@ -1,5 +1,5 @@
-import { alternatesFor } from "@/lib/i18nRoutes";
 import type { Metadata } from "next";
+import { mirroredPageMetadata } from "@/lib/seo";
 import AiAgentsAutomationContent from "./AiAgentsAutomationContent";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd, faqJsonLd, serviceJsonLd } from "@/lib/structuredData";
@@ -7,16 +7,10 @@ import translations from "@/lib/translations";
 
 const title = "AI Agents & Business Automation UAE | ZentexAI";
 const description =
-  "AI agent development and business automation for UAE companies, including Dubai and Abu Dhabi, and the wider Middle East: secure, production-ready agents that connect knowledge, workflows and business systems with controlled human oversight.";
+  "AI agent development and business automation for UAE companies: secure agents that connect approved knowledge, workflows and systems, with human oversight.";
 const PATH = "/services/ai-agents-automation-uae";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: alternatesFor(PATH, "en"),
-  openGraph: { title, description, url: PATH, type: "website" },
-  twitter: { card: "summary_large_image", title, description },
-};
+export const metadata: Metadata = mirroredPageMetadata(PATH, "en", title, description);
 
 export default function AiAgentsAutomationPage() {
   return (

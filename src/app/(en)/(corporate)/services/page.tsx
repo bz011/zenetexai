@@ -1,20 +1,14 @@
-import { alternatesFor } from "@/lib/i18nRoutes";
 import type { Metadata } from "next";
+import { mirroredPageMetadata } from "@/lib/seo";
 import ServicesContent from "./ServicesContent";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd, serviceJsonLd } from "@/lib/structuredData";
 
-const title = "AI Solutions, Automation & Consulting for UAE Businesses — ZentexAI";
+const title = "AI Solutions, Automation & Consulting | ZentexAI";
 const description =
-  "Practical AI agents, workflow automation, and AI consulting for businesses in the UAE and MENA region, plus hands-on project management consulting. Built to produce real outcomes.";
+  "AI agents, workflow automation, machine learning and analytics for UAE and MENA businesses, plus AI and project management consulting.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: alternatesFor("/services", "en"),
-  openGraph: { title, description, url: "/services", type: "website" },
-  twitter: { card: "summary_large_image", title, description },
-};
+export const metadata: Metadata = mirroredPageMetadata("/services", "en", title, description);
 
 const SERVICE_SCHEMAS = [
   { name: "AI Solutions", description: "Practical AI systems built to do real work inside your organization.", path: "/services#ai-solutions" },

@@ -1,37 +1,42 @@
 "use client";
 
 import Link from "@/components/LocaleLink";
-import { useLang } from "@/lib/LanguageContext";
 import Logo from "@/components/brand/Logo";
+import LegalLinks from "@/components/nav/LegalLinks";
+import { useLang } from "@/lib/LanguageContext";
+import { chromeCopy } from "@/lib/chromeCopy";
 import { BRAND } from "@/lib/branding";
 
 /**
  * Restrained Academy footer - deliberately NOT the full corporate marketing
- * footer (no service/resources nav grid). Just brand + a couple of links
- * back out to the corporate site, and the copyright line.
+ * footer. Brand, two links back to the main site, legal slot, copyright.
  */
 export default function AcademyFooter() {
-  const { t } = useLang();
+  const { lang, t } = useLang();
+  const c = chromeCopy[lang];
 
   return (
-    <footer className="border-t border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 py-10 text-center sm:flex-row sm:justify-between sm:text-left">
-        <Link href="/" className="flex items-center gap-2">
+    <footer className="border-t border-line">
+      <div className="container-page flex flex-col items-center gap-5 py-10 text-center sm:flex-row sm:justify-between sm:text-start">
+        <Link href="/" aria-label={c.homeLabel} className="flex items-center gap-2">
           <Logo variant="horizontal" tone="light" />
         </Link>
 
-        <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-          <Link href="/" className="text-[13px] text-slate-500 transition-colors hover:text-slate-800">
+        <nav aria-label={c.footerNavigation} className="flex flex-wrap items-center justify-center gap-x-6">
+          <Link href="/" className="inline-flex min-h-[2.75rem] items-center text-small text-ink-3 transition-colors hover:text-ink">
             {BRAND.name}.com
           </Link>
-          <Link href="/contact" className="text-[13px] text-slate-500 transition-colors hover:text-slate-800">
+          <Link href="/contact" className="inline-flex min-h-[2.75rem] items-center text-small text-ink-3 transition-colors hover:text-ink">
             {t.nav.contact}
           </Link>
         </nav>
 
-        <p className="text-[12px] text-slate-400">
-          &copy; {new Date().getFullYear()} {BRAND.legalName}. {t.footer.rights}
-        </p>
+        <div className="flex flex-col items-center gap-2 sm:items-end">
+          <p className="text-caption text-ink-3">
+            &copy; {new Date().getFullYear()} {BRAND.legalName}. {t.footer.rights}
+          </p>
+          <LegalLinks />
+        </div>
       </div>
     </footer>
   );

@@ -1,5 +1,5 @@
-import { alternatesFor } from "@/lib/i18nRoutes";
 import type { Metadata } from "next";
+import { mirroredPageMetadata } from "@/lib/seo";
 import HomeContent from "./HomeContent";
 import { fetchPublishedPosts } from "@/lib/posts";
 
@@ -14,17 +14,11 @@ import { fetchPublishedPosts } from "@/lib/posts";
 // to that request's visitor immediately with nothing to fall back on.
 export const revalidate = 3600;
 
-const title = "ZentexAI — AI Solutions, AI Agents & Automation in the UAE";
+const title = "ZentexAI — AI Solutions & Automation in the UAE";
 const description =
-  "ZentexAI delivers AI solutions, AI agents, and automation for businesses in the UAE and MENA, plus project management consulting and PMP exam training with a practical simulator.";
+  "AI agents, automation and machine learning for UAE and MENA businesses, plus project management consulting and PMP exam training with a practical simulator.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: alternatesFor("/", "en"),
-  openGraph: { title, description, url: "/", type: "website" },
-  twitter: { card: "summary_large_image", title, description },
-};
+export const metadata: Metadata = mirroredPageMetadata("/", "en", title, description);
 
 export default async function HomePage() {
   const latestPosts = await fetchPublishedPosts(3);

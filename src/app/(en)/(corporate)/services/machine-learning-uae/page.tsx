@@ -1,5 +1,5 @@
-import { alternatesFor } from "@/lib/i18nRoutes";
 import type { Metadata } from "next";
+import { mirroredPageMetadata } from "@/lib/seo";
 import MachineLearningContent from "./MachineLearningContent";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd, faqJsonLd, serviceJsonLd } from "@/lib/structuredData";
@@ -7,16 +7,10 @@ import translations from "@/lib/translations";
 
 const title = "Machine Learning Services UAE | ZentexAI";
 const description =
-  "ZentexAI builds practical machine learning and predictive analytics for UAE businesses, including Dubai — demand forecasting, classification, and anomaly detection, evaluated against a clear baseline before anything goes live.";
+  "Practical machine learning for UAE businesses: demand forecasting, classification and anomaly detection, checked against a clear baseline before launch.";
 const PATH = "/services/machine-learning-uae";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: alternatesFor(PATH, "en"),
-  openGraph: { title, description, url: PATH, type: "website" },
-  twitter: { card: "summary_large_image", title, description },
-};
+export const metadata: Metadata = mirroredPageMetadata(PATH, "en", title, description);
 
 export default function MachineLearningPage() {
   return (

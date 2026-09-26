@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import AcademyHeader from "@/components/academy/AcademyHeader";
 import AcademyFooter from "@/components/academy/AcademyFooter";
+import SkipLink from "@/components/nav/SkipLink";
 
 // The one deliberate exception within the Academy shell: the active Mock
 // Exam runner (/pmp/mock-exam/<attemptId>, not /history, not /results) gets
@@ -21,9 +22,10 @@ export default function AcademyShell({ children }: { children: React.ReactNode }
   }
 
   return (
-    <div className="academy-shell flex min-h-screen flex-col bg-white">
+    <div className="academy-shell flex min-h-screen flex-col bg-surface-0">
+      <SkipLink />
       <AcademyHeader />
-      <main className="flex-1">{children}</main>
+      <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">{children}</main>
       <AcademyFooter />
     </div>
   );

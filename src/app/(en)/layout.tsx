@@ -5,6 +5,7 @@ import JsonLd from "@/components/JsonLd";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/structuredData";
 import { BRAND } from "@/lib/branding";
 import { arabicFont, manrope } from "@/lib/fonts";
+import { OG_IMAGE } from "@/lib/seo";
 
 const title = `${BRAND.name} — AI Solutions, Consulting & Professional Learning`;
 const description = `${BRAND.tagline} Featuring the PMP Mastery Program.`;
@@ -20,9 +21,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title,
   description,
-  alternates: { canonical: "/" },
-  openGraph: { title, description, siteName: BRAND.name, type: "website", url: "/" },
-  twitter: { card: "summary_large_image", title, description },
+  // No site-wide canonical here: a canonical of "/" on every page that does not
+  // set its own would point unrelated URLs at the homepage. Public pages set
+  // theirs through pageMetadata() (lib/seo.ts), which also supplies the image.
+  openGraph: { title, description, siteName: BRAND.name, type: "website", images: [OG_IMAGE] },
+  twitter: { card: "summary_large_image", title, description, images: [OG_IMAGE.url] },
 };
 
 export default function RootLayout({

@@ -66,7 +66,7 @@ describe("middleware access to Arabic routes", () => {
   async function status(pathname: string) {
     const { middleware } = await import("@/middleware");
     const res = await middleware(new NextRequest(`https://zentexai.com${pathname}`));
-    return { status: res.status, location: res.headers.get("location") };
+    return { status: res.status, location: res.headers.get("location"), rewrite: res.headers.get("x-middleware-rewrite") };
   }
 
   it("lets logged-out visitors reach every Arabic marketing route without a redirect", async () => {
@@ -77,17 +77,33 @@ describe("middleware access to Arabic routes", () => {
     }
   });
 
-  it("does not expose protected or unlisted routes under /ar, and creates no redirect loop", async () => {
+  it("does not expose protected or unlisted routes under /ar: anonymous requests get a real 404 (rewrite), never a page, and there is no redirect loop", async () => {
     for (const p of ["/ar/dashboard", "/ar/admin", "/ar/pmp/mock-exam", "/ar/about", "/ar/login-x", "/ar/checkout/success"]) {
+      const r = await status(p);
+      expect(r.status, p).toBe(404);
+      expect(r.location, p).toBeNull();
+      expect(new URL(r.rewrite!, "https://zentexai.com").pathname, p).toBe("/ar/__not_found__");
+    }
+  });
+
+  it("still sends anonymous visitors to /login for the real private areas", async () => {
+    for (const p of ["/dashboard", "/pmp/practice", "/admin", "/certificate"]) {
       const r = await status(p);
       expect(r.status, p).toBe(307);
       expect(new URL(r.location!, "https://zentexai.com").pathname, p).toBe("/login");
-    }
-    for (const p of ["/dashboard", "/pmp/practice", "/admin"]) {
-      expect((await status(p)).status, p).toBe(307);
+      expect(new URL(r.location!, "https://zentexai.com").searchParams.get("redirectTo"), p).toBe(p);
     }
     // The login page itself is public, so /login never redirects to itself.
     expect((await status("/login")).status).toBe(200);
+  });
+
+  it("answers unknown English URLs with a real 404 instead of a login redirect", async () => {
+    for (const p of ["/totally-unknown", "/dashboardx", "/llms.txt"]) {
+      const r = await status(p);
+      expect(r.status, p).toBe(404);
+      expect(r.location, p).toBeNull();
+      expect(new URL(r.rewrite!, "https://zentexai.com").pathname, p).toBe("/__not_found__");
+    }
   });
 
   it("leaves the existing English public routes unchanged", async () => {

@@ -1,5 +1,5 @@
-import { alternatesFor } from "@/lib/i18nRoutes";
 import type { Metadata } from "next";
+import { mirroredPageMetadata } from "@/lib/seo";
 import AcademyContent from "./AcademyContent";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/structuredData";
@@ -7,15 +7,9 @@ import PmpDiscoverabilitySection from "@/components/seo/PmpDiscoverabilitySectio
 
 const title = "PMP Course in Arabic & English (UAE) | ZentexAI Academy";
 const description =
-  "ZentexAI Academy offers an Arabic-friendly PMP Mastery Program (دورة PMP بالعربي) and a PMP exam simulator for professionals in the UAE and MENA, plus upcoming AI Agents training.";
+  "ZentexAI Academy: an Arabic-friendly PMP Mastery Program (دورة PMP بالعربي) and a PMP exam simulator for professionals in the UAE and MENA.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: alternatesFor("/academy", "en"),
-  openGraph: { title, description, url: "/academy", type: "website" },
-  twitter: { card: "summary_large_image", title, description },
-};
+export const metadata: Metadata = mirroredPageMetadata("/academy", "en", title, description);
 
 export default function AcademyPage() {
   return (

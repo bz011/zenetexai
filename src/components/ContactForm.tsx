@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useLang } from "@/lib/LanguageContext";
+import { formCopy } from "@/lib/chromeCopy";
 
 interface FormData {
   name: string;
@@ -14,10 +15,11 @@ interface FormData {
 const empty: FormData = { name: "", email: "", company: "", inquiryType: "general", message: "" };
 
 const inputCls =
-  "w-full rounded-xl border border-white/[0.09] bg-white/[0.04] px-4 py-3 text-[14px] text-white placeholder-slate-600 outline-none transition-all focus:border-indigo-500/60 focus:bg-white/[0.06] focus:ring-2 focus:ring-indigo-500/15";
+  "w-full rounded-inner border border-line-strong bg-surface-0 px-4 py-3 text-[15px] text-ink placeholder:text-ink-3 outline-none transition-colors focus:border-accent-fg focus:ring-2 focus:ring-accent-fg/25";
+const labelCls = "mb-1.5 block text-small font-medium text-ink-2";
 
 export default function ContactForm() {
-  const { t } = useLang();
+  const { lang, t } = useLang();
   const f = t.form;
 
   const [form, setForm] = useState<FormData>(empty);
@@ -52,7 +54,7 @@ export default function ContactForm() {
       setSubmitted(true);
       setForm(empty);
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError(formCopy[lang].error);
     } finally {
       setLoading(false);
     }
@@ -60,18 +62,15 @@ export default function ContactForm() {
 
   if (submitted) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
-          <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <div role="status" className="flex flex-col items-center justify-center py-10 text-center">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-positive/40 bg-positive/10 text-positive">
+          <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 className="mt-5 text-lg font-semibold text-white">{f.success_title}</h3>
-        <p className="mt-2 text-[14px] text-slate-400">{f.success_sub}</p>
-        <button
-          onClick={() => setSubmitted(false)}
-          className="btn-ghost mt-6 text-[13px]"
-        >
+        <h3 className="mt-5 text-h3 text-ink">{f.success_title}</h3>
+        <p className="mt-2 text-small text-ink-2">{f.success_sub}</p>
+        <button type="button" onClick={() => setSubmitted(false)} className="btn-ghost mt-4">
           {f.send_another}
         </button>
       </div>
@@ -82,37 +81,37 @@ export default function ContactForm() {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="name" className="mb-1.5 block text-[13px] font-medium text-slate-400">
-            {f.name} <span className="text-indigo-400">*</span>
+          <label htmlFor="name" className={labelCls}>
+            {f.name} <span aria-hidden="true" className="text-accent-fg">*</span>
           </label>
-          <input id="name" name="name" type="text" required value={form.name}
+          <input id="name" name="name" type="text" autoComplete="name" required value={form.name}
             onChange={handleChange} placeholder={f.name_placeholder} className={inputCls} />
         </div>
         <div>
-          <label htmlFor="email" className="mb-1.5 block text-[13px] font-medium text-slate-400">
-            {f.email} <span className="text-indigo-400">*</span>
+          <label htmlFor="email" className={labelCls}>
+            {f.email} <span aria-hidden="true" className="text-accent-fg">*</span>
           </label>
-          <input id="email" name="email" type="email" required value={form.email}
+          <input id="email" name="email" type="email" autoComplete="email" required value={form.email}
             onChange={handleChange} placeholder={f.email_placeholder} className={inputCls} />
         </div>
       </div>
 
       <div>
-        <label htmlFor="company" className="mb-1.5 block text-[13px] font-medium text-slate-400">
+        <label htmlFor="company" className={labelCls}>
           {f.company}{" "}
-          <span className="text-[12px] font-normal text-slate-600">{f.company_optional}</span>
+          <span className="text-caption font-normal text-ink-3">{f.company_optional}</span>
         </label>
-        <input id="company" name="company" type="text" value={form.company}
+        <input id="company" name="company" type="text" autoComplete="organization" value={form.company}
           onChange={handleChange} placeholder={f.company_placeholder} className={inputCls} />
       </div>
 
       <div>
-        <label htmlFor="inquiryType" className="mb-1.5 block text-[13px] font-medium text-slate-400">
+        <label htmlFor="inquiryType" className={labelCls}>
           {f.inquiry_type}
         </label>
-        <select id="inquiryType" name="inquiryType" value={form.inquiryType} onChange={handleChange} className={inputCls}>
+        <select id="inquiryType" name="inquiryType" autoComplete="off" value={form.inquiryType} onChange={handleChange} className={inputCls}>
           {t.contact.inquiry_types.map((option) => (
-            <option key={option.value} value={option.value} className="bg-[#0b1220]">
+            <option key={option.value} value={option.value}>
               {option.label}
             </option>
           ))}
@@ -120,21 +119,21 @@ export default function ContactForm() {
       </div>
 
       <div>
-        <label htmlFor="message" className="mb-1.5 block text-[13px] font-medium text-slate-400">
-          {f.message} <span className="text-indigo-400">*</span>
+        <label htmlFor="message" className={labelCls}>
+          {f.message} <span aria-hidden="true" className="text-accent-fg">*</span>
         </label>
-        <textarea id="message" name="message" rows={5} required value={form.message}
+        <textarea id="message" name="message" rows={5} required autoComplete="off" value={form.message}
           onChange={handleChange} placeholder={f.message_placeholder}
           className={`${inputCls} resize-none`} />
       </div>
 
       {error && (
-        <p className="rounded-xl border border-red-500/20 bg-red-500/[0.08] px-4 py-3 text-[13px] text-red-400">
+        <p role="alert" className="rounded-inner border border-danger/40 bg-danger/10 px-4 py-3 text-small text-danger">
           {error}
         </p>
       )}
 
-      <button type="submit" disabled={loading} className="btn-primary w-full py-3 text-[14px]">
+      <button type="submit" disabled={loading} className="btn-primary w-full">
         {loading ? f.submitting : f.submit}
       </button>
     </form>

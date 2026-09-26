@@ -56,7 +56,7 @@ export default function Logo({ variant = "horizontal", tone = "dark", className 
 
   if (variant === "primary") {
     return (
-      <span className={`inline-flex flex-col ${className}`}>
+      <span dir="ltr" className={`inline-flex flex-col ${className}`}>
         <span className="inline-flex items-center gap-3">
           <LogoIcon
             inkColor={ink}
@@ -80,7 +80,7 @@ export default function Logo({ variant = "horizontal", tone = "dark", className 
   // and extra spacing happen inside this fixed footprint, not by growing
   // the navbar itself.
   return (
-    <span className={`inline-flex h-9 items-center gap-3 md:h-10 ${className}`}>
+    <span dir="ltr" className={`inline-flex h-9 items-center gap-3 md:h-10 ${className}`}>
       <LogoIcon
         inkColor={ink}
         gradientId={`zentex-horizontal-${tone}`}

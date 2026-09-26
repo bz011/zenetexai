@@ -1,22 +1,16 @@
-import { alternatesFor } from "@/lib/i18nRoutes";
 import type { Metadata } from "next";
+import { mirroredPageMetadata } from "@/lib/seo";
 import ServiceLandingContent from "@/components/ServiceLandingContent";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd, faqJsonLd, serviceJsonLd } from "@/lib/structuredData";
 import { dataAnalyticsCopy } from "@/lib/serviceLandingCopy";
 
-const title = "Data Analytics Services UAE | KPIs, BI & Reporting | ZentexAI";
+const title = "Data Analytics Services UAE | ZentexAI";
 const description =
-  "Data analytics and business intelligence services for UAE businesses and SMEs: KPI frameworks, data audits, clean data models, dashboards, and reporting automation, built around your real decisions.";
+  "Data analytics for UAE businesses and SMEs: KPI frameworks, data audits, clean data models, dashboards and reporting automation built around your real decisions.";
 const PATH = "/services/data-analytics-uae";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: alternatesFor(PATH, "en"),
-  openGraph: { title, description, url: PATH, type: "website" },
-  twitter: { card: "summary_large_image", title, description },
-};
+export const metadata: Metadata = mirroredPageMetadata(PATH, "en", title, description);
 
 export default function DataAnalyticsPage() {
   return (

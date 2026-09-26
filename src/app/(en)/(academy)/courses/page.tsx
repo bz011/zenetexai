@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import PageLoading from "@/components/PageLoading";
+import { mirroredPageMetadata } from "@/lib/seo";
 import CoursesPageBody from "./CoursesPageBody";
-import { alternatesFor } from "@/lib/i18nRoutes";
 
-const title = "PMP Exam Simulator & Courses in Arabic and English | ZentexAI";
+const title = "PMP Exam Simulator & Courses (Arabic & English) | ZentexAI";
 const description =
-  "Browse ZentexAI Academy's PMP Exam Simulator (محاكي PMP) and PMP Mastery Program: Arabic and English practice questions, filterable Practice Mode, and full-length timed mock exams.";
+  "ZentexAI Academy's PMP Exam Simulator (محاكي PMP) and PMP Mastery Program: Arabic and English practice questions, timed mock exams and filterable Practice Mode.";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: alternatesFor("/courses", "en"),
-  openGraph: { title, description, url: "/courses", type: "website" },
-  twitter: { card: "summary_large_image", title, description },
-};
+export const metadata: Metadata = mirroredPageMetadata("/courses", "en", title, description);
 export const dynamic = "force-dynamic";
 
+// The storefront keeps its loading state as a LOCAL Suspense boundary. A
+// loading.tsx here would also wrap /courses/[courseSlug] (the product page),
+// stream its shell with status 200 and turn a missing product into a soft 404.
 export default function CoursesPage() {
-  return <CoursesPageBody lang="en" />;
+  return (
+    <Suspense fallback={<PageLoading />}>
+      <CoursesPageBody lang="en" />
+    </Suspense>
+  );
 }

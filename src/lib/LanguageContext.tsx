@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { resolveRouteLocale, pathForLang } from "./i18nRoutes";
+import { resolveRouteLocale, pathForLang, languageToPersist } from "./i18nRoutes";
 import translations, { Lang, Translations } from "./translations";
 
 interface LanguageContextValue {
@@ -40,6 +40,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const value = window.localStorage.getItem(STORAGE_KEY);
     if (value === "en" || value === "ar") setStoredLang(value);
   }, []);
+
+  // Remember the language of the last language-fixed page, so Arabic
+  // continues across links to pages that have no Arabic URL yet.
+  const persistable = languageToPersist(route);
+  useEffect(() => {
+    if (persistable) {
+      window.localStorage.setItem(STORAGE_KEY, persistable);
+      setStoredLang(persistable);
+    }
+  }, [persistable]);
 
   function setLang(next: Lang) {
     window.localStorage.setItem(STORAGE_KEY, next);

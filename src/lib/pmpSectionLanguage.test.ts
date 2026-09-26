@@ -72,9 +72,9 @@ describe("PMP discoverability section renders one language per page", () => {
     expect(read("src/app/(en)/(academy)/courses/CoursesPageBody.tsx")).toContain('arabicOnly={lang === "ar"} englishOnly={lang === "en"}');
   });
 
-  it("does not touch the English page metadata (title/description/hreflang stay as they were)", () => {
-    const academy = read("src/app/(en)/(academy)/academy/page.tsx");
-    expect(academy).toContain("PMP Course in Arabic & English (UAE) | ZentexAI Academy");
-    expect(academy).toContain("alternatesFor(\"/academy\", \"en\")");
+  it("keeps the English academy title and hreflang set intact", async () => {
+    const { metadata } = await import("@/app/(en)/(academy)/academy/page");
+    expect(metadata.title).toBe("PMP Course in Arabic & English (UAE) | ZentexAI Academy");
+    expect((metadata.alternates as { languages: Record<string, string> }).languages).toEqual({ en: "/academy", ar: "/ar/academy", "x-default": "/academy" });
   });
 });

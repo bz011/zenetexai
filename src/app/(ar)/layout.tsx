@@ -5,12 +5,13 @@ import JsonLd from "@/components/JsonLd";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/structuredData";
 import { BRAND } from "@/lib/branding";
 import { arabicFont, manrope } from "@/lib/fonts";
+import { OG_IMAGE } from "@/lib/seo";
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://zentexai.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  openGraph: { siteName: BRAND.name, type: "website", locale: "ar_AE" },
+  openGraph: { siteName: BRAND.name, type: "website", locale: "ar_AE", images: [OG_IMAGE] },
 };
 
 /**

@@ -4,6 +4,7 @@ import {
   alternatesFor,
   hasArabicVersion,
   isArabicPath,
+  languageToPersist,
   localizeHref,
   pathForLang,
   resolveRouteLocale,
@@ -58,11 +59,24 @@ describe("i18nRoutes", () => {
     expect(localizeHref("/services", "ar")).toBe("/ar/services");
     expect(localizeHref("/services/power-bi-consulting-uae#deliverables", "ar")).toBe("/ar/services/power-bi-consulting-uae#deliverables");
     expect(localizeHref("/courses?x=1", "ar")).toBe("/ar/courses?x=1");
-    expect(localizeHref("/contact", "ar")).toBe("/contact");
+    // Contact has no /ar page, but the Arabic homepage carries the Arabic form.
+    expect(localizeHref("/contact", "ar")).toBe("/ar#contact");
+    expect(localizeHref("/contact", "en")).toBe("/contact");
+    expect(localizeHref("/about", "ar")).toBe("/about");
     expect(localizeHref("/blog/some-post", "ar")).toBe("/blog/some-post");
     expect(localizeHref("#programs", "ar")).toBe("#programs");
     expect(localizeHref("https://example.com/services", "ar")).toBe("https://example.com/services");
     expect(localizeHref("/services", "en")).toBe("/services");
+  });
+
+  it("remembers the language of language-fixed URLs only, so Arabic carries over to pages without an Arabic URL", () => {
+    expect(languageToPersist(resolveRouteLocale("/ar"))).toBe("ar");
+    expect(languageToPersist(resolveRouteLocale("/ar/services"))).toBe("ar");
+    expect(languageToPersist(resolveRouteLocale("/academy"))).toBe("en");
+    // Pages without a language-fixed URL never overwrite the preference.
+    expect(languageToPersist(resolveRouteLocale("/about"))).toBeNull();
+    expect(languageToPersist(resolveRouteLocale("/contact"))).toBeNull();
+    expect(languageToPersist(resolveRouteLocale("/dashboard"))).toBeNull();
   });
 
   it("emits self-referencing canonicals with a reciprocal en/ar/x-default set", () => {

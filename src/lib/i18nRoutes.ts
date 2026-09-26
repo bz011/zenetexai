@@ -76,13 +76,38 @@ export function pathForLang(enPath: string, lang: SiteLang): string {
   return lang === "ar" && hasArabicVersion(enPath) ? toArabicPath(enPath) : normalize(enPath);
 }
 
-/** Rewrites an internal href for Arabic readers when its target has an Arabic page; anything else passes through untouched. */
+/**
+ * English destinations whose Arabic experience is a section of an Arabic page
+ * rather than a page of its own. The Arabic homepage carries the full Arabic
+ * contact form (#contact), so an Arabic reader who asks to "talk to the team"
+ * lands on that form - in Arabic, on a crawlable Arabic URL - instead of on the
+ * English /contact page.
+ */
+const ARABIC_SECTION_DESTINATIONS: Record<string, string> = {
+  "/contact": `${AR_PREFIX}#contact`,
+};
+
+/** Rewrites an internal href for Arabic readers when its target has an Arabic page (or an Arabic section); anything else passes through untouched. */
 export function localizeHref(href: string, lang: SiteLang): string {
   if (lang !== "ar" || !href.startsWith("/") || href.startsWith("//")) return href;
   const match = /^([^?#]*)(.*)$/.exec(href);
   const pathPart = match?.[1] ?? href;
   const suffix = match?.[2] ?? "";
+  const section = ARABIC_SECTION_DESTINATIONS[normalize(pathPart)];
+  if (section && suffix === "") return section;
   return hasArabicVersion(pathPart) ? `${toArabicPath(pathPart)}${suffix}` : href;
+}
+
+/**
+ * The language to remember after visiting a URL. On a page that exists in both
+ * languages the URL is authoritative, so it is persisted; that way an Arabic
+ * reader who landed straight on /ar/... (no toggle click) keeps Arabic when
+ * they follow a link to a page without an Arabic URL (About, Blog, ...), whose
+ * language comes from the stored preference. Pages without a language-fixed
+ * URL never overwrite the preference.
+ */
+export function languageToPersist(route: RouteLocale): SiteLang | null {
+  return route.mirrored ? route.locale : null;
 }
 
 /** Absolute-path hreflang/canonical set for a page that exists in both languages. */

@@ -1,5 +1,5 @@
-import { alternatesFor } from "@/lib/i18nRoutes";
 import type { Metadata } from "next";
+import { mirroredPageMetadata } from "@/lib/seo";
 import WhatsappAutomationContent from "./WhatsappAutomationContent";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd, faqJsonLd, serviceJsonLd } from "@/lib/structuredData";
@@ -7,16 +7,10 @@ import translations from "@/lib/translations";
 
 const title = "WhatsApp Automation & AI Agents UAE | ZentexAI";
 const description =
-  "WhatsApp AI automation for UAE businesses, including Dubai: ZentexAI builds secure WhatsApp automation and AI agents, connecting customer conversations with lead qualification, booking, CRM workflows and controlled human handoff.";
+  "WhatsApp AI automation for UAE businesses: agents that connect customer chats to lead qualification, booking and CRM workflows, with controlled human handoff.";
 const PATH = "/services/whatsapp-automation-uae";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  alternates: alternatesFor(PATH, "en"),
-  openGraph: { title, description, url: PATH, type: "website" },
-  twitter: { card: "summary_large_image", title, description },
-};
+export const metadata: Metadata = mirroredPageMetadata(PATH, "en", title, description);
 
 export default function WhatsappAutomationPage() {
   return (

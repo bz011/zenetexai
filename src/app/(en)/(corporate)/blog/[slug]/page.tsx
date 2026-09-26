@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getPool } from "@/lib/db";
@@ -48,13 +49,7 @@ export async function generateMetadata(
   if (!post) return { title: "Post Not Found — ZENTEXAI", robots: { index: false, follow: false } };
 
   const path = `/blog/${post.slug}`;
-  return {
-    title: post.meta_title,
-    description: post.meta_description,
-    alternates: { canonical: path },
-    openGraph: { title: post.meta_title, description: post.meta_description, url: path, type: "article", publishedTime: post.published_at },
-    twitter: { card: "summary_large_image", title: post.meta_title, description: post.meta_description },
-  };
+  return pageMetadata({ title: post.meta_title, description: post.meta_description, path, type: "article", publishedTime: post.published_at });
 }
 
 export default async function BlogPostPage(
