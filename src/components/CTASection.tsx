@@ -8,7 +8,7 @@ export default function CTASection() {
   const c = t.cta;
 
   return (
-    <section className="relative overflow-hidden border-t border-white/[0.06] px-6 py-36">
+    <section className="relative overflow-hidden border-t border-white/[0.06] px-6 py-20 md:py-28 lg:py-36">
 
       {/* Ambient glows */}
       <div className="pointer-events-none absolute inset-0">
@@ -20,10 +20,10 @@ export default function CTASection() {
         <div className="mx-auto max-w-2xl">
 
           {/* Heading */}
-          <div className="animate-fade-up mb-12 text-center">
+          <div className="animate-fade-up mb-8 md:mb-12 text-center">
             <span className="label">{c.badge}</span>
             <h2 className="mt-3 text-3xl font-bold text-white md:text-4xl">{c.headline}</h2>
-            <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-slate-400">{c.sub}</p>
+            <p className="mx-auto mt-4 max-w-md text-body leading-relaxed text-slate-400">{c.sub}</p>
           </div>
 
           {/* Form card — elevated with glow border */}

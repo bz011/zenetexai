@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>ZentexAI Brand Kit — Visual Review</title>
+<style>
+  body { font-family: -apple-system, "Segoe UI", sans-serif; margin: 0; padding: 40px; background: #F1F5F9; color: #0F172A; }
+  h1 { font-size: 20px; }
+  h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-top: 48px; }
+  .dark { background: #060B18; padding: 24px; border-radius: 12px; }
+  .light { background: #FFFFFF; padding: 24px; border-radius: 12px; border: 1px solid #E2E8F0; }
+  .row { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; margin-top: 12px; }
+  .cell { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .cell span { font-size: 11px; color: #94A3B8; }
+  .dark .cell span { color: #64748B; }
+  .navbar-sim { background: rgba(6,11,24,0.85); padding: 14px 24px; border-radius: 8px; display: inline-flex; align-items: center; }
+  .footer-sim { background: #060B18; padding: 32px; border-radius: 12px; max-width: 320px; }
+</style>
+</head>
+<body>
+  <h1>ZentexAI Brand Kit — Sprint 7.6.3 Visual Review</h1>
+  <p>Static reference sheet for manual review (no browser automation available in this environment). Open this file directly.</p>
+
+  <h2>1. Navbar simulation — required widths (120/140/160/200/260/400px)</h2>
+  <div class="dark">
+    <div class="row">
+      <div class="cell"><div class="navbar-sim"><img src="logo-horizontal.png" style="width:120px;height:auto"></div><span>120px</span></div>
+      <div class="cell"><div class="navbar-sim"><img src="logo-horizontal.png" style="width:140px;height:auto"></div><span>140px</span></div>
+      <div class="cell"><div class="navbar-sim"><img src="logo-horizontal.png" style="width:160px;height:auto"></div><span>160px</span></div>
+      <div class="cell"><div class="navbar-sim"><img src="logo-horizontal.png" style="width:200px;height:auto"></div><span>200px</span></div>
+      <div class="cell"><div class="navbar-sim"><img src="logo-horizontal.png" style="width:260px;height:auto"></div><span>260px</span></div>
+      <div class="cell"><div class="navbar-sim"><img src="logo-horizontal.png" style="width:400px;height:auto"></div><span>400px</span></div>
+    </div>
+  </div>
+
+  <h2>2. Actual navbar height (desktop h-9=36px / h-10=40px, mobile h-9=36px)</h2>
+  <div class="dark">
+    <div class="row">
+      <div class="cell"><div class="navbar-sim"><img src="logo-horizontal.png" style="height:36px;width:auto"></div><span>36px (mobile, h-9)</span></div>
+      <div class="cell"><div class="navbar-sim"><img src="logo-horizontal.png" style="height:40px;width:auto"></div><span>40px (desktop, h-10)</span></div>
+    </div>
+  </div>
+
+  <h2>3. Primary logo with tagline — light and dark background</h2>
+  <div class="light">
+    <img src="logo-primary.svg" style="height:80px;width:auto">
+  </div>
+  <div class="dark" style="margin-top:12px;">
+    <img src="logo-primary.png" style="height:80px;width:auto">
+  </div>
+
+  <h2>4. Footer simulation (approx. 320px column)</h2>
+  <div class="footer-sim">
+    <img src="logo-primary.png" style="height:40px;width:auto">
+    <p style="color:#94A3B8;font-size:13px;margin-top:12px;">AI solutions, project management consulting, and professional learning.</p>
+  </div>
+
+  <h2>5. Monochrome variants</h2>
+  <div class="row">
+    <div class="cell light" style="padding:20px;"><img src="logo-black.svg" style="height:60px;width:auto"><span>logo-black.svg</span></div>
+    <div class="cell dark" style="padding:20px;"><img src="logo-white.svg" style="height:60px;width:auto"><span style="color:#64748B">logo-white.svg</span></div>
+  </div>
+
+  <h2>6. Icon mark alone — sizes</h2>
+  <div class="row dark" style="padding:20px;">
+    <div class="cell"><img src="icon.png" style="width:32px;height:32px"><span>32px</span></div>
+    <div class="cell"><img src="icon.png" style="width:64px;height:64px"><span>64px</span></div>
+    <div class="cell"><img src="logo-icon.svg" style="width:128px;height:128px"><span>128px (full detail)</span></div>
+  </div>
+
+  <h2>7. Favicon — required sizes (16/24/32/40/48/64/128px)</h2>
+  <div class="row dark" style="padding:20px;">
+    <div class="cell"><img src="favicon.svg" style="width:16px;height:16px"><span>16px</span></div>
+    <div class="cell"><img src="favicon.svg" style="width:24px;height:24px"><span>24px</span></div>
+    <div class="cell"><img src="favicon-32.png" style="width:32px;height:32px"><span>32px</span></div>
+    <div class="cell"><img src="favicon.svg" style="width:40px;height:40px"><span>40px</span></div>
+    <div class="cell"><img src="favicon.svg" style="width:48px;height:48px"><span>48px</span></div>
+    <div class="cell"><img src="favicon-64.png" style="width:64px;height:64px"><span>64px</span></div>
+    <div class="cell"><img src="favicon.svg" style="width:128px;height:128px"><span>128px</span></div>
+  </div>
+
+  <h2>8. App icon / Open Graph</h2>
+  <div class="row">
+    <div class="cell"><img src="../../src/app/icon.png" style="width:96px;height:96px" onerror="this.style.display='none'"><span>src/app/icon.png</span></div>
+  </div>
+  <p style="font-size:12px;color:#64748B;">(App icon/OG image live under src/app/ - see icon.png and opengraph-image.png in that folder; not reachable via a relative link from this static file when served, view directly in the repo.)</p>
+</body>
+</html>

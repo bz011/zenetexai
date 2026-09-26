@@ -1,30 +1,41 @@
 import { NextResponse } from "next/server";
 import { getPool } from "@/lib/db";
+import { requireApiRole } from "@/lib/auth/requireRole";
+import { deletePostSchema } from "@/lib/validators/blogValidators";
+import { isRateLimited } from "@/lib/rateLimit";
 
 export async function DELETE(req: Request) {
-  console.log("[delete-post] Incoming delete request");
+  const auth = await requireApiRole(["admin"]);
+  if (!auth.authorized) {
+    return NextResponse.json(
+      { success: false, error: auth.status === 401 ? "Not authenticated" : "Forbidden" },
+      { status: auth.status }
+    );
+  }
 
-  let body: Record<string, unknown>;
+  if (isRateLimited(`delete-post:${auth.user.id}`, 10, 60_000)) {
+    return NextResponse.json({ success: false, error: "Too many requests, please slow down" }, { status: 429 });
+  }
+
+  let rawBody: unknown;
   try {
-    body = await req.json();
+    rawBody = await req.json();
   } catch {
-    return NextResponse.json(
-      { success: false, error: "Invalid JSON body" },
-      { status: 400 }
-    );
+    return NextResponse.json({ success: false, error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { slug } = body as Record<string, string>;
-
-  if (!slug) {
-    return NextResponse.json(
-      { success: false, error: "Missing required field: slug" },
-      { status: 400 }
-    );
+  const parsed = deletePostSchema.safeParse(rawBody);
+  if (!parsed.success) {
+    return NextResponse.json({ success: false, error: "Invalid or missing slug" }, { status: 400 });
   }
+  const { slug } = parsed.data;
+
+  console.log(`[delete-post] Incoming delete request from admin ${auth.user.id} for slug "${slug}"`);
 
   try {
     const pool = getPool();
+    // Fully parameterized - slug is never concatenated into SQL text, and
+    // was already validated against a strict [a-z0-9-]+ shape above.
     const result = await pool.query(
       `DELETE FROM website_posts WHERE slug = $1 RETURNING id, slug`,
       [slug]

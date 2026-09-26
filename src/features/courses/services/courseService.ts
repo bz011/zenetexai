@@ -1,0 +1,377 @@
+/**
+ * Course/module/lesson read queries.
+ *
+ * All functions take a Supabase client as a parameter rather than creating
+ * their own — callers pass the RLS-respecting server client
+ * (createSupabaseServer()), so a student only ever sees published content
+ * and admins/instructors see everything, exactly per the RLS policies in
+ * migration 006. Nothing here needs the service-role client.
+ */
+
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type {
+  Course,
+  CourseModule,
+  Lesson,
+  LearningAssessment,
+  CourseWithProgress,
+} from "@/features/courses/types/course";
+
+export async function getPublishedCourses(supabase: SupabaseClient): Promise<Course[]> {
+  const { data, error } = await supabase
+    .from("courses")
+    .select("id, slug, title_en, title_ar, description_en, description_ar, cover_image_url, order_index, is_published")
+    .eq("is_published", true)
+    .order("order_index", { ascending: true });
+
+  if (error) {
+    console.error("[courseService] getPublishedCourses error:", error.message);
+    return [];
+  }
+  return data as Course[];
+}
+
+export async function getCourseBySlug(supabase: SupabaseClient, slug: string): Promise<Course | null> {
+  const { data, error } = await supabase
+    .from("courses")
+    .select("id, slug, title_en, title_ar, description_en, description_ar, cover_image_url, order_index, is_published")
+    .eq("slug", slug)
+    .single();
+
+  if (error) return null;
+  return data as Course;
+}
+
+/**
+ * Full course tree (published modules -> published lessons) plus the
+ * current user's lesson_progress, annotated per lesson, with totals
+ * computed on read rather than stored.
+ */
+export async function getCourseWithProgress(
+  supabase: SupabaseClient,
+  course: Course,
+  userId: string
+): Promise<CourseWithProgress> {
+  const { data: modules } = await supabase
+    .from("modules")
+    .select("id, course_id, title_en, title_ar, description_en, description_ar, order_index, is_published")
+    .eq("course_id", course.id)
+    .eq("is_published", true)
+    .order("order_index", { ascending: true });
+
+  const moduleList = (modules ?? []) as CourseModule[];
+  const moduleIds = moduleList.map((m) => m.id);
+
+  const { data: lessons } = moduleIds.length
+    ? await supabase
+        .from("lessons")
+        .select("id, module_id, title_en, title_ar, content_en, content_ar, video_provider, video_url, duration_minutes, order_index, is_published")
+        .in("module_id", moduleIds)
+        .eq("is_published", true)
+        .order("order_index", { ascending: true })
+    : { data: [] as Lesson[] };
+
+  const lessonList = (lessons ?? []) as Lesson[];
+  const lessonIds = lessonList.map((l) => l.id);
+
+  const { data: progressRows } = lessonIds.length
+    ? await supabase
+        .from("lesson_progress")
+        .select("lesson_id")
+        .eq("user_id", userId)
+        .in("lesson_id", lessonIds)
+    : { data: [] as { lesson_id: string }[] };
+
+  const completedLessonIds = new Set((progressRows ?? []).map((r) => r.lesson_id));
+
+  const { data: moduleAssessments } = moduleIds.length
+    ? await supabase
+        .from("learning_assessments")
+        .select("id, type, lesson_id, module_id, title_en, title_ar, passing_score, order_index, is_published")
+        .in("module_id", moduleIds)
+        .eq("type", "module_assessment")
+        .eq("is_published", true)
+    : { data: [] as LearningAssessment[] };
+
+  const assessmentByModule = new Map<string, LearningAssessment>();
+  for (const a of (moduleAssessments ?? []) as LearningAssessment[]) {
+    if (a.module_id) assessmentByModule.set(a.module_id, a);
+  }
+
+  const modulesWithLessons = moduleList.map((m) => ({
+    ...m,
+    lessons: lessonList
+      .filter((l) => l.module_id === m.id)
+      .map((l) => ({ ...l, completed: completedLessonIds.has(l.id) })),
+    moduleAssessment: assessmentByModule.get(m.id) ?? null,
+  }));
+
+  return {
+    ...course,
+    modules: modulesWithLessons,
+    totalLessons: lessonList.length,
+    completedLessons: completedLessonIds.size,
+  };
+}
+
+/**
+ * Whether ALL published lessons in a module have been completed by this
+ * user — the single source of truth for module-quiz unlocking (Sprint 11).
+ * Lessons need not be completed in order; only the total count matters.
+ *
+ * Deliberately counts DISTINCT completed lesson_progress rows against the
+ * count of published lesson ids, rather than checking "any progress
+ * exists" — a module with zero published lessons returns true (nothing to
+ * gate on) so a misconfigured/empty module can never permanently lock a
+ * quiz, but this should not occur for Modules 2-6 in practice.
+ *
+ * Called from BOTH the assessment page (UI: show QuizLocked vs the real
+ * quiz) and the submit API route (server-side enforcement) — same query,
+ * same answer, so the two surfaces can never disagree.
+ */
+export async function isModuleQuizUnlocked(supabase: SupabaseClient, userId: string, moduleId: string): Promise<boolean> {
+  const { data: lessons } = await supabase.from("lessons").select("id").eq("module_id", moduleId).eq("is_published", true);
+
+  const lessonIds = (lessons ?? []).map((l: { id: string }) => l.id);
+  if (lessonIds.length === 0) return true;
+
+  const { data: progress } = await supabase
+    .from("lesson_progress")
+    .select("lesson_id")
+    .eq("user_id", userId)
+    .in("lesson_id", lessonIds);
+
+  const completedCount = new Set((progress ?? []).map((p: { lesson_id: string }) => p.lesson_id)).size;
+  return completedCount >= lessonIds.length;
+}
+
+export async function isLessonCompleted(
+  supabase: SupabaseClient,
+  userId: string,
+  lessonId: string
+): Promise<boolean> {
+  const { data } = await supabase
+    .from("lesson_progress")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("lesson_id", lessonId)
+    .maybeSingle();
+
+  return !!data;
+}
+
+/**
+ * Previous/next lesson within the SAME module, by order_index — Sprint 6
+ * lesson navigation deliberately doesn't cross module boundaries, since
+ * "next" after a module's last lesson is naturally its module assessment
+ * (already linked from the course page), not an arbitrary next module.
+ */
+export async function getPreviousNextLesson(
+  supabase: SupabaseClient,
+  moduleId: string,
+  currentOrderIndex: number
+): Promise<{ previous: Pick<Lesson, "id" | "title_en" | "title_ar"> | null; next: Pick<Lesson, "id" | "title_en" | "title_ar"> | null }> {
+  const [{ data: previous }, { data: next }] = await Promise.all([
+    supabase
+      .from("lessons")
+      .select("id, title_en, title_ar")
+      .eq("module_id", moduleId)
+      .eq("is_published", true)
+      .lt("order_index", currentOrderIndex)
+      .order("order_index", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from("lessons")
+      .select("id, title_en, title_ar")
+      .eq("module_id", moduleId)
+      .eq("is_published", true)
+      .gt("order_index", currentOrderIndex)
+      .order("order_index", { ascending: true })
+      .limit(1)
+      .maybeSingle(),
+  ]);
+
+  return { previous: previous ?? null, next: next ?? null };
+}
+
+export async function getLessonResources(
+  supabase: SupabaseClient,
+  lessonId: string
+): Promise<{ id: string; fileName: string; fileUrl: string }[]> {
+  const { data } = await supabase
+    .from("lesson_resources")
+    .select("id, file_name, file_url")
+    .eq("lesson_id", lessonId)
+    .order("order_index", { ascending: true });
+
+  return ((data ?? []) as { id: string; file_name: string; file_url: string }[]).map((r) => ({
+    id: r.id,
+    fileName: r.file_name,
+    fileUrl: r.file_url,
+  }));
+}
+
+export async function getLessonById(supabase: SupabaseClient, lessonId: string): Promise<Lesson | null> {
+  const { data, error } = await supabase
+    .from("lessons")
+    .select("id, module_id, title_en, title_ar, content_en, content_ar, video_provider, video_url, duration_minutes, order_index, is_published")
+    .eq("id", lessonId)
+    .single();
+
+  if (error) return null;
+  return data as Lesson;
+}
+
+export async function getLessonCheckpoint(
+  supabase: SupabaseClient,
+  lessonId: string
+): Promise<LearningAssessment | null> {
+  const { data, error } = await supabase
+    .from("learning_assessments")
+    .select("id, type, lesson_id, module_id, title_en, title_ar, passing_score, order_index, is_published")
+    .eq("lesson_id", lessonId)
+    .eq("type", "checkpoint")
+    .eq("is_published", true)
+    .maybeSingle();
+
+  if (error) return null;
+  return data as LearningAssessment | null;
+}
+
+export async function getAssessmentById(
+  supabase: SupabaseClient,
+  assessmentId: string
+): Promise<LearningAssessment | null> {
+  const { data, error } = await supabase
+    .from("learning_assessments")
+    .select("id, type, lesson_id, module_id, title_en, title_ar, passing_score, order_index, is_published")
+    .eq("id", assessmentId)
+    .single();
+
+  if (error) return null;
+  return data as LearningAssessment;
+}
+
+// getAssessmentQuestionsForStudent was removed in Sprint 6 — superseded by
+// quizService.getQuizQuestions(), which reads BOTH legacy
+// learning_assessment_questions and bank-linked questions (migration 007)
+// through one unified shape. See quizService.ts.
+
+export interface PublicCurriculumLesson {
+  id: string;
+  titleEn: string;
+  titleAr: string | null;
+}
+
+export interface PublicCurriculumModule {
+  id: string;
+  titleEn: string;
+  titleAr: string | null;
+  lessons: PublicCurriculumLesson[];
+}
+
+/**
+ * Titles-only curriculum outline for a PUBLIC product page (Sprint 10) -
+ * never content/video, and never a module that has zero published lessons.
+ * Returns [] whenever there is nothing genuinely publishable yet, so a
+ * placeholder-only course (e.g. a module named as a draft, with no lessons
+ * authored) never surfaces on the public storefront - the caller renders
+ * an honest "curriculum coming soon" state instead.
+ *
+ * Called with the server-side admin client (the product page is public and
+ * the underlying tables are RLS-limited to authenticated users), so RLS is
+ * NOT a backstop here: every query below must keep its is_published filter
+ * and select only ids/titles/order - never content or video columns.
+ */
+export async function getPublicCurriculumOutline(supabase: SupabaseClient, courseSlug: string): Promise<PublicCurriculumModule[]> {
+  const { data: course } = await supabase.from("courses").select("id").eq("slug", courseSlug).eq("is_published", true).maybeSingle();
+  if (!course) return [];
+
+  const { data: modules } = await supabase
+    .from("modules")
+    .select("id, title_en, title_ar, order_index")
+    .eq("course_id", (course as { id: string }).id)
+    .eq("is_published", true)
+    .order("order_index", { ascending: true });
+
+  const moduleList = (modules ?? []) as { id: string; title_en: string; title_ar: string | null }[];
+  if (moduleList.length === 0) return [];
+
+  const { data: lessons } = await supabase
+    .from("lessons")
+    .select("id, module_id, title_en, title_ar, order_index")
+    .in(
+      "module_id",
+      moduleList.map((m) => m.id)
+    )
+    .eq("is_published", true)
+    .order("order_index", { ascending: true });
+
+  const lessonList = (lessons ?? []) as { id: string; module_id: string; title_en: string; title_ar: string | null }[];
+  if (lessonList.length === 0) return [];
+
+  return moduleList
+    .map((m) => ({
+      id: m.id,
+      titleEn: m.title_en,
+      titleAr: m.title_ar,
+      lessons: lessonList
+        .filter((l) => l.module_id === m.id)
+        .map((l) => ({ id: l.id, titleEn: l.title_en, titleAr: l.title_ar })),
+    }))
+    .filter((m) => m.lessons.length > 0);
+}
+
+/**
+ * Which of the given (already RLS-visible, i.e. published) assessment ids
+ * actually have at least one real question attached - a `learning_assessments`
+ * row existing and being published is not enough on its own for a quiz to
+ * be usable. Mirrors quizService.getQuizQuestions()'s own source-of-truth
+ * exactly (bank-linked question_links OR legacy learning_assessment_questions,
+ * never both for the same assessment) via a lightweight existence check
+ * rather than fetching full question payloads, since only presence/absence
+ * is needed here. Callers use this to decide whether to show a quiz CTA at
+ * all - never render QuizRunner for an assessment not in this set.
+ */
+export async function getReadyAssessmentIds(supabase: SupabaseClient, assessmentIds: string[]): Promise<Set<string>> {
+  if (assessmentIds.length === 0) return new Set();
+
+  const [{ data: linkRows }, { data: legacyRows }] = await Promise.all([
+    supabase.from("learning_assessment_question_links").select("assessment_id").in("assessment_id", assessmentIds),
+    supabase.from("learning_assessment_questions").select("assessment_id").in("assessment_id", assessmentIds),
+  ]);
+
+  const ready = new Set<string>();
+  for (const r of (linkRows ?? []) as { assessment_id: string }[]) ready.add(r.assessment_id);
+  for (const r of (legacyRows ?? []) as { assessment_id: string }[]) ready.add(r.assessment_id);
+  return ready;
+}
+
+export interface AssessmentAttemptStatus {
+  attempted: Set<string>;
+  /**
+   * EVER passed, derived from persisted learning_assessment_attempts rows
+   * rather than a stored flag - once a passing attempt exists it is never
+   * un-passed by a later failed retake (this is "does at least one
+   * passed=true row exist", which stays true forever regardless of what
+   * attempts follow - no separate permanent boolean needed or maintained).
+   */
+  passed: Set<string>;
+}
+
+/** One query, both sets - avoids a second round trip for "attempted at all" (used to distinguish a first "Take Quiz" CTA from a "Retake Quiz" one after a failed attempt). */
+export async function getAssessmentAttemptStatus(supabase: SupabaseClient, userId: string, assessmentIds: string[]): Promise<AssessmentAttemptStatus> {
+  if (assessmentIds.length === 0) return { attempted: new Set(), passed: new Set() };
+
+  const { data } = await supabase
+    .from("learning_assessment_attempts")
+    .select("assessment_id, passed")
+    .eq("user_id", userId)
+    .in("assessment_id", assessmentIds);
+
+  const rows = (data ?? []) as { assessment_id: string; passed: boolean }[];
+  const attempted = new Set(rows.map((r) => r.assessment_id));
+  const passed = new Set(rows.filter((r) => r.passed).map((r) => r.assessment_id));
+  return { attempted, passed };
+}

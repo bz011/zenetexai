@@ -1,0 +1,706 @@
+"use server";
+
+/**
+ * Mock Exam attempt lifecycle: create (runs the full blueprint engine),
+ * read (with server-authoritative break-aware timer + auto-grade on
+ * expiry), per-question autosave, break start/end, and submit. Mirrors
+ * practiceSessionService.ts's shape exactly - same "app-level check + RLS
+ * backstop" pattern, same debounced-autosave-friendly per-field actions.
+ */
+
+import { requireUser } from "@/lib/auth/requireRole";
+import { checkRateLimit } from "@/lib/upstashRateLimit";
+import { getBankQuestions } from "@/features/courses/services/quizService";
+import { submitMockExamAttempt } from "@/features/mock-exam/services/examGradingService";
+import {
+  computeExamRemainingSeconds,
+  isExamExpired,
+  computeBreakRemainingSeconds,
+  getEligibleBreak,
+  sectionJustCompleted,
+} from "@/features/mock-exam/services/examTimerUtils";
+import { fetchApprovedQuestionInventory, fetchQuestionHistoryForUser } from "@/features/mock-exam/services/examInventoryService";
+import {
+  buildTargetCells,
+  resolveCellsAgainstInventory,
+  resolveInteractionTypeCounts,
+  resolveAnswerTypeCounts,
+  selectQuestionsForDraws,
+  enforceImageQuota,
+  sectionForSequenceIndex,
+  cellKey,
+} from "@/features/mock-exam/services/blueprintEngine";
+import { getActiveBlueprint, getBlueprintByVersion, MOCK_EXAM_MIN_IMAGE_QUESTIONS, type PmpInteractionType, type PmpAnswerType } from "@/features/mock-exam/config/examBlueprint";
+import type { CreateMockExamAttemptResult, MockExamAttempt, MockExamAttemptQuestionState, MockExamRunnerData } from "@/features/mock-exam/types/mockExam";
+import type { QuizSubmitAnswer } from "@/features/courses/types/course";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+async function getCertificationId(supabase: SupabaseClient, code: string): Promise<string | null> {
+  const { data } = await supabase.from("certifications").select("id").eq("code", code).maybeSingle();
+  return (data as { id: string } | null)?.id ?? null;
+}
+
+/** Product target for a NEW exam's overlap with the student's immediately previous independently-generated attempt (Sprint 9.1 item 7) - a best-effort target the 3-tier selection in blueprintEngine.ts naturally minimizes toward, not a hard block; the actual resulting count is always computed and persisted regardless. */
+const PREVIOUS_ATTEMPT_OVERLAP_TARGET = 40;
+
+/** For the start page - lets a student resume an in-progress attempt instead of accidentally starting a second one. */
+export async function findActiveMockExamAttemptId(): Promise<string | null> {
+  const { supabase, user } = await requireUser();
+  const { data } = await supabase
+    .from("mock_exam_attempts")
+    .select("id")
+    .eq("user_id", user.id)
+    .in("status", ["active", "on_break"])
+    .order("started_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return (data as { id: string } | null)?.id ?? null;
+}
+
+/** Name of the partial unique index from migration 030 (mock_exam_attempts(user_id) WHERE status IN ('active','on_break')) - matched by substring against SQLERRM, since create_mock_exam_attempt() converts a caught exception into {success:false, error: SQLERRM} rather than throwing. */
+const ONE_ACTIVE_ATTEMPT_CONSTRAINT = "idx_mock_exam_attempts_one_active_per_user";
+
+/**
+ * Shared by createMockExamAttempt() and retakeMockExamAttempt(): both call
+ * create_mock_exam_attempt_gated(), so both can lose the same race (double
+ * click, two tabs, a retried request) against the migration 030 unique
+ * index. That is not a real failure - it means some other concurrent
+ * request for this same user already won and is now the active attempt - so
+ * this resolves it the same way the Start page's own "resume" flow would,
+ * instead of surfacing a raw database error to the user.
+ */
+async function resolveCreateAttemptResult(
+  result: { success: boolean; attempt_id?: string; error?: string } | undefined,
+  capabilityErrorMessage: string,
+  genericErrorMessage: string
+): Promise<CreateMockExamAttemptResult> {
+  if (result?.success) {
+    return { success: true, attemptId: result.attempt_id };
+  }
+  if (result?.error?.includes(ONE_ACTIVE_ATTEMPT_CONSTRAINT)) {
+    const existingId = await findActiveMockExamAttemptId();
+    if (existingId) {
+      return { success: true, attemptId: existingId };
+    }
+  }
+  if (result?.error === "capability_required") {
+    return { success: false, error: capabilityErrorMessage };
+  }
+  return { success: false, error: result?.error ?? genericErrorMessage };
+}
+
+/**
+ * Runs the full blueprint engine end to end and persists the result via
+ * create_mock_exam_attempt. This is the only place a Mock Exam's 180
+ * questions are ever chosen - once persisted, mock_exam_attempt_questions
+ * is fixed (item 7 - refreshing never re-selects).
+ */
+export async function createMockExamAttempt(): Promise<CreateMockExamAttemptResult> {
+  const { supabase, user } = await requireUser();
+
+  // Checked before the inventory fetch + blueprint allocation below (real
+  // work: fetches the full approved-question inventory and the caller's
+  // question history, then runs the domain x approach x difficulty
+  // allocation) - a rejected request here does none of that. Entitlement
+  // (mock_exam:pmp) is still enforced entirely by
+  // create_mock_exam_attempt_gated()/RLS, unchanged.
+  const limit = await checkRateLimit("mockexam-create", user.id);
+  if (!limit.allowed) {
+    return { success: false, error: "Too many attempts. Please wait a moment and try again." };
+  }
+
+  const certificationId = await getCertificationId(supabase, "PMP");
+  if (!certificationId) {
+    return { success: false, error: "Certification not found" };
+  }
+
+  const blueprint = getActiveBlueprint();
+
+  const [{ rows: inventoryRows, excludedIncompleteCount }, history] = await Promise.all([
+    fetchApprovedQuestionInventory(supabase, certificationId),
+    fetchQuestionHistoryForUser(supabase, user.id),
+  ]);
+
+  if (inventoryRows.length < blueprint.totalQuestions) {
+    return {
+      success: false,
+      error: `Not enough approved questions to build a ${blueprint.totalQuestions}-question exam (only ${inventoryRows.length} available).`,
+    };
+  }
+
+  // --- Domain x Approach x Difficulty allocation + fallback resolution ---
+  const targetCells = buildTargetCells(blueprint.totalQuestions, blueprint);
+  const cellCounts: Record<string, number> = {};
+  for (const row of inventoryRows) {
+    const key = cellKey(row.domain, row.approach, row.difficulty);
+    cellCounts[key] = (cellCounts[key] ?? 0) + 1;
+  }
+  const { draws, fallbackLog, totalShortfall } = resolveCellsAgainstInventory(targetCells, cellCounts);
+
+  // --- interaction_type / answer_type exam-wide targets (lowest priority, best-effort) ---
+  const interactionTypeInventory: Record<PmpInteractionType, number> = { standard: 0, graphic_based: 0, drag_and_drop: 0, hotspot: 0, matching: 0 };
+  const answerTypeInventory: Record<PmpAnswerType, number> = { single: 0, multiple_response: 0 };
+  for (const row of inventoryRows) {
+    interactionTypeInventory[row.interactionType] += 1;
+    answerTypeInventory[row.answerType] += 1;
+  }
+  const { resolved: interactionTypeBudget, fallbackLog: interactionFallbackLog } = resolveInteractionTypeCounts(
+    blueprint.totalQuestions,
+    blueprint,
+    interactionTypeInventory
+  );
+  const { fallbackLog: answerTypeFallbackLog } = resolveAnswerTypeCounts(blueprint.totalQuestions, blueprint, answerTypeInventory);
+
+  // --- Concrete question selection (never-seen > least-seen > previous-attempt-overlap, see blueprintEngine.ts) ---
+  let selected = selectQuestionsForDraws(inventoryRows, draws, interactionTypeBudget, history.seenCounts, history.previousAttemptQuestionIds);
+
+  // Priority #1 (total count) is non-negotiable - if the cell-level fallback
+  // hierarchy still came up short (extremely unlikely at this bank's size,
+  // but handled generically rather than assumed impossible), top up from
+  // ANY remaining approved question of any domain/approach/difficulty
+  // before ever returning fewer than requested.
+  let topUpCount = 0;
+  if (totalShortfall > 0 || selected.length < blueprint.totalQuestions) {
+    const stillNeeded = blueprint.totalQuestions - selected.length;
+    const alreadyUsed = new Set(selected.map((s) => s.questionId));
+    const leftover = inventoryRows.filter((r) => !alreadyUsed.has(r.questionId));
+    const topUp = leftover.slice(0, stillNeeded);
+    topUpCount = topUp.length;
+    selected = selected.concat(
+      topUp.map((r) => ({ questionId: r.questionId, interactionType: r.interactionType, answerType: r.answerType, hasImage: r.hasImage, domain: r.domain, approach: r.approach, difficulty: r.difficulty }))
+    );
+  }
+
+  if (selected.length < blueprint.totalQuestions) {
+    return {
+      success: false,
+      error: `Could only assemble ${selected.length}/${blueprint.totalQuestions} questions even after every fallback - the approved bank is too small right now.`,
+    };
+  }
+
+  // Image-bearing minimum (best-effort against real inventory): swaps within
+  // the same Domain only, so domain allocation and total count are untouched.
+  const imageQuota = enforceImageQuota(selected, inventoryRows, MOCK_EXAM_MIN_IMAGE_QUESTIONS, history.seenCounts, history.previousAttemptQuestionIds);
+  selected = imageQuota.selected;
+
+  // Presentation order is randomized (PMI's real exam does not group
+  // questions by domain/approach) - composition (which 180 got picked) is
+  // the blueprint's job, order is not.
+  const shuffled = [...selected].sort(() => Math.random() - 0.5);
+  const questionIds = shuffled.map((q) => q.questionId);
+  const sectionNumbers = shuffled.map((_, i) => sectionForSequenceIndex(i, blueprint));
+
+  // Actual resulting overlap with the immediately previous independently-
+  // generated attempt - always computed and persisted (item 7's "if
+  // fallback is required, minimize overlap and persist/report the actual
+  // overlap count"), regardless of whether it stayed under the 40 target.
+  const previousAttemptOverlapCount = shuffled.filter((q) => history.previousAttemptQuestionIds.has(q.questionId)).length;
+
+  const blueprintSnapshot = {
+    blueprintVersion: blueprint.version,
+    totalQuestions: blueprint.totalQuestions,
+    targetCells,
+    resolvedCellCounts: draws,
+    fallbackLog,
+    interactionTypeBudget,
+    interactionFallbackLog,
+    answerTypeFallbackLog,
+    excludedIncompleteInventoryCount: excludedIncompleteCount,
+    topUpCount,
+    imageQuota: {
+      requested: imageQuota.requested,
+      available: imageQuota.available,
+      achieved: imageQuota.achieved,
+      shortfall: imageQuota.shortfall,
+      swaps: imageQuota.swaps,
+      log: imageQuota.log,
+    },
+    previousAttemptId: history.previousAttemptId,
+    previousAttemptOverlapCount,
+    previousAttemptOverlapTarget: PREVIOUS_ATTEMPT_OVERLAP_TARGET,
+  };
+
+  // Gated wrapper (migration 020) - verifies the 'mock_exam:pmp' entitlement
+  // server-side before delegating to create_mock_exam_attempt() unchanged.
+  const { data, error } = await supabase.rpc("create_mock_exam_attempt_gated", {
+    p_certification_id: certificationId,
+    p_blueprint_version: blueprint.version,
+    p_blueprint_snapshot: blueprintSnapshot,
+    p_question_ids: questionIds,
+    p_section_numbers: sectionNumbers,
+    p_duration_seconds: blueprint.durationSeconds,
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  const result = data as { success: boolean; attempt_id?: string; error?: string };
+  return resolveCreateAttemptResult(result, "PMP Exam Simulator access is required to start the Mock Exam.", "Failed to create Mock Exam attempt");
+}
+
+/**
+ * Retake Same Exam (item 7A): creates a NEW attempt with the EXACT same 180
+ * question_ids, order, and section allocation as originalAttemptId -
+ * answers/flags/section-lock/break state all start fresh, and a brand-new
+ * timer starts at the full duration. The RPC re-verifies ownership of
+ * originalAttemptId server-side (never trusts this action's caller alone) -
+ * a user can never retake another user's attempt. A retake is deliberately
+ * EXEMPT from the previous-attempt overlap policy - createMockExamAttempt
+ * is never called for a retake, so blueprintEngine's selection logic never
+ * runs at all; the question set is reused verbatim, not regenerated.
+ */
+export async function retakeMockExamAttempt(originalAttemptId: string): Promise<CreateMockExamAttemptResult> {
+  const { supabase, user } = await requireUser();
+
+  const limit = await checkRateLimit("mockexam-create", user.id);
+  if (!limit.allowed) {
+    return { success: false, error: "Too many attempts. Please wait a moment and try again." };
+  }
+
+  const { data: original } = await supabase
+    .from("mock_exam_attempts")
+    .select("id, user_id, status, certification_id, blueprint_version, blueprint_snapshot, duration_seconds")
+    .eq("id", originalAttemptId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (!original) {
+    return { success: false, error: "Original attempt not found" };
+  }
+  const originalRow = original as {
+    certification_id: string;
+    blueprint_version: string;
+    blueprint_snapshot: unknown;
+    duration_seconds: number;
+    status: string;
+  };
+  if (originalRow.status !== "completed" && originalRow.status !== "expired") {
+    return { success: false, error: "You can only retake a completed exam" };
+  }
+
+  const { data: questionRows } = await supabase
+    .from("mock_exam_attempt_questions")
+    .select("question_id, sequence_number, section_number")
+    .eq("attempt_id", originalAttemptId)
+    .order("sequence_number", { ascending: true });
+
+  type Row = { question_id: string | null; sequence_number: number; section_number: number };
+  const rows = (questionRows ?? []) as Row[];
+
+  if (rows.some((r) => r.question_id === null)) {
+    return { success: false, error: "This exam can no longer be retaken exactly - one or more of its questions is no longer available. Start a new exam instead." };
+  }
+
+  const questionIds = rows.map((r) => r.question_id as string);
+  const sectionNumbers = rows.map((r) => r.section_number);
+
+  const { data, error } = await supabase.rpc("create_mock_exam_attempt_gated", {
+    p_certification_id: originalRow.certification_id,
+    p_blueprint_version: originalRow.blueprint_version,
+    p_blueprint_snapshot: originalRow.blueprint_snapshot,
+    p_question_ids: questionIds,
+    p_section_numbers: sectionNumbers,
+    p_duration_seconds: originalRow.duration_seconds,
+    p_retake_of_attempt_id: originalAttemptId,
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+  const result = data as { success: boolean; attempt_id?: string; error?: string };
+  return resolveCreateAttemptResult(result, "PMP Exam Simulator access is required to retake the Mock Exam.", "Failed to create retake attempt");
+}
+
+interface AttemptRow {
+  id: string;
+  status: MockExamAttempt["status"];
+  blueprint_version: string;
+  total_questions: number;
+  current_question_index: number;
+  duration_seconds: number;
+  on_break: boolean;
+  break_started_at: string | null;
+  current_section: number;
+  breaks_taken: number[];
+  sections_locked: number[];
+  score: number | null;
+  correct_count: number;
+  incorrect_count: number;
+  unanswered_count: number;
+  started_at: string;
+  completed_at: string | null;
+  retake_of_attempt_id: string | null;
+  root_attempt_id: string | null;
+}
+
+function mapAttemptRow(row: AttemptRow): MockExamAttempt {
+  return {
+    id: row.id,
+    status: row.status,
+    blueprintVersion: row.blueprint_version,
+    totalQuestions: row.total_questions,
+    currentQuestionIndex: row.current_question_index,
+    durationSeconds: row.duration_seconds,
+    onBreak: row.on_break,
+    breakStartedAt: row.break_started_at,
+    currentSection: row.current_section,
+    breaksTaken: row.breaks_taken,
+    sectionsLocked: row.sections_locked,
+    score: row.score,
+    correctCount: row.correct_count,
+    incorrectCount: row.incorrect_count,
+    unansweredCount: row.unanswered_count,
+    startedAt: row.started_at,
+    completedAt: row.completed_at,
+    retakeOfAttemptId: row.retake_of_attempt_id,
+    rootAttemptId: row.root_attempt_id,
+  };
+}
+
+const ATTEMPT_COLUMNS =
+  "id, status, blueprint_version, total_questions, current_question_index, duration_seconds, on_break, break_started_at, current_section, breaks_taken, sections_locked, score, correct_count, incorrect_count, unanswered_count, started_at, completed_at, retake_of_attempt_id, root_attempt_id";
+
+async function getAttemptQuestionsAndStates(
+  supabase: SupabaseClient,
+  attemptId: string
+): Promise<{ questions: MockExamRunnerData["questions"]; states: MockExamAttemptQuestionState[] }> {
+  const { data } = await supabase
+    .from("mock_exam_attempt_questions")
+    .select("question_id, sequence_number, section_number, response, is_correct, is_flagged, answered_at, time_spent_seconds")
+    .eq("attempt_id", attemptId)
+    .order("sequence_number", { ascending: true });
+
+  type Row = {
+    question_id: string | null;
+    sequence_number: number;
+    section_number: number;
+    response: QuizSubmitAnswer | null;
+    is_correct: boolean | null;
+    is_flagged: boolean;
+    answered_at: string | null;
+    time_spent_seconds: number;
+  };
+  const rows = (data ?? []) as Row[];
+
+  const bankLinks = rows
+    .filter((r): r is Row & { question_id: string } => r.question_id !== null)
+    .map((r) => ({ question_id: r.question_id, order_index: r.sequence_number }));
+
+  const bankQuestions = bankLinks.length ? await getBankQuestions(supabase, bankLinks) : [];
+  const questionById = new Map(bankQuestions.map((q) => [q.id, q]));
+
+  const questions = rows.map((r) => (r.question_id ? questionById.get(r.question_id) ?? null : null));
+
+  const states: MockExamAttemptQuestionState[] = rows.map((r) => ({
+    questionId: r.question_id,
+    sequenceNumber: r.sequence_number,
+    sectionNumber: r.section_number,
+    response: r.response,
+    isCorrect: r.is_correct,
+    isFlagged: r.is_flagged,
+    answeredAt: r.answered_at,
+    timeSpentSeconds: r.time_spent_seconds,
+  }));
+
+  return { questions, states };
+}
+
+/**
+ * Reads an attempt for the runner, computing remaining time fresh
+ * server-side (break-aware - see examTimerUtils.ts) and auto-grading on
+ * genuine expiry, mirroring getPracticeSession exactly.
+ */
+export async function getMockExamAttempt(attemptId: string): Promise<MockExamRunnerData | null> {
+  const { supabase, user } = await requireUser();
+
+  const { data } = await supabase.from("mock_exam_attempts").select(ATTEMPT_COLUMNS).eq("id", attemptId).eq("user_id", user.id).maybeSingle();
+  if (!data) return null;
+  let attempt = mapAttemptRow(data as AttemptRow);
+
+  const blueprint = getBlueprintByVersion(attempt.blueprintVersion) ?? getActiveBlueprint();
+
+  let serverRemainingSeconds: number | null = null;
+  let serverBreakRemainingSeconds: number | null = null;
+
+  if (attempt.status === "active" || attempt.status === "on_break") {
+    serverRemainingSeconds = computeExamRemainingSeconds(
+      attempt.startedAt,
+      attempt.durationSeconds,
+      attempt.breaksTaken,
+      attempt.onBreak,
+      attempt.breakStartedAt,
+      blueprint
+    );
+
+    if (attempt.onBreak && attempt.breakStartedAt) {
+      const currentBreakNumber = attempt.breaksTaken[attempt.breaksTaken.length - 1];
+      serverBreakRemainingSeconds = computeBreakRemainingSeconds(attempt.breakStartedAt, currentBreakNumber, blueprint);
+    }
+
+    if (serverRemainingSeconds <= 0) {
+      await submitMockExamAttempt(supabase, attemptId, user.id, "expired");
+      const { data: refreshed } = await supabase.from("mock_exam_attempts").select(ATTEMPT_COLUMNS).eq("id", attemptId).single();
+      if (refreshed) attempt = mapAttemptRow(refreshed as AttemptRow);
+      serverRemainingSeconds = 0;
+      serverBreakRemainingSeconds = null;
+    }
+  }
+
+  const { questions, states } = await getAttemptQuestionsAndStates(supabase, attemptId);
+
+  return { attempt, questions, questionStates: states, serverRemainingSeconds, serverBreakRemainingSeconds };
+}
+
+/**
+ * Saves the student's in-progress response only - never grades. Blocked
+ * while on_break, and blocked for any question belonging to a section
+ * already in sections_locked (item 11's section-review restriction) - the
+ * navigator hides the option client-side, but this is the server-side
+ * backstop, since a client can always be bypassed.
+ */
+export async function saveExamAnswer(attemptId: string, questionId: string, response: QuizSubmitAnswer): Promise<{ success: boolean }> {
+  const { supabase, user } = await requireUser();
+
+  const limit = await checkRateLimit("answer-save", user.id);
+  if (!limit.allowed) return { success: false };
+
+  const { data: owned } = await supabase.from("mock_exam_attempts").select("id, status, current_section").eq("id", attemptId).eq("user_id", user.id).maybeSingle();
+  if (!owned) return { success: false };
+  const attemptRow = owned as { status: string; current_section: number };
+  if (attemptRow.status !== "active") return { success: false };
+
+  // A write is only ever allowed for a question in the attempt's CURRENT
+  // section - not a past/locked section (item 11) and not a not-yet-reached
+  // future one either (item 4's "do not expose future-section questions
+  // before that section begins" applies just as much to a direct server
+  // action call as it does to UI navigation - the client's own goToIndex
+  // bound is not the real boundary, this is).
+  const { data: q } = await supabase
+    .from("mock_exam_attempt_questions")
+    .select("section_number")
+    .eq("attempt_id", attemptId)
+    .eq("question_id", questionId)
+    .maybeSingle();
+  if (!q || (q as { section_number: number }).section_number !== attemptRow.current_section) {
+    return { success: false };
+  }
+
+  const { error } = await supabase
+    .from("mock_exam_attempt_questions")
+    .update({ response, answered_at: new Date().toISOString() })
+    .eq("attempt_id", attemptId)
+    .eq("question_id", questionId);
+
+  return { success: !error };
+}
+
+export async function recordExamTimeSpent(attemptId: string, questionId: string, deltaSeconds: number): Promise<{ success: boolean }> {
+  if (deltaSeconds <= 0) return { success: true };
+  const { supabase, user } = await requireUser();
+
+  const { data: owned } = await supabase.from("mock_exam_attempts").select("id, status").eq("id", attemptId).eq("user_id", user.id).maybeSingle();
+  if (!owned || (owned as { status: string }).status !== "active") return { success: false };
+
+  const { data: existing } = await supabase
+    .from("mock_exam_attempt_questions")
+    .select("time_spent_seconds")
+    .eq("attempt_id", attemptId)
+    .eq("question_id", questionId)
+    .maybeSingle();
+  if (!existing) return { success: false };
+
+  const priorSeconds = (existing as { time_spent_seconds: number }).time_spent_seconds;
+  const { error } = await supabase
+    .from("mock_exam_attempt_questions")
+    .update({ time_spent_seconds: priorSeconds + Math.round(deltaSeconds) })
+    .eq("attempt_id", attemptId)
+    .eq("question_id", questionId);
+
+  return { success: !error };
+}
+
+export async function saveExamCurrentIndex(attemptId: string, index: number): Promise<{ success: boolean }> {
+  const { supabase, user } = await requireUser();
+
+  const { error } = await supabase
+    .from("mock_exam_attempts")
+    .update({ current_question_index: Math.max(0, index) })
+    .eq("id", attemptId)
+    .eq("user_id", user.id)
+    .eq("status", "active");
+
+  return { success: !error };
+}
+
+export async function toggleExamFlag(attemptId: string, questionId: string, isFlagged: boolean): Promise<{ success: boolean }> {
+  const { supabase, user } = await requireUser();
+
+  const { data: owned } = await supabase.from("mock_exam_attempts").select("id").eq("id", attemptId).eq("user_id", user.id).maybeSingle();
+  if (!owned) return { success: false };
+
+  const { error } = await supabase
+    .from("mock_exam_attempt_questions")
+    .update({ is_flagged: isFlagged })
+    .eq("attempt_id", attemptId)
+    .eq("question_id", questionId);
+
+  return { success: !error };
+}
+
+interface SectionBoundaryRow {
+  status: string;
+  blueprint_version: string;
+  current_question_index: number;
+  breaks_taken: number[];
+  sections_locked: number[];
+}
+
+async function loadSectionBoundaryRow(supabase: SupabaseClient, attemptId: string, userId: string): Promise<SectionBoundaryRow | null> {
+  const { data } = await supabase
+    .from("mock_exam_attempts")
+    .select("id, status, blueprint_version, current_question_index, breaks_taken, sections_locked")
+    .eq("id", attemptId)
+    .eq("user_id", userId)
+    .maybeSingle();
+  return (data as SectionBoundaryRow | null) ?? null;
+}
+
+/**
+ * Starts the next eligible break (item 11): locks the just-completed
+ * section from further review immediately, matching "once a candidate
+ * completes a section and starts a break, enforce the intended
+ * section-review restrictions" - the lock happens at break START, not end.
+ *
+ * Sprint 9.1 fix: this is now called while current_question_index STILL
+ * points at the just-answered last question of the section (the runner no
+ * longer advances into the next section's first question before the
+ * student has chosen break-vs-continue - see ExamRunner.tsx's
+ * SectionCompleteScreen gate), so this also advances current_question_index
+ * itself by one position, server-side, rather than trusting a client value.
+ * "Questions completed" for both eligibility and lock purposes is therefore
+ * current_question_index + 1, not current_question_index directly.
+ */
+export async function startExamBreak(attemptId: string): Promise<{ success: boolean; error?: string; nextIndex?: number }> {
+  const { supabase, user } = await requireUser();
+
+  const row = await loadSectionBoundaryRow(supabase, attemptId, user.id);
+  if (!row) return { success: false, error: "Attempt not found" };
+  if (row.status !== "active") return { success: false, error: "Attempt is not active" };
+
+  const blueprint = getBlueprintByVersion(row.blueprint_version) ?? getActiveBlueprint();
+  const questionsCompleted = row.current_question_index + 1;
+  const eligibility = getEligibleBreak(questionsCompleted, row.breaks_taken, blueprint);
+  if (!eligibility.eligible || eligibility.breakNumber === null) {
+    return { success: false, error: eligibility.reason ?? "No break currently available" };
+  }
+
+  const justCompleted = sectionJustCompleted(questionsCompleted, blueprint);
+  const newSectionsLocked = justCompleted !== null && !row.sections_locked.includes(justCompleted) ? [...row.sections_locked, justCompleted] : row.sections_locked;
+  const nextIndex = row.current_question_index + 1;
+
+  const { error } = await supabase
+    .from("mock_exam_attempts")
+    .update({
+      status: "on_break",
+      on_break: true,
+      break_started_at: new Date().toISOString(),
+      breaks_taken: [...row.breaks_taken, eligibility.breakNumber],
+      sections_locked: newSectionsLocked,
+      current_section: (justCompleted ?? blueprint.sections[0].sectionNumber) + 1,
+      current_question_index: nextIndex,
+    })
+    .eq("id", attemptId);
+
+  return { success: !error, error: error?.message, nextIndex };
+}
+
+/**
+ * Continue Without Break (Sprint 9.1 item 3/4): the alternative choice on
+ * the same SectionCompleteScreen gate as startExamBreak - locks the
+ * just-completed section exactly the same way (completing a section always
+ * seals it from further review, whether or not its break was taken) and
+ * advances into the next section, but skips the break state machine
+ * entirely. No break is consumed, breaks_taken is untouched.
+ */
+export async function advanceToNextSection(attemptId: string): Promise<{ success: boolean; error?: string; nextIndex?: number; nextSection?: number }> {
+  const { supabase, user } = await requireUser();
+
+  const row = await loadSectionBoundaryRow(supabase, attemptId, user.id);
+  if (!row) return { success: false, error: "Attempt not found" };
+  if (row.status !== "active") return { success: false, error: "Attempt is not active" };
+
+  const blueprint = getBlueprintByVersion(row.blueprint_version) ?? getActiveBlueprint();
+  const questionsCompleted = row.current_question_index + 1;
+  const justCompleted = sectionJustCompleted(questionsCompleted, blueprint);
+  if (justCompleted === null) {
+    return { success: false, error: "Not currently at a section boundary" };
+  }
+
+  const newSectionsLocked = row.sections_locked.includes(justCompleted) ? row.sections_locked : [...row.sections_locked, justCompleted];
+  const nextIndex = row.current_question_index + 1;
+  const nextSection = justCompleted + 1;
+
+  const { error } = await supabase
+    .from("mock_exam_attempts")
+    .update({ sections_locked: newSectionsLocked, current_section: nextSection, current_question_index: nextIndex })
+    .eq("id", attemptId);
+
+  return { success: !error, error: error?.message, nextIndex, nextSection };
+}
+
+/** Ends the current break early - the exam clock's pause was already capped at the break's max duration by computeExamRemainingSeconds regardless of when this is called, so there is no way to "cheat" by delaying this call. */
+export async function endExamBreak(attemptId: string): Promise<{ success: boolean; error?: string }> {
+  const { supabase, user } = await requireUser();
+
+  const { data } = await supabase.from("mock_exam_attempts").select("id, status, on_break").eq("id", attemptId).eq("user_id", user.id).maybeSingle();
+  if (!data) return { success: false, error: "Attempt not found" };
+  const row = data as { status: string; on_break: boolean };
+  if (row.status !== "on_break" || !row.on_break) return { success: false, error: "Attempt is not currently on break" };
+
+  const { error } = await supabase
+    .from("mock_exam_attempts")
+    .update({ status: "active", on_break: false, break_started_at: null })
+    .eq("id", attemptId);
+
+  return { success: !error, error: error?.message };
+}
+
+/**
+ * Manual submit still re-verifies server-side expiry (break-aware) before
+ * trusting "manual" as the reason - identical posture to
+ * practiceSessionService.ts's submitSession: the server's clock always
+ * decides, never the browser's.
+ */
+export async function submitMockExam(attemptId: string): Promise<{ success: boolean; error?: string }> {
+  const { supabase, user } = await requireUser();
+
+  const limit = await checkRateLimit("assessment-submit", user.id);
+  if (!limit.allowed) return { success: false, error: "rate_limited" };
+
+  const { data } = await supabase
+    .from("mock_exam_attempts")
+    .select("blueprint_version, duration_seconds, started_at, breaks_taken, on_break, break_started_at")
+    .eq("id", attemptId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  let reason: "manual" | "expired" = "manual";
+  if (data) {
+    const row = data as { blueprint_version: string; duration_seconds: number; started_at: string; breaks_taken: number[]; on_break: boolean; break_started_at: string | null };
+    const blueprint = getBlueprintByVersion(row.blueprint_version) ?? getActiveBlueprint();
+    if (isExamExpired(row.started_at, row.duration_seconds, row.breaks_taken, row.on_break, row.break_started_at, blueprint)) {
+      reason = "expired";
+    }
+  }
+
+  const result = await submitMockExamAttempt(supabase, attemptId, user.id, reason);
+  return { success: result.success, error: result.error };
+}
+
+/** Client-callable wrapper for examResultsService.ts's lazy single-question detail fetch (item 9) - AssessmentResultsView calls this directly from the browser when a student opens the review panel for one question. */
+export async function getMockExamReviewQuestionDetail(attemptId: string, questionId: string) {
+  const { supabase, user } = await requireUser();
+  const { getMockExamReviewQuestionDetail: fetchDetail } = await import("@/features/mock-exam/services/examResultsService");
+  return fetchDetail(supabase, attemptId, user.id, questionId);
+}

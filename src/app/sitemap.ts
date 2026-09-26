@@ -1,0 +1,99 @@
+import type { MetadataRoute } from "next";
+import { supabaseAdmin } from "@/lib/supabase/admin";
+import { fetchPublishedPosts } from "@/lib/posts";
+import { hasArabicVersion, toArabicPath } from "@/lib/i18nRoutes";
+
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://zentexai.com";
+
+// Without this, Next.js treats this route as eligible for static generation
+// (confirmed via `npm run build` marking /sitemap.xml as "○ Static") since it
+// calls no per-request API (headers/cookies) - meaning it would only ever
+// reflect whatever was in the database at the last build, not new content
+// published afterward. Regenerating at most once per hour is a documented,
+// supported option for Next.js metadata route files and is more than fresh
+// enough for a sitemap (crawlers do not need sub-hour freshness).
+export const revalidate = 3600;
+
+/**
+ * Dynamic XML sitemap (served natively by Next.js at /sitemap.xml from this
+ * file - no package needed). Lists ONLY real, public, canonical pages that
+ * return 200:
+ *  - static marketing pages (home, services, the AI Agents & Automation UAE
+ *    landing page, academy, about, contact, resources, blog index)
+ *  - published product pages (currently: PMP Mastery Program, PMP Exam
+ *    Simulator) - read directly by slug/is_published, not hardcoded, so an
+ *    admin publishing/unpublishing a product is reflected automatically
+ *  - published blog articles, one entry per real row in website_posts
+ *
+ * Deliberately EXCLUDED (see the task's own list): /tools and /enroll
+ * (301 redirects, not 200 pages - next.config.js), every authenticated
+ * route (/dashboard, /certificate, lessons, assessments, practice, mock
+ * exam, checkout), /admin/**, /api/**, and all auth pages (login/signup/
+ * password reset/verify-email) - none of those are meant to rank, and
+ * several require a session that a crawler will never have anyway.
+ */
+type StaticEntry = MetadataRoute.Sitemap[number];
+
+/**
+ * Pages that exist in both languages are emitted as two entries (English +
+ * Arabic), each carrying the full reciprocal hreflang set. Only paths in
+ * ARABIC_EQUIVALENT_PATHS - i.e. with a real Arabic page behind them - are
+ * ever given an Arabic entry or an alternates block.
+ */
+function withArabicVersions(entries: StaticEntry[]): StaticEntry[] {
+  return entries.flatMap((entry) => {
+    const enPath = new URL(entry.url).pathname;
+    if (!hasArabicVersion(enPath)) return [entry];
+    const en = `${SITE_URL}${enPath === "/" ? "/" : enPath}`;
+    const ar = `${SITE_URL}${toArabicPath(enPath)}`;
+    const languages = { en, ar, "x-default": en };
+    return [
+      { ...entry, alternates: { languages } },
+      { ...entry, url: ar, alternates: { languages } },
+    ];
+  });
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const staticEntries: MetadataRoute.Sitemap = withArabicVersions([
+    { url: `${SITE_URL}/`, changeFrequency: "weekly", priority: 1 },
+    { url: `${SITE_URL}/services`, changeFrequency: "monthly" },
+    { url: `${SITE_URL}/services/ai-agents-automation-uae`, changeFrequency: "monthly" },
+    { url: `${SITE_URL}/services/whatsapp-automation-uae`, changeFrequency: "monthly" },
+    { url: `${SITE_URL}/services/machine-learning-uae`, changeFrequency: "monthly" },
+    { url: `${SITE_URL}/services/data-analytics-uae`, changeFrequency: "monthly" },
+    { url: `${SITE_URL}/services/power-bi-consulting-uae`, changeFrequency: "monthly" },
+    { url: `${SITE_URL}/academy`, changeFrequency: "monthly" },
+    { url: `${SITE_URL}/about`, changeFrequency: "yearly" },
+    { url: `${SITE_URL}/contact`, changeFrequency: "yearly" },
+    { url: `${SITE_URL}/resources`, changeFrequency: "weekly" },
+    { url: `${SITE_URL}/blog`, changeFrequency: "weekly" },
+    { url: `${SITE_URL}/courses`, changeFrequency: "monthly" },
+  ]);
+
+  let productEntries: MetadataRoute.Sitemap = [];
+  try {
+    const { data: products } = await supabaseAdmin.from("products").select("slug, updated_at").eq("is_published", true);
+    productEntries = ((products ?? []) as { slug: string; updated_at: string | null }[]).map((p) => ({
+      url: `${SITE_URL}/courses/${p.slug}`,
+      lastModified: p.updated_at ? new Date(p.updated_at) : undefined,
+      changeFrequency: "monthly" as const,
+    }));
+  } catch (err) {
+    console.error("[sitemap] failed to load products:", (err as Error).message);
+  }
+
+  let postEntries: MetadataRoute.Sitemap = [];
+  try {
+    const posts = await fetchPublishedPosts();
+    postEntries = posts.map((post) => ({
+      url: `${SITE_URL}/blog/${post.slug}`,
+      lastModified: new Date(post.published_at),
+      changeFrequency: "yearly" as const,
+    }));
+  } catch (err) {
+    console.error("[sitemap] failed to load posts:", (err as Error).message);
+  }
+
+  return [...staticEntries, ...withArabicVersions(productEntries), ...postEntries];
+}

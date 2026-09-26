@@ -1,0 +1,59 @@
+-- ============================================================================
+-- MIGRATION 030: Enforce at most one active/on_break Mock Exam attempt per user
+-- ============================================================================
+-- Until now, "only one active Mock Exam attempt at a time" was a UI-only
+-- convention (findActiveMockExamAttemptId() in examAttemptService.ts steers
+-- the Start page toward resuming rather than starting a second one), not a
+-- database guarantee - two concurrent createMockExamAttempt() calls (double
+-- click, two tabs, a retried request) could both succeed and leave a user
+-- with two simultaneously "active"/"on_break" attempts, which the timer,
+-- resume, and grading logic never anticipate.
+--
+-- "Active resumable" is defined exactly as the application already defines
+-- it (examAttemptService.ts, findActiveMockExamAttemptId) - status IN
+-- ('active', 'on_break') - NOT merely 'active'. mock_exam_attempt_status
+-- (migration 016) has five values: active, on_break, completed, expired,
+-- abandoned; only the first two represent a still-in-progress attempt a user
+-- could resume, so only those two are constrained here. 'completed',
+-- 'expired', and 'abandoned' attempts are historical and a user may have any
+-- number of them (that's the whole point of retakes, migration 018).
+--
+-- create_mock_exam_attempt()/create_mock_exam_attempt_gated() (migrations
+-- 016/018/020) already wrap their body in `EXCEPTION WHEN OTHERS THEN RETURN
+-- jsonb_build_object('success', false, 'error', SQLERRM)` - a violation of
+-- this index surfaces as a normal {success:false, error:"duplicate key ..."}
+-- JSON response, not a thrown/uncaught exception, so no PL/pgSQL change is
+-- required for the RPC to keep working. The distinctive index name below is
+-- matched by substring in examAttemptService.ts (createMockExamAttempt/
+-- retakeMockExamAttempt) to translate a lost race into a normal "resume your
+-- existing attempt" result instead of surfacing the raw database error to
+-- the user.
+--
+-- PRODUCTION SAFETY: this migration has NOT been applied to production from
+-- this environment (no production DB access). Before applying it, run the
+-- read-only preflight query below against production - if it returns any
+-- rows, those users currently hold more than one active/on_break attempt and
+-- this index creation will fail until that pre-existing data is resolved.
+-- Resolving any such rows is a business decision (e.g. which attempt should
+-- "win") for the project owner to make - this migration deliberately does
+-- not guess or auto-remediate.
+--
+-- --- PRODUCTION PREFLIGHT (read-only - run this first, separately) --------
+-- SELECT user_id, COUNT(*) AS active_attempt_count,
+--        array_agg(id ORDER BY started_at DESC) AS attempt_ids,
+--        array_agg(status ORDER BY started_at DESC) AS statuses,
+--        array_agg(started_at ORDER BY started_at DESC) AS started_at_values
+-- FROM mock_exam_attempts
+-- WHERE status IN ('active', 'on_break')
+-- GROUP BY user_id
+-- HAVING COUNT(*) > 1;
+-- ---------------------------------------------------------------------------
+-- ============================================================================
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_mock_exam_attempts_one_active_per_user
+  ON mock_exam_attempts (user_id)
+  WHERE status IN ('active', 'on_break');
+
+-- ============================================================================
+-- END OF MIGRATION 030
+-- ============================================================================
