@@ -1,0 +1,47 @@
+name: Dependency security
+
+on:
+  pull_request:
+    paths:
+      - package.json
+      - package-lock.json
+      - security/**
+      - scripts/security/**
+      - .github/workflows/dependency-security.yml
+  push:
+    branches: [main, alpha-platform]
+    paths:
+      - package.json
+      - package-lock.json
+      - security/**
+      - scripts/security/**
+      - .github/workflows/dependency-security.yml
+  schedule:
+    # Weekly, so advisories published after the last lockfile change still surface.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: npm audit policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # --ignore-scripts: the audit needs no install scripts, and skipping them
+      # keeps this job from executing arbitrary dependency code.
+      - run: npm ci --ignore-scripts
+
+      # Fails only on NEW high/critical advisories that are not listed in
+      # security/accepted-advisories.json. Known/deferred findings (e.g. the
+      # Next.js 14 line) are reported in the job summary, not hidden.
+      - run: npx tsx scripts/security/auditCheck.ts

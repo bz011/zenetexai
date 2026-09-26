@@ -1,0 +1,54 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Asia/Dubai
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+    groups:
+      npm-minor-and-patch:
+        update-types:
+          - minor
+          - patch
+    ignore:
+      # Version updates propose minor/patch only. Majors are deliberate,
+      # separately-planned migrations (see docs/SECURITY_DEPENDENCIES.md:
+      # "Framework Security Migration" - Next.js/React 19/R3F 9/Drei 10).
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # three.js is 0.x: a minor bump is a breaking change and must be
+      # coordinated with @react-three/fiber and drei.
+      - dependency-name: "three"
+        update-types: ["version-update:semver-minor"]
+      # Stay on the Next 14 / React 18 line until the framework migration.
+      - dependency-name: "next"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-minor"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-minor"]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Asia/Dubai
+    open-pull-requests-limit: 3
+    labels:
+      - dependencies
+    commit-message:
+      prefix: "chore(ci)"
+    groups:
+      actions:
+        patterns:
+          - "*"
