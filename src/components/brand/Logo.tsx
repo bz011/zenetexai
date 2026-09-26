@@ -13,6 +13,11 @@ const WHITE = "#FFFFFF";
 const NAVY = "#0F172A";
 const BLUE = "#2563EB";
 const TEAL = "#06B6D4";
+// The tagline is small text, so on the dark surface its blue/cyan must meet AA
+// (the brand blue #2563EB is only 3.8:1 on the navy page). Same hues, lighter
+// steps - the wordmark and icon keep the exact approved brand colours.
+const TAGLINE_BLUE_ON_DARK = "#60A5FA";
+const TAGLINE_TEAL_ON_DARK = "#22D3EE";
 const ICON_SCALE_STYLE = { transform: "scale(1.05)", transformOrigin: "center" } as const;
 
 function Wordmark({ sizeClassName, ink }: { sizeClassName: string; ink: string }) {
@@ -68,8 +73,8 @@ export default function Logo({ variant = "horizontal", tone = "dark", className 
         </span>
         <span className={`ms-[52px] mt-1 text-xs md:ms-[60px] md:text-sm ${manrope.className} font-semibold`}>
           <span style={{ color: tone === "light" ? "#334155" : "#F8FAFC" }}>Intelligence. </span>
-          <span style={{ color: BLUE }}>Execution. </span>
-          <span style={{ color: TEAL }}>Impact.</span>
+          <span style={{ color: tone === "light" ? BLUE : TAGLINE_BLUE_ON_DARK }}>Execution. </span>
+          <span style={{ color: tone === "light" ? TEAL : TAGLINE_TEAL_ON_DARK }}>Impact.</span>
         </span>
       </span>
     );

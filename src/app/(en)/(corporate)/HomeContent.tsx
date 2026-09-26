@@ -2,12 +2,15 @@
 
 import Link from "@/components/LocaleLink";
 import { useLang } from "@/lib/LanguageContext";
-import HeroSection from "@/components/HeroSection";
+import { homeCopy } from "@/lib/homeCopy";
+import GovernedFlow from "@/components/flow/GovernedFlow";
 import CTASection from "@/components/CTASection";
+import Section from "@/components/ui/Section";
+import SectionHeader from "@/components/ui/SectionHeader";
 import type { PublishedPost } from "@/lib/posts";
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+function formatDate(iso: string, lang: "en" | "ar") {
+  return new Date(iso).toLocaleDateString(lang === "ar" ? "ar" : "en-US", { year: "numeric", month: "short", day: "numeric" });
 }
 
 function excerpt(body: string, maxLen = 110) {
@@ -15,164 +18,184 @@ function excerpt(body: string, maxLen = 110) {
   return text.length > maxLen ? text.slice(0, maxLen) + "…" : text;
 }
 
+function Chevron({ className = "" }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 20 20" fill="none" className={className}>
+      <path d="M7 4l6 6-6 6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function Check() {
+  return (
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-1 shrink-0 text-accent-fg">
+      <path d="M3 8.5l3 3 7-7" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 interface Props {
   latestPosts: PublishedPost[];
 }
 
 export default function HomeContent({ latestPosts }: Props) {
-  const { t } = useLang();
+  const { lang, t } = useLang();
+  const c = homeCopy[lang];
   const h = t.home;
-  const sv = t.services;
 
   return (
-    <div className="ux-page">
-      <HeroSection />
-
-      {/* ── Core Services ───────────────────────────────────────────────── */}
-      <section className="py-20 md:py-28 lg:py-36">
-        <div className="container-page">
-          <div className="animate-fade-up mb-10 md:mb-16 max-w-2xl">
-            <span className="label">{h.core_services_eyebrow}</span>
-            <h2 className="mt-3 text-3xl font-bold text-white md:text-4xl">{h.core_services_h2}</h2>
-            <p className="mt-4 text-body leading-relaxed text-slate-400">{h.core_services_sub}</p>
-          </div>
-
-          {/* sm:2 / lg:4 (not md:3) - sv.categories now holds 4 items (AI
-              Solutions, AI Consulting, PM Consulting, Machine Learning), and
-              3 columns would leave the 4th card alone on its own row. 2 and
-              4 both divide evenly into 4, so every breakpoint fills its last
-              row completely. */}
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {sv.categories.map((cat, i) => (
-              <div
-                key={cat.id}
-                className="animate-fade-up card card-hover p-7"
-                style={{ animationDelay: `${100 + i * 80}ms` }}
-              >
-                <span className="label text-caption">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="mt-2.5 text-lead font-semibold text-white">{cat.title}</h3>
-                <p className="mt-2.5 text-body leading-relaxed text-slate-400">{cat.desc}</p>
-                <div className="mt-4 flex flex-wrap gap-1.5">
-                  {cat.examples.slice(0, 3).map((ex) => (
-                    <span key={ex} className="rounded-full border border-white/[0.07] bg-white/[0.03] px-2.5 py-1 text-caption text-slate-400">
-                      {ex}
-                    </span>
-                  ))}
-                </div>
-                {cat.learnMoreHref && cat.learnMoreLabel && (
-                  <Link href={cat.learnMoreHref} className="mt-4 inline-block text-small font-medium text-indigo-400 transition-colors hover:text-indigo-300">
-                    {cat.learnMoreLabel}
-                  </Link>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-10">
-            <Link href="/services" className="btn-ghost">{h.core_services_link}</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Why ZentexAI ───────────────────────────────────────────────── */}
-      <section className="border-t border-white/[0.06] bg-white/[0.015] py-20 md:py-28 lg:py-36">
-        <div className="container-page">
-          <div className="animate-fade-up mb-10 md:mb-16 text-center">
-            <span className="label">{h.why_eyebrow}</span>
-            <h2 className="mt-3 text-3xl font-bold text-white md:text-4xl">{h.why_h2}</h2>
-            <p className="mx-auto mt-4 max-w-lg text-body text-slate-400">{h.why_sub}</p>
-          </div>
-
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {h.benefits.map((b, i) => (
-              <div
-                key={b.title}
-                className="animate-fade-up card card-hover p-7"
-                style={{ animationDelay: `${100 + i * 60}ms` }}
-              >
-                <div className="mb-5 h-px w-12 bg-gradient-to-r from-indigo-500 to-violet-500" />
-                <h3 className="text-body font-semibold text-white">{b.title}</h3>
-                <p className="mt-2.5 text-small leading-relaxed text-slate-400">{b.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Featured Product: PMP Mastery Program ─────────────────────── */}
-      <section className="border-t border-white/[0.06] py-20 md:py-28 lg:py-36">
-        <div className="container-page">
-          <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
-            <div className="animate-fade-up">
-              <span className="label">{h.featured_eyebrow}</span>
-              <h2 className="mt-3 text-3xl font-bold text-white md:text-4xl">
-                {h.featured_h2_line1}
-                <br />
-                <span className="gradient-text">{h.featured_h2_line2}</span>
-              </h2>
-              <p className="mt-5 text-body leading-relaxed text-slate-400">{h.featured_p1}</p>
-              <p className="mt-3.5 text-body leading-relaxed text-slate-400">{h.featured_p2}</p>
-              <div className="mt-9 flex gap-3">
-                <Link href="/courses" className="btn-primary">{h.featured_btn1}</Link>
-                <Link href="/academy" className="btn-secondary">{h.featured_btn2}</Link>
-              </div>
+    <div>
+      {/* ── Hero ─ text is plain HTML, visible at first paint (no entrance animation on copy) ── */}
+      <section aria-labelledby="hero-title">
+        <div className="container-page grid items-center gap-12 pb-16 pt-10 md:pb-24 md:pt-14 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16">
+          <div>
+            <p className="label">{c.hero.eyebrow}</p>
+            <h1 id="hero-title" className="mt-4 text-display text-ink">{c.hero.title}</h1>
+            <p className="mt-6 max-w-xl text-lead text-ink-2">{c.hero.sub}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/contact" className="btn-primary">{c.hero.ctaPrimary}</Link>
+              <Link href="/services" className="btn-secondary">{c.hero.ctaSecondary}</Link>
             </div>
-
-            <div className="space-y-3">
-              {h.featured_features.map((feature, i) => (
-                <div
-                  key={feature}
-                  className="animate-fade-up flex items-start gap-3 rounded-xl border border-white/[0.07] bg-white/[0.03] px-5 py-4"
-                  style={{ animationDelay: `${i * 70}ms` }}
-                >
-                  <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
-                  <span className="text-body leading-relaxed text-slate-300">{feature}</span>
+            <dl className="mt-10 grid gap-x-8 gap-y-5 border-t border-line pt-6 sm:grid-cols-3">
+              {c.hero.facts.map((f) => (
+                <div key={f.k}>
+                  <dt className="text-caption font-semibold uppercase tracking-[0.1em] text-ink-3">{f.k}</dt>
+                  <dd className="mt-1 text-small text-ink">{f.v}</dd>
                 </div>
               ))}
-            </div>
+            </dl>
           </div>
+
+          <GovernedFlow />
         </div>
       </section>
 
-      {/* ── Meet the Founder ───────────────────────────────────────────── */}
-      <section className="border-t border-white/[0.06] bg-white/[0.015] py-16 md:py-24 lg:py-32">
-        <div className="container-page">
-          <div className="mx-auto max-w-2xl text-center">
-            <span className="label">{h.founder_eyebrow}</span>
-            <h2 className="mt-3 text-2xl font-bold text-white md:text-3xl">{h.founder_h2}</h2>
-            <p className="mx-auto mt-5 max-w-xl text-body leading-relaxed text-slate-400">{h.founder_summary}</p>
-            <div className="mt-7">
+      {/* ── What we do: a plain, crawlable statement of what / who / how ── */}
+      <Section bordered aria-labelledby="what-title">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+          <SectionHeader flush eyebrow={c.what.eyebrow} title={c.what.title} id="what-title" />
+          <dl className="divide-y divide-line border-y border-line">
+            {c.what.items.map((item) => (
+              <div key={item.term} className="grid gap-2 py-6 md:grid-cols-[9.5rem_minmax(0,1fr)] md:gap-6">
+                <dt className="font-heading text-h4 text-ink">{item.term}</dt>
+                <dd className="text-body text-ink-2">{item.body}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </Section>
+
+      {/* ── Services: an index, each with its own mechanism ── */}
+      <Section bordered aria-labelledby="services-title">
+        <SectionHeader eyebrow={c.services.eyebrow} title={c.services.title} description={c.services.sub} id="services-title" />
+        <ul className="divide-y divide-line border-y border-line">
+          {c.services.build.map((s) => (
+            <li key={s.href}>
+              <Link
+                href={s.href}
+                className="group grid gap-x-8 gap-y-2 py-6 transition-colors hover:bg-surface-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1.7fr)_auto] md:px-3"
+              >
+                <h3 className="text-h3 text-ink">{s.name}</h3>
+                <div>
+                  <p className="text-body text-ink-2">{s.line}</p>
+                  <p className={`mt-2 text-caption text-ink-3 ${lang === "en" ? "font-mono" : ""}`}>{s.flow}</p>
+                </div>
+                <span aria-hidden="true" className="hidden items-center text-accent-fg md:flex">
+                  <Chevron className="transition-transform duration-150 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-10 grid gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.7fr)] md:gap-8">
+          <p className="label">{c.services.advisoryTitle}</p>
+          <ul className="grid gap-6 sm:grid-cols-2">
+            {c.services.advisory.map((a) => (
+              <li key={a.name}>
+                <h3 className="font-heading text-h4 text-ink">{a.name}</h3>
+                <p className="mt-1 text-small text-ink-2">{a.line}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="mt-8">
+          <Link href="/services" className="btn-ghost">{c.services.allServices} <Chevron className="rtl:rotate-180" /></Link>
+        </div>
+      </Section>
+
+      {/* ── Working principles: statements, not claim cards ── */}
+      <Section bordered aria-labelledby="principles-title">
+        <SectionHeader eyebrow={c.principles.eyebrow} title={c.principles.title} id="principles-title" />
+        <ol className="grid gap-x-16 gap-y-10 md:grid-cols-2">
+          {c.principles.items.map((p, i) => (
+            <li key={p.title} className="border-t border-line-strong pt-5">
+              <p aria-hidden="true" className="font-mono text-caption text-ink-3">{String(i + 1).padStart(2, "0")}</p>
+              <h3 className="mt-2 text-h3 text-ink">{p.title}</h3>
+              <p className="mt-2 max-w-md text-body text-ink-2">{p.body}</p>
+            </li>
+          ))}
+        </ol>
+      </Section>
+
+      {/* ── Featured program ── */}
+      <Section bordered aria-labelledby="program-title">
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-start lg:gap-16">
+          <div>
+            <p className="label">{h.featured_eyebrow}</p>
+            <h2 id="program-title" className="mt-3 text-h2 text-ink">{h.featured_h2_line1}</h2>
+            <p className="mt-5 text-body text-ink-2">{h.featured_p1}</p>
+            <p className="mt-3 text-body text-ink-2">{h.featured_p2}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link href="/courses" className="btn-primary">{h.featured_btn1}</Link>
+              <Link href="/academy" className="btn-secondary">{h.featured_btn2}</Link>
+            </div>
+          </div>
+          <ul className="divide-y divide-line border-y border-line">
+            {h.featured_features.map((feature) => (
+              <li key={feature} className="flex items-start gap-3 py-4 text-body text-ink-2">
+                <Check />
+                <span>{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Section>
+
+      {/* ── Founder ── */}
+      <Section bordered tight aria-labelledby="founder-title">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+          <SectionHeader flush eyebrow={h.founder_eyebrow} title={h.founder_h2} id="founder-title" />
+          <div>
+            <p className="text-body text-ink-2">{h.founder_summary}</p>
+            <div className="mt-4">
               <Link href="/about" className="btn-ghost">{h.founder_btn}</Link>
             </div>
           </div>
         </div>
-      </section>
+      </Section>
 
-      {/* ── Latest Articles ────────────────────────────────────────────── */}
+      {/* ── Latest articles (only when published) ── */}
       {latestPosts.length > 0 && (
-        <section className="border-t border-white/[0.06] py-16 md:py-24 lg:py-32">
-          <div className="container-page">
-            <div className="animate-fade-up mb-8 md:mb-12 text-center">
-              <span className="label">{t.nav.blog}</span>
-              <h2 className="mt-3 text-2xl font-bold text-white md:text-3xl">{h.articles_h2}</h2>
-              <p className="mx-auto mt-3 max-w-md text-body text-slate-400">{h.articles_sub}</p>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-3">
-              {latestPosts.map((post) => (
-                <Link key={post.id} href={`/blog/${post.slug}`} className="card card-hover block p-6">
-                  <p className="text-caption text-slate-400">{formatDate(post.published_at)}</p>
-                  <h3 className="mt-2 text-body font-semibold leading-snug text-white">{post.title}</h3>
-                  <p className="mt-2 text-small leading-relaxed text-slate-400">{excerpt(post.body)}</p>
+        <Section bordered aria-labelledby="articles-title">
+          <SectionHeader eyebrow={t.nav.blog} title={h.articles_h2} description={h.articles_sub} id="articles-title" />
+          <ul className="divide-y divide-line border-y border-line">
+            {latestPosts.map((post) => (
+              <li key={post.id}>
+                <Link href={`/blog/${post.slug}`} className="group grid gap-x-8 gap-y-1 py-5 transition-colors hover:bg-surface-1 md:grid-cols-[9rem_minmax(0,1fr)] md:px-3">
+                  <p className="text-caption text-ink-3">{formatDate(post.published_at, lang)}</p>
+                  <div>
+                    <h3 className="text-h4 text-ink">{post.title}</h3>
+                    <p className="mt-1 text-small text-ink-2">{excerpt(post.body)}</p>
+                  </div>
                 </Link>
-              ))}
-            </div>
-
-            <div className="mt-10 text-center">
-              <Link href="/blog" className="btn-ghost">{h.articles_view_all}</Link>
-            </div>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-8">
+            <Link href="/blog" className="btn-ghost">{h.articles_view_all}</Link>
           </div>
-        </section>
+        </Section>
       )}
 
       <CTASection />

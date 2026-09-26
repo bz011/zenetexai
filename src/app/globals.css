@@ -37,6 +37,7 @@
   /* One heading face for the whole site (Manrope; Noto Sans Arabic per glyph). */
   h1, h2, h3, h4 {
     @apply font-heading;
+    text-wrap: balance; /* no single-word last lines in headlines */
   }
 
   /* Keyboard focus: one visible, AA-contrast ring everywhere. */
@@ -53,10 +54,18 @@
     letter-spacing: 0;
   }
 
-  /* Negative tracking is a Latin display technique; it harms Arabic joining. */
+  /* Negative tracking is a Latin display technique; it harms Arabic joining.
+     Arabic also needs taller lines and a lighter weight than Latin display
+     type (extra-bold Arabic closes up its counters and collides diacritics). */
   [dir="rtl"] :is(.text-display, .text-h1, .text-h2, .text-h3, .text-h4) {
     letter-spacing: 0;
   }
+  [dir="rtl"] :is(.text-display, .text-h1) {
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  [dir="rtl"] .text-h2 { line-height: 1.35; }
+  [dir="rtl"] .text-h3 { line-height: 1.45; }
 
   [dir="rtl"] .label {
     letter-spacing: 0.02em;

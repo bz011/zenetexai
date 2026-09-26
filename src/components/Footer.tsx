@@ -47,7 +47,7 @@ export default function Footer() {
       <div className="container-page py-12 md:py-16">
         <div className="grid gap-10 lg:grid-cols-[1.2fr_3fr]">
           <div className="max-w-xs">
-            <Link href="/" aria-label={c.homeLabel} className="inline-flex">
+            <Link href="/" className="inline-flex">
               <Logo variant="primary" />
             </Link>
             <p className="mt-4 text-small text-ink-3">{t.footer.tagline}</p>

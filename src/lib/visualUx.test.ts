@@ -26,7 +26,7 @@ function render(pathname: string, el: () => React.ReactElement) {
 /** The public pages this sprint's typography and spacing scale applies to. */
 const SCOPED_FILES = [
   "src/app/(en)/(corporate)/HomeContent.tsx",
-  "src/components/HeroSection.tsx",
+  "src/components/flow/GovernedFlow.tsx",
   "src/components/CTASection.tsx",
   "src/app/(en)/(corporate)/services/ServicesContent.tsx",
   "src/app/(en)/(corporate)/services/ai-agents-automation-uae/AiAgentsAutomationContent.tsx",

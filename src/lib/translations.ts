@@ -9,7 +9,6 @@ export type Lang = "en" | "ar";
 interface ProcessStep { step: string; title: string; desc: string }
 interface ValueItem { title: string; desc: string }
 interface FeatureItem { title: string; desc: string }
-interface BenefitItem { title: string; desc: string }
 interface ContactDetail { id: string; label: string; value: string; href: string | null; icon: string }
 interface ServiceCategory { id: string; title: string; desc: string; examples: string[]; learnMoreHref?: string; learnMoreLabel?: string; learnMoreHref2?: string; learnMoreLabel2?: string }
 interface AcademyProgram { id: string; title: string; tag: string; status: string; duration?: string; desc: string }
@@ -103,10 +102,6 @@ export interface Translations {
     send_message: string; coming_soon_inline: string;
     content_note: string; week: string; weeks: string;
   };
-  hero: {
-    badge: string; headline1: string; headline2: string;
-    sub: string; cta_primary: string; cta_secondary: string; region_note: string;
-  };
   cta: { badge: string; headline: string; sub: string };
   form: {
     name: string; name_placeholder: string; email: string; email_placeholder: string;
@@ -116,9 +111,6 @@ export interface Translations {
     success_title: string; success_sub: string; send_another: string;
   };
   home: {
-    core_services_eyebrow: string; core_services_h2: string; core_services_sub: string; core_services_link: string;
-    why_eyebrow: string; why_h2: string; why_sub: string;
-    benefits: BenefitItem[];
     featured_eyebrow: string; featured_h2_line1: string; featured_h2_line2: string;
     featured_p1: string; featured_p2: string; featured_features: string[];
     featured_btn1: string; featured_btn2: string;
@@ -459,17 +451,7 @@ const en: Translations = {
     send_message: "Send Message", coming_soon_inline: "Coming Soon",
     content_note: "Content is being prepared. Check back soon.",
     week: "week", weeks: "weeks",
-  },
-  hero: {
-    badge: "AI Solutions · Consulting · Professional Learning",
-    headline1: "Practical AI.",
-    headline2: "Real Project Results.",
-    sub: "ZentexAI helps organizations apply AI effectively and strengthen how they deliver projects — through AI solutions, hands-on consulting, and professional learning programs, including our flagship PMP Mastery Program.",
-    cta_primary: "Talk to Our Team",
-    cta_secondary: "Explore Services",
-    region_note: "Serving organizations and professionals across the UAE and the wider MENA region",
-  },
-  cta: {
+  },  cta: {
     badge: "Get in Touch",
     headline: "Let's Work Together",
     sub: "Tell us about your organization and what you're trying to solve. We'll come back with a clear proposal — no pressure.",
@@ -488,29 +470,6 @@ const en: Translations = {
 
   // ── Home ────────────────────────────────────────────────────────────────────
   home: {
-    core_services_eyebrow: "What We Do",
-    core_services_h2: "Core Services",
-    core_services_sub: "Three disciplines, one team: practical AI, sound project delivery, and the professional learning to support both.",
-    core_services_link: "Explore all services →",
-
-    why_eyebrow: "Why ZentexAI",
-    why_h2: "What Makes Us Different",
-    why_sub: "We combine AI engineering, project management expertise, and a bias toward real delivery — not just recommendations.",
-    benefits: [
-      { title: "Real Delivery, Not Just Reports",
-        desc: "We build and implement — not just advise. Every engagement ends with something working in your hands." },
-      { title: "Project Management Expertise",
-        desc: "Our approach to AI adoption is grounded in real project management discipline, not just technical enthusiasm." },
-      { title: "Bilingual by Design",
-        desc: "We work in both Arabic and English. Our solutions are built for the MENA market, not translated for it." },
-      { title: "Clear Scope, Clear Pricing",
-        desc: "No vague retainers. Every engagement starts with a defined scope, timeline, and deliverable." },
-      { title: "Responsible AI Adoption",
-        desc: "We help you adopt AI in ways that are governable and sustainable — not just fast." },
-      { title: "One Partner, Multiple Disciplines",
-        desc: "AI solutions, consulting, and professional learning under one roof, so your team grows alongside what we build." },
-    ],
-
     featured_eyebrow: "Featured Program",
     featured_h2_line1: "PMP Mastery Program",
     featured_h2_line2: "Our Flagship Product",
@@ -1377,17 +1336,7 @@ const ar: Translations = {
     send_message: "إرسال الرسالة", coming_soon_inline: "قريباً",
     content_note: "المحتوى قيد الإعداد. تفقّد الموقع لاحقاً.",
     week: "أسبوع", weeks: "أسابيع",
-  },
-  hero: {
-    badge: "حلول الذكاء الاصطناعي · الاستشارات · التعليم الاحترافي",
-    headline1: "ذكاء اصطناعي عملي.",
-    headline2: "نتائج مشاريع حقيقية.",
-    sub: "تساعد ZentexAI المؤسسات على تبني الذكاء الاصطناعي بفعالية وتعزيز طريقة تسليم مشاريعها — من خلال حلول الذكاء الاصطناعي، والاستشارات العملية، وبرامج التعليم الاحترافي، بما في ذلك برنامجنا الرائد PMP Mastery Program.",
-    cta_primary: "تحدث إلى فريقنا",
-    cta_secondary: "استكشف الخدمات",
-    region_note: "نخدم المؤسسات والمهنيين في دولة الإمارات العربية المتحدة ومنطقة الشرق الأوسط وشمال أفريقيا",
-  },
-  cta: {
+  },  cta: {
     badge: "تواصل معنا",
     headline: "لنعمل معاً",
     sub: "أخبرنا عن مؤسستك وما تسعى لتحقيقه. سنعود إليك بمقترح واضح — دون أي إلزام.",
@@ -1406,29 +1355,6 @@ const ar: Translations = {
 
   // ── Home ────────────────────────────────────────────────────────────────────
   home: {
-    core_services_eyebrow: "ما نقدمه",
-    core_services_h2: "خدماتنا الأساسية",
-    core_services_sub: "ثلاثة تخصصات، فريق واحد: ذكاء اصطناعي عملي، تسليم مشاريع سليم، وتعليم احترافي يدعم كليهما.",
-    core_services_link: "← استكشف جميع الخدمات",
-
-    why_eyebrow: "لماذا ZentexAI",
-    why_h2: "ما الذي يميّزنا",
-    why_sub: "نجمع بين هندسة الذكاء الاصطناعي وخبرة إدارة المشاريع ونزعة حقيقية نحو التسليم الفعلي — لا مجرد التوصيات.",
-    benefits: [
-      { title: "تسليم فعلي، لا تقارير فقط",
-        desc: "نبني وننفذ — لا نكتفي بالنصح. كل مشاركة تنتهي بشيء جاهز للعمل بين يديك." },
-      { title: "خبرة في إدارة المشاريع",
-        desc: "نهجنا في تبني الذكاء الاصطناعي مبني على انضباط حقيقي في إدارة المشاريع، لا مجرد حماس تقني." },
-      { title: "ثنائي اللغة بالتصميم",
-        desc: "نعمل بالعربية والإنجليزية. حلولنا مصممة لسوق الشرق الأوسط، لا مترجمة إليه." },
-      { title: "نطاق واضح، تسعير واضح",
-        desc: "لا عقود مبهمة. كل مشاركة تبدأ بنطاق محدد وجدول زمني وتسليمات واضحة." },
-      { title: "تبنٍّ مسؤول للذكاء الاصطناعي",
-        desc: "نساعدك على تبني الذكاء الاصطناعي بطريقة قابلة للحوكمة والاستدامة — لا مجرد السرعة." },
-      { title: "شريك واحد، تخصصات متعددة",
-        desc: "حلول الذكاء الاصطناعي والاستشارات والتعليم الاحترافي تحت سقف واحد — حتى يتطور فريقك مع ما نبنيه." },
-    ],
-
     featured_eyebrow: "برنامجنا المميز",
     featured_h2_line1: "PMP Mastery Program",
     featured_h2_line2: "منتجنا الرائد",

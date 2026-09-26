@@ -82,7 +82,7 @@ const config: Config = {
         small: ["calc(clamp(0.875rem, 0.85rem + 0.15vw, 0.9375rem) * var(--type-scale, 1))", { lineHeight: "1.6" }],
         body: ["calc(clamp(0.9375rem, 0.91rem + 0.2vw, 1.0625rem) * var(--type-scale, 1))", { lineHeight: "1.7" }],
         lead: ["calc(clamp(1.0625rem, 1rem + 0.35vw, 1.25rem) * var(--type-scale, 1))", { lineHeight: "1.65" }],
-        display: ["calc(clamp(2.5rem, 1.7rem + 3.4vw, 4.25rem) * var(--type-scale, 1))", { lineHeight: "1.05", letterSpacing: "-0.03em", fontWeight: "800" }],
+        display: ["calc(clamp(2.25rem, 1.5rem + 2.6vw, 3.375rem) * var(--type-scale, 1))", { lineHeight: "1.05", letterSpacing: "-0.03em", fontWeight: "800" }],
         h1: ["calc(clamp(2.125rem, 1.6rem + 2.2vw, 3.25rem) * var(--type-scale, 1))", { lineHeight: "1.1", letterSpacing: "-0.025em", fontWeight: "800" }],
         h2: ["calc(clamp(1.625rem, 1.35rem + 1.3vw, 2.375rem) * var(--type-scale, 1))", { lineHeight: "1.18", letterSpacing: "-0.02em", fontWeight: "700" }],
         h3: ["calc(clamp(1.125rem, 1.05rem + 0.45vw, 1.375rem) * var(--type-scale, 1))", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "700" }],

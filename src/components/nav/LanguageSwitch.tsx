@@ -18,8 +18,8 @@ export default function LanguageSwitch() {
       className="flex min-h-[2.75rem] min-w-[2.75rem] items-center justify-center gap-1 rounded-inner border border-line-strong px-3 text-xs font-semibold transition-colors hover:border-ink-3 hover:bg-surface-2"
       aria-label={`EN / AR - ${c.switchLanguage}`}
     >
-      <span className={lang === "en" ? "text-ink" : "text-ink-3"}>EN</span>
-      <span aria-hidden="true" className="text-ink-3">/</span>
+      <span className={lang === "en" ? "text-ink" : "text-ink-3"}>EN</span>{" "}
+      <span className="text-ink-3">/</span>{" "}
       <span className={lang === "ar" ? "text-ink" : "text-ink-3"}>AR</span>
     </button>
   );

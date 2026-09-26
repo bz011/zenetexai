@@ -1,0 +1,242 @@
+"use client";
+
+import { useCallback, useEffect, useRef } from "react";
+import { animateSequence } from "motion/mini";
+import { useLang } from "@/lib/LanguageContext";
+import { visualCopy } from "@/lib/visualCopy";
+import { flowCopy } from "@/lib/flowCopy";
+
+/**
+ * The ZentexAI governed flow: work enters, passes controlled stages (gates),
+ * reaches approved systems, a human-handoff branch exists for anything outside
+ * permissions, and every step lands in an audit trail.
+ *
+ * LEVEL A of the homepage visual: semantic HTML (an ordered list you can read,
+ * search and hear) + inline SVG rails/gates + Motion. It is also the mobile,
+ * reduced-motion and no-WebGL rendering of the same concept. All meaningful
+ * text is HTML and visible from the first paint; motion only changes graphics
+ * (rails, markers, ticks) from idle to done, once, when the diagram is on
+ * screen. Copy comes from visualCopy.agent (the AI Agents page's own wording).
+ *
+ * Motion is used through `motion/mini` (WAAPI, ~3 KB gzip) rather than the full
+ * React animation runtime (~40 KB) - the diagram needs a timeline, not springs
+ * or gestures, and the homepage's JavaScript budget matters more.
+ */
+
+type RowKind = "input" | "gate" | "stage" | "systems";
+interface RowSpec {
+  kind: RowKind;
+  key: string;
+}
+
+// Row order, top to bottom. Gates sit on the rail between rows.
+const ROWS: RowSpec[] = [
+  { kind: "input", key: "input" },
+  { kind: "gate", key: "knowledge" },
+  { kind: "stage", key: "0" },
+  { kind: "stage", key: "1" },
+  { kind: "gate", key: "permission" },
+  { kind: "stage", key: "2" },
+  { kind: "stage", key: "3" },
+  { kind: "gate", key: "result" },
+  { kind: "systems", key: "systems" },
+];
+
+// Storytelling timeline: one narrative pass, once. Each transition is <= 240ms;
+// the whole pass (9 rows) is ~2s and is skipped entirely for reduced motion.
+const STEP_S = 0.18;
+const START_S = 0.4;
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+/** Idle -> done transforms/opacities for each animated part. `done` is also the reduced-motion state. */
+const FX = {
+  rail: { idle: { transform: "scaleY(0)" }, done: { transform: "scaleY(1)" } },
+  dot: { idle: { transform: "scale(0)" }, done: { transform: "scale(1)" } },
+  gate: { idle: { opacity: "0" }, done: { opacity: "1" } },
+  branch: { idle: { opacity: "0" }, done: { opacity: "1" } },
+  tick: { idle: { transform: "scaleY(0.25)", opacity: "0.35" }, done: { transform: "scaleY(1)", opacity: "1" } },
+} as const;
+type FxName = keyof typeof FX;
+
+function setState(root: HTMLElement, state: "idle" | "done") {
+  root.querySelectorAll<HTMLElement | SVGElement>("[data-fx]").forEach((el) => {
+    const name = el.getAttribute("data-fx") as FxName;
+    Object.assign(el.style, FX[name][state]);
+  });
+}
+
+function Rail({ first, last, gate, row }: { first: boolean; last: boolean; gate: boolean; row: number }) {
+  // Spans the whole row and stretches vertically only (viewBox is 28px wide,
+  // the same as its column), so lines stay crisp at any row height.
+  const top = first ? 10 : 0;
+  const bottom = last ? 10 : 100;
+  return (
+    <svg aria-hidden="true" className="absolute inset-y-0 start-0 h-full w-7 overflow-visible" viewBox="0 0 28 100" preserveAspectRatio="none">
+      <rect x="13" y={top} width="2" height={bottom - top} className="fill-line-strong" />
+      <rect
+        data-fx="rail"
+        data-row={row}
+        x="13"
+        y={top}
+        width="2"
+        height={bottom - top}
+        className="fill-accent"
+        style={{ transform: FX.rail.idle.transform, transformBox: "fill-box", transformOrigin: "50% 0%" }}
+      />
+      {gate && (
+        <>
+          <rect x="6" y="49" width="16" height="2" className="fill-line-strong" />
+          <rect data-fx="gate" data-row={row} x="6" y="49" width="16" height="2" className="fill-accent-2" style={{ opacity: 0 }} />
+        </>
+      )}
+    </svg>
+  );
+}
+
+function Node({ row }: { row: number }) {
+  return (
+    <span aria-hidden="true" className="absolute start-[7px] top-[4px] flex h-3.5 w-3.5 items-center justify-center rounded-full border-2 border-line-strong bg-surface-1">
+      <span data-fx="dot" data-row={row} className="h-1.5 w-1.5 rounded-full bg-accent" style={{ transform: FX.dot.idle.transform }} />
+    </span>
+  );
+}
+
+export default function GovernedFlow({ showReplay = false, className = "" }: { showReplay?: boolean; className?: string }) {
+  const { lang } = useLang();
+  const c = visualCopy[lang].agent;
+  const f = flowCopy[lang];
+  const ref = useRef<HTMLElement>(null);
+  const controls = useRef<{ stop: () => void } | null>(null);
+  const reducedRef = useRef(false);
+
+  const play = useCallback(() => {
+    const root = ref.current;
+    if (!root) return;
+    controls.current?.stop();
+    if (reducedRef.current) {
+      // Reduced motion: resolve immediately to the final, understandable state.
+      setState(root, "done");
+      return;
+    }
+    setState(root, "idle");
+    const sequence: unknown[] = [];
+    root.querySelectorAll<HTMLElement | SVGElement>("[data-fx]").forEach((el) => {
+      const name = el.getAttribute("data-fx") as FxName;
+      const row = Number(el.getAttribute("data-row") ?? 0);
+      const at = START_S + row * STEP_S;
+      const to = FX[name].done;
+      const keyframes: Record<string, unknown[]> = {};
+      for (const key of Object.keys(to) as (keyof typeof to)[]) {
+        keyframes[key] = [(FX[name].idle as Record<string, string>)[key], (to as Record<string, string>)[key]];
+      }
+      sequence.push([el, keyframes, { duration: name === "rail" ? 0.24 : 0.2, ease: EASE, at }]);
+    });
+    controls.current = animateSequence(sequence as never);
+  }, []);
+
+  useEffect(() => {
+    reducedRef.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const root = ref.current;
+    if (!root) return;
+    if (!("IntersectionObserver" in window)) {
+      setState(root, "done");
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          observer.disconnect();
+          play();
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(root);
+    return () => {
+      observer.disconnect();
+      controls.current?.stop();
+    };
+  }, [play]);
+
+  return (
+    <figure ref={ref} role="group" aria-label={c.label} className={`mechanism p-5 md:p-6 ${className}`}>
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="label">{f.title}</h2>
+        {showReplay && (
+          <button type="button" onClick={play} className="hidden text-caption font-medium text-ink-3 underline-offset-4 hover:text-ink hover:underline motion-safe:inline">
+            {f.replay}
+          </button>
+        )}
+      </div>
+
+      <ol className="mt-4">
+        {ROWS.map((row, i) => {
+          const isGate = row.kind === "gate";
+          const last = i === ROWS.length - 1;
+          return (
+            <li key={row.key} className={`relative ps-10 ${isGate ? "py-1.5" : last ? "pb-0" : "pb-3"}`}>
+              <Rail first={i === 0} last={last} gate={isGate} row={i} />
+              {!isGate && <Node row={i} />}
+
+              {row.kind === "input" && (
+                <>
+                  <h3 className="text-small font-semibold text-ink">{c.inputs_title}</h3>
+                  <p className="mt-1 text-small leading-snug text-ink-2">{c.inputs.join(" · ")}</p>
+                </>
+              )}
+
+              {isGate && <p className="text-caption font-medium text-accent-2-fg">{f.gates[row.key as keyof typeof f.gates]}</p>}
+
+              {row.kind === "stage" && (
+                <>
+                  <h3 className="text-small font-semibold text-ink">
+                    <span className="text-ink-3">{Number(row.key) + 1}</span> {c.steps[Number(row.key)].title}
+                  </h3>
+                  <p className="mt-0.5 text-small leading-snug text-ink-2">{c.steps[Number(row.key)].desc}</p>
+                  {row.key === "1" && (
+                    <div className="relative mt-2.5 rounded-inner border border-dashed border-line-strong px-3 py-2">
+                      <span
+                        aria-hidden="true"
+                        data-fx="branch"
+                        data-row={i}
+                        className="pointer-events-none absolute inset-[-1px] rounded-inner border border-dashed border-accent-2"
+                        style={{ opacity: 0 }}
+                      />
+                      <p className="text-caption font-semibold text-ink">{c.human_title}</p>
+                      <p className="mt-0.5 text-caption text-ink-2">{c.human}</p>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {row.kind === "systems" && (
+                <>
+                  <h3 className="text-small font-semibold text-ink">{c.systems_title}</h3>
+                  <p className="mt-1 text-small leading-snug text-ink-2">{c.systems.join(" · ")}</p>
+                </>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+
+      <div className="mt-4 border-t border-line pt-3.5">
+        <div className="flex items-center gap-3">
+          <p className="text-caption font-semibold uppercase tracking-[0.1em] text-ink-2">{f.auditTitle}</p>
+          <div aria-hidden="true" className="flex flex-1 items-center gap-1">
+            {ROWS.map((row, i) => (
+              <span
+                key={row.key}
+                data-fx="tick"
+                data-row={i}
+                className="h-3 max-w-[10px] flex-1 rounded-[1px] bg-accent-2"
+                style={{ transform: FX.tick.idle.transform, opacity: FX.tick.idle.opacity, transformOrigin: "50% 100%" }}
+              />
+            ))}
+          </div>
+        </div>
+        <p className="mt-2 text-caption text-ink-3">{c.audit}</p>
+      </div>
+    </figure>
+  );
+}

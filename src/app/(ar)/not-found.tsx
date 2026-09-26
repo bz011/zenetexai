@@ -5,7 +5,7 @@ import Logo from "@/components/brand/Logo";
 export default function ArabicNotFound() {
   return (
     <main id="main-content" className="flex min-h-screen flex-col items-center justify-center px-6 py-24 text-center">
-      <Link href="/ar" className="mb-10 inline-flex" aria-label="ZentexAI - الرئيسية">
+      <Link href="/ar" className="mb-10 inline-flex">
         <Logo variant="primary" />
       </Link>
 

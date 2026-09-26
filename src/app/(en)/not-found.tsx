@@ -11,7 +11,7 @@ import Logo from "@/components/brand/Logo";
 export default function NotFound() {
   return (
     <main id="main-content" className="flex min-h-screen flex-col items-center justify-center px-6 py-24 text-center">
-      <Link href="/" className="mb-10 inline-flex" aria-label="ZentexAI home">
+      <Link href="/" className="mb-10 inline-flex">
         <Logo variant="primary" />
       </Link>
 

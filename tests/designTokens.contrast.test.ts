@@ -68,3 +68,20 @@ describe.each(Object.entries(themes))("%s theme tokens meet WCAG AA", (_name, t)
     expect(contrast(t["focus"], t["surface-1"])).toBeGreaterThanOrEqual(3);
   });
 });
+
+describe("logo tagline on dark surfaces", () => {
+  it("uses tagline colours that meet AA (the brand blue #2563EB alone is only ~3.8:1 on the navy page)", () => {
+    const logo = fs.readFileSync(path.resolve(__dirname, "../src/components/brand/Logo.tsx"), "utf-8");
+    const hex = (name: string) => {
+      const m = new RegExp(`${name} = "#([0-9A-Fa-f]{6})"`).exec(logo);
+      if (!m) throw new Error(`${name} not found in Logo.tsx`);
+      const n = parseInt(m[1], 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255] as [number, number, number];
+    };
+    for (const name of ["TAGLINE_BLUE_ON_DARK", "TAGLINE_TEAL_ON_DARK"]) {
+      for (const surface of ["surface-0", "surface-1"]) {
+        expect(contrast(hex(name), themes.dark[surface]), `${name} on ${surface}`).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  });
+});
