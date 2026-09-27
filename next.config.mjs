@@ -62,7 +62,12 @@ const CSP_DIRECTIVES = [
   //     HTML attribute and is governed by style-src the same as a <style>
   //     tag. No 'unsafe-eval' is included in either - a production Next.js
   //     build does not require it.
-  "script-src 'self' 'unsafe-inline'",
+  //   'unsafe-eval' is added ONLY under `next dev`: the dev bundles (webpack
+  //     eval source maps, React Refresh) call eval(), and without it the page
+  //     throws an EvalError, never hydrates, and every client effect is
+  //     skipped (e.g. the ?flow3d=1 layer). The production header is
+  //     unchanged.
+  `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data:${SUPABASE_ORIGIN ? ` ${SUPABASE_ORIGIN}` : ""}`,
   "font-src 'self' data:",
