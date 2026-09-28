@@ -1,13 +1,16 @@
 import {
   AdditiveBlending,
+  AlwaysStencilFunc,
   Color,
   DirectionalLight,
   DoubleSide,
   Group,
   Mesh,
   MeshBasicMaterial,
+  NotEqualStencilFunc,
   PlaneGeometry,
   PointLight,
+  ReplaceStencilOp,
   Vector3,
   type Light,
   type Material,
@@ -15,7 +18,7 @@ import {
 } from "three";
 import { buildCard, loadPhoneModel, PHONE_MODEL, type CardBuilt } from "../devices";
 import { canvasTexture, lightPoolTexture, reflectionMaterial, softShadowTexture, vignetteTexture, type ShowcaseKit } from "../kit";
-import { roundedPlane } from "../shapes";
+import { roundedPlane, roundedSlab } from "../shapes";
 import { glowTrail, ramp, trailPoints } from "../ribbon";
 import { buildGlow, createTrailPulse, easeInOutCubic, Timeline, type TrailPulse } from "../anim";
 import type { UiFont } from "../uiFont";
@@ -63,6 +66,20 @@ const PHONE_ROT: [number, number, number] = [0.02, -0.35, 0.114];
 const BLUE: [number, number, number] = [0.145, 0.388, 0.922];
 const CYAN: [number, number, number] = [0.133, 0.827, 0.933];
 const VIOLET: [number, number, number] = [0.56, 0.36, 0.93];
+/** how bright the static trails are (1 = as originally authored): the lines carry the story, they should not glow on their own */
+const TRAIL_STRENGTH = 0.62;
+
+/**
+ * Makes a line/pulse material draw only OUTSIDE the phone's silhouette: it is tested against the stencil mask the
+ * phone writes (see the mask below), so no connection can ever be seen crossing the phone's face, whatever its depth.
+ */
+function behindPhone<T extends Mesh>(m: T): T {
+  (m.material as Material).stencilWrite = true;
+  (m.material as Material).stencilFunc = NotEqualStencilFunc;
+  (m.material as Material).stencilRef = 1;
+  return m;
+}
+
 /** the pulse colour, 0..255 (createTrailPulse takes 8-bit channels) */
 const PULSE_RGB: [number, number, number] = [158, 199, 255];
 
@@ -155,10 +172,22 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
       const m = o as Mesh;
       if (!m.isMesh) return;
       m.castShadow = false;
-      m.material = own(reflectionMaterial(m.material as Material, GROUND_Y, 4.2, 0.12));
+      m.material = own(reflectionMaterial(m.material as Material, GROUND_Y, 4.2, 0.075));
     });
     mirror.add(echo);
     group.add(mirror);
+
+    // The phone's silhouette as an invisible stencil mask (added AFTER the reflection copy is taken, so the mirror is
+    // unaffected): every connection and pulse draws only outside it, i.e. the phone sits in front of the network.
+    const maskMat = own(
+      new MeshBasicMaterial({ colorWrite: false, depthWrite: false, depthTest: false, stencilWrite: true, stencilFunc: AlwaysStencilFunc, stencilRef: 1, stencilZPass: ReplaceStencilOp }),
+    );
+    const phoneD = PHONE_H * (PHONE_MODEL.size.d / PHONE_MODEL.size.h);
+    const mask = new Mesh(own(roundedSlab(PHONE_W * 0.985, PHONE_H * 0.99, phoneD, PHONE_W * 0.17, 0.02)), maskMat);
+    mask.renderOrder = -100;
+    mask.position.copy(phone.group.position);
+    mask.rotation.copy(phone.group.rotation);
+    group.add(mask);
 
     const phoneLocal = (px: number, py: number, zEps: number): Vector3 =>
       new Vector3(screen.x, faceY, screen.z + zEps).add(pixelOffset(px, py, 944, 2115, sw, sh));
@@ -223,7 +252,7 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
       // static trail: unchanged geometry, each input on its own path (see the checkpoint report)
       const anchor = new Vector3(spec.pos[0] + 1.3, spec.pos[1] - 0.1, spec.pos[2]);
       const target = new Vector3(-PHONE_W / 2 + 0.35, 3.4 - i * 1.55, PHONE_Z - 1.0 - i * 0.05);
-      glowTrail(anchor, target, ramp(BLUE, i % 2 ? CYAN : VIOLET), 0.13).forEach((m) => group.add(m));
+      glowTrail(anchor, target, ramp(BLUE, i % 2 ? CYAN : VIOLET), 0.13, TRAIL_STRENGTH).forEach((m) => group.add(behindPhone(m)));
       inputLanes.push({ toPhone: trailPoints(anchor, target) });
     });
 
@@ -261,12 +290,12 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
       const source = new Vector3(PHONE_W / 2 - 0.45, 2.4 - (i + 1) * 1.7, PHONE_Z - 0.6);
       const anchor = new Vector3(r.pos[0] - 1.35, r.pos[1], r.pos[2]);
       resultLanes.push({ fromPhone: trailPoints(source, anchor) });
-      glowTrail(source, anchor, ramp(BLUE, CYAN), 0.15).forEach((m) => group.add(m));
+      glowTrail(source, anchor, ramp(BLUE, CYAN), 0.15, TRAIL_STRENGTH).forEach((m) => group.add(behindPhone(m)));
     });
     // the calendar's own trail (phone -> calendar)
     const calSource = new Vector3(PHONE_W / 2 - 0.45, 2.4, PHONE_Z - 0.6);
     const calAnchor = new Vector3(calPos[0] - 1.95, calPos[1] - 0.2, calPos[2]);
-    glowTrail(calSource, calAnchor, ramp(BLUE, CYAN), 0.15).forEach((m) => group.add(m));
+    glowTrail(calSource, calAnchor, ramp(BLUE, CYAN), 0.15, TRAIL_STRENGTH).forEach((m) => group.add(behindPhone(m)));
     const calLane = trailPoints(calSource, calAnchor);
 
     // the orb's presence: a fixed, non-animated glow - constant brightness,
@@ -276,7 +305,7 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
     const orbGlow = buildGlow(kit, own, 2.0, [110, 170, 255]);
     orbGlow.position.copy(phoneLocal(ORB_PX.x, ORB_PX.y, 0.0009));
     phone.group.add(orbGlow);
-    (mat(orbGlow) as MeshBasicMaterial).opacity = 0.14;
+    (mat(orbGlow) as MeshBasicMaterial).opacity = 0.1;
 
     // ── grounding only: contact shadow, a faint cool pool, no opaque disc ──
     const shadowTex = kit.track(softShadowTexture());
@@ -289,7 +318,7 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
     contactShadow.renderOrder = -1;
     group.add(contactShadow);
 
-    const poolTex = kit.track(lightPoolTexture([56, 130, 240], 0.22));
+    const poolTex = kit.track(lightPoolTexture([56, 130, 240], 0.12));
     const pool = new Mesh(
       own(new PlaneGeometry(10, 6)),
       own(new MeshBasicMaterial({ map: poolTex, transparent: true, depthWrite: false, toneMapped: false })),
@@ -300,7 +329,7 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
     group.add(pool);
 
     // a soft dark fade behind the phone, so the plate separates from the hero
-    const vignetteTex = kit.track(vignetteTexture(0.4));
+    const vignetteTex = kit.track(vignetteTexture(0.5));
     const vignette = new Mesh(
       own(new PlaneGeometry(20, 16)),
       own(new MeshBasicMaterial({ map: vignetteTex, transparent: true, depthWrite: false, toneMapped: false, side: DoubleSide })),
@@ -310,13 +339,13 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
     group.add(vignette);
 
     // ── lighting: cool key/rim, a warm light on the left objects, cool on the right ──
-    const key = new DirectionalLight(0xe7edff, 1.7);
+    const key = new DirectionalLight(0xe7edff, 1.45);
     key.position.set(-6, 10, 11);
-    const rimR = new DirectionalLight(0x6ea8ff, 2.4);
+    const rimR = new DirectionalLight(0x6ea8ff, 1.7);
     rimR.position.set(9, 4, -8);
-    const warmLeft = new PointLight(0xffa85e, 3.2, 13, 2);
+    const warmLeft = new PointLight(0xffa85e, 2.3, 13, 2);
     warmLeft.position.set(-9.5, 2, 5);
-    const coolRight = new PointLight(0x38d6ee, 5, 14, 2);
+    const coolRight = new PointLight(0x38d6ee, 3.0, 14, 2);
     coolRight.position.set(9, 0.5, 3);
     lights.push(key, rimR, warmLeft, coolRight);
 
@@ -344,6 +373,7 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
       const PULSE_OUT: [number, number, number] = [150, 240, 255];
       const mkPulse = (pts: Vector3[], rgb: [number, number, number], size: number): TrailPulse => {
         const pulse = createTrailPulse(kit, own, pts, rgb, size);
+        behindPhone(pulse.sprite as unknown as Mesh);
         group.add(pulse.sprite);
         return pulse;
       };
@@ -496,6 +526,8 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
       anchors: {},
       lights,
       camera: { fov: 24, dist: 30, target: new Vector3(0, -0.7, 0), yaw: 4, pitch: 3, designAspect: 1.6 },
+      portrait: { target: new Vector3(0, -0.15, PHONE_Z), dist: 33, yaw: 6, pitch: 4 },
+      environmentIntensity: 0.62,
       tick,
       dispose() {
         group.traverse((o) => {

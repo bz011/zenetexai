@@ -481,6 +481,13 @@ export function buildAcademyScene(kit: ShowcaseKit, font: UiFont, reducedMotion:
     lights,
     tick,
     camera: { fov: 24, dist: 32, target: new Vector3(0, -0.5, 0), yaw: 4, pitch: 3, designAspect: 1.6 },
+    portrait: {
+      // the laptop's screen, in world space (content is scaled 1.08 and offset (0.15, 0.7, 0) as a group)
+      target: new Vector3(0.15 + 1.08 * LAPTOP_POS[0], 0.7 + 1.08 * (LAPTOP_POS[1] + SCREEN.y), 1.08 * LAPTOP_POS[2]),
+      dist: 30,
+      yaw: 4,
+      pitch: 3,
+    },
     dispose() {
       group.traverse((o) => {
         const mm = o as { isMesh?: boolean; geometry?: { dispose(): void } };

@@ -15,7 +15,8 @@ export function trailPoints(a: Vector3, b: Vector3): Vector3[] {
   return [a, a.clone().lerp(mid, 0.35), mid, b.clone().lerp(mid, 0.35), b];
 }
 
-export function glowTrail(a: Vector3, b: Vector3, colorAt: ColorAt, baseWidth = 0.14): Mesh[] {
+/** `strength` scales the whole trail's brightness (1 = as authored). */
+export function glowTrail(a: Vector3, b: Vector3, colorAt: ColorAt, baseWidth = 0.14, strength = 1): Mesh[] {
   const points = trailPoints(a, b);
   const layers: [number, number][] = [
     [1, 0.1],
@@ -27,7 +28,7 @@ export function glowTrail(a: Vector3, b: Vector3, colorAt: ColorAt, baseWidth = 
     const mat = new MeshBasicMaterial({
       vertexColors: true,
       transparent: true,
-      opacity,
+      opacity: opacity * strength,
       blending: AdditiveBlending,
       depthWrite: false,
       toneMapped: false,

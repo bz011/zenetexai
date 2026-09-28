@@ -397,6 +397,7 @@ export function buildMlScene(kit: ShowcaseKit, font: UiFont, reducedMotion: bool
     lights,
     tick,
     camera: { fov: 24, dist: 32, target: new Vector3(0, -0.5, 0), yaw: 4, pitch: 3, designAspect: 1.6 },
+    portrait: { target: new Vector3(CORE_POS[0], CORE_POS[1] + 0.3, CORE_POS[2]), dist: 30, yaw: 4, pitch: 3 },
     dispose() {
       group.traverse((o) => {
         const mm = o as { isMesh?: boolean; geometry?: { dispose(): void } };

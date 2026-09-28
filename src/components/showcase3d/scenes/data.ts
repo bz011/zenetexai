@@ -200,6 +200,13 @@ export function buildDataScene(kit: ShowcaseKit, font: UiFont, reducedMotion: bo
   // brighter core plus a softer secondary parallel path per source, so the
   // incoming side reads as rich energetic data streams (section 7), not
   // single thin wires. Many disconnected sources feeding one pipeline.
+  // Dormant, every trail is deliberately dim (DORMANT_TRAIL): with this many
+  // lines on screen at once, full brightness read as a web of wires competing
+  // with the dashboard. The animation's pulses are unaffected - riding a quiet
+  // line, they are still the brightest thing on it, so the active path stays
+  // obviously visible against the rest.
+  const DORMANT_TRAIL = 0.5;
+  const DORMANT_SIDE = 0.38;
   // The exact curve control points of every lane, kept so a pulse can ride the visible path.
   interface Lane {
     main: Vector3[];
@@ -213,11 +220,11 @@ export function buildDataScene(kit: ShowcaseKit, font: UiFont, reducedMotion: bo
     const anchor = new Vector3(spec.pos[0] + 1.3, spec.pos[1] - 0.08, spec.pos[2]);
     const target = moduleLeft.clone().add(new Vector3(0, 1.9 - i * 0.95, 0));
     const color = i % 2 ? CYAN : VIOLET;
-    glowTrail(anchor, target, ramp(BLUE, color), 0.13).forEach((m) => group.add(m));
+    glowTrail(anchor, target, ramp(BLUE, color), 0.13, DORMANT_TRAIL).forEach((m) => group.add(m));
     // secondary parallel path, softer and offset - a second thread in the same stream
     const anchor2 = anchor.clone().add(new Vector3(0, -0.35, 0.2));
     const target2 = target.clone().add(new Vector3(0, -0.3, 0.15));
-    glowTrail(anchor2, target2, ramp(BLUE, color), 0.06).forEach((m) => group.add(m));
+    glowTrail(anchor2, target2, ramp(BLUE, color), 0.06, DORMANT_SIDE).forEach((m) => group.add(m));
     srcLanes.push({ main: trailPoints(anchor, target), side: trailPoints(anchor2, target2) });
   });
   // A small number of clean, parallel streams out of the module's right face
@@ -229,7 +236,7 @@ export function buildDataScene(kit: ShowcaseKit, font: UiFont, reducedMotion: bo
   [1.4, 0.7, 0, -0.7, -1.4].forEach((dy, i) => {
     const from = moduleRight.clone().add(new Vector3(0, dy, 0));
     const to = dashLeftBase.clone().add(new Vector3(0, dy * 0.8, -0.2));
-    glowTrail(from, to, ramp(VIOLET, CYAN), 0.12).forEach((m) => group.add(m));
+    glowTrail(from, to, ramp(VIOLET, CYAN), 0.12, DORMANT_TRAIL).forEach((m) => group.add(m));
     modLanes.push({ main: trailPoints(from, to) });
   });
 
@@ -237,12 +244,12 @@ export function buildDataScene(kit: ShowcaseKit, font: UiFont, reducedMotion: bo
   OUTPUTS.forEach((spec, i) => {
     const source = dashRight.clone().add(new Vector3(0, -(i * 1.25), -0.1));
     const anchor = new Vector3(spec.pos[0] - 1.4, spec.pos[1], spec.pos[2]);
-    glowTrail(source, anchor, ramp(BLUE, CYAN), 0.15).forEach((m) => group.add(m));
+    glowTrail(source, anchor, ramp(BLUE, CYAN), 0.15, DORMANT_TRAIL).forEach((m) => group.add(m));
     // a second, cleaner companion stream - the output side stays more
     // organised/controlled than the incoming side (section 11)
     const source2 = source.clone().add(new Vector3(0, 0.32, 0.1));
     const anchor2 = anchor.clone().add(new Vector3(0, 0.28, 0.08));
-    glowTrail(source2, anchor2, ramp(BLUE, CYAN), 0.07).forEach((m) => group.add(m));
+    glowTrail(source2, anchor2, ramp(BLUE, CYAN), 0.07, DORMANT_SIDE).forEach((m) => group.add(m));
     outLanes.push({ main: trailPoints(source, anchor), side: trailPoints(source2, anchor2) });
   });
 
@@ -283,9 +290,9 @@ export function buildDataScene(kit: ShowcaseKit, font: UiFont, reducedMotion: bo
   rimR.position.set(9, 4, -8);
   const warmLeft = new PointLight(0xffa85e, 3.0, 13, 2);
   warmLeft.position.set(-9.5, 2, 5);
-  const coolRight = new PointLight(0x38d6ee, 5, 14, 2);
+  const coolRight = new PointLight(0x38d6ee, 3.6, 14, 2);
   coolRight.position.set(9, 0.5, 3);
-  const violetAccent = new PointLight(0x8b5cf6, 2.2, 10, 2);
+  const violetAccent = new PointLight(0x8b5cf6, 1.6, 10, 2);
   violetAccent.position.set(8, -1.5, 2);
   lights.push(key, rimR, warmLeft, coolRight, violetAccent);
 
@@ -476,6 +483,7 @@ export function buildDataScene(kit: ShowcaseKit, font: UiFont, reducedMotion: bo
     lights,
     tick,
     camera: { fov: 24, dist: 32, target: new Vector3(0, -0.5, 0), yaw: 4, pitch: 3, designAspect: 1.6 },
+    portrait: { target: new Vector3(DASH_X, GROUND_Y + DASH_PANEL_H / 2 + 0.7, DASH_Z), dist: 34, yaw: 6, pitch: 3 },
     dispose() {
       group.traverse((o) => {
         const mm = o as { isMesh?: boolean; geometry?: { dispose(): void } };
