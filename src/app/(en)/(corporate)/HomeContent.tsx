@@ -4,6 +4,7 @@ import Link from "@/components/LocaleLink";
 import { useLang } from "@/lib/LanguageContext";
 import { homeCopy } from "@/lib/homeCopy";
 import HeroVisual from "@/components/flow/HeroVisual";
+import ShowcaseGate from "@/components/showcase3d/ShowcaseGate";
 import CTASection from "@/components/CTASection";
 import Section from "@/components/ui/Section";
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -46,29 +47,31 @@ export default function HomeContent({ latestPosts }: Props) {
   return (
     <div>
       {/* ── Hero ─ text is plain HTML, visible at first paint (no entrance animation on copy) ── */}
-      <section aria-labelledby="hero-title" className="overflow-x-clip">
-        <div className="container-page grid items-center gap-12 pb-16 pt-10 md:pb-24 md:pt-14 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16">
-          <div className="relative z-10">
-            <p className="label">{c.hero.eyebrow}</p>
-            <h1 id="hero-title" className="mt-4 text-display text-ink">{c.hero.title}</h1>
-            <p className="mt-6 max-w-xl text-lead text-ink-2">{c.hero.sub}</p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/contact" className="btn-primary">{c.hero.ctaPrimary}</Link>
-              <Link href="/services" className="btn-secondary">{c.hero.ctaSecondary}</Link>
+      <ShowcaseGate enabled={lang === "en"}>
+        <section aria-labelledby="hero-title" className="overflow-x-clip">
+          <div className="container-page grid items-center gap-12 pb-16 pt-10 md:pb-24 md:pt-14 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16">
+            <div className="relative z-10">
+              <p className="label">{c.hero.eyebrow}</p>
+              <h1 id="hero-title" className="mt-4 text-display text-ink">{c.hero.title}</h1>
+              <p className="mt-6 max-w-xl text-lead text-ink-2">{c.hero.sub}</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link href="/contact" className="btn-primary">{c.hero.ctaPrimary}</Link>
+                <Link href="/services" className="btn-secondary">{c.hero.ctaSecondary}</Link>
+              </div>
+              <dl className="mt-10 grid gap-x-8 gap-y-5 border-t border-line pt-6 sm:grid-cols-3">
+                {c.hero.facts.map((f) => (
+                  <div key={f.k}>
+                    <dt className="text-caption font-semibold uppercase tracking-[0.1em] text-ink-3">{f.k}</dt>
+                    <dd className="mt-1 text-small text-ink">{f.v}</dd>
+                  </div>
+                ))}
+              </dl>
             </div>
-            <dl className="mt-10 grid gap-x-8 gap-y-5 border-t border-line pt-6 sm:grid-cols-3">
-              {c.hero.facts.map((f) => (
-                <div key={f.k}>
-                  <dt className="text-caption font-semibold uppercase tracking-[0.1em] text-ink-3">{f.k}</dt>
-                  <dd className="mt-1 text-small text-ink">{f.v}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
 
-          <HeroVisual />
-        </div>
-      </section>
+            <HeroVisual />
+          </div>
+        </section>
+      </ShowcaseGate>
 
       {/* ── What we do: a plain, crawlable statement of what / who / how ── */}
       <Section bordered aria-labelledby="what-title">

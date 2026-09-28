@@ -69,9 +69,15 @@ const CSP_DIRECTIVES = [
   //     unchanged.
   `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "production" ? "" : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline'",
-  `img-src 'self' data:${SUPABASE_ORIGIN ? ` ${SUPABASE_ORIGIN}` : ""}`,
+  // blob: in img-src/connect-src is for the AI Agents showcase's glTF phone
+  // model (public/models/ai-agents-phone.glb): three.js's GLTFLoader decodes
+  // a GLB's embedded textures by creating an object URL from the binary chunk
+  // already in memory (URL.createObjectURL) and fetching that blob: URL back -
+  // never a network request, just how the browser hands JS-owned bytes to the
+  // image/texture decoder. No other blob: source is created anywhere in the app.
+  `img-src 'self' data: blob:${SUPABASE_ORIGIN ? ` ${SUPABASE_ORIGIN}` : ""}`,
   "font-src 'self' data:",
-  `connect-src 'self'${SUPABASE_ORIGIN ? ` ${SUPABASE_ORIGIN}` : ""}`,
+  `connect-src 'self' blob:${SUPABASE_ORIGIN ? ` ${SUPABASE_ORIGIN}` : ""}`,
   "media-src 'self'",
   `frame-src ${VIDEO_FRAME_ORIGINS.join(" ")}`,
   "object-src 'none'",
