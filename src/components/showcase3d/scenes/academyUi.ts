@@ -1,6 +1,9 @@
 import { dither, makeCanvas } from "../kit";
-import { INK, MUTED, checkMark, font, glassPanel, rr } from "../cardUi";
+import { INK, MUTED, checkMark, drawInBox, fitFontSize, font, glassPanel, rr } from "../cardUi";
 import type { UiFont } from "../uiFont";
+import type { Translations } from "@/lib/translations";
+
+type AcademyCopy = Translations["showcase"]["academy"];
 
 /**
  * Canvas drawings for the Academy scene: the PMP course panel, the lesson
@@ -206,16 +209,6 @@ function checkBadge(g: CanvasRenderingContext2D, cx: number, cy: number, r: numb
   checkMark(g, cx, cy, r * 1.15, "#052e1f", r * 0.2);
 }
 
-/** Shrinks a font until `text` fits `maxW`. */
-function fitFont(g: CanvasRenderingContext2D, f: UiFont, weight: number, px: number, text: string, maxW: number, min = 22): void {
-  let s = px;
-  g.font = font(f, weight, s);
-  while (g.measureText(text).width > maxW && s > min) {
-    s -= 1;
-    g.font = font(f, weight, s);
-  }
-}
-
 // ─────────────────────────────── PMP course panel ───────────────────────────────
 
 export const COURSE_W = 760;
@@ -230,14 +223,7 @@ export interface CourseProgress {
 export const COURSE_START: CourseProgress = { done3: 0, next4: 0, bar: 0 };
 export const COURSE_END: CourseProgress = { done3: 1, next4: 1, bar: 1 };
 
-const MODULES: { title: string; sub: string; icon: IconName }[] = [
-  { title: "Module 1", sub: "Introduction", icon: "doc" },
-  { title: "Module 2", sub: "Project Management Foundations", icon: "gear" },
-  { title: "Module 3", sub: "Agile & Hybrid", icon: "play" },
-  { title: "Module 4", sub: "People", icon: "people" },
-  { title: "Module 5", sub: "Process", icon: "flow" },
-  { title: "Module 6", sub: "Business Environment", icon: "bars" },
-];
+const MODULE_ICONS: IconName[] = ["doc", "gear", "play", "people", "flow", "bars"];
 
 const ROW_X = 44;
 const ROW_W = COURSE_W - 88;
@@ -246,18 +232,23 @@ const ROW_GAP = 13;
 const ROW_Y0 = 240;
 const rowY = (i: number): number => ROW_Y0 + i * (ROW_H + ROW_GAP);
 
-export function createCoursePanel(f: UiFont): LiveScreen<CourseProgress> {
+export function createCoursePanel(f: UiFont, copy: AcademyCopy): LiveScreen<CourseProgress> {
   const W = COURSE_W;
   const H = COURSE_H;
   const base = makeCanvas(W, H);
   const g = base.g;
+  const rtl = f.rtl;
   glassPanel(g, W, H, 60, "#60a5fa");
 
-  icon(g, "book", 44 + 46, 96, 78, "#5eb4ff");
+  // header: icon+title row mirrors under RTL, like every other row in this scene
+  const headIconCx = rtl ? W - 44 - 46 : 44 + 46;
+  const headTextX = rtl ? 44 : 44 + 128;
+  const headTextW = W - 44 * 2 - 128;
+  icon(g, "book", headIconCx, 96, 78, "#5eb4ff");
   g.fillStyle = INK;
-  g.font = font(f, 700, 66);
   g.textBaseline = "alphabetic";
-  g.fillText("PMP Course", 44 + 128, 116);
+  fitFontSize(g, f, 700, 66, copy.pmpCourse, headTextW, 36);
+  drawInBox(g, copy.pmpCourse, headTextX, headTextW, 116, rtl);
   // progress track (the fill and its label are live)
   g.fillStyle = "rgba(255,255,255,0.08)";
   rr(g, ROW_X, 200, ROW_W, 12, 6);
@@ -295,26 +286,33 @@ export function createCoursePanel(f: UiFont): LiveScreen<CourseProgress> {
       }
     });
   };
+  // RTL: the tile moves to the row's other end, title/subtitle right-align reading back toward it, and the
+  // status badge (check/lock/ring) moves to the row's near end - the row's own internal layout mirrors, the
+  // panel's position in the scene does not.
+  const tileX = rtl ? ROW_X + ROW_W - 24 - 96 : ROW_X + 24;
+  const rowTextX = rtl ? ROW_X + 24 : ROW_X + 148;
+  const rowTextW = ROW_W - 148 - 96;
+  const statusX = rtl ? ROW_X + 62 : ROW_X + ROW_W - 62;
   /** icon tile + the two lines of text; `dim` fades locked rows */
   const rowContent = (ctx: CanvasRenderingContext2D, i: number, y: number, tileColor: string, textA: number): void => {
-    const m = MODULES[i];
+    const m = { title: copy.modules[i].title, sub: copy.modules[i].subtitle, icon: MODULE_ICONS[i] };
     withAlpha(ctx, 1, () => {
       ctx.fillStyle = "rgba(255,255,255,0.06)";
-      rr(ctx, ROW_X + 24, y + 22, 96, 96, 22);
+      rr(ctx, tileX, y + 22, 96, 96, 22);
       ctx.fill();
-      icon(ctx, m.icon, ROW_X + 72, y + 70, 54, tileColor);
+      icon(ctx, m.icon, tileX + 48, y + 70, 54, tileColor);
       ctx.save();
       ctx.globalAlpha = textA;
       ctx.fillStyle = INK;
-      ctx.font = font(f, 700, 42);
-      ctx.fillText(m.title, ROW_X + 148, y + 68);
+      ctx.textBaseline = "alphabetic";
+      fitFontSize(ctx, f, 700, 42, m.title, rowTextW, 24);
+      drawInBox(ctx, m.title, rowTextX, rowTextW, y + 68, rtl);
       ctx.fillStyle = MUTED;
-      fitFont(ctx, f, 500, 31, m.sub, ROW_W - 148 - 96, 22);
-      ctx.fillText(m.sub, ROW_X + 148, y + 110);
+      fitFontSize(ctx, f, 500, 31, m.sub, rowTextW, 20);
+      drawInBox(ctx, m.sub, rowTextX, rowTextW, y + 110, rtl);
       ctx.restore();
     });
   };
-  const statusX = ROW_X + ROW_W - 62;
 
   // rows that never change: 1 and 2 done, 5 and 6 locked
   [0, 1].forEach((i) => {
@@ -347,11 +345,11 @@ export function createCoursePanel(f: UiFont): LiveScreen<CourseProgress> {
       lg.fill();
       lg.fillStyle = MUTED;
       lg.font = font(f, 500, 32);
-      const t2 = "2 of 6 complete";
-      const t3 = "3 of 6 complete";
-      const lx = ROW_X + 128;
-      withAlpha(lg, xOut(p.bar), () => lg.fillText(t2, lx, 172));
-      withAlpha(lg, xIn(p.bar), () => lg.fillText(t3, lx, 172));
+      const t2 = copy.progress.of6.replace("{n}", "2");
+      const t3 = copy.progress.of6.replace("{n}", "3");
+      const progW = ROW_W - 128;
+      withAlpha(lg, xOut(p.bar), () => drawInBox(lg, t2, rtl ? ROW_X : ROW_X + 128, progW, 172, rtl));
+      withAlpha(lg, xIn(p.bar), () => drawInBox(lg, t3, rtl ? ROW_X : ROW_X + 128, progW, 172, rtl));
 
       // module 3: active -> completed
       const y3 = rowY(2);
@@ -400,11 +398,12 @@ const SLIDE = { x: 40, y: 92, w: 870, h: 590 };
 const SIDE = { x: 940, y: 92, w: 300 };
 const CTRL_Y = 708;
 
-export function createLessonScreen(f: UiFont): LiveScreen<LessonProgress> {
+export function createLessonScreen(f: UiFont, copy: AcademyCopy): LiveScreen<LessonProgress> {
   const W = LESSON_W;
   const H = LESSON_H;
   const base = makeCanvas(W, H);
   const g = base.g;
+  const rtl = f.rtl;
   const bg = g.createLinearGradient(0, 0, 0, H);
   bg.addColorStop(0, "#0b1226");
   bg.addColorStop(1, "#060913");
@@ -423,7 +422,8 @@ export function createLessonScreen(f: UiFont): LiveScreen<LessonProgress> {
   g.fillStyle = MUTED;
   g.font = font(f, 600, 30);
   g.textBaseline = "alphabetic";
-  g.fillText("PMP Course  ·  Module 3  ·  Agile & Hybrid", 170, 56);
+  fitFontSize(g, f, 600, 30, copy.lessonBreadcrumb, W - 170 - 40, 20);
+  drawInBox(g, copy.lessonBreadcrumb, 170, W - 170 - 40, 56, rtl);
   g.fillStyle = "rgba(255,255,255,0.06)";
   g.fillRect(0, 76, W, 2);
 
@@ -439,12 +439,14 @@ export function createLessonScreen(f: UiFont): LiveScreen<LessonProgress> {
   g.lineWidth = 2;
   rr(g, s.x + 1, s.y + 1, s.w - 2, s.h - 2, 25);
   g.stroke();
+  const slideTextW = s.w - 92;
   g.fillStyle = INK;
   g.font = font(f, 700, 52);
-  g.fillText("Agile & Hybrid", s.x + 46, s.y + 84);
+  fitFontSize(g, f, 700, 52, copy.lessonTitle, slideTextW, 32);
+  drawInBox(g, copy.lessonTitle, s.x + 46, slideTextW, s.y + 84, rtl);
   g.fillStyle = MUTED;
-  g.font = font(f, 500, 30);
-  g.fillText("Choosing an approach that fits the work", s.x + 46, s.y + 128);
+  fitFontSize(g, f, 500, 30, copy.lessonSub, slideTextW, 20);
+  drawInBox(g, copy.lessonSub, s.x + 46, slideTextW, s.y + 128, rtl);
   // sprint loop, right side of the slide
   const cx = s.x + s.w - 190;
   const cy = s.y + 330;
@@ -461,9 +463,8 @@ export function createLessonScreen(f: UiFont): LiveScreen<LessonProgress> {
   g.lineTo(cx + 92 * Math.cos(Math.PI * 1.7) - 8, cy + 92 * Math.sin(Math.PI * 1.7) + 14);
   g.fill();
   g.fillStyle = MUTED;
-  g.font = font(f, 600, 26);
-  const sp = "Sprint";
-  g.fillText(sp, cx - g.measureText(sp).width / 2, cy + 9);
+  fitFontSize(g, f, 600, 26, copy.sprint, 150, 16);
+  g.fillText(copy.sprint, cx - g.measureText(copy.sprint).width / 2, cy + 9);
 
   // key points under the diagram
   for (let i = 0; i < 3; i++) {
@@ -500,7 +501,8 @@ export function createLessonScreen(f: UiFont): LiveScreen<LessonProgress> {
   // lower text placeholders
   g.fillStyle = INK;
   g.font = font(f, 700, 36);
-  g.fillText("Agile & Hybrid: delivering value iteratively", 40, 822);
+  fitFontSize(g, f, 700, 36, copy.lessonFooter, W - 80, 22);
+  drawInBox(g, copy.lessonFooter, 40, W - 80, 822, rtl);
   g.fillStyle = "rgba(148,163,184,0.3)";
   rr(g, 40, 848, 640, 12, 6);
   g.fill();
@@ -528,8 +530,9 @@ export function createLessonScreen(f: UiFont): LiveScreen<LessonProgress> {
       const play = clamp01(p.play);
       const done = smooth(clamp01(p.complete));
 
-      // the slide's own activity: a marker moving Predictive -> Agile -> Hybrid
-      const labels = ["Predictive", "Agile", "Hybrid"];
+      // the slide's own activity: a marker moving Predictive -> Agile -> Hybrid. Pill order/position is kept
+      // physical in both languages (the playback progress math is tied directly to it); only their text translates.
+      const labels = copy.lessonStages;
       const bw = 200;
       const gap = 24;
       const by = SLIDE.y + 172;
@@ -545,7 +548,7 @@ export function createLessonScreen(f: UiFont): LiveScreen<LessonProgress> {
         rr(lg, bx + 1, by + 1, bw - 2, 90, 19);
         lg.stroke();
         lg.fillStyle = on ? INK : MUTED;
-        lg.font = font(f, 700, 32);
+        fitFontSize(lg, f, 700, 32, t, bw - 24, 20);
         lg.fillText(t, bx + (bw - lg.measureText(t).width) / 2, by + 56);
         if (i < 2) {
           lg.strokeStyle = "rgba(148,163,184,0.5)";
@@ -576,8 +579,8 @@ export function createLessonScreen(f: UiFont): LiveScreen<LessonProgress> {
         lg.fill();
         checkBadge(lg, SLIDE.x + 46 + 34, SLIDE.y + SLIDE.h - 65, 18, GREEN);
         lg.fillStyle = "#b9f3dc";
-        lg.font = font(f, 600, 30);
-        lg.fillText("Lesson complete", SLIDE.x + 46 + 66, SLIDE.y + SLIDE.h - 55);
+        fitFontSize(lg, f, 600, 30, copy.lessonComplete, 312 - 66 - 20, 18);
+        drawInBox(lg, copy.lessonComplete, SLIDE.x + 46 + 66, 312 - 66 - 20, SLIDE.y + SLIDE.h - 55, rtl);
       });
 
       // sidebar: the current lesson gets its check
@@ -632,24 +635,35 @@ const SIM_OPT_GAP = 14;
 const SIM_SEL = 1;
 const SIM_BTN = { y: 926, h: 84 };
 
-export function createSimulatorPanel(f: UiFont): LiveScreen<SimProgress> {
+export function createSimulatorPanel(f: UiFont, copy: AcademyCopy): LiveScreen<SimProgress> {
   const W = SIM_W;
   const H = SIM_H;
   const base = makeCanvas(W, H);
   const g = base.g;
+  const rtl = f.rtl;
   glassPanel(g, W, H, 56, "#60a5fa");
-  icon(g, "doc", SIM_PAD + 40, 88, 66, "#5eb4ff");
+  // header: RTL swaps which side carries the icon+title vs. the clock+timer cluster
+  const titleIconCx = rtl ? W - SIM_PAD - 40 : SIM_PAD + 40;
+  const titleX = rtl ? SIM_PAD : SIM_PAD + 100;
+  const timer = "02:15:00";
+  g.font = font(f, 600, 42);
+  const tw = g.measureText(timer).width;
+  const titleW = W - SIM_PAD * 2 - 100 - (tw + 40 + 24);
+  icon(g, "doc", titleIconCx, 88, 66, "#5eb4ff");
   g.fillStyle = INK;
-  g.font = font(f, 700, 48);
   g.textBaseline = "alphabetic";
-  g.fillText("PMP Exam Simulator", SIM_PAD + 100, 104);
-  // clock + timer, right-aligned
+  fitFontSize(g, f, 700, 48, copy.simulator.title, titleW, 28);
+  drawInBox(g, copy.simulator.title, titleX, titleW, 104, rtl);
+  // clock + timer
   g.fillStyle = INK;
   g.font = font(f, 600, 42);
-  const timer = "02:15:00";
-  const tw = g.measureText(timer).width;
-  g.fillText(timer, W - SIM_PAD - tw, 196);
-  icon(g, "clock", W - SIM_PAD - tw - 40, 182, 44, "#5eb4ff");
+  if (rtl) {
+    g.fillText(timer, SIM_PAD, 196);
+    icon(g, "clock", SIM_PAD + tw + 40, 182, 44, "#5eb4ff");
+  } else {
+    g.fillText(timer, W - SIM_PAD - tw, 196);
+    icon(g, "clock", W - SIM_PAD - tw - 40, 182, 44, "#5eb4ff");
+  }
   // progress track
   g.fillStyle = "rgba(255,255,255,0.09)";
   rr(g, SIM_PAD, 262, W - SIM_PAD * 2, 12, 6);
@@ -670,11 +684,14 @@ export function createSimulatorPanel(f: UiFont): LiveScreen<SimProgress> {
       const res = clamp01(p.result);
       const adv = smooth(clamp01(p.advance));
 
-      // question label + progress (45 -> 46 of 180)
+      // question label + progress (45 -> 46 of 180); the progress bar's fill direction is kept physical in
+      // both languages (see the module/verify-row bars elsewhere in the showcase) - only the label translates.
       lg.fillStyle = INK;
       lg.font = font(f, 600, 34);
-      withAlpha(lg, xOut(adv) * dim, () => lg.fillText("Question 45 of 180", SIM_PAD, 240));
-      withAlpha(lg, xIn(adv) * dim, () => lg.fillText("Question 46 of 180", SIM_PAD, 240));
+      const q45 = copy.simulator.questionOf.replace("{n}", "45");
+      const q46 = copy.simulator.questionOf.replace("{n}", "46");
+      withAlpha(lg, xOut(adv) * dim, () => drawInBox(lg, q45, SIM_PAD, cw, 240, rtl));
+      withAlpha(lg, xIn(adv) * dim, () => drawInBox(lg, q46, SIM_PAD, cw, 240, rtl));
       const frac = (45 + adv) / 180;
       const pg = lg.createLinearGradient(SIM_PAD, 0, SIM_PAD + cw, 0);
       pg.addColorStop(0, "#2563eb");
@@ -794,13 +811,21 @@ export function createSimulatorPanel(f: UiFont): LiveScreen<SimProgress> {
       const baseY = SIM_BTN.y + 56 + dy * 0.5;
       lg.font = font(f, 700, 40);
       lg.fillStyle = "#fff";
-      const submitW = lg.measureText("Submit").width;
-      withAlpha(lg, baseA * (1 - t), () => lg.fillText("Submit", bx + (bw - submitW) / 2, baseY - t * SLIDE_PX));
-      const correctW = lg.measureText("Correct").width;
+      const submitLabel = copy.simulator.submit;
+      const correctLabel = copy.simulator.correct;
+      fitFontSize(lg, f, 700, 40, submitLabel, bw - 40, 24);
+      const submitW = lg.measureText(submitLabel).width;
+      withAlpha(lg, baseA * (1 - t), () => lg.fillText(submitLabel, bx + (bw - submitW) / 2, baseY - t * SLIDE_PX));
+      lg.font = font(f, 700, 40);
+      fitFontSize(lg, f, 700, 40, correctLabel, bw - 80, 24);
+      const correctW = lg.measureText(correctLabel).width;
       withAlpha(lg, t, () => {
         const y = baseY + (1 - t) * SLIDE_PX;
-        checkMark(lg, bx + (bw - correctW) / 2 - 42, y - 13, 26, "#fff", 6);
-        lg.fillText("Correct", bx + (bw - correctW) / 2 + 6, y);
+        // the checkmark sits on the side the word is read FROM: before it in English, after it (i.e. to its
+        // right, since Arabic reads right-to-left) in Arabic.
+        const checkCx = rtl ? bx + (bw + correctW) / 2 + 42 : bx + (bw - correctW) / 2 - 42;
+        checkMark(lg, checkCx, y - 13, 26, "#fff", 6);
+        lg.fillText(correctLabel, bx + (bw - correctW) / 2 + 6, y);
       });
       lg.restore();
     },
@@ -813,7 +838,7 @@ export const CERT_W = 640;
 export const CERT_H = 660;
 
 /** `dormant`: a dark glass card with a faint outline of the certificate; `active`: the finished, gold-trimmed certificate. */
-export function drawCertificate(f: UiFont, active: boolean): HTMLCanvasElement {
+export function drawCertificate(f: UiFont, copy: AcademyCopy, active: boolean): HTMLCanvasElement {
   const W = CERT_W;
   const H = CERT_H;
   const { c, g } = makeCanvas(W, H);
@@ -857,11 +882,10 @@ export function drawCertificate(f: UiFont, active: boolean): HTMLCanvasElement {
   const ink = active ? "#2a2116" : "rgba(26,34,54,0.94)";
   g.fillStyle = ink;
   g.textBaseline = "alphabetic";
-  g.font = font(f, 700, 46);
-  const l1 = "Certificate";
-  const l2 = "of Completion";
-  g.fillText(l1, px + (pw - g.measureText(l1).width) / 2, py + 176);
-  g.fillText(l2, px + (pw - g.measureText(l2).width) / 2, py + 232);
+  fitFontSize(g, f, 700, 46, copy.certificate.title1, pw - 80, 28);
+  g.fillText(copy.certificate.title1, px + (pw - g.measureText(copy.certificate.title1).width) / 2, py + 176);
+  fitFontSize(g, f, 700, 46, copy.certificate.title2, pw - 80, 28);
+  g.fillText(copy.certificate.title2, px + (pw - g.measureText(copy.certificate.title2).width) / 2, py + 232);
   // text lines
   g.fillStyle = active ? "rgba(90,70,30,0.28)" : "rgba(30,40,62,0.3)";
   rr(g, px + 60, py + 268, pw - 120, 10, 5);
@@ -935,35 +959,45 @@ export const AI_H = 380;
 /** where the "Coming Soon" pill sits in the AI card's canvas (px), for the acknowledgement glow */
 export const AI_PILL = { x: 60, y: 268, w: 268, h: 66 };
 
-export function drawAiCourseCard(f: UiFont): HTMLCanvasElement {
+export function drawAiCourseCard(f: UiFont, copy: AcademyCopy): HTMLCanvasElement {
   const W = AI_W;
   const H = AI_H;
   const { c, g } = makeCanvas(W, H);
+  const rtl = f.rtl;
   glassPanel(g, W, H, 56, "#7c6bd6");
-  icon(g, "robot", 100, 106, 84, "#9d8fe0");
+  // RTL: the robot icon+title/lines move to the right, the "AI" chip to the left - the row and the chip mirror
+  // exactly like the icon+text rows elsewhere in the showcase.
+  const robotCx = rtl ? W - 100 : 100;
+  // The text box is padded symmetrically (176px on both sides), so its far edge already lands exactly on the
+  // mirrored icon's position in both languages - the same box, just read from whichever end the icon is on.
+  const titleX = 176;
+  const titleW = AI_W - 176 * 2;
+  icon(g, "robot", robotCx, 106, 84, "#9d8fe0");
   g.fillStyle = "rgba(230,236,247,0.92)";
-  g.font = font(f, 700, 54);
   g.textBaseline = "alphabetic";
-  g.fillText("AI Agents Course", 176, 116);
+  fitFontSize(g, f, 700, 54, copy.aiCourse.title, titleW, 30);
+  drawInBox(g, copy.aiCourse.title, titleX, titleW, 116, rtl);
   g.fillStyle = MUTED;
-  g.font = font(f, 500, 34);
-  g.fillText("Secure, Production-Ready", 176, 174);
-  g.fillText("AI Agents for Business", 176, 218);
-  // Coming Soon pill
+  fitFontSize(g, f, 500, 34, copy.aiCourse.line1, titleW, 20);
+  drawInBox(g, copy.aiCourse.line1, 176, titleW, 174, rtl);
+  fitFontSize(g, f, 500, 34, copy.aiCourse.line2, titleW, 20);
+  drawInBox(g, copy.aiCourse.line2, 176, titleW, 218, rtl);
+  // Coming Soon pill: mirrors to the row's other end together with the title block
   const p = AI_PILL;
+  const pillX = rtl ? p.x : p.x + 116;
   g.fillStyle = "rgba(139,92,246,0.18)";
-  rr(g, p.x + 116, p.y, p.w, p.h, p.h / 2);
+  rr(g, pillX, p.y, p.w, p.h, p.h / 2);
   g.fill();
   g.strokeStyle = "rgba(167,139,250,0.85)";
   g.lineWidth = 3;
-  rr(g, p.x + 117.5, p.y + 1.5, p.w - 3, p.h - 3, p.h / 2 - 1.5);
+  rr(g, pillX + 1.5, p.y + 1.5, p.w - 3, p.h - 3, p.h / 2 - 1.5);
   g.stroke();
   g.fillStyle = "#e4dcff";
-  g.font = font(f, 600, 32);
-  const t = "Coming Soon";
-  g.fillText(t, p.x + 116 + (p.w - g.measureText(t).width) / 2, p.y + 44);
-  // the AI chip on the right
-  const cx = W - 170;
+  fitFontSize(g, f, 600, 32, copy.aiCourse.comingSoon, p.w - 24, 20);
+  const t = copy.aiCourse.comingSoon;
+  g.fillText(t, pillX + (p.w - g.measureText(t).width) / 2, p.y + 44);
+  // the AI chip, mirrored to the opposite end from the title block
+  const cx = rtl ? 170 : W - 170;
   const cy = H / 2;
   const chip = g.createLinearGradient(cx - 80, cy - 80, cx + 80, cy + 80);
   chip.addColorStop(0, "rgba(96,165,250,0.22)");

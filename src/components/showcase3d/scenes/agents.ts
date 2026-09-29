@@ -22,6 +22,7 @@ import { roundedPlane, roundedSlab } from "../shapes";
 import { glowTrail, ramp, trailPoints } from "../ribbon";
 import { buildGlow, createTrailPulse, easeInOutCubic, Timeline, type TrailPulse } from "../anim";
 import type { UiFont } from "../uiFont";
+import type { Translations } from "@/lib/translations";
 import {
   PHONE_EMPTY,
   PHONE_FULL,
@@ -85,8 +86,6 @@ const PULSE_RGB: [number, number, number] = [158, 199, 255];
 
 interface InputSpec {
   kind: "messages" | "email" | "website" | "documents";
-  title: string;
-  subtitle: string;
   accent: string;
   pos: [number, number, number];
   rot: [number, number, number];
@@ -97,13 +96,15 @@ interface InputSpec {
 // shared x, no shared z, no even vertical rhythm - each card its own depth,
 // tilt and roll. Pulled inward from the previous pass so every card - the
 // Messages card especially - sits fully inside the viewport at 1440x900,
-// clear of the header and both edges. Copy is one clear word each.
+// clear of the header and both edges. Title/subtitle come from copy.agents.inputs.
 const INPUTS: InputSpec[] = [
-  { kind: "messages", title: "Messages", subtitle: "Customer request", accent: "#60a5fa", pos: [-7.5, 3.75, 2.0], rot: [0.03, -0.22, 0.05], scale: 0.96 },
-  { kind: "email", title: "Email", subtitle: "New inquiry", accent: "#60a5fa", pos: [-6.5, 2.0, -0.35], rot: [0.02, -0.14, -0.03], scale: 0.9 },
-  { kind: "website", title: "Website", subtitle: "Booking request", accent: "#38d6ee", pos: [-7.8, 0.2, 1.0], rot: [0.015, -0.26, 0.04], scale: 0.94 },
-  { kind: "documents", title: "Documents", subtitle: "Knowledge", accent: "#38d6ee", pos: [-6.4, -1.8, -0.9], rot: [0.01, -0.16, -0.045], scale: 0.84 },
+  { kind: "messages", accent: "#60a5fa", pos: [-7.5, 3.75, 2.0], rot: [0.03, -0.22, 0.05], scale: 0.96 },
+  { kind: "email", accent: "#60a5fa", pos: [-6.5, 2.0, -0.35], rot: [0.02, -0.14, -0.03], scale: 0.9 },
+  { kind: "website", accent: "#38d6ee", pos: [-7.8, 0.2, 1.0], rot: [0.015, -0.26, 0.04], scale: 0.94 },
+  { kind: "documents", accent: "#38d6ee", pos: [-6.4, -1.8, -0.9], rot: [0.01, -0.16, -0.045], scale: 0.84 },
 ];
+/** maps INPUTS[i].kind to its copy.agents.inputs key, in array order */
+const INPUT_KEYS = ["messages", "email", "website", "documents"] as const;
 
 /** Header orb centre in the phone-screen canvas (944 x 2115) - see agentsUi.ts's drawPhoneScreen header layout. */
 const ORB_PX = { x: 118, y: 214 };
@@ -120,7 +121,8 @@ function mat(m: Mesh): Material {
 /** A rounded face-sized plane laid just in front of a card's face: a second layer of content that is crossfaded in. */
 const OVERLAY_Z = 0.008;
 
-export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: boolean): Promise<ShowcaseScene> {
+export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: boolean, t: Translations["showcase"]): Promise<ShowcaseScene> {
+  const copy = t.agents;
   return loadPhoneModel(PHONE_H).then((phone) => {
     const group = new Group();
     const lights: Light[] = [];
@@ -136,7 +138,7 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
     // The phone screen is a live canvas (see createPhoneScreen): animated, it
     // starts empty and the cycle fills the conversation in; reduced motion
     // paints the finished conversation once.
-    const phoneUi = createPhoneScreen(font);
+    const phoneUi = createPhoneScreen(font, copy);
     const phoneProgress: PhoneProgress = { ...(reducedMotion ? PHONE_FULL : PHONE_EMPTY) };
     phoneUi.render(phoneProgress);
     const screenTex = kit.track(canvasTexture(phoneUi.canvas));
@@ -240,7 +242,8 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
     const inputCards: CardBuilt[] = [];
     const inputLanes: { toPhone: Vector3[] }[] = [];
     INPUTS.forEach((spec, i) => {
-      const tex = kit.track(canvasTexture(drawInputCard(font, spec.kind, spec.title, spec.subtitle, spec.accent)));
+      const ic = copy.inputs[INPUT_KEYS[i]];
+      const tex = kit.track(canvasTexture(drawInputCard(font, spec.kind, ic.title, ic.subtitle, spec.accent)));
       const card = buildCard(kit, tex, 3.1, 1.96, 0.28, 0.08);
       owned.push(...card.owned);
       card.group.position.set(...spec.pos);
@@ -262,31 +265,32 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
     const CAL_W = 4.9;
     const CAL_H = 3.528;
     const CAL_DEPTH = 0.1;
-    const calTex = kit.track(canvasTexture(drawCalendarCard(font, reducedMotion ? "full" : "shell")));
+    const calTex = kit.track(canvasTexture(drawCalendarCard(font, copy, reducedMotion ? "full" : "shell")));
     const cal = buildCard(kit, calTex, CAL_W, CAL_H, 0.32, CAL_DEPTH);
     owned.push(...cal.owned);
     const calPos: [number, number, number] = [8.3, 2.35, -0.6];
     cal.group.position.set(...calPos);
     cal.group.rotation.set(0.015, 0.3, -0.02);
     group.add(cal.group);
-    const results: { pos: [number, number, number]; rot: [number, number, number]; title: string; subtitle: string }[] = [
-      { pos: [9.5, -0.35, -1.15], rot: [0.01, 0.26, -0.03], title: "Confirmation sent", subtitle: "Email + message" },
-      { pos: [8.55, -1.85, -1.65], rot: [0.008, 0.28, -0.035], title: "Customer notified", subtitle: "Reminder scheduled" },
+    const RESULT_KEYS = ["confirmationSent", "customerNotified"] as const;
+    const results: { pos: [number, number, number]; rot: [number, number, number] }[] = [
+      { pos: [9.5, -0.35, -1.15], rot: [0.01, 0.26, -0.03] },
+      { pos: [8.55, -1.85, -1.65], rot: [0.008, 0.28, -0.035] },
     ];
     const RES_W = 3.35;
     const RES_H = 1.42;
     const RES_DEPTH = 0.08;
     const resultCards: CardBuilt[] = [];
     const resultLanes: { fromPhone: Vector3[] }[] = [];
-    results.forEach((r) => {
-      const tex = kit.track(canvasTexture(drawResultChip(font, r.title, r.subtitle, reducedMotion)));
+    results.forEach((r, i) => {
+      const rc = copy.results[RESULT_KEYS[i]];
+      const tex = kit.track(canvasTexture(drawResultChip(font, rc.title, rc.subtitle, reducedMotion)));
       const card = buildCard(kit, tex, RES_W, RES_H, 0.26, RES_DEPTH);
       owned.push(...card.owned);
       card.group.position.set(...r.pos);
       card.group.rotation.set(...r.rot);
       group.add(card.group);
       resultCards.push(card);
-      const i = resultCards.length - 1;
       const source = new Vector3(PHONE_W / 2 - 0.45, 2.4 - (i + 1) * 1.7, PHONE_Z - 0.6);
       const anchor = new Vector3(r.pos[0] - 1.35, r.pos[1], r.pos[2]);
       resultLanes.push({ fromPhone: trailPoints(source, anchor) });
@@ -385,13 +389,14 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
       const outPulses = resultLanes.map((l) => mkPulse(l.fromPhone, PULSE_OUT, 1.4)); // phone -> result cards
 
       // dormant -> active content layers
-      const calIdle = addLayer(cal, kit.track(canvasTexture(drawCalendarCard(font, "idle"))), CAL_W, CAL_H, 0.32, CAL_DEPTH);
+      const calIdle = addLayer(cal, kit.track(canvasTexture(drawCalendarCard(font, copy, "idle"))), CAL_W, CAL_H, 0.32, CAL_DEPTH);
       calIdle.opacity = 1;
-      const calBooked = addLayer(cal, kit.track(canvasTexture(drawCalendarCard(font, "booked"))), CAL_W, CAL_H, 0.32, CAL_DEPTH);
-      const calFooter = addLayer(cal, kit.track(canvasTexture(drawCalendarCard(font, "footer"))), CAL_W, CAL_H, 0.32, CAL_DEPTH);
-      const chipActive = resultCards.map((c, i) =>
-        addLayer(c, kit.track(canvasTexture(drawResultChip(font, results[i].title, results[i].subtitle, true))), RES_W, RES_H, 0.26, RES_DEPTH),
-      );
+      const calBooked = addLayer(cal, kit.track(canvasTexture(drawCalendarCard(font, copy, "booked"))), CAL_W, CAL_H, 0.32, CAL_DEPTH);
+      const calFooter = addLayer(cal, kit.track(canvasTexture(drawCalendarCard(font, copy, "footer"))), CAL_W, CAL_H, 0.32, CAL_DEPTH);
+      const chipActive = resultCards.map((c, i) => {
+        const rc = copy.results[RESULT_KEYS[i]];
+        return addLayer(c, kit.track(canvasTexture(drawResultChip(font, rc.title, rc.subtitle, true))), RES_W, RES_H, 0.26, RES_DEPTH);
+      });
       const layers = { calBooked: 0, calFooter: 0, chip0: 0, chip1: 0 };
       /** slot change: the open slot fades out and the booking fades in right behind it (a tiny overlap, so the slot never goes empty) - and back again on reset */
       const xOut = (p: number) => Math.max(0, Math.min(1, 1 - p / 0.4));

@@ -1,5 +1,9 @@
 import { canvasTexture, dither, makeCanvas } from "../kit";
+import { drawInBox, fitFontSize } from "../cardUi";
 import type { UiFont } from "../uiFont";
+import type { Translations } from "@/lib/translations";
+
+type AgentsCopy = Translations["showcase"]["agents"];
 
 /**
  * Canvas drawings for the AI Agents scene. Everything here is ILLUSTRATIVE demo
@@ -161,8 +165,10 @@ export interface PhoneProgress {
 
 export const PHONE_EMPTY: PhoneProgress = { request: 0, thinking: 0, reply: 0, chips: 0, select: 0, choice: 0, verify: 0, work: 0, booking: 0, done: 0, status: 0, fade: 1, clock: 0 };
 export const PHONE_FULL: PhoneProgress = { request: 1, thinking: 0, reply: 1, chips: 1, select: 1, choice: 1, verify: 1, work: 1, booking: 1, done: 1, status: 0, fade: 1, clock: 0 };
-/** header status labels; PhoneProgress.status indexes (and crossfades between) these */
-export const STATUS = ["Online", "Reading request…", "Searching knowledge…", "Online", "Verifying availability…", "Booking appointment…", "Online"];
+/** header status labels, in story order (three resting "Online" points included); PhoneProgress.status indexes (and crossfades between) these */
+function statusList(c: AgentsCopy): string[] {
+  return [c.status.online, c.status.readingRequest, c.status.searchingKnowledge, c.status.online, c.status.verifyingAvailability, c.status.bookingAppointment, c.status.online];
+}
 
 export interface PhoneScreen {
   canvas: HTMLCanvasElement;
@@ -184,12 +190,19 @@ const stagger = (p: number, i: number, n: number, spread: number): number => cla
  * top. Every element has a fixed final position (the full conversation is laid
  * out up front), so nothing ever shifts when a later element appears.
  */
-export function createPhoneScreen(f: UiFont): PhoneScreen {
+export function createPhoneScreen(f: UiFont, copy: AgentsCopy): PhoneScreen {
   const W = 944;
   const H = 2115;
   const base = makeCanvas(W, H);
   const g = base.g;
   const pad = 60;
+  const rtl = f.rtl;
+  const STATUS = statusList(copy);
+  // header row mirrors icon+text under RTL (orb moves to the far side the text now reads FROM); English is unchanged.
+  const headerOrbX = rtl ? W - pad - 58 : pad + 58;
+  const headerTextX = rtl ? pad : pad + 146;
+  const headerTextW = W - pad * 2 - 146;
+  const headerDotX = rtl ? headerOrbX - 84 : pad + 150;
 
   const bg = g.createLinearGradient(0, 0, 0, H);
   bg.addColorStop(0, "#0a1024");
@@ -208,14 +221,14 @@ export function createPhoneScreen(f: UiFont): PhoneScreen {
   g.fill();
 
   // header: the assistant's presence (the status label is the live layer)
-  drawOrb(g, pad + 58, 214, 56, true, true);
+  drawOrb(g, headerOrbX, 214, 56, true, true);
   g.fillStyle = INK;
-  g.font = font(f, 700, 42);
   g.textBaseline = "alphabetic";
-  g.fillText("ZentexAI Assistant", pad + 146, 202);
+  fitFontSize(g, f, 700, 42, copy.assistantName, headerTextW, 26);
+  drawInBox(g, copy.assistantName, headerTextX, headerTextW, 202, rtl);
   g.fillStyle = "#4ade80";
   g.beginPath();
-  g.arc(pad + 150, 232, 6, 0, Math.PI * 2);
+  g.arc(headerDotX, 232, 6, 0, Math.PI * 2);
   g.fill();
   g.fillStyle = LINE;
   g.fillRect(pad, 320, W - pad * 2, 2);
@@ -244,7 +257,7 @@ export function createPhoneScreen(f: UiFont): PhoneScreen {
 
   g.fillStyle = "rgba(148,163,184,0.7)";
   g.font = font(f, 500, 36);
-  g.fillText("Type a message…", pad + 96, cy + barH / 2 + 12);
+  drawInBox(g, copy.composerPlaceholder, pad + 96, W - pad - 138 - 40 - (pad + 96), cy + barH / 2 + 12, rtl);
 
   const micX = W - pad - 138;
   g.strokeStyle = "rgba(148,163,184,0.7)";
@@ -287,7 +300,7 @@ export function createPhoneScreen(f: UiFont): PhoneScreen {
   const replyX = lpad + 76;
   const replyW = LW - lpad - replyX - 8;
   g.font = font(f, 500, 37);
-  const replyLines = wrap(g, "Of course. These times are available tomorrow:", replyW - 68);
+  const replyLines = wrap(g, copy.assistantReply, replyW - 68);
   const replyH = 44 + replyLines.length * 54 + 30;
   const requestY = 0;
   const replyY = requestY + 112 + 52;
@@ -346,15 +359,15 @@ export function createPhoneScreen(f: UiFont): PhoneScreen {
       const sf = p.status - si;
       lg.font = font(f, 500, 29);
       lg.fillStyle = MUTED;
-      fadeOnly(xOut(sf), () => lg.fillText(STATUS[si], pad + 166, 244));
-      if (sf > 0.003 && si + 1 < STATUS.length) fadeOnly(xIn(sf), () => lg.fillText(STATUS[si + 1], pad + 166, 244));
+      fadeOnly(xOut(sf), () => drawInBox(lg, STATUS[si], headerTextX, headerTextW, 244, rtl));
+      if (sf > 0.003 && si + 1 < STATUS.length) fadeOnly(xIn(sf), () => drawInBox(lg, STATUS[si + 1], headerTextX, headerTextW, 244, rtl));
 
       lg.save();
       lg.translate(0, 350);
       lg.scale(K, K);
       const F = p.fade;
 
-      appear(p.request, F, () => userBubble("I need to book an appointment.", requestY));
+      appear(p.request, F, () => userBubble(copy.customerRequest, requestY));
 
       // assistant: orb + typing pill, which the reply bubble replaces in place
       const present = clamp01(Math.max(p.thinking, p.reply));
@@ -381,11 +394,11 @@ export function createPhoneScreen(f: UiFont): PhoneScreen {
         lg.stroke();
         lg.fillStyle = INK;
         lg.font = font(f, 500, 37);
-        replyLines.forEach((l, i) => lg.fillText(l, replyX + 36, replyY + 74 + i * 54));
+        replyLines.forEach((l, i) => drawInBox(lg, l, replyX + 36, replyW - 72, replyY + 74 + i * 54, rtl));
       });
 
       // time chips, staggered; the 10:00 chip then fills in
-      ["9:30 AM", "10:00 AM", "11:30 AM"].forEach((t, i) => {
+      copy.timeChips.forEach((t, i) => {
         const cx = replyX + i * (190 + 16);
         const local = stagger(p.chips, i, 3, 0.8);
         appear(local, F, () => {
@@ -413,18 +426,23 @@ export function createPhoneScreen(f: UiFont): PhoneScreen {
         });
       });
 
-      appear(p.choice, F, () => userBubble("10:00 AM", choiceY));
+      appear(p.choice, F, () => userBubble(copy.bookedTime, choiceY));
 
       // action row: verifying -> booking -> booked, one line whose wording crossfades in place
       const v = clamp01(p.verify);
       const doneIn = xIn(clamp01(p.done));
       const doneOut = xOut(clamp01(p.done));
+      // this row mirrors icon+text under RTL, same as the header; the progress bar below keeps its physical
+      // position and fill direction in both languages (an RTL-mirrored bar isn't needed for the text to fit).
+      const verifyIconX = rtl ? LW - lpad - 22 : lpad + 22;
+      const verifyTextX = rtl ? lpad + 8 : barX;
+      const verifyTextW = barW;
       const orbA = v * doneOut * F;
-      fadeOnly(orbA, () => drawOrb(lg, lpad + 22, verifyY + 24, 20, false));
+      fadeOnly(orbA, () => drawOrb(lg, verifyIconX, verifyY + 24, 20, false));
       lg.font = font(f, 500, 34);
       lg.fillStyle = "rgba(148,163,184,0.85)";
-      fadeOnly(v * xOut(clamp01(p.booking)) * F, () => lg.fillText("Verifying availability…", lpad + 76, verifyY + 34));
-      fadeOnly(v * xIn(clamp01(p.booking)) * doneOut * F, () => lg.fillText("Booking your appointment…", lpad + 76, verifyY + 34));
+      fadeOnly(v * xOut(clamp01(p.booking)) * F, () => drawInBox(lg, copy.status.verifyingAvailability, verifyTextX, verifyTextW, verifyY + 34, rtl));
+      fadeOnly(v * xIn(clamp01(p.booking)) * doneOut * F, () => drawInBox(lg, copy.bookingYourAppointment, verifyTextX, verifyTextW, verifyY + 34, rtl));
       // progress bar
       fadeOnly(v * doneOut * F, () => {
         lg.fillStyle = "rgba(255,255,255,0.08)";
@@ -442,21 +460,21 @@ export function createPhoneScreen(f: UiFont): PhoneScreen {
       });
       lg.font = font(f, 500, 30);
       lg.fillStyle = "rgba(148,163,184,0.6)";
-      fadeOnly(v * xOut(clamp01(p.booking)) * F, () => lg.fillText("Verifying availability with your calendar", barX, subY));
-      fadeOnly(v * xIn(clamp01(p.booking)) * doneOut * F, () => lg.fillText("Adding it to your calendar", barX, subY));
+      fadeOnly(v * xOut(clamp01(p.booking)) * F, () => drawInBox(lg, copy.verifyingWithCalendar, verifyTextX, verifyTextW, subY, rtl));
+      fadeOnly(v * xIn(clamp01(p.booking)) * doneOut * F, () => drawInBox(lg, copy.addingToCalendar, verifyTextX, verifyTextW, subY, rtl));
       // success: a check badge and the outcome, in the same place
       appear(doneIn, F, () => {
         lg.fillStyle = "#22d3ee";
         lg.beginPath();
-        lg.arc(lpad + 22, verifyY + 24, 22, 0, Math.PI * 2);
+        lg.arc(verifyIconX, verifyY + 24, 22, 0, Math.PI * 2);
         lg.fill();
-        check(lg, lpad + 22, verifyY + 24, 24, "#04222b", 5);
+        check(lg, verifyIconX, verifyY + 24, 24, "#04222b", 5);
         lg.fillStyle = INK;
-        lg.font = font(f, 600, 36);
-        lg.fillText("You're booked for 10:00 AM", lpad + 76, verifyY + 32);
+        fitFontSize(lg, f, 600, 36, copy.youreBooked, verifyTextW, 26);
+        drawInBox(lg, copy.youreBooked, verifyTextX, verifyTextW, verifyY + 32, rtl);
         lg.fillStyle = "rgba(148,163,184,0.75)";
         lg.font = font(f, 500, 30);
-        lg.fillText("Tomorrow · confirmation on its way", barX, verifyY + 84);
+        drawInBox(lg, copy.confirmationOnItsWay, verifyTextX, verifyTextW, verifyY + 84, rtl);
       });
       lg.restore();
     },
@@ -475,7 +493,7 @@ export type CalendarLayer = "full" | "shell" | "idle" | "booked" | "footer";
  * reduced-motion frame). The key content sits right of centre because the
  * phone overlaps the left edge.
  */
-export function drawCalendarCard(f: UiFont, layer: CalendarLayer = "full"): HTMLCanvasElement {
+export function drawCalendarCard(f: UiFont, copy: AgentsCopy, layer: CalendarLayer = "full"): HTMLCanvasElement {
   const W = 1000;
   const H = 720;
   const { c, g } = makeCanvas(W, H);
@@ -483,29 +501,39 @@ export function drawCalendarCard(f: UiFont, layer: CalendarLayer = "full"): HTML
   const ty = 250;
   const tw = W - 250 - 60;
   const th = 250;
+  const rtl = f.rtl;
   g.textBaseline = "alphabetic";
 
   if (layer === "shell" || layer === "full") {
     glassPanel(g, W, H, 52, "#2563eb");
+    // the heading pair mirrors under RTL: the prominent "Tomorrow" moves to the side reading starts from
     g.fillStyle = INK;
     g.font = font(f, 700, 46);
-    g.fillText("Tomorrow", 250, 104);
+    if (rtl) g.fillText(copy.calendar.tomorrow, W - 60 - g.measureText(copy.calendar.tomorrow).width, 104);
+    else g.fillText(copy.calendar.tomorrow, 250, 104);
     g.fillStyle = MUTED;
     g.font = font(f, 500, 32);
-    const t = "Calendar";
-    g.fillText(t, W - 60 - g.measureText(t).width, 102);
+    if (rtl) g.fillText(copy.calendar.calendarLabel, 250, 102);
+    else g.fillText(copy.calendar.calendarLabel, W - 60 - g.measureText(copy.calendar.calendarLabel).width, 102);
     g.fillStyle = LINE;
     g.fillRect(250, 140, W - 250 - 60, 2);
 
-    // quiet hour rows
+    // quiet hour rows: sit outside the main card face (to its left); mirrored to its right under RTL
     g.fillStyle = MUTED;
     g.font = font(f, 500, 34);
-    g.fillText("9:30 AM", 40, 216);
-    g.fillText("11:30 AM", 40, 566);
+    const hourW = tx - 40 - 20;
+    drawInBox(g, copy.timeChips[0], rtl ? W - tx + 20 : 40, hourW, 216, rtl);
+    drawInBox(g, copy.timeChips[2], rtl ? W - tx + 20 : 40, hourW, 566, rtl);
     g.fillStyle = LINE;
     g.fillRect(250, 196, W - 250 - 60, 2);
     g.fillRect(250, 546, W - 250 - 60, 2);
   }
+
+  // the text column shared by the idle/booked slot content: same padding on
+  // both sides regardless of language, so nothing changes for English and
+  // Arabic right-aligns naturally within the exact same visual box.
+  const slotX = rtl ? tx + 24 : tx + 52;
+  const slotW = tw - 76;
 
   if (layer === "idle") {
     // the slot the agent is about to fill: an open, dashed "Available" outline
@@ -516,11 +544,11 @@ export function drawCalendarCard(f: UiFont, layer: CalendarLayer = "full"): HTML
     g.stroke();
     g.setLineDash([]);
     g.fillStyle = "rgba(148,163,184,0.75)";
-    g.font = font(f, 700, 76);
-    g.fillText("10:00 AM", tx + 52, ty + 106);
+    fitFontSize(g, f, 700, 76, copy.bookedTime, slotW, 44);
+    drawInBox(g, copy.bookedTime, slotX, slotW, ty + 106, rtl);
     g.fillStyle = "rgba(148,163,184,0.6)";
-    g.font = font(f, 600, 40);
-    g.fillText("Available", tx + 52, ty + 172);
+    fitFontSize(g, f, 600, 40, copy.calendar.available, slotW, 26);
+    drawInBox(g, copy.calendar.available, slotX, slotW, ty + 172, rtl);
   }
 
   if (layer === "booked" || layer === "full") {
@@ -535,12 +563,12 @@ export function drawCalendarCard(f: UiFont, layer: CalendarLayer = "full"): HTML
     rr(g, tx, ty, 12, th, 6);
     g.fill();
     g.fillStyle = "#fff";
-    g.font = font(f, 700, 76);
-    g.fillText("10:00 AM", tx + 52, ty + 106);
+    fitFontSize(g, f, 700, 76, copy.bookedTime, slotW, 44);
+    drawInBox(g, copy.bookedTime, slotX, slotW, ty + 106, rtl);
     g.fillStyle = "rgba(226,238,255,0.95)";
-    g.font = font(f, 600, 40);
-    g.fillText("Appointment booked", tx + 52, ty + 172);
-    const bx = tx + tw - 84;
+    fitFontSize(g, f, 600, 40, copy.calendar.appointmentBooked, slotW, 26);
+    drawInBox(g, copy.calendar.appointmentBooked, slotX, slotW, ty + 172, rtl);
+    const bx = rtl ? tx + 84 : tx + tw - 84;
     g.fillStyle = "rgba(255,255,255,0.22)";
     g.beginPath();
     g.arc(bx, ty + 84, 46, 0, Math.PI * 2);
@@ -549,10 +577,14 @@ export function drawCalendarCard(f: UiFont, layer: CalendarLayer = "full"): HTML
   }
 
   if (layer === "footer" || layer === "full") {
+    const checkX = rtl ? tx + tw - 26 : tx + 26;
+    const footTextX = rtl ? tx : tx + 74;
+    const footTextW = tw - 74;
     g.fillStyle = "rgba(203,213,225,0.9)";
     g.font = font(f, 500, 38);
-    check(g, tx + 26, ty + th + 60, 26, "rgba(34,211,238,0.95)", 5);
-    g.fillText("Confirmation sent", tx + 74, ty + th + 74);
+    check(g, checkX, ty + th + 60, 26, "rgba(34,211,238,0.95)", 5);
+    fitFontSize(g, f, 500, 38, copy.calendar.confirmationSent, footTextW, 24);
+    drawInBox(g, copy.calendar.confirmationSent, footTextX, footTextW, ty + th + 74, rtl);
   }
   if (layer === "shell" || layer === "full") dither(g, W, H, 1.6);
   return c;
@@ -711,12 +743,16 @@ export function drawInputCard(f: UiFont, kind: IconKind, title: string, subtitle
   const { c, g } = makeCanvas(W, H);
   glassPanel(g, W, H, 46, accent);
 
-  const PAD = 64; // left padding to the icon area
+  const PAD = 64; // padding to the icon area
   const ICON_R = 44; // icon area radius
-  const ICON_TEXT_GAP = 36; // clear space between icon's right edge and text
+  const ICON_TEXT_GAP = 36; // clear space between the icon's edge and the text
   const ROW_CY = H / 2; // the icon + both text lines are one group, centred in the card
-  const iconCx = PAD + ICON_R;
-  const textX = PAD + ICON_R * 2 + ICON_TEXT_GAP;
+  const rtl = f.rtl;
+  // RTL: the icon moves to the right and the text column fills the space to its left - the row's own
+  // internal composition mirrors for natural reading; the card's place in the scene does not.
+  const iconCx = rtl ? W - PAD - ICON_R : PAD + ICON_R;
+  const textX = rtl ? PAD : PAD + ICON_R * 2 + ICON_TEXT_GAP;
+  const textW = W - PAD * 2 - ICON_R * 2 - ICON_TEXT_GAP;
 
   g.save();
   g.translate(iconCx, ROW_CY);
@@ -724,12 +760,12 @@ export function drawInputCard(f: UiFont, kind: IconKind, title: string, subtitle
   g.restore();
 
   g.fillStyle = INK;
-  g.font = font(f, 700, 60);
   g.textBaseline = "alphabetic";
-  g.fillText(title, textX, ROW_CY - 14);
+  fitFontSize(g, f, 700, 60, title, textW, 34);
+  drawInBox(g, title, textX, textW, ROW_CY - 14, rtl);
   g.fillStyle = MUTED;
-  g.font = font(f, 500, 42);
-  g.fillText(subtitle, textX, ROW_CY + 42);
+  fitFontSize(g, f, 500, 42, subtitle, textW, 24);
+  drawInBox(g, subtitle, textX, textW, ROW_CY + 42, rtl);
   dither(g, W, H, 1.4);
   return c;
 }
@@ -741,10 +777,12 @@ export function drawResultChip(f: UiFont, title: string, subtitle: string, activ
   const { c, g } = makeCanvas(W, H);
   glassPanel(g, W, H, 36, active ? "#22d3ee" : "#475569");
   // Same [ICON AREA][TEXT AREA] gap used by the input cards, applied here too.
-  const bx = 78;
-  const by = H / 2;
+  const rtl = f.rtl;
   const badgeR = 34;
-  const textX = bx + badgeR + 36;
+  const bx = rtl ? W - 78 : 78;
+  const by = H / 2;
+  const textX = rtl ? 40 : bx + badgeR + 36;
+  const textW = W - 40 - (badgeR * 2 + 36) - 40;
   if (active) {
     const badge = g.createRadialGradient(bx, by, 4, bx, by, badgeR);
     badge.addColorStop(0, "#29dcf2");
@@ -764,12 +802,12 @@ export function drawResultChip(f: UiFont, title: string, subtitle: string, activ
     g.setLineDash([]);
   }
   g.fillStyle = active ? INK : "rgba(148,163,184,0.8)";
-  g.font = font(f, 700, 44);
   g.textBaseline = "alphabetic";
-  g.fillText(title, textX, by - 8);
+  fitFontSize(g, f, 700, 44, title, textW, 26);
+  drawInBox(g, title, textX, textW, by - 8, rtl);
   g.fillStyle = active ? MUTED : "rgba(148,163,184,0.5)";
-  g.font = font(f, 500, 34);
-  g.fillText(subtitle, textX, by + 40);
+  fitFontSize(g, f, 500, 34, subtitle, textW, 20);
+  drawInBox(g, subtitle, textX, textW, by + 40, rtl);
   dither(g, W, H, 1.4);
   return c;
 }

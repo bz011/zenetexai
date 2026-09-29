@@ -1,6 +1,9 @@
 import { canvasTexture, dither, makeCanvas } from "../kit";
-import { INK, MUTED, ROW_ICON_R, checkMark, drawIconTextRow, font, glassPanel, rr } from "../cardUi";
+import { INK, MUTED, ROW_ICON_R, checkMark, drawIconTextRow, drawInBox, fitFontSize, font, glassPanel, rr } from "../cardUi";
 import type { UiFont } from "../uiFont";
+import type { Translations } from "@/lib/translations";
+
+type DataCopy = Translations["showcase"]["data"];
 
 /**
  * Canvas drawings for the Data & Analytics scene. Illustrative demo UI only -
@@ -260,12 +263,7 @@ export const PROC_H = 2480;
 /** vertical centre of each of the four stage rows, in this canvas's own pixel space - used to place local highlight/overlay meshes in world space if ever needed. */
 export const PROC_ROW_CY = [370, 950, 1530, 2110] as const;
 
-const PROC_STAGES: { kind: StageKind; label: string }[] = [
-  { kind: "extract", label: "Extract" },
-  { kind: "clean", label: "Clean" },
-  { kind: "transform", label: "Transform" },
-  { kind: "unify", label: "Unify" },
-];
+const PROC_STAGE_KINDS: StageKind[] = ["extract", "clean", "transform", "unify"];
 
 function drawDownArrow(g: CanvasRenderingContext2D, x: number, y0: number, y1: number, color: string): void {
   // a soft glow behind the shaft so the connector reads as a luminous data
@@ -297,7 +295,7 @@ function drawDownArrow(g: CanvasRenderingContext2D, x: number, y0: number, y1: n
  * arrow connects each row to the next, deliberately distinct from the
  * organic curved data trails outside the module (section F of the brief).
  */
-export function drawProcessingModule(f: UiFont): HTMLCanvasElement {
+export function drawProcessingModule(f: UiFont, copy: DataCopy): HTMLCanvasElement {
   const W = PROC_W;
   const H = PROC_H;
   const { c, g } = makeCanvas(W, H);
@@ -317,8 +315,14 @@ export function drawProcessingModule(f: UiFont): HTMLCanvasElement {
   const rowX = 50;
   const iconR = 66;
   const accents = ["#60a5fa", "#38d6ee", "#818cf8", "#a78bfa"];
+  const rtl = f.rtl;
+  const stageLabels = [copy.stages.extract, copy.stages.clean, copy.stages.transform, copy.stages.unify];
+  // RTL: icon moves to the row's other end, label right-aligned reading back toward it - the module's own
+  // outline, the vertical arrow chain and its position in the scene are unchanged.
+  const labelX = rtl ? rowX + 46 : rowX + 46 + iconR * 2 + 40;
+  const labelW = rowW - 92 - iconR * 2 - 40;
 
-  PROC_STAGES.forEach((stage, i) => {
+  PROC_STAGE_KINDS.forEach((kind, i) => {
     const cy = PROC_ROW_CY[i];
     const accent = accents[i];
     // this stage's own row, subtly separated but clearly inside the outer shell
@@ -331,16 +335,16 @@ export function drawProcessingModule(f: UiFont): HTMLCanvasElement {
     g.stroke();
 
     g.save();
-    g.translate(rowX + 46 + iconR, cy);
-    drawStageIcon(g, stage.kind, iconR, accent);
+    g.translate(rtl ? rowX + rowW - 46 - iconR : rowX + 46 + iconR, cy);
+    drawStageIcon(g, kind, iconR, accent);
     g.restore();
 
     g.fillStyle = INK;
-    g.font = font(f, 700, 84);
     g.textBaseline = "middle";
-    g.fillText(stage.label, rowX + 46 + iconR * 2 + 40, cy);
+    fitFontSize(g, f, 700, 84, stageLabels[i], labelW, 46);
+    drawInBox(g, stageLabels[i], labelX, labelW, cy, rtl);
 
-    if (i < PROC_STAGES.length - 1) {
+    if (i < PROC_STAGE_KINDS.length - 1) {
       drawDownArrow(g, W / 2, cy + rowH / 2 + 16, PROC_ROW_CY[i + 1] - rowH / 2 - 16, "#5fd8f2");
     }
   });
@@ -393,7 +397,7 @@ function dashLayout() {
   const kpiY = 150;
   const kpiH = 132;
   const kpiGap = 28;
-  const kpiW = (contentW - kpiGap * (KPIS.length - 1)) / KPIS.length;
+  const kpiW = (contentW - kpiGap * (KPI_SHAPE.length - 1)) / KPI_SHAPE.length;
   const row2Y = kpiY + kpiH + 34;
   const row2H = 340;
   const trendW = contentW * 0.6;
@@ -420,11 +424,12 @@ interface Kpi {
 
 // No delta/trend indicators here on purpose: this is illustrative sample
 // data (see the stage's accessible description), not a claimed result.
-const KPIS: Kpi[] = [
-  { label: "Revenue", target: 186, prefix: "$", suffix: "K" },
-  { label: "Projects", target: 24, prefix: "", suffix: "" },
-  { label: "Margin", target: 31, prefix: "", suffix: "%" },
-  { label: "Delivery", target: 97, prefix: "", suffix: "%" },
+// Labels come from copy.dashboard.kpi; only the numeric shape lives here.
+const KPI_SHAPE: { key: "revenue" | "projects" | "margin" | "delivery"; target: number; prefix: string; suffix: string }[] = [
+  { key: "revenue", target: 186, prefix: "$", suffix: "K" },
+  { key: "projects", target: 24, prefix: "", suffix: "" },
+  { key: "margin", target: 31, prefix: "", suffix: "%" },
+  { key: "delivery", target: 97, prefix: "", suffix: "%" },
 ];
 
 /** Static ghost of the charts (grid, tracks, baselines): what an empty dashboard looks like before data arrives. */
@@ -599,12 +604,14 @@ export interface DashboardScreen {
  * data-driven parts (KPI values, bars, donut, channels, forecast) on top, so
  * the scene can populate the dashboard frame by frame cheaply.
  */
-export function createDashboardScreen(f: UiFont): DashboardScreen {
+export function createDashboardScreen(f: UiFont, copy: DataCopy): DashboardScreen {
   const W = DASH_W;
   const H = DASH_H;
   const L = dashLayout();
   const base = makeCanvas(W, H);
   const g = base.g;
+  const rtl = f.rtl;
+  const KPIS = KPI_SHAPE.map((k) => ({ ...k, label: copy.dashboard.kpi[k.key] }));
 
   const bg = g.createLinearGradient(0, 0, 0, H);
   bg.addColorStop(0, "#0a1024");
@@ -636,17 +643,19 @@ export function createDashboardScreen(f: UiFont): DashboardScreen {
     g.stroke();
   }
 
-  // header
+  // header: RTL swaps which side carries the title vs. the "This month" pill
   g.fillStyle = INK;
   g.font = font(f, 700, 54);
   g.textBaseline = "alphabetic";
-  g.fillText("Overview", L.padL, 100);
+  if (rtl) g.fillText(copy.dashboard.overview, W - L.padR - g.measureText(copy.dashboard.overview).width, 100);
+  else g.fillText(copy.dashboard.overview, L.padL, 100);
   g.fillStyle = "rgba(255,255,255,0.05)";
-  rr(g, W - L.padR - 260, 62, 260, 52, 26);
+  rr(g, rtl ? L.padL : W - L.padR - 260, 62, 260, 52, 26);
   g.fill();
   g.fillStyle = MUTED;
   g.font = font(f, 500, 32);
-  g.fillText("This month", W - L.padR - 205, 96);
+  if (rtl) g.fillText(copy.dashboard.thisMonth, L.padL + 55, 96);
+  else g.fillText(copy.dashboard.thisMonth, W - L.padR - 205, 96);
 
   // KPI cards (labels only - the values are the live layer)
   KPIS.forEach((k, i) => {
@@ -659,8 +668,8 @@ export function createDashboardScreen(f: UiFont): DashboardScreen {
     rr(g, kx + 0.5, L.kpiY + 0.5, L.kpiW - 1, L.kpiH - 1, 23.5);
     g.stroke();
     g.fillStyle = MUTED;
-    g.font = font(f, 500, 34);
-    g.fillText(k.label, kx + 28, L.kpiY + 48);
+    fitFontSize(g, f, 500, 34, k.label, L.kpiW - 56, 22);
+    drawInBox(g, k.label, kx + 28, L.kpiW - 56, L.kpiY + 48, rtl);
   });
 
   // trend + donut row
@@ -669,28 +678,31 @@ export function createDashboardScreen(f: UiFont): DashboardScreen {
   g.fill();
   g.fillStyle = INK;
   g.font = font(f, 700, 40);
-  g.fillText("Revenue trend", L.padL + 28, L.row2Y + 46);
+  drawInBox(g, copy.dashboard.revenueTrend, L.padL + 28, L.trendW - 56, L.row2Y + 46, rtl);
 
   g.fillStyle = "rgba(255,255,255,0.035)";
   rr(g, L.donutX, L.row2Y, L.donutW, L.row2H, 24);
   g.fill();
   g.fillStyle = INK;
   g.font = font(f, 700, 40);
-  g.fillText("By category", L.donutX + 28, L.row2Y + 46);
+  drawInBox(g, copy.dashboard.byCategory, L.donutX + 28, L.donutW - 56, L.row2Y + 46, rtl);
   const legend: [string, string][] = [
-    ["#3b82f6", "Category A"],
-    ["#22d3ee", "Category B"],
-    ["#8b5cf6", "Category C"],
+    ["#3b82f6", copy.dashboard.categoryA],
+    ["#22d3ee", copy.dashboard.categoryB],
+    ["#8b5cf6", copy.dashboard.categoryC],
   ];
+  const dotX = L.donutX + L.donutW * (rtl ? 0.44 : 0.56);
+  const legendTextX = rtl ? L.donutX + 28 : dotX + 22;
+  const legendTextW = rtl ? dotX - 22 - (L.donutX + 28) : L.donutX + L.donutW - 28 - legendTextX;
   legend.forEach(([color, label], i) => {
     const ly = L.row2Y + 100 + i * 46;
     g.fillStyle = color;
     g.beginPath();
-    g.arc(L.donutX + L.donutW * 0.56, ly, 8, 0, Math.PI * 2);
+    g.arc(dotX, ly, 8, 0, Math.PI * 2);
     g.fill();
     g.fillStyle = MUTED;
     g.font = font(f, 500, 28);
-    g.fillText(label, L.donutX + L.donutW * 0.56 + 22, ly + 8);
+    drawInBox(g, label, legendTextX, legendTextW, ly + 8, rtl);
   });
 
   // bars + spark row
@@ -699,14 +711,14 @@ export function createDashboardScreen(f: UiFont): DashboardScreen {
   g.fill();
   g.fillStyle = INK;
   g.font = font(f, 700, 38);
-  g.fillText("Top channels", L.padL + 28, L.row3Y + 42);
+  drawInBox(g, copy.dashboard.topChannels, L.padL + 28, L.barsW - 56, L.row3Y + 42, rtl);
 
   g.fillStyle = "rgba(255,255,255,0.035)";
   rr(g, L.sparkX, L.row3Y, L.sparkW, L.row3H, 24);
   g.fill();
   g.fillStyle = INK;
   g.font = font(f, 700, 38);
-  g.fillText("Forecast", L.sparkX + 24, L.row3Y + 42);
+  drawInBox(g, copy.dashboard.forecast, L.sparkX + 24, L.sparkW - 48, L.row3Y + 42, rtl);
 
   drawChartGhosts(g, L);
   dither(g, W, H, 1.6);
@@ -723,7 +735,7 @@ export function createDashboardScreen(f: UiFont): DashboardScreen {
         const v = Math.round(k.target * easeOut(stagger(p.kpi, i, KPIS.length, 0.5)));
         lg.fillStyle = INK;
         lg.font = font(f, 700, 56);
-        lg.fillText(`${k.prefix}${v}${k.suffix}`, kx + 28, L.kpiY + 104);
+        drawInBox(lg, `${k.prefix}${v}${k.suffix}`, kx + 28, L.kpiW - 56, L.kpiY + 104, rtl);
       });
       trendLive(lg, L.trend, p.bars);
       donutLive(lg, L.donut.cx, L.donut.cy, L.donut.r, p.donut);
@@ -734,8 +746,8 @@ export function createDashboardScreen(f: UiFont): DashboardScreen {
 }
 
 /** The fully populated screen, for static (reduced-motion) use. */
-export function drawDashboardScreen(f: UiFont): HTMLCanvasElement {
-  const d = createDashboardScreen(f);
+export function drawDashboardScreen(f: UiFont, copy: DataCopy): HTMLCanvasElement {
+  const d = createDashboardScreen(f, copy);
   d.render(DASH_FULL);
   return d.canvas;
 }

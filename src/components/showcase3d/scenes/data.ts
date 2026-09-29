@@ -36,6 +36,7 @@ import {
 } from "./dataUi";
 import type { UiFont } from "../uiFont";
 import type { ShowcaseScene } from "./types";
+import type { Translations } from "@/lib/translations";
 
 /**
  * SCENE 2 - DATA & ANALYTICS. STATIC look-dev checkpoint (no animation yet):
@@ -77,8 +78,6 @@ const VIOLET: [number, number, number] = [0.56, 0.36, 0.93];
 
 interface SourceSpec {
   kind: SourceKind;
-  title: string;
-  subtitle: string;
   accent: string;
   pos: [number, number, number];
   rot: [number, number, number];
@@ -87,17 +86,19 @@ interface SourceSpec {
 
 // ONE left-hand source family: five separate floating cards reading top to
 // bottom (Excel -> Databases -> Cloud -> PDF -> APIs), with a visible gap
-// between each pair and only gentle x/z/roll variation for depth.
+// between each pair and only gentle x/z/roll variation for depth. Title/
+// subtitle come from copy.data.sources.
 const SOURCE_CARD_W = 2.95;
 const SOURCE_CARD_H = 1.84;
+const SOURCE_KEYS = ["spreadsheet", "database", "cloud", "document", "api"] as const;
 const SOURCES: SourceSpec[] = [
   // vertical pitch 1.95 with a ~0.88 scale leaves a clear ~0.35-unit gap
   // between every pair of cards (five separate floating cards, not a stack)
-  { kind: "spreadsheet", title: "Excel Files", subtitle: "Spreadsheets", accent: "#34d399", pos: [-9.0, 3.8, 0.9], rot: [0.03, -0.2, 0.05], scale: 0.88 },
-  { kind: "database", title: "Databases", subtitle: "ERP · CRM · SQL", accent: "#60a5fa", pos: [-9.28, 1.85, -0.2], rot: [0.02, -0.13, -0.03], scale: 0.88 },
-  { kind: "cloud", title: "Cloud Apps", subtitle: "Drive · SharePoint", accent: "#38d6ee", pos: [-9.13, -0.1, 0.6], rot: [0.015, -0.24, 0.04], scale: 0.88 },
-  { kind: "document", title: "PDF Documents", subtitle: "Reports · Invoices", accent: "#fb923c", pos: [-9.2, -2.05, -0.3], rot: [0.01, -0.15, -0.045], scale: 0.88 },
-  { kind: "api", title: "APIs", subtitle: "Third-party systems", accent: "#818cf8", pos: [-9.05, -4.0, 0.7], rot: [0.01, -0.18, 0.03], scale: 0.88 },
+  { kind: "spreadsheet", accent: "#34d399", pos: [-9.0, 3.8, 0.9], rot: [0.03, -0.2, 0.05], scale: 0.88 },
+  { kind: "database", accent: "#60a5fa", pos: [-9.28, 1.85, -0.2], rot: [0.02, -0.13, -0.03], scale: 0.88 },
+  { kind: "cloud", accent: "#38d6ee", pos: [-9.13, -0.1, 0.6], rot: [0.015, -0.24, 0.04], scale: 0.88 },
+  { kind: "document", accent: "#fb923c", pos: [-9.2, -2.05, -0.3], rot: [0.01, -0.15, -0.045], scale: 0.88 },
+  { kind: "api", accent: "#818cf8", pos: [-9.05, -4.0, 0.7], rot: [0.01, -0.18, 0.03], scale: 0.88 },
 ];
 
 /**
@@ -121,8 +122,6 @@ const PROC_ROT: [number, number, number] = [0.012, -0.09, 0.012];
 
 interface OutputSpec {
   kind: OutputKind;
-  title: string;
-  subtitle: string;
   accent: string;
   pos: [number, number, number];
   rot: [number, number, number];
@@ -130,27 +129,30 @@ interface OutputSpec {
 
 // One coherent output family on the right, mirroring AI Agents' result
 // cluster: same bigger card size as the sources now (section 10) so left and
-// right read as comparable visual weight.
+// right read as comparable visual weight. Title/subtitle come from
+// copy.data.outputs.
 // Scaled to ~77% (4.1 -> 3.16, 2.56 -> 1.97) and pulled in toward centre
 // (~75% of the previous x/y spread), matching the sources' treatment.
 const OUTPUT_CARD_W = 3.16;
 const OUTPUT_CARD_H = 1.97;
+const OUTPUT_KEYS = ["insights", "dashboards", "reports"] as const;
 // x shifted substantially further right (final layout pass, section 8/9):
 // same reasoning as the sources - card scale LOCKED, position only.
 const OUTPUTS: OutputSpec[] = [
-  { kind: "insights", title: "Business Insights", subtitle: "Trends · Forecasts", accent: "#a78bfa", pos: [9.1, 1.9, -0.55], rot: [0.012, 0.24, -0.03] },
-  { kind: "dashboards", title: "Interactive Dashboards", subtitle: "Clear · Customizable", accent: "#60a5fa", pos: [8.84, 0.1, -0.7], rot: [0.01, 0.27, -0.035] },
-  { kind: "reports", title: "Automated Reports", subtitle: "Scheduled · On-demand", accent: "#38d6ee", pos: [9.1, -1.78, -0.65], rot: [0.008, 0.25, -0.03] },
+  { kind: "insights", accent: "#a78bfa", pos: [9.1, 1.9, -0.55], rot: [0.012, 0.24, -0.03] },
+  { kind: "dashboards", accent: "#60a5fa", pos: [8.84, 0.1, -0.7], rot: [0.01, 0.27, -0.035] },
+  { kind: "reports", accent: "#38d6ee", pos: [9.1, -1.78, -0.65], rot: [0.008, 0.25, -0.03] },
 ];
 
-export function buildDataScene(kit: ShowcaseKit, font: UiFont, reducedMotion: boolean): Promise<ShowcaseScene> {
+export function buildDataScene(kit: ShowcaseKit, font: UiFont, reducedMotion: boolean, t: Translations["showcase"]): Promise<ShowcaseScene> {
+  const copy = t.data;
   const group = new Group();
   const lights: Light[] = [];
   const owned: { dispose(): void }[] = [];
   const own = <T extends { dispose(): void }>(x: T): T => (owned.push(x), x);
 
   // ── centre: the analytics dashboard ──
-  const dashUi = createDashboardScreen(font);
+  const dashUi = createDashboardScreen(font, copy);
   const dashProgress: DashProgress = { ...(reducedMotion ? DASH_FULL : DASH_EMPTY) };
   dashUi.render(dashProgress);
   const dashTex = own(canvasTexture(dashUi.canvas));
@@ -164,8 +166,9 @@ export function buildDataScene(kit: ShowcaseKit, font: UiFont, reducedMotion: bo
 
   // ── left: fragmented raw business sources ──
   const sourceCards: CardBuilt[] = [];
-  SOURCES.forEach((spec) => {
-    const tex = own(canvasTexture(drawSourceCard(font, spec.kind, spec.title, spec.subtitle, spec.accent)));
+  SOURCES.forEach((spec, i) => {
+    const sc = copy.sources[SOURCE_KEYS[i]];
+    const tex = own(canvasTexture(drawSourceCard(font, spec.kind, sc.title, sc.subtitle, spec.accent)));
     const card = buildCard(kit, tex, SOURCE_CARD_W, SOURCE_CARD_H, 0.34, 0.1);
     owned.push(...card.owned);
     card.group.position.set(...spec.pos);
@@ -176,7 +179,7 @@ export function buildDataScene(kit: ShowcaseKit, font: UiFont, reducedMotion: bo
   });
 
   // ── one processing module: Extract/Clean/Transform/Unify as internal rows of a single glass shell (section D) ──
-  const procTex = own(canvasTexture(drawProcessingModule(font)));
+  const procTex = own(canvasTexture(drawProcessingModule(font, copy)));
   const procModule = buildCard(kit, procTex, PROC_MODULE_W, PROC_MODULE_H, 0.32, 0.14);
   owned.push(...procModule.owned);
   procModule.group.position.set(...PROC_POS);
@@ -185,8 +188,9 @@ export function buildDataScene(kit: ShowcaseKit, font: UiFont, reducedMotion: bo
 
   // ── right: organised business outputs ──
   const outputCards: CardBuilt[] = [];
-  OUTPUTS.forEach((spec) => {
-    const tex = own(canvasTexture(drawOutputCard(font, spec.kind, spec.title, spec.subtitle, spec.accent)));
+  OUTPUTS.forEach((spec, i) => {
+    const oc = copy.outputs[OUTPUT_KEYS[i]];
+    const tex = own(canvasTexture(drawOutputCard(font, spec.kind, oc.title, oc.subtitle, spec.accent)));
     const card = buildCard(kit, tex, OUTPUT_CARD_W, OUTPUT_CARD_H, 0.34, 0.1);
     owned.push(...card.owned);
     card.group.position.set(...spec.pos);

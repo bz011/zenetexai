@@ -22,6 +22,7 @@ import { buildMlScene } from "./scenes/ml";
 import type { ShowcaseScene } from "./scenes/types";
 import type { ShowcaseServiceId } from "./showcaseParam";
 import { loadUiFont, type UiFont } from "./uiFont";
+import type { Lang, Translations } from "@/lib/translations";
 
 /** The approved cinematic plate: a real photo/render, used as the shared, baked environment behind every scene. */
 const BACKGROUND_PLATE = "/showcase/plate-agents.webp";
@@ -69,6 +70,9 @@ export interface MountOptions {
   reducedMotion: boolean;
   /** touch swipe between services (horizontal swipes only; vertical scrolling is untouched) */
   onSwipe?: (dir: 1 | -1) => void;
+  /** current site language - decides the canvas font family/direction and which copy each scene draws */
+  lang: Lang;
+  copy: Translations["showcase"];
 }
 
 const smoothstep = (t: number): number => {
@@ -82,7 +86,7 @@ export default async function mountShowcase(
   opts: MountOptions,
   onLost: () => void,
 ): Promise<ShowcaseHandle> {
-  const font = await loadUiFont();
+  const font = await loadUiFont(opts.lang);
   const coarse = window.matchMedia("(pointer: coarse)").matches;
 
   const canvas = document.createElement("canvas");
@@ -154,14 +158,14 @@ export default async function mountShowcase(
   function ensure(id: ShowcaseServiceId): Promise<ShowcaseScene> | null {
     const have = built.get(id);
     if (have) return have;
-    type Builder = (kit: ShowcaseKit, font: UiFont, reducedMotion: boolean) => Promise<ShowcaseScene>;
+    type Builder = (kit: ShowcaseKit, font: UiFont, reducedMotion: boolean, copy: Translations["showcase"]) => Promise<ShowcaseScene>;
     let builder: Builder | null = null;
     if (id === "agents") builder = buildAgentsScene;
     else if (id === "data") builder = buildDataScene;
     else if (id === "ml") builder = buildMlScene;
     else if (id === "academy") builder = buildAcademyScene;
     if (!builder) return null;
-    const p = builder(kit, font, opts.reducedMotion).then((s) => {
+    const p = builder(kit, font, opts.reducedMotion, opts.copy).then((s) => {
       s.group.visible = false;
       scene.add(s.group);
       s.lights.forEach((l) => {

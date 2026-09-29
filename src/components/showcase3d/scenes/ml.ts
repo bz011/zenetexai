@@ -17,6 +17,7 @@ import { buildCard } from "../devices";
 import { canvasTexture, lightPoolTexture, softShadowTexture, vignetteTexture, makeCanvas, type ShowcaseKit } from "../kit";
 import { mix, tapeGeometry } from "../../core3d/geometry";
 import type { UiFont } from "../uiFont";
+import type { Translations } from "@/lib/translations";
 import { buildMlCore, CORE_H, CORE_W } from "./mlCore";
 import { drawGlowFrame } from "./agentsUi";
 import {
@@ -104,7 +105,8 @@ function beamTexture() {
   return canvasTexture(c, false);
 }
 
-export function buildMlScene(kit: ShowcaseKit, font: UiFont, reducedMotion: boolean): Promise<ShowcaseScene> {
+export function buildMlScene(kit: ShowcaseKit, font: UiFont, reducedMotion: boolean, t: Translations["showcase"]): Promise<ShowcaseScene> {
+  const copy = t.ml;
   const group = new Group();
   const lights: Light[] = [];
   const owned: { dispose(): void }[] = [];
@@ -112,7 +114,7 @@ export function buildMlScene(kit: ShowcaseKit, font: UiFont, reducedMotion: bool
 
   // ── left: historical data ──
   // Animated, the scene starts dormant and the cycle brings it to life; reduced motion paints the finished frame once.
-  const hist = createHistoricalCard(font);
+  const hist = createHistoricalCard(font, copy);
   const histProgress: HistProgress = { ...(reducedMotion ? HIST_FULL : HIST_EMPTY) };
   hist.render(histProgress);
   const histTex = own(canvasTexture(hist.canvas));
@@ -131,7 +133,7 @@ export function buildMlScene(kit: ShowcaseKit, font: UiFont, reducedMotion: bool
   group.add(core.group);
 
   // ── right: predictions ──
-  const pred = createPredictionPanel(font);
+  const pred = createPredictionPanel(font, copy);
   const predProgress: PredProgress = { ...(reducedMotion ? PRED_FULL : PRED_EMPTY) };
   pred.render(predProgress);
   const predTex = own(canvasTexture(pred.canvas));

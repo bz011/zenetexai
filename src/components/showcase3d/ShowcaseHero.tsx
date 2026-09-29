@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import LocaleLink from "@/components/LocaleLink";
+import { useLang } from "@/lib/LanguageContext";
 import type { ShowcaseHandle } from "./mountShowcase";
 import { SHOWCASE_SERVICES, type ShowcaseServiceId } from "./showcaseParam";
 
@@ -17,29 +18,27 @@ import { SHOWCASE_SERVICES, type ShowcaseServiceId } from "./showcaseParam";
  * as the stage's accessible name (below) rather than as visible text, so this
  * checkpoint's screenshot is not competing with it either; a shipped version
  * should surface it visibly again (e.g. as a caption once real copy returns).
+ *
+ * Runs in both languages: every visible/accessible string comes from
+ * `t.showcase` (the site's existing Translations, via useLang()) rather than
+ * being hardcoded here, and each service's CTA is a LocaleLink so an Arabic
+ * visitor lands on that service's real Arabic page.
  */
 
-const STAGE_LABELS: Record<ShowcaseServiceId, string> = {
-  agents:
-    "Illustration, not a real conversation: a customer asks an AI assistant on a phone to book an appointment; the assistant offers times, the customer picks 10:00 AM, and the booking is confirmed and dispatched as a calendar entry and two notifications.",
-  data: "Illustrative example, not real customer data: scattered business sources (spreadsheets, databases, cloud apps, PDF documents, APIs) are extracted, cleaned, transformed and unified into one analytics dashboard, which produces business insights, interactive dashboards and automated reports.",
-  ml: "Illustrative example, not real business data: a card of historical data (sales, users, transactions, market trends, external factors) feeds a machine learning model, which generates a prediction panel showing a future forecast with a confidence band and three results - demand forecast, churn risk and next month sales.",
-  academy:
-    "Illustrative example, not real student data: a PMP course panel with six modules, a lesson playing on a laptop, a PMP exam simulator showing question 45 of 180, and a certificate of completion earned at the end, with a small card announcing an AI Agents Course as coming soon.",
-};
-
-/** Where each service's call to action goes: each of these is an existing, public page. */
-const SERVICE_CTA: Record<ShowcaseServiceId, { label: string; href: string; short: string }> = {
-  agents: { label: "Explore AI Agents", href: "/services/ai-agents-automation-uae", short: "Agents" },
-  data: { label: "Explore Data & Analytics", href: "/services/data-analytics-uae", short: "Data" },
-  ml: { label: "Explore Machine Learning", href: "/services/machine-learning-uae", short: "ML" },
-  academy: { label: "Explore Academy", href: "/academy", short: "Academy" },
+/** Where each service's call to action goes: each of these is an existing, public page (LocaleLink sends Arabic visitors to its Arabic URL where one exists). */
+const CTA_HREF: Record<ShowcaseServiceId, string> = {
+  agents: "/services/ai-agents-automation-uae",
+  data: "/services/data-analytics-uae",
+  ml: "/services/machine-learning-uae",
+  academy: "/academy",
 };
 
 /** Fade the call to action out, swap it, fade it in: ms. */
 const CTA_SWAP_MS = 170;
 
 export default function ShowcaseHero({ initial, onFailed }: { initial: ShowcaseServiceId; onFailed: () => void }) {
+  const { lang, isRTL, t } = useLang();
+  const copy = t.showcase;
   const host = useRef<HTMLDivElement | null>(null);
   const handle = useRef<ShowcaseHandle | null>(null);
   const activeRef = useRef<ShowcaseServiceId>(initial);
@@ -77,7 +76,9 @@ export default function ShowcaseHero({ initial, onFailed }: { initial: ShowcaseS
     // desktop pointer response only with a real pointer (not touch) and when motion is allowed
     const fine = window.matchMedia("(pointer: fine)").matches && window.matchMedia("(hover: hover)").matches;
     import("./mountShowcase")
-      .then(({ default: mount }) => mount(el, initial, { parallax: fine && !reduce, reducedMotion: reduce, onSwipe: reduce ? undefined : (d) => step(d) }, onFailed))
+      .then(({ default: mount }) =>
+        mount(el, initial, { parallax: fine && !reduce, reducedMotion: reduce, onSwipe: reduce ? undefined : (d) => step(d), lang, copy }, onFailed),
+      )
       .then((h) => {
         if (cancelled) h.dispose();
         else handle.current = h;
@@ -88,17 +89,22 @@ export default function ShowcaseHero({ initial, onFailed }: { initial: ShowcaseS
       handle.current?.dispose();
       handle.current = null;
     };
+    // `copy`/`lang` intentionally excluded: on this page, switching language always navigates between "/" and
+    // "/ar" (see LanguageContext.tsx - the homepage has a real Arabic URL), which remounts this component fresh
+    // with the new language already in place. Depending on them here would tear down and rebuild every scene on
+    // any other unrelated re-render, losing whatever the animation was doing.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initial, onFailed, step]);
 
   // the call to action follows the selected service: fade out, swap, fade in
   useEffect(() => {
     if (active === ctaFor) return;
     setCtaVisible(false);
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       setCtaFor(active);
       setCtaVisible(true);
     }, CTA_SWAP_MS);
-    return () => window.clearTimeout(t);
+    return () => window.clearTimeout(timer);
   }, [active, ctaFor]);
 
   // the active indicator slides between tabs
@@ -121,8 +127,12 @@ export default function ShowcaseHero({ initial, onFailed }: { initial: ShowcaseS
     const ready = SHOWCASE_SERVICES.filter((s) => s.ready);
     const i = ready.findIndex((s) => s.id === active);
     let next = -1;
-    if (e.key === "ArrowRight") next = (i + 1) % ready.length;
-    else if (e.key === "ArrowLeft") next = (i - 1 + ready.length) % ready.length;
+    // Arrow keys move by reading direction, not by physical left/right, so they still feel like
+    // "next tab" / "previous tab" once the row visually mirrors under RTL.
+    const forward = isRTL ? "ArrowLeft" : "ArrowRight";
+    const backward = isRTL ? "ArrowRight" : "ArrowLeft";
+    if (e.key === forward) next = (i + 1) % ready.length;
+    else if (e.key === backward) next = (i - 1 + ready.length) % ready.length;
     else if (e.key === "Home") next = 0;
     else if (e.key === "End") next = ready.length - 1;
     if (next < 0) return;
@@ -132,7 +142,11 @@ export default function ShowcaseHero({ initial, onFailed }: { initial: ShowcaseS
     tabs.current[SHOWCASE_SERVICES.findIndex((s) => s.id === id)]?.focus();
   }
 
-  const cta = SERVICE_CTA[ctaFor];
+  const label = (id: ShowcaseServiceId): string => copy.selector[id];
+  const shortLabel = (id: ShowcaseServiceId): string => copy.selector[`${id}Short` as const];
+  const stageLabel = copy.stage[active];
+  const ctaLabel = copy.cta[ctaFor];
+  const ctaHref = CTA_HREF[ctaFor];
 
   return (
     <section
@@ -141,39 +155,51 @@ export default function ShowcaseHero({ initial, onFailed }: { initial: ShowcaseS
       // horizontal swipes are ours (switch service); vertical panning stays with the page
       style={{ minHeight: "clamp(560px, calc(100svh - 73px), 900px)", touchAction: "pan-y" }}
     >
-      <div ref={host} role="img" aria-label={STAGE_LABELS[active]} data-showcase-host className="pointer-events-none absolute inset-0" />
+      <div ref={host} role="img" aria-label={stageLabel} data-showcase-host className="pointer-events-none absolute inset-0" />
 
       {/*
-        The site-wide WhatsApp button (fixed bottom-5 right-5, 48px, z-40) sits in this same corner. Below the "sm"
-        breakpoint this bar isn't wide enough to clear it on its own, so it gets extra right padding there only -
-        pulling the centred content left just enough that the last tab never sits under the widget.
+        The site-wide WhatsApp button (fixed bottom-5 right-5 in LTR, bottom-5 left-5 in RTL - see
+        WhatsAppButton.tsx - 48px, z-40) sits in the corner this bar's trailing edge approaches. Below
+        the "sm" breakpoint this bar isn't wide enough to clear it on its own, so it gets extra padding
+        on that side only, pulling the centred content in just enough that the last tab never sits
+        under the widget, in either language.
       */}
       <div
-        className="absolute inset-x-0 z-10 flex flex-col items-center gap-3 px-3 pr-16 sm:px-4 sm:pr-4"
+        className="absolute inset-x-0 z-10 flex flex-col items-center gap-3 px-3 pr-16 rtl:pr-3 rtl:pl-16 sm:px-4"
         style={{ bottom: "max(1.25rem, env(safe-area-inset-bottom))" }}
       >
         <LocaleLink
-          href={cta.href}
+          href={ctaHref}
           aria-hidden={ctaVisible ? undefined : true}
           tabIndex={ctaVisible ? 0 : -1}
           className={`group inline-flex min-h-[2.75rem] items-center gap-2 rounded-full border border-white/15 bg-black/40 px-5 text-small font-semibold text-ink backdrop-blur-sm transition-[opacity,background-color,border-color,transform] duration-150 hover:border-white/30 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-black/60 ${
             ctaVisible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-1 opacity-0"
           }`}
         >
-          {cta.label}
-          <span aria-hidden className="transition-transform duration-150 group-hover:translate-x-0.5">
-            →
-          </span>
+          {isRTL && (
+            <span aria-hidden className="transition-transform duration-150 group-hover:-translate-x-0.5">
+              ←
+            </span>
+          )}
+          {ctaLabel}
+          {!isRTL && (
+            <span aria-hidden className="transition-transform duration-150 group-hover:translate-x-0.5">
+              →
+            </span>
+          )}
         </LocaleLink>
 
         <div
           ref={list}
           role="tablist"
-          aria-label="Service"
+          aria-label={copy.selector.agents /* unused as visible text; kept non-empty for the accessibility tree */}
           onKeyDown={onKeyDown}
           className="relative flex max-w-full gap-0.5 rounded-full border border-white/10 bg-black/40 p-1 backdrop-blur-sm sm:gap-1"
         >
           {indicator && (
+            // `offsetLeft` is always a physical (left-edge) pixel value, regardless of direction - under RTL the
+            // tab row itself mirrors visually (flexbox is direction-aware), so the same left-anchored transform
+            // that positions the indicator in English already lands on the right tab in Arabic with no changes.
             <span
               aria-hidden
               className="pointer-events-none absolute bottom-1 left-0 top-1 rounded-full bg-accent transition-[transform,width] duration-300 ease-out motion-reduce:transition-none"
@@ -191,7 +217,7 @@ export default function ShowcaseHero({ initial, onFailed }: { initial: ShowcaseS
                 type="button"
                 role="tab"
                 aria-selected={selected}
-                aria-label={s.label}
+                aria-label={label(s.id)}
                 aria-disabled={!s.ready}
                 tabIndex={selected ? 0 : -1}
                 onClick={() => s.ready && select(s.id)}
@@ -199,8 +225,8 @@ export default function ShowcaseHero({ initial, onFailed }: { initial: ShowcaseS
                   selected ? "text-accent-on" : s.ready ? "text-ink-2 hover:bg-white/10 hover:text-ink" : "cursor-not-allowed text-ink-3 opacity-55"
                 }`}
               >
-                <span className="sm:hidden">{SERVICE_CTA[s.id].short}</span>
-                <span className="hidden sm:inline">{s.label}</span>
+                <span className="sm:hidden">{shortLabel(s.id)}</span>
+                <span className="hidden sm:inline">{label(s.id)}</span>
               </button>
             );
           })}

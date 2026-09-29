@@ -15,6 +15,7 @@ interface AcademyProgram { id: string; title: string; tag: string; status: strin
 interface FounderInfo { name: string; titles: string[]; bio: string }
 interface InquiryType { value: string; label: string }
 interface FaqItem { q: string; a: string }
+interface ShowcaseCard { title: string; subtitle: string }
 
 // ─── Translation shape ────────────────────────────────────────────────────────
 
@@ -348,6 +349,72 @@ export interface Translations {
     valid_heading: string; not_found_heading: string; not_found_body: string;
     student_label: string; course_label: string; issued_label: string; certificate_number_label: string;
     academy_name: string;
+  };
+  /**
+   * The homepage 3D showcase (?showcase=1). Every canvas-drawn string across
+   * the four scenes, plus the DOM selector/CTA/accessible stage description.
+   * ZentexAI and PMP stay in Latin script in both languages, matching the
+   * rest of the site's Arabic copy (see e.g. aiAgentsAutomation, academy).
+   */
+  showcase: {
+    selector: { agents: string; agentsShort: string; data: string; dataShort: string; ml: string; mlShort: string; academy: string; academyShort: string };
+    cta: { agents: string; data: string; ml: string; academy: string };
+    /** the stage's accessible name - one descriptive sentence per scene, not shown as visible text */
+    stage: { agents: string; data: string; ml: string; academy: string };
+    agents: {
+      inputs: { messages: ShowcaseCard; email: ShowcaseCard; website: ShowcaseCard; documents: ShowcaseCard };
+      results: { confirmationSent: ShowcaseCard; customerNotified: ShowcaseCard };
+      assistantName: string;
+      /** header status line, in story order (three "Online" resting points included) */
+      status: { online: string; readingRequest: string; searchingKnowledge: string; verifyingAvailability: string; bookingAppointment: string };
+      composerPlaceholder: string;
+      assistantReply: string;
+      customerRequest: string;
+      /** the time the demo books - reused for the chip, the customer's reply bubble and the calendar */
+      bookedTime: string;
+      timeChips: [string, string, string];
+      bookingYourAppointment: string;
+      verifyingWithCalendar: string;
+      addingToCalendar: string;
+      youreBooked: string;
+      confirmationOnItsWay: string;
+      calendar: { tomorrow: string; calendarLabel: string; available: string; appointmentBooked: string; confirmationSent: string };
+    };
+    data: {
+      sources: { spreadsheet: ShowcaseCard; database: ShowcaseCard; cloud: ShowcaseCard; document: ShowcaseCard; api: ShowcaseCard };
+      outputs: { insights: ShowcaseCard; dashboards: ShowcaseCard; reports: ShowcaseCard };
+      stages: { extract: string; clean: string; transform: string; unify: string };
+      dashboard: {
+        overview: string; thisMonth: string;
+        kpi: { revenue: string; projects: string; margin: string; delivery: string };
+        revenueTrend: string; byCategory: string; categoryA: string; categoryB: string; categoryC: string;
+        topChannels: string; forecast: string;
+      };
+    };
+    ml: {
+      historicalData: string; historicalTags: string; historicalTags2: string;
+      predictions: string; nextSixMonths: string; past: string; futurePrediction: string;
+      kpi: {
+        demandForecast: [string, string]; demandCaption: string;
+        churnRisk: [string, string]; churnCaption: string;
+        nextMonthSales: [string, string]; nextMonthCaption: string;
+      };
+    };
+    academy: {
+      pmpCourse: string;
+      modules: [ShowcaseCard, ShowcaseCard, ShowcaseCard, ShowcaseCard, ShowcaseCard, ShowcaseCard];
+      progress: { of6: string };
+      lessonBreadcrumb: string;
+      lessonTitle: string;
+      lessonSub: string;
+      sprint: string;
+      lessonStages: [string, string, string];
+      lessonComplete: string;
+      lessonFooter: string;
+      simulator: { title: string; questionOf: string; submit: string; correct: string };
+      certificate: { title1: string; title2: string };
+      aiCourse: { title: string; line1: string; line2: string; comingSoon: string };
+    };
   };
 }
 
@@ -1234,6 +1301,113 @@ const en: Translations = {
     certificate_number_label: "Certificate Number",
     academy_name: "ZentexAI Academy",
   },
+
+  // ── Homepage 3D showcase ─────────────────────────────────────────────────────
+  showcase: {
+    selector: {
+      agents: "AI Agents", agentsShort: "Agents",
+      data: "Data & Analytics", dataShort: "Data",
+      ml: "Machine Learning", mlShort: "ML",
+      academy: "Academy", academyShort: "Academy",
+    },
+    cta: {
+      agents: "Explore AI Agents",
+      data: "Explore Data & Analytics",
+      ml: "Explore Machine Learning",
+      academy: "Explore Academy",
+    },
+    stage: {
+      agents:
+        "Illustration, not a real conversation: a customer asks an AI assistant on a phone to book an appointment; the assistant offers times, the customer picks 10:00 AM, and the booking is confirmed and dispatched as a calendar entry and two notifications.",
+      data: "Illustrative example, not real customer data: scattered business sources (spreadsheets, databases, cloud apps, PDF documents, APIs) are extracted, cleaned, transformed and unified into one analytics dashboard, which produces business insights, interactive dashboards and automated reports.",
+      ml: "Illustrative example, not real business data: a card of historical data (sales, users, transactions, market trends, external factors) feeds a machine learning model, which generates a prediction panel showing a future forecast with a confidence band and three results - demand forecast, churn risk and next month sales.",
+      academy:
+        "Illustrative example, not real student data: a PMP course panel with six modules, a lesson playing on a laptop, a PMP exam simulator showing question 45 of 180, and a certificate of completion earned at the end, with a small card announcing an AI Agents Course as coming soon.",
+    },
+    agents: {
+      inputs: {
+        messages: { title: "Messages", subtitle: "Customer request" },
+        email: { title: "Email", subtitle: "New inquiry" },
+        website: { title: "Website", subtitle: "Booking request" },
+        documents: { title: "Documents", subtitle: "Knowledge" },
+      },
+      results: {
+        confirmationSent: { title: "Confirmation sent", subtitle: "Email + message" },
+        customerNotified: { title: "Customer notified", subtitle: "Reminder scheduled" },
+      },
+      assistantName: "ZentexAI Assistant",
+      status: {
+        online: "Online",
+        readingRequest: "Reading request…",
+        searchingKnowledge: "Searching knowledge…",
+        verifyingAvailability: "Verifying availability…",
+        bookingAppointment: "Booking appointment…",
+      },
+      composerPlaceholder: "Type a message…",
+      assistantReply: "Of course. These times are available tomorrow:",
+      customerRequest: "I need to book an appointment.",
+      bookedTime: "10:00 AM",
+      timeChips: ["9:30 AM", "10:00 AM", "11:30 AM"],
+      bookingYourAppointment: "Booking your appointment…",
+      verifyingWithCalendar: "Verifying availability with your calendar",
+      addingToCalendar: "Adding it to your calendar",
+      youreBooked: "You're booked for 10:00 AM",
+      confirmationOnItsWay: "Tomorrow · confirmation on its way",
+      calendar: { tomorrow: "Tomorrow", calendarLabel: "Calendar", available: "Available", appointmentBooked: "Appointment booked", confirmationSent: "Confirmation sent" },
+    },
+    data: {
+      sources: {
+        spreadsheet: { title: "Excel Files", subtitle: "Spreadsheets" },
+        database: { title: "Databases", subtitle: "ERP · CRM · SQL" },
+        cloud: { title: "Cloud Apps", subtitle: "Drive · SharePoint" },
+        document: { title: "PDF Documents", subtitle: "Reports · Invoices" },
+        api: { title: "APIs", subtitle: "Third-party systems" },
+      },
+      outputs: {
+        insights: { title: "Business Insights", subtitle: "Trends · Forecasts" },
+        dashboards: { title: "Interactive Dashboards", subtitle: "Clear · Customizable" },
+        reports: { title: "Automated Reports", subtitle: "Scheduled · On-demand" },
+      },
+      stages: { extract: "Extract", clean: "Clean", transform: "Transform", unify: "Unify" },
+      dashboard: {
+        overview: "Overview", thisMonth: "This month",
+        kpi: { revenue: "Revenue", projects: "Projects", margin: "Margin", delivery: "Delivery" },
+        revenueTrend: "Revenue trend", byCategory: "By category", categoryA: "Category A", categoryB: "Category B", categoryC: "Category C",
+        topChannels: "Top channels", forecast: "Forecast",
+      },
+    },
+    ml: {
+      historicalData: "Historical Data", historicalTags: "Sales · Users · Transactions", historicalTags2: "Market Trends · External Factors",
+      predictions: "Predictions", nextSixMonths: "Next 6 Months", past: "Past", futurePrediction: "Future (Prediction)",
+      kpi: {
+        demandForecast: ["Demand", "Forecast"], demandCaption: "Expected Growth",
+        churnRisk: ["Churn", "Risk"], churnCaption: "Low Risk",
+        nextMonthSales: ["Next Month", "Sales"], nextMonthCaption: "Projected Increase",
+      },
+    },
+    academy: {
+      pmpCourse: "PMP Course",
+      modules: [
+        { title: "Module 1", subtitle: "Introduction" },
+        { title: "Module 2", subtitle: "Project Management Foundations" },
+        { title: "Module 3", subtitle: "Agile & Hybrid" },
+        { title: "Module 4", subtitle: "People" },
+        { title: "Module 5", subtitle: "Process" },
+        { title: "Module 6", subtitle: "Business Environment" },
+      ],
+      progress: { of6: "{n} of 6 complete" },
+      lessonBreadcrumb: "PMP Course  ·  Module 3  ·  Agile & Hybrid",
+      lessonTitle: "Agile & Hybrid",
+      lessonSub: "Choosing an approach that fits the work",
+      sprint: "Sprint",
+      lessonStages: ["Predictive", "Agile", "Hybrid"],
+      lessonComplete: "Lesson complete",
+      lessonFooter: "Agile & Hybrid: delivering value iteratively",
+      simulator: { title: "PMP Exam Simulator", questionOf: "Question {n} of 180", submit: "Submit", correct: "Correct" },
+      certificate: { title1: "Certificate", title2: "of Completion" },
+      aiCourse: { title: "AI Agents Course", line1: "Secure, Production-Ready", line2: "AI Agents for Business", comingSoon: "Coming Soon" },
+    },
+  },
 };
 
 // ─── Arabic ───────────────────────────────────────────────────────────────────
@@ -2119,6 +2293,113 @@ const ar: Translations = {
     issued_label: "تاريخ الإصدار",
     certificate_number_label: "رقم الشهادة",
     academy_name: "ZentexAI Academy",
+  },
+
+  // ── Homepage 3D showcase ─────────────────────────────────────────────────────
+  showcase: {
+    selector: {
+      agents: "وكلاء الذكاء الاصطناعي", agentsShort: "الوكلاء",
+      data: "تحليل البيانات", dataShort: "البيانات",
+      ml: "تعلّم الآلة", mlShort: "تعلّم الآلة",
+      academy: "الأكاديمية", academyShort: "الأكاديمية",
+    },
+    cta: {
+      agents: "اطّلع على وكلاء الذكاء الاصطناعي",
+      data: "اطّلع على تحليل البيانات",
+      ml: "اطّلع على تعلّم الآلة",
+      academy: "اطّلع على الأكاديمية",
+    },
+    stage: {
+      agents:
+        "توضيح تخيلي وليس محادثة حقيقية: يطلب عميل من مساعد ذكاء اصطناعي على الهاتف حجز موعد؛ يقترح المساعد أوقاتاً متاحة، يختار العميل الساعة 10:00 صباحاً، ويُؤكَّد الحجز ويُرسَل كموعد في التقويم مع إشعارين.",
+      data: "مثال توضيحي وليس بيانات عملاء حقيقية: مصادر أعمال متفرقة (جداول بيانات، قواعد بيانات، تطبيقات سحابية، مستندات PDF، وواجهات برمجية) تُستخرج وتُنظَّف وتُحوَّل وتُوحَّد في لوحة تحليلات واحدة، تُنتج رؤى أعمال ولوحات تفاعلية وتقارير آلية.",
+      ml: "مثال توضيحي وليس بيانات أعمال حقيقية: بطاقة بيانات تاريخية (المبيعات، المستخدمون، المعاملات، اتجاهات السوق، وعوامل خارجية) تُغذّي نموذج تعلّم آلي، يُنتج لوحة تنبؤ تعرض توقعاً مستقبلياً مع نطاق ثقة وثلاث نتائج: توقع الطلب، ومخاطر فقدان العملاء، ومبيعات الشهر القادم.",
+      academy:
+        "مثال توضيحي وليس بيانات طلاب حقيقية: لوحة دورة PMP بست وحدات، درس يُعرض على حاسوب محمول، محاكي امتحان PMP يعرض السؤال 45 من 180، وشهادة إتمام تُمنح في النهاية، مع بطاقة صغيرة تُعلن عن دورة وكلاء الذكاء الاصطناعي قريباً.",
+    },
+    agents: {
+      inputs: {
+        messages: { title: "الرسائل", subtitle: "طلب العميل" },
+        email: { title: "البريد الإلكتروني", subtitle: "استفسار جديد" },
+        website: { title: "الموقع الإلكتروني", subtitle: "طلب حجز" },
+        documents: { title: "المستندات", subtitle: "المعرفة" },
+      },
+      results: {
+        confirmationSent: { title: "تم إرسال التأكيد", subtitle: "بريد إلكتروني + رسالة" },
+        customerNotified: { title: "تم إشعار العميل", subtitle: "تذكير مجدول" },
+      },
+      assistantName: "مساعد ZentexAI",
+      status: {
+        online: "متصل",
+        readingRequest: "جارٍ قراءة الطلب…",
+        searchingKnowledge: "جارٍ البحث في قاعدة المعرفة…",
+        verifyingAvailability: "التحقق من التوفر…",
+        bookingAppointment: "جارٍ حجز الموعد…",
+      },
+      composerPlaceholder: "اكتب رسالة…",
+      assistantReply: "بالتأكيد، هذه الأوقات متاحة غداً:",
+      customerRequest: "أحتاج إلى حجز موعد.",
+      bookedTime: "10:00 ص",
+      timeChips: ["9:30 ص", "10:00 ص", "11:30 ص"],
+      bookingYourAppointment: "جارٍ حجز موعدك…",
+      verifyingWithCalendar: "التحقق من التوفر في تقويمك",
+      addingToCalendar: "إضافته إلى تقويمك",
+      youreBooked: "تم حجز موعدك للساعة 10:00 صباحاً",
+      confirmationOnItsWay: "غداً · سيصلك التأكيد قريباً",
+      calendar: { tomorrow: "غداً", calendarLabel: "التقويم", available: "متاح", appointmentBooked: "تم حجز الموعد", confirmationSent: "تم إرسال التأكيد" },
+    },
+    data: {
+      sources: {
+        spreadsheet: { title: "ملفات إكسل", subtitle: "جداول بيانات" },
+        database: { title: "قواعد البيانات", subtitle: "ERP · CRM · SQL" },
+        cloud: { title: "تطبيقات سحابية", subtitle: "Drive · SharePoint" },
+        document: { title: "مستندات PDF", subtitle: "تقارير · فواتير" },
+        api: { title: "واجهات API", subtitle: "أنظمة خارجية" },
+      },
+      outputs: {
+        insights: { title: "رؤى الأعمال", subtitle: "اتجاهات · توقعات" },
+        dashboards: { title: "لوحات تفاعلية", subtitle: "واضحة · قابلة للتخصيص" },
+        reports: { title: "تقارير آلية", subtitle: "مجدولة · عند الطلب" },
+      },
+      stages: { extract: "استخراج", clean: "تنظيف", transform: "تحويل", unify: "توحيد" },
+      dashboard: {
+        overview: "نظرة عامة", thisMonth: "هذا الشهر",
+        kpi: { revenue: "الإيرادات", projects: "المشاريع", margin: "الهامش", delivery: "التسليم" },
+        revenueTrend: "اتجاه الإيرادات", byCategory: "حسب الفئة", categoryA: "الفئة أ", categoryB: "الفئة ب", categoryC: "الفئة ج",
+        topChannels: "أهم القنوات", forecast: "التوقعات",
+      },
+    },
+    ml: {
+      historicalData: "البيانات التاريخية", historicalTags: "المبيعات · المستخدمون · المعاملات", historicalTags2: "اتجاهات السوق · عوامل خارجية",
+      predictions: "التنبؤات", nextSixMonths: "الأشهر الستة القادمة", past: "الماضي", futurePrediction: "المستقبل (تنبؤ)",
+      kpi: {
+        demandForecast: ["توقع الطلب", ""], demandCaption: "نمو متوقع",
+        churnRisk: ["مخاطر فقدان العملاء", ""], churnCaption: "منخفضة",
+        nextMonthSales: ["مبيعات الشهر القادم", ""], nextMonthCaption: "زيادة متوقعة",
+      },
+    },
+    academy: {
+      pmpCourse: "دورة PMP",
+      modules: [
+        { title: "الوحدة 1", subtitle: "مقدمة" },
+        { title: "الوحدة 2", subtitle: "أساسيات إدارة المشاريع" },
+        { title: "الوحدة 3", subtitle: "Agile & Hybrid" },
+        { title: "الوحدة 4", subtitle: "الأشخاص" },
+        { title: "الوحدة 5", subtitle: "العمليات" },
+        { title: "الوحدة 6", subtitle: "بيئة الأعمال" },
+      ],
+      progress: { of6: "تم إكمال {n} من 6" },
+      lessonBreadcrumb: "دورة PMP  ·  الوحدة 3  ·  Agile & Hybrid",
+      lessonTitle: "Agile & Hybrid",
+      lessonSub: "اختيار النهج المناسب للعمل",
+      sprint: "Sprint",
+      lessonStages: ["Predictive", "Agile", "Hybrid"],
+      lessonComplete: "اكتمل الدرس",
+      lessonFooter: "Agile & Hybrid: تقديم القيمة بشكل تكراري",
+      simulator: { title: "محاكي اختبار PMP", questionOf: "السؤال {n} من 180", submit: "إرسال", correct: "إجابة صحيحة" },
+      certificate: { title1: "شهادة", title2: "إتمام" },
+      aiCourse: { title: "دورة وكلاء الذكاء الاصطناعي", line1: "آمنة وجاهزة للإنتاج", line2: "وكلاء ذكاء اصطناعي للأعمال", comingSoon: "قريباً" },
+    },
   },
 };
 

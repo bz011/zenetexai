@@ -19,6 +19,7 @@ import { canvasTexture, lightPoolTexture, makeCanvas, softShadowTexture, vignett
 import { mix, tapeGeometry } from "../../core3d/geometry";
 import { roundedPlane, roundedSlab } from "../shapes";
 import type { UiFont } from "../uiFont";
+import type { Translations } from "@/lib/translations";
 import { drawGlowFrame, drawSheen } from "./agentsUi";
 import {
   AI_H,
@@ -147,7 +148,8 @@ function deckTexture() {
   return canvasTexture(c);
 }
 
-export function buildAcademyScene(kit: ShowcaseKit, font: UiFont, reducedMotion: boolean): Promise<ShowcaseScene> {
+export function buildAcademyScene(kit: ShowcaseKit, font: UiFont, reducedMotion: boolean, t: Translations["showcase"]): Promise<ShowcaseScene> {
+  const copy = t.academy;
   // everything that is an object of the scene lives in `content`, so the whole composition can be scaled and lifted as one
   const group = new Group();
   const content = new Group();
@@ -163,7 +165,7 @@ export function buildAcademyScene(kit: ShowcaseKit, font: UiFont, reducedMotion:
   const finished = reducedMotion;
 
   // ── left: the PMP course ──
-  const course = createCoursePanel(font);
+  const course = createCoursePanel(font, copy);
   const courseProgress: CourseProgress = { ...(finished ? COURSE_END : COURSE_START) };
   course.render(courseProgress);
   const courseTex = own(canvasTexture(course.canvas));
@@ -174,7 +176,7 @@ export function buildAcademyScene(kit: ShowcaseKit, font: UiFont, reducedMotion:
   content.add(courseCard.group);
 
   // ── centre: the lesson on a laptop (the hero) ──
-  const lesson = createLessonScreen(font);
+  const lesson = createLessonScreen(font, copy);
   const lessonProgress: LessonProgress = { ...(finished ? LESSON_END : LESSON_START) };
   lesson.render(lessonProgress);
   const lessonTex = own(canvasTexture(lesson.canvas));
@@ -204,7 +206,7 @@ export function buildAcademyScene(kit: ShowcaseKit, font: UiFont, reducedMotion:
   content.add(laptop);
 
   // ── right: the exam simulator ──
-  const sim = createSimulatorPanel(font);
+  const sim = createSimulatorPanel(font, copy);
   const simProgress: SimProgress = { ...(finished ? SIM_END : SIM_START) };
   sim.render(simProgress);
   const simTex = own(canvasTexture(sim.canvas));
@@ -215,7 +217,7 @@ export function buildAcademyScene(kit: ShowcaseKit, font: UiFont, reducedMotion:
   content.add(simCard.group);
 
   // ── the certificate (dormant until the end) ──
-  const certTex = own(canvasTexture(drawCertificate(font, finished)));
+  const certTex = own(canvasTexture(drawCertificate(font, copy, finished)));
   const certCard = buildCard(kit, certTex, CERT_SIZE.w, CERT_SIZE.h, 0.3, 0.1);
   owned.push(...certCard.owned);
   certCard.group.position.set(...CERT_POS);
@@ -223,7 +225,7 @@ export function buildAcademyScene(kit: ShowcaseKit, font: UiFont, reducedMotion:
   content.add(certCard.group);
 
   // ── the AI Agents Course teaser (secondary) ──
-  const aiTex = own(canvasTexture(drawAiCourseCard(font)));
+  const aiTex = own(canvasTexture(drawAiCourseCard(font, copy)));
   const aiCard = buildCard(kit, aiTex, AI_SIZE.w, AI_SIZE.h, 0.3, 0.1);
   owned.push(...aiCard.owned);
   aiCard.group.position.set(...AI_POS);
@@ -327,7 +329,7 @@ export function buildAcademyScene(kit: ShowcaseKit, font: UiFont, reducedMotion:
       card.group.add(plane);
       return m;
     };
-    const certActiveTex = own(canvasTexture(drawCertificate(font, true)));
+    const certActiveTex = own(canvasTexture(drawCertificate(font, copy, true)));
     const certLayer = addLayer(certCard, certActiveTex, CERT_SIZE.w, CERT_SIZE.h, 0.3, 0.1);
     // the medal, revealed last, on its own plane near the certificate's top
     const sealTex = own(canvasTexture(drawSeal(), false));

@@ -37,6 +37,41 @@ export function wrapText(g: CanvasRenderingContext2D, text: string, maxW: number
   return lines;
 }
 
+/**
+ * Shrinks `weight`-weighted text down from `startPx` (in 1px steps, never below
+ * `minPx`) until it fits `maxW`, sets `g.font` to the result, and returns the
+ * chosen size. Arabic strings are frequently a different length than their
+ * English source at the same visual weight, so every fixed-width label in the
+ * showcase that isn't already safely short should be measured this way rather
+ * than assumed to fit.
+ */
+export function fitFontSize(g: CanvasRenderingContext2D, f: UiFont, weight: number, startPx: number, text: string, maxW: number, minPx = 22): number {
+  let px = startPx;
+  g.font = font(f, weight, px);
+  while (g.measureText(text).width > maxW && px > minPx) {
+    px -= 1;
+    g.font = font(f, weight, px);
+  }
+  return px;
+}
+
+/**
+ * Draws one line of text anchored to a box [x, x+w]: left-anchored and
+ * left-to-right for English, right-anchored and right-to-left for Arabic - the
+ * box itself (and everything else on the card) does not move. `g.direction`
+ * only affects how this one call resolves "start"/mixed-direction runs inside
+ * the string (e.g. Latin digits or acronyms embedded in an Arabic subtitle);
+ * it is reset immediately after, so it never leaks into a sibling draw call
+ * that assumes the canvas's default direction.
+ */
+export function drawInBox(g: CanvasRenderingContext2D, text: string, x: number, w: number, y: number, rtl: boolean): void {
+  g.direction = rtl ? "rtl" : "ltr";
+  g.textAlign = rtl ? "right" : "left";
+  g.fillText(text, rtl ? x + w : x, y);
+  g.direction = "ltr";
+  g.textAlign = "left";
+}
+
 const GLASS_TOP = "#0b1220";
 const GLASS_BOTTOM = "#05080f";
 
@@ -115,26 +150,28 @@ export function drawIconTextRow(
   subtitle: string,
   drawIcon: (g: CanvasRenderingContext2D) => void,
 ): void {
-  const iconCx = ROW_PAD + ROW_ICON_R;
+  // RTL: the icon moves to the right edge and the text column fills the
+  // remaining space to its left, so an Arabic title/subtitle reads from the
+  // icon outward instead of anchoring at a left edge that no longer means
+  // "the start of the line" - the row's own composition (icon + two lines of
+  // text), not the card's position in the scene, is what mirrors here.
+  const rtl = f.rtl;
+  const iconCx = rtl ? cardW - ROW_PAD - ROW_ICON_R : ROW_PAD + ROW_ICON_R;
+  const textX = rtl ? ROW_PAD : ROW_TEXT_X;
+  const textW = cardW - ROW_TEXT_X - ROW_PAD;
   g.save();
   g.translate(iconCx, rowCy);
   drawIcon(g);
   g.restore();
 
-  // Auto-fit the title down from 64px rather than letting a long title (e.g.
+  // Auto-fit the title down from 70px rather than letting a long title (e.g.
   // "Interactive Dashboards") silently overflow the canvas and get truncated -
   // the exact objective clipping bug the typography QA pass exists to catch.
-  const maxTitleW = cardW - ROW_TEXT_X - ROW_PAD;
-  let titleSize = 70;
-  g.font = font(f, 700, titleSize);
-  while (g.measureText(title).width > maxTitleW && titleSize > 38) {
-    titleSize -= 2;
-    g.font = font(f, 700, titleSize);
-  }
+  fitFontSize(g, f, 700, 70, title, textW, 38);
   g.fillStyle = INK;
   g.textBaseline = "alphabetic";
-  g.fillText(title, ROW_TEXT_X, rowCy - 20);
+  drawInBox(g, title, textX, textW, rowCy - 20, rtl);
   g.fillStyle = MUTED;
-  g.font = font(f, 500, 46);
-  g.fillText(subtitle, ROW_TEXT_X, rowCy + 46);
+  fitFontSize(g, f, 500, 46, subtitle, textW, 26);
+  drawInBox(g, subtitle, textX, textW, rowCy + 46, rtl);
 }
