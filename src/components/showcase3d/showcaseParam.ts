@@ -1,7 +1,10 @@
 /**
- * Look-dev selector for the homepage service showcase (art-direction phase).
- * Off unless the URL asks: /?showcase=1 (optionally &scene=agents|data|ml|academy). The
- * default homepage never sees this. All four services exist at this checkpoint.
+ * Selector for the homepage service showcase. On by default (optionally
+ * &scene=agents|data|ml|academy to open on a specific one) - the default
+ * homepage now is this showcase. ?showcase=0 forces the pre-showcase 2D
+ * fallback hero, for debugging/emergency use. ?showcase=1 still works, kept
+ * for backward compatibility with any existing links. All four services are
+ * built and ready.
  */
 export type ShowcaseServiceId = "agents" | "data" | "ml" | "academy";
 
@@ -26,7 +29,7 @@ export interface ShowcaseParams {
 export function resolveShowcaseParams(search: string): ShowcaseParams | null {
   const q = new URLSearchParams(search);
   const flag = q.get("showcase");
-  if (flag !== "1" && flag !== "true") return null;
+  if (flag === "0" || flag === "false") return null;
   const wanted = q.get("scene");
   const found = SHOWCASE_SERVICES.find((s) => s.id === wanted && s.ready);
   return { scene: found ? found.id : "agents" };

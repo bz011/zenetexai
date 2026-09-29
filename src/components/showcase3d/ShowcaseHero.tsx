@@ -7,17 +7,19 @@ import type { ShowcaseHandle } from "./mountShowcase";
 import { SHOWCASE_SERVICES, type ShowcaseServiceId } from "./showcaseParam";
 
 /**
- * LOOK-DEV ONLY (?showcase=1). ART-DIRECTION CHECKPOINT: the showcase owns the
- * full viewport - no marketing copy competes with it on this stage. The
- * default homepage's real H1/paragraph/CTA are untouched and still exist in
- * HomeContent.tsx; ShowcaseGate only swaps them out client-side, after load,
- * behind this explicit query flag. Final semantic H1 placement for a shipped
- * version is a separate decision - see docs/design-v2/CORE-LOOKDEV.md context.
+ * The homepage hero, shown by default (see ShowcaseGate; ?showcase=0 forces
+ * the pre-showcase 2D fallback instead). The showcase owns the full viewport
+ * - no marketing copy competes with it on this stage. The pre-showcase hero's
+ * real H1/paragraph/CTA are untouched and still exist in HomeContent.tsx as
+ * the fallback children; ShowcaseGate swaps them out client-side, after load,
+ * unless that opt-out flag or a mount failure sends it back to them. Whether
+ * this stage should expose its own semantic H1 remains open - unchanged by
+ * this pass, see docs/design-v2/CORE-LOOKDEV.md context.
  *
  * The "illustrative example, not a real conversation" disclosure is preserved
- * as the stage's accessible name (below) rather than as visible text, so this
- * checkpoint's screenshot is not competing with it either; a shipped version
- * should surface it visibly again (e.g. as a caption once real copy returns).
+ * as the stage's accessible name (below) rather than as visible text; it
+ * should surface visibly again at some point (e.g. as a caption once real
+ * copy returns).
  *
  * Runs in both languages: every visible/accessible string comes from
  * `t.showcase` (the site's existing Translations, via useLang()) rather than

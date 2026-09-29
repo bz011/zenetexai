@@ -4,21 +4,25 @@ import { renderToString } from "react-dom/server";
 import ShowcaseGate from "./ShowcaseGate";
 import { resolveShowcaseParams, SHOWCASE_SERVICES } from "./showcaseParam";
 
-describe("showcase look-dev selector (?showcase=1)", () => {
-  it("is off unless asked for explicitly", () => {
-    expect(resolveShowcaseParams("")).toBeNull();
-    expect(resolveShowcaseParams("?core=A")).toBeNull();
+describe("showcase selector (on by default; ?showcase=0 opts out)", () => {
+  it("is on unless explicitly turned off", () => {
+    expect(resolveShowcaseParams("")).toEqual({ scene: "agents" });
+    expect(resolveShowcaseParams("?core=A")).toEqual({ scene: "agents" });
     expect(resolveShowcaseParams("?showcase=0")).toBeNull();
-    expect(resolveShowcaseParams("?showcase=")).toBeNull();
+    expect(resolveShowcaseParams("?showcase=false")).toBeNull();
   });
 
-  it("opens on AI Agents by default, allows every built scene, and ignores unknown ones", () => {
+  it("stays on with the old explicit ?showcase=1 link, for backward compatibility", () => {
     expect(resolveShowcaseParams("?showcase=1")).toEqual({ scene: "agents" });
-    expect(resolveShowcaseParams("?showcase=1&scene=agents")).toEqual({ scene: "agents" });
     expect(resolveShowcaseParams("?showcase=1&scene=data")).toEqual({ scene: "data" });
-    expect(resolveShowcaseParams("?showcase=1&scene=ml")).toEqual({ scene: "ml" });
-    expect(resolveShowcaseParams("?showcase=1&scene=academy")).toEqual({ scene: "academy" });
-    expect(resolveShowcaseParams("?showcase=1&scene=nonsense")).toEqual({ scene: "agents" });
+  });
+
+  it("allows every built scene by default and ignores unknown ones", () => {
+    expect(resolveShowcaseParams("?scene=agents")).toEqual({ scene: "agents" });
+    expect(resolveShowcaseParams("?scene=data")).toEqual({ scene: "data" });
+    expect(resolveShowcaseParams("?scene=ml")).toEqual({ scene: "ml" });
+    expect(resolveShowcaseParams("?scene=academy")).toEqual({ scene: "academy" });
+    expect(resolveShowcaseParams("?scene=nonsense")).toEqual({ scene: "agents" });
   });
 
   it("has exactly the four hero services, all ready", () => {

@@ -10,12 +10,14 @@ interface HeroProps {
 }
 
 /**
- * Look-dev switch for the homepage hero. Children ARE the default hero and are
- * what the server and the first client render always show. Only when the URL
- * asks (?showcase=1) and WebGL exists does this swap in the showcase (loaded on
- * demand, so it adds nothing to the route's initial JavaScript), at every screen
- * size - portrait screens get their own framing. Any failure returns to the
- * default hero.
+ * Homepage hero switch. Children ARE the pre-showcase hero and are what the
+ * server and the first client render always show, so there's no layout shift
+ * or SSR mismatch before the effect below runs. On mount, unless the URL opts
+ * out (?showcase=0) and provided WebGL exists, this swaps in the showcase
+ * (loaded on demand, so it adds nothing to the route's initial JavaScript), at
+ * every screen size - portrait screens get their own framing. Any failure -
+ * WebGL missing, the dynamic import rejecting, or the showcase itself calling
+ * onFailed() after a mount error - falls back to the children automatically.
  */
 export default function ShowcaseGate({ enabled, children }: { enabled: boolean; children: ReactNode }) {
   const [active, setActive] = useState<{ Hero: ComponentType<HeroProps>; params: ShowcaseParams } | null>(null);

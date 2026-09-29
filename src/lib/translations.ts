@@ -351,7 +351,8 @@ export interface Translations {
     academy_name: string;
   };
   /**
-   * The homepage 3D showcase (?showcase=1). Every canvas-drawn string across
+   * The homepage 3D showcase (on by default; ?showcase=0 forces the 2D
+   * fallback). Every canvas-drawn string across
    * the four scenes, plus the DOM selector/CTA/accessible stage description.
    * ZentexAI and PMP stay in Latin script in both languages, matching the
    * rest of the site's Arabic copy (see e.g. aiAgentsAutomation, academy).
