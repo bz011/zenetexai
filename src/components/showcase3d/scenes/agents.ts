@@ -531,7 +531,7 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
       anchors: {},
       lights,
       camera: { fov: 24, dist: 30, target: new Vector3(0, -0.7, 0), yaw: 4, pitch: 3, designAspect: 1.6 },
-      portrait: { target: new Vector3(0, -0.15, PHONE_Z), dist: 33, yaw: 6, pitch: 4 },
+      portrait: { target: new Vector3(0.65, -0.15, PHONE_Z), dist: 44, yaw: 6, pitch: 4 },
       environmentIntensity: 0.62,
       tick,
       dispose() {
