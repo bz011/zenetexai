@@ -21,6 +21,23 @@
  * reaches `.from(...)`/`.rpc(...)` etc. with the vars genuinely missing
  * throws the same clear error as before, just at request time instead of
  * build time - no placeholder credentials, no silent fallback.
+ *
+ * NOT added (Master Audit Wave 0-D, 2026-09-30): the "server-only" hardening
+ * package was tried here and reverted. Its guard works by resolving to a
+ * no-op under Next.js's own "react-server" export condition and to an
+ * unconditional throw otherwise - that's correct inside Next.js's real
+ * build, but this project's Vitest config (vitest.config.ts) has no
+ * "react-server" resolution condition, so under test every import of this
+ * module - including from entirely legitimate server-side service/route
+ * tests - hit the unconditional throw. Confirmed by trying it: it broke
+ * batchDiversityService.test.ts, coverageIntelligenceService.test.ts,
+ * examAttemptService.test.ts, and BuyNowButton.test.ts. Making it safe would
+ * need a `resolve.conditions: ["react-server"]` change to vitest.config.ts,
+ * which risks changing how other packages resolve under test in ways this
+ * pass did not have room to fully verify - left for a dedicated follow-up
+ * rather than shipped partially tested. No client component imports this
+ * module today (verified directly), so the risk this package would have
+ * guarded against remains theoretical, not live.
  */
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";

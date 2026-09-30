@@ -62,13 +62,14 @@ describe("skip link and footer", () => {
     expect(render("/ar", () => createElement(SkipLink))).toContain("تخطَّ إلى المحتوى الرئيسي");
   });
 
-  it("links every service page from the footer (internal linking) and renders no legal placeholder while none are configured", () => {
+  it("links every service page from the footer (internal linking) and links the three draft legal pages now that they exist (Master Audit Wave 0-C)", () => {
     const html = render("/", () => createElement(Footer));
     for (const p of ["ai-agents-automation-uae", "whatsapp-automation-uae", "machine-learning-uae", "data-analytics-uae", "power-bi-consulting-uae"]) {
       expect(html).toContain(`/services/${p}`);
     }
-    expect(html.toLowerCase()).not.toContain("privacy");
-    expect(html.toLowerCase()).not.toContain("terms");
+    expect(html).toContain('href="/privacy"');
+    expect(html).toContain('href="/terms"');
+    expect(html).toContain('href="/refund"');
   });
 
   it("points Arabic footer service links at Arabic pages", () => {

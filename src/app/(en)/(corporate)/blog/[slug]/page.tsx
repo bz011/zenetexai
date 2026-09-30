@@ -3,6 +3,7 @@ import { pageMetadata } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getPool } from "@/lib/db";
+import { REMOVED_SLUGS } from "@/lib/posts";
 import MarkdownBody from "@/components/MarkdownBody";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd, articleJsonLd } from "@/lib/structuredData";
@@ -25,6 +26,12 @@ function isArabicText(text: string): boolean {
 }
 
 async function fetchPost(slug: string): Promise<Post | null> {
+  // Removed from public content (see REMOVED_SLUGS in @/lib/posts for why) -
+  // checked before the query even runs, so a direct/bookmarked/crawled hit
+  // on the old URL 404s exactly like a slug that never existed, rather than
+  // depending on the row itself being deleted.
+  if ((REMOVED_SLUGS as readonly string[]).includes(slug)) return null;
+
   try {
     const pool = getPool();
     const result = await pool.query<Post>(

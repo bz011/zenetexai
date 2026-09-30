@@ -43,6 +43,12 @@ export const PUBLIC_ROUTES: ReadonlySet<string> = new Set<string>([
   "/resources",
   "/contact",
   "/enroll",
+  // Legal pages (draft - see src/lib/legalCopy.ts). Public/reachable so the
+  // routes exist and can be linked, but noindexed at the page-metadata level
+  // until their owner/legal-review markers are resolved.
+  "/privacy",
+  "/terms",
+  "/refund",
   // SEO infrastructure (Next metadata routes) - crawlers have no session.
   "/sitemap.xml",
   "/robots.txt",

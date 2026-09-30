@@ -27,9 +27,6 @@ export default function ContactForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const WEBHOOK_URL =
-    "https://script.google.com/macros/s/AKfycbw_XdWko2zRiJ084YgzxJZq3ftxBZCxuDYpmRdu8WFHdNt3QVIfcjU18vsTQ4CRXuBE/exec";
-
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
@@ -39,18 +36,17 @@ export default function ContactForm() {
     setLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
-      params.append("name", form.name);
-      params.append("email", form.email);
-      params.append("company", form.company);
-      params.append("inquiryType", form.inquiryType);
-      params.append("message", form.message);
-
-      const res = await fetch(WEBHOOK_URL, {
+      // Same-origin route, not script.google.com directly - the browser
+      // never talks to the destination itself (see src/app/api/contact/route.ts
+      // for why: the CSP correctly has no reason to allow that origin).
+      const res = await fetch("/api/contact", {
         method: "POST",
-        body: params,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
       });
       if (!res.ok) throw new Error();
+      const data = (await res.json()) as { success: boolean };
+      if (!data.success) throw new Error();
       setSubmitted(true);
       setForm(empty);
     } catch {

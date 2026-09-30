@@ -18,7 +18,7 @@ describe("route access classification", () => {
   });
 
   it("keeps public marketing, auth, product and Arabic pages public", () => {
-    for (const p of ["/", "/about", "/services", "/services/ai-agents-automation-uae", "/academy", "/contact", "/login", "/signup", "/courses", "/courses/pmp-exam-simulator", "/blog/some-post", "/checkout/success", "/verify/ABC", "/api/assessments/1/submit", "/auth/callback", "/robots.txt", "/sitemap.xml", "/ar", "/ar/academy", "/ar/services", "/ar/courses/pmp-exam-simulator"]) {
+    for (const p of ["/", "/about", "/services", "/services/ai-agents-automation-uae", "/academy", "/contact", "/login", "/signup", "/courses", "/courses/pmp-exam-simulator", "/blog/some-post", "/checkout/success", "/verify/ABC", "/api/assessments/1/submit", "/auth/callback", "/robots.txt", "/sitemap.xml", "/ar", "/ar/academy", "/ar/services", "/ar/courses/pmp-exam-simulator", "/privacy", "/terms", "/refund"]) {
       expect(classifyRoute(p), p).toBe("public");
     }
   });

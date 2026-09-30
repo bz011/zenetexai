@@ -25,7 +25,37 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { classifyRoute, notFoundRewriteFor } from "@/lib/auth/routeAccess";
 
+// Permanently removed content (Master Audit Wave 0-B/final pass, 2026-09-30):
+// two blog posts containing unsupported fabricated case studies/statistics.
+// 410, not 404 - this tells crawlers the removal is deliberate and permanent
+// (Google de-indexes a 410 faster than an ambiguous 404), and there is no
+// redirect target since neither post has a genuine replacement. Checked
+// before anything else in this file - cheapest possible reject, and applies
+// regardless of session state (this is public content either way).
+//
+// Deliberately NOT imported from src/lib/posts.ts's own REMOVED_SLUGS
+// (the single source of truth for every other exclusion - blog index, Home,
+// Resources, sitemap, the [slug] page itself): that module imports
+// src/lib/db.ts, which imports "pg" at module scope. Middleware runs on
+// Vercel's Edge Runtime, not Node.js, and "pg" depends on raw TCP/Node
+// built-ins Edge doesn't provide. A local `next build` bundled it without
+// erroring, but that doesn't prove it executes safely in the real Edge
+// sandbox - and middleware's matcher covers nearly every route on the site,
+// so a bad import here risks breaking the entire site, not just these two
+// URLs. Duplicating the two slugs as plain strings here is a small, safe
+// trade against that risk. If these two slugs are ever entirely deleted
+// from website_posts, both this list and REMOVED_SLUGS should be cleaned up
+// together.
+const REMOVED_BLOG_PATHS = new Set([
+  "/blog/transforming-learning-how-ai-is-enhancing-education-in-mena-businesses",
+  "/blog/transforming-learning-how-ai-is-enhancing-employee-development-in-mena-businesses",
+]);
+
 export async function middleware(request: NextRequest) {
+  if (REMOVED_BLOG_PATHS.has(request.nextUrl.pathname)) {
+    return new NextResponse("Gone", { status: 410 });
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(

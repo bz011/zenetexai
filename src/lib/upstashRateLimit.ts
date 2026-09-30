@@ -64,6 +64,7 @@ export function isRateLimitingConfigured(): boolean {
  * own duration format ("<n> <s|m|h>").
  */
 const BUCKET_LIMITS = {
+  "contact-form-ip": { requests: 5, window: "10 m" },
   "checkout-create": { requests: 5, window: "5 m" },
   "checkout-create-ip": { requests: 15, window: "5 m" },
   "free-enrollment": { requests: 5, window: "10 m" },
