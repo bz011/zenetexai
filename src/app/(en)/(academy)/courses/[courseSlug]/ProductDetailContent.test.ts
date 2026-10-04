@@ -79,12 +79,15 @@ describe("ProductDetailContent layout", () => {
     expect(occurrences).toBe(1);
   });
 
-  it("formats the promo end date with an unambiguous, localized month name and timezone label (not raw M/D/YYYY)", () => {
+  it("formats the promo end date with an unambiguous, localized month name and a fixed timezone label (not raw M/D/YYYY, and not dependent on the server or visitor's own local timezone)", () => {
     const html = render(masteryProduct(), "pmp-mastery-program", "/courses/pmp-mastery-program");
-    // "at GMT+4" (Intl's timeZoneName: "short" output with no hour/minute requested) proves the
-    // viewer's own timezone shifts the calendar date near a boundary (this fixture is UTC 20:00) -
-    // exactly the ambiguity the fix makes visible instead of hiding.
-    expect(html).toMatch(/October (5|6), 2026 at (GMT|UTC)[+-]?\d*/);
+    // Pinned to timeZone: "Asia/Dubai" explicitly (not the runtime's ambient local timezone) -
+    // this fixture is UTC 20:00, which is already Oct 6 in Dubai (UTC+4), and must render
+    // identically here regardless of which timezone this test happens to run in. Relying on
+    // the ambient local timezone instead (as an earlier version of this fix did) produced a
+    // different calendar day on the Vercel server than in a visitor's browser for the same
+    // timestamp, which is a real React hydration-mismatch bug (error #425) caught on production.
+    expect(html).toContain("October 6, 2026 at GMT+4");
     expect(html).not.toMatch(/10\/5\/2026|5\/10\/2026|10\/6\/2026|6\/10\/2026/);
   });
 

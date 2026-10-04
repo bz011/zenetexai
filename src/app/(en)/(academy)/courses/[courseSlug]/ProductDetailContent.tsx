@@ -143,7 +143,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
                     <p className="mt-1 text-2xl font-bold text-emerald-400">{c.free_badge}</p>
                     {price.promotionValidUntil && (
                       <p className="mt-1 text-small text-slate-400">
-                        {p.promo_ends_label}: {new Date(price.promotionValidUntil).toLocaleDateString(lang === "ar" ? "ar" : "en-US", { year: "numeric", month: "long", day: "numeric", timeZoneName: "short" })}
+                        {p.promo_ends_label}: {new Date(price.promotionValidUntil).toLocaleDateString(lang === "ar" ? "ar" : "en-US", { year: "numeric", month: "long", day: "numeric", timeZoneName: "short", timeZone: "Asia/Dubai" })}
                       </p>
                     )}
                   </div>
