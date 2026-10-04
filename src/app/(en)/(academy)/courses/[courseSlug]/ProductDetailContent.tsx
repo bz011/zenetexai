@@ -72,10 +72,10 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
               <p className="text-small leading-relaxed text-slate-400">
                 {lang === "ar" ? (
                   <>تريد التدرّب على الامتحان فقط؟ اطّلع على{" "}
-                    <Link href="/courses/pmp-exam-simulator" className="text-indigo-400 transition-colors hover:text-indigo-300">محاكي اختبار PMP</Link>.</>
+                    <Link href="/courses/pmp-exam-simulator" className="text-indigo-400 underline underline-offset-2 transition-colors hover:text-indigo-300">محاكي اختبار PMP</Link>.</>
                 ) : (
                   <>Looking for exam practice on its own? See the{" "}
-                    <Link href="/courses/pmp-exam-simulator" className="text-indigo-400 transition-colors hover:text-indigo-300">PMP Exam Simulator</Link>.</>
+                    <Link href="/courses/pmp-exam-simulator" className="text-indigo-400 underline underline-offset-2 transition-colors hover:text-indigo-300">PMP Exam Simulator</Link>.</>
                 )}
               </p>
             )}
@@ -83,10 +83,10 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
               <p className="text-small leading-relaxed text-slate-400">
                 {lang === "ar" ? (
                   <>تريد دورة كاملة أيضاً؟ اطّلع على{" "}
-                    <Link href="/courses/pmp-mastery-program" className="text-indigo-400 transition-colors hover:text-indigo-300">برنامج احتراف PMP</Link>.</>
+                    <Link href="/courses/pmp-mastery-program" className="text-indigo-400 underline underline-offset-2 transition-colors hover:text-indigo-300">برنامج احتراف PMP</Link>.</>
                 ) : (
                   <>Want full course instruction too? See the{" "}
-                    <Link href="/courses/pmp-mastery-program" className="text-indigo-400 transition-colors hover:text-indigo-300">PMP Mastery Program</Link>.</>
+                    <Link href="/courses/pmp-mastery-program" className="text-indigo-400 underline underline-offset-2 transition-colors hover:text-indigo-300">PMP Mastery Program</Link>.</>
                 )}
               </p>
             )}
@@ -132,7 +132,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
               {price ? (
                 isFreeNow ? (
                   <div className="mt-2">
-                    <span className="mb-2 inline-block rounded-full bg-amber-500/[0.15] px-2.5 py-0.5 text-caption font-semibold text-amber-400">
+                    <span className="mb-2 inline-block rounded-full bg-amber-500/[0.15] px-2.5 py-0.5 text-caption font-semibold text-amber-800">
                       {c.launch_offer_badge}
                     </span>
                     {price.regularAmountMinorUnits !== null && (
