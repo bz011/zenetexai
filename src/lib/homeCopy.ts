@@ -42,11 +42,11 @@ export const homeCopy: { en: HomeCopy; ar: HomeCopy } = {
     hero: {
       eyebrow: "AI solutions · Consulting · Professional learning",
       title: "AI systems that do real work — inside boundaries you set.",
-      sub: "ZentexAI builds AI agents, automation and machine-learning solutions for businesses in the UAE and MENA, backed by project management consulting and professional learning — including our PMP Mastery Program.",
+      sub: "ZentexAI builds AI agents, automation, data & analytics, and machine-learning systems for real business operations, backed by project management consulting and professional learning — including our PMP Mastery Program.",
       ctaPrimary: "Talk to our team",
       ctaSecondary: "Explore services",
       facts: [
-        { k: "Serves", v: "The UAE and the wider MENA region" },
+        { k: "Core focus", v: "AI agents, data & analytics, machine learning" },
         { k: "Languages", v: "Arabic and English" },
         { k: "Every agent", v: "Human oversight and an audit trail" },
       ],
@@ -57,11 +57,11 @@ export const homeCopy: { en: HomeCopy; ar: HomeCopy } = {
       items: [
         {
           term: "What ZentexAI does",
-          body: "ZentexAI is an AI solutions, consulting and professional-learning company. We build AI agents and workflow automation, machine-learning and analytics solutions, and provide project management consulting and PMP exam training.",
+          body: "ZentexAI is an AI and technology company. We build AI agents & automation, data & analytics, and machine-learning systems — backed by project management consulting and professional learning, including PMP exam training.",
         },
         {
           term: "Who it is for",
-          body: "Organizations in the UAE and wider MENA region that want AI applied to real work — customer enquiries, bookings, documents, reporting and forecasting — and professionals preparing for the PMP exam.",
+          body: "Organizations that want AI applied to real work — customer enquiries, bookings, documents, reporting and forecasting — and professionals preparing for the PMP exam.",
         },
         {
           term: "How we implement",
@@ -81,10 +81,10 @@ export const homeCopy: { en: HomeCopy; ar: HomeCopy } = {
           flow: "Request → Understand → Decide → Act → Verify",
         },
         {
-          href: "/services/whatsapp-automation-uae",
-          name: "WhatsApp automation",
-          line: "Customer conversations connected to lead qualification, booking and CRM workflows.",
-          flow: "Conversation → Qualify → Book → Hand off",
+          href: "/services/data-analytics-uae",
+          name: "Data & analytics",
+          line: "KPI frameworks, clean data models and reporting built around your real decisions.",
+          flow: "Sources → Validation → Analysis → Insight → Decision",
         },
         {
           href: "/services/machine-learning-uae",
@@ -93,10 +93,10 @@ export const homeCopy: { en: HomeCopy; ar: HomeCopy } = {
           flow: "Data → Baseline → Candidate → Evaluation → Decision",
         },
         {
-          href: "/services/data-analytics-uae",
-          name: "Data analytics",
-          line: "KPI frameworks, clean data models and reporting built around your real decisions.",
-          flow: "Sources → Validation → Analysis → Insight → Decision",
+          href: "/services/whatsapp-automation-uae",
+          name: "WhatsApp automation",
+          line: "Customer conversations connected to lead qualification, booking and CRM workflows.",
+          flow: "Conversation → Qualify → Book → Hand off",
         },
         {
           href: "/services/power-bi-consulting-uae",
@@ -119,7 +119,7 @@ export const homeCopy: { en: HomeCopy; ar: HomeCopy } = {
         { title: "Scope before software", body: "Every engagement starts with a defined scope, timeline and deliverable — no vague retainers." },
         { title: "Delivery discipline", body: "Our approach to AI adoption is grounded in real project management practice, not technical enthusiasm alone." },
         { title: "Controls by design", body: "Approved knowledge only, least-privilege access, validation before action, human approval where it matters, and full logging." },
-        { title: "Arabic and English, natively", body: "We work in both languages. Our solutions are built for the MENA market, not translated for it." },
+        { title: "Arabic and English, natively", body: "We work in both languages. Our solutions are built bilingual from the start, not translated after the fact." },
       ],
     },
   },
@@ -127,11 +127,11 @@ export const homeCopy: { en: HomeCopy; ar: HomeCopy } = {
     hero: {
       eyebrow: "حلول الذكاء الاصطناعي · الاستشارات · التعلّم المهني",
       title: "أنظمة ذكاء اصطناعي تنجز عملاً حقيقياً — ضمن حدود تضعها أنت.",
-      sub: "تبني ZentexAI وكلاء ذكاء اصطناعي وأتمتة وحلول تعلّم آلة للشركات في الإمارات والشرق الأوسط، مدعومة باستشارات إدارة المشاريع والتعلّم المهني — ومنها برنامج PMP Mastery Program.",
+      sub: "تبني ZentexAI وكلاء ذكاء اصطناعي وأتمتة وحلول تحليل بيانات وتعلّم آلة لعمليات الأعمال الحقيقية، مدعومة باستشارات إدارة المشاريع والتعلّم المهني — ومنها برنامج PMP Mastery Program.",
       ctaPrimary: "تحدث إلى فريقنا",
       ctaSecondary: "استكشف الخدمات",
       facts: [
-        { k: "نخدم", v: "دولة الإمارات ومنطقة الشرق الأوسط وشمال أفريقيا" },
+        { k: "محور التركيز", v: "وكلاء الذكاء الاصطناعي، تحليل البيانات، تعلّم الآلة" },
         { k: "اللغات", v: "العربية والإنجليزية" },
         { k: "كل وكيل", v: "إشراف بشري وسجل تدقيق" },
       ],
@@ -142,11 +142,11 @@ export const homeCopy: { en: HomeCopy; ar: HomeCopy } = {
       items: [
         {
           term: "ما الذي تقدمه ZentexAI",
-          body: "ZentexAI شركة حلول ذكاء اصطناعي واستشارات وتعلّم مهني. نبني وكلاء ذكاء اصطناعي وأتمتة لسير العمل وحلول تعلّم آلة وتحليلات، ونقدم استشارات إدارة المشاريع والتدريب على اختبار PMP.",
+          body: "ZentexAI شركة ذكاء اصطناعي وتكنولوجيا. نبني وكلاء ذكاء اصطناعي وأتمتة، وحلول تحليل بيانات، وأنظمة تعلّم آلة — مدعومة باستشارات إدارة المشاريع والتعلّم المهني، بما في ذلك التدريب على اختبار PMP.",
         },
         {
           term: "لمن هي",
-          body: "المؤسسات في الإمارات ومنطقة الشرق الأوسط التي تريد تطبيق الذكاء الاصطناعي على أعمال حقيقية — استفسارات العملاء والحجوزات والمستندات وإعداد التقارير والتنبؤ — والمهنيين الذين يستعدون لاختبار PMP.",
+          body: "المؤسسات التي تريد تطبيق الذكاء الاصطناعي على أعمال حقيقية — استفسارات العملاء والحجوزات والمستندات وإعداد التقارير والتنبؤ — والمهنيين الذين يستعدون لاختبار PMP.",
         },
         {
           term: "كيف ننفّذ",
@@ -166,10 +166,10 @@ export const homeCopy: { en: HomeCopy; ar: HomeCopy } = {
           flow: "الطلب ← الفهم ← القرار ← التنفيذ ← التحقق",
         },
         {
-          href: "/services/whatsapp-automation-uae",
-          name: "أتمتة واتساب",
-          line: "ربط محادثات العملاء بتأهيل العملاء المحتملين والحجوزات وسير عمل إدارة العملاء.",
-          flow: "المحادثة ← التأهيل ← الحجز ← التسليم البشري",
+          href: "/services/data-analytics-uae",
+          name: "تحليل البيانات",
+          line: "أُطر مؤشرات الأداء ونماذج بيانات نظيفة وتقارير مبنية حول قراراتك الفعلية.",
+          flow: "المصادر ← التحقق ← التحليل ← الاستنتاج ← القرار",
         },
         {
           href: "/services/machine-learning-uae",
@@ -178,10 +178,10 @@ export const homeCopy: { en: HomeCopy; ar: HomeCopy } = {
           flow: "البيانات ← خط الأساس ← النموذج المرشح ← التقييم ← القرار",
         },
         {
-          href: "/services/data-analytics-uae",
-          name: "تحليل البيانات",
-          line: "أُطر مؤشرات الأداء ونماذج بيانات نظيفة وتقارير مبنية حول قراراتك الفعلية.",
-          flow: "المصادر ← التحقق ← التحليل ← الاستنتاج ← القرار",
+          href: "/services/whatsapp-automation-uae",
+          name: "أتمتة واتساب",
+          line: "ربط محادثات العملاء بتأهيل العملاء المحتملين والحجوزات وسير عمل إدارة العملاء.",
+          flow: "المحادثة ← التأهيل ← الحجز ← التسليم البشري",
         },
         {
           href: "/services/power-bi-consulting-uae",
@@ -204,7 +204,7 @@ export const homeCopy: { en: HomeCopy; ar: HomeCopy } = {
         { title: "النطاق قبل البرمجيات", body: "يبدأ كل مشروع بنطاق وجدول زمني ومخرجات محددة — بلا عقود مفتوحة غامضة." },
         { title: "انضباط التسليم", body: "يستند نهجنا في تبنّي الذكاء الاصطناعي إلى ممارسة حقيقية في إدارة المشاريع، لا إلى الحماس التقني وحده." },
         { title: "ضوابط بالتصميم", body: "معرفة معتمدة فقط، وصلاحيات بأقل قدر لازم، وتحقق قبل التنفيذ، وموافقة بشرية حيث يلزم، وتسجيل كامل." },
-        { title: "العربية والإنجليزية بالأصل", body: "نعمل باللغتين. حلولنا مبنية لسوق المنطقة، لا مترجمة إليه." },
+        { title: "العربية والإنجليزية بالأصل", body: "نعمل باللغتين. حلولنا مبنية ثنائية اللغة منذ البداية، لا مترجمة لاحقاً." },
       ],
     },
   },

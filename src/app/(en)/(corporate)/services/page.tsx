@@ -4,14 +4,16 @@ import ServicesContent from "./ServicesContent";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd, serviceJsonLd } from "@/lib/structuredData";
 
-const title = "AI Solutions, Automation & Consulting | ZentexAI";
+const title = "AI Agents, Data & Analytics, Machine Learning | ZentexAI";
 const description =
-  "AI agents, workflow automation, machine learning and analytics for UAE and MENA businesses, plus AI and project management consulting.";
+  "AI agents & automation, data & analytics, and machine learning, plus AI and project management consulting — built for real business operations.";
 
 export const metadata: Metadata = mirroredPageMetadata("/services", "en", title, description);
 
 const SERVICE_SCHEMAS = [
-  { name: "AI Solutions", description: "Practical AI systems built to do real work inside your organization.", path: "/services#ai-solutions" },
+  { name: "AI Agents & Automation", description: "Practical AI systems built to do real work inside your organization.", path: "/services#ai-solutions" },
+  { name: "Data & Analytics", description: "KPI frameworks, clean data models, and dashboards built around the decisions your business actually needs to make.", path: "/services#data-analytics" },
+  { name: "Machine Learning", description: "Practical machine learning for forecasting, classification, and anomaly detection.", path: "/services#machine-learning" },
   { name: "AI Consulting", description: "Clear guidance on where AI fits your organization, and how to adopt it responsibly.", path: "/services#ai-consulting" },
   { name: "Project Management Consulting", description: "Hands-on project delivery expertise — from setting up a PMO to recovering a troubled project.", path: "/services#pm-consulting" },
 ];

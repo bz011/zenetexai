@@ -37,3 +37,4 @@ next-env.d.ts
 # Question Bank
 /PMP_Question_Bank.xlsx
 /PMP_Question_Bank_original_backup.xlsx
+.env*

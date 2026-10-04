@@ -205,8 +205,8 @@ export default function WhatsappAutomationContent() {
       <section className="border-t border-line px-6 py-12 md:py-16">
         <div className="container-page">
           <RelatedLinkRow items={[
-              { href: "/services/ai-agents-automation-uae", en: "AI Agents & Automation UAE", ar: "وكلاء الذكاء الاصطناعي والأتمتة في الإمارات" },
-              { href: "/services/data-analytics-uae", en: "Data Analytics Services UAE", ar: "خدمات تحليل البيانات في الإمارات" },
+              { href: "/services/ai-agents-automation-uae", en: "AI Agents & Automation", ar: "وكلاء الذكاء الاصطناعي والأتمتة" },
+              { href: "/services/data-analytics-uae", en: "Data Analytics Services", ar: "خدمات تحليل البيانات" },
               { href: "/blog/whatsapp-automation-uae-businesses", en: "WhatsApp Automation for UAE Businesses" },
               { href: "/blog/ai-agents-for-business-uae", en: "AI Agents for Business in the UAE" },
               { href: "/blog/ai-automation-clinics-service-businesses", en: "AI Automation for Clinics and Service Businesses" },

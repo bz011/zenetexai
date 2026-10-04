@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import ShowcaseGate from "./ShowcaseGate";
-import { resolveShowcaseParams, SHOWCASE_SERVICES } from "./showcaseParam";
+import { resolveShowcaseParams, shouldLoadShowcase, SHOWCASE_SERVICES } from "./showcaseParam";
 
 describe("showcase selector (on by default; ?showcase=0 opts out)", () => {
   it("is on unless explicitly turned off", () => {
@@ -28,6 +28,20 @@ describe("showcase selector (on by default; ?showcase=0 opts out)", () => {
   it("has exactly the four hero services, all ready", () => {
     expect(SHOWCASE_SERVICES.map((s) => s.label)).toEqual(["AI Agents", "Data & Analytics", "Machine Learning", "Academy"]);
     expect(SHOWCASE_SERVICES.filter((s) => s.ready).map((s) => s.id)).toEqual(["agents", "data", "ml", "academy"]);
+  });
+});
+
+describe("shouldLoadShowcase (ShowcaseGate's load condition)", () => {
+  it("requires WebGL", () => {
+    expect(shouldLoadShowcase({ webgl: false, saveData: false })).toBe(false);
+  });
+
+  it("respects the browser's Data Saver preference even when WebGL is available", () => {
+    expect(shouldLoadShowcase({ webgl: true, saveData: true })).toBe(false);
+  });
+
+  it("loads when WebGL is available and Data Saver is off", () => {
+    expect(shouldLoadShowcase({ webgl: true, saveData: false })).toBe(true);
   });
 });
 

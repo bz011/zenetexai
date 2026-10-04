@@ -13,9 +13,9 @@ export default function Page() {
     <>
       <ArabicServiceJsonLd
         enPath={EN_PATH}
-        crumbName="أتمتة واتساب في الإمارات"
+        crumbName="أتمتة واتساب"
         serviceName="أتمتة واتساب ووكلاء الذكاء الاصطناعي"
-        serviceDescription="أتمتة واتساب ووكلاء ذكاء اصطناعي آمنة للشركات في الإمارات، تشمل تأهيل العملاء المحتملين والحجوزات وسير عمل إدارة العملاء مع تسليم بشري مضبوط."
+        serviceDescription="أتمتة واتساب ووكلاء ذكاء اصطناعي آمنة، تشمل تأهيل العملاء المحتملين والحجوزات وسير عمل إدارة العملاء مع تسليم بشري مضبوط."
         faq={translations.ar.whatsappAutomation.faq}
       />
       <WhatsappAutomationContent />

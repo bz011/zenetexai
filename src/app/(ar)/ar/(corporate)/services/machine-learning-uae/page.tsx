@@ -13,9 +13,9 @@ export default function Page() {
     <>
       <ArabicServiceJsonLd
         enPath={EN_PATH}
-        crumbName="خدمات تعلّم الآلة في الإمارات"
+        crumbName="خدمات تعلّم الآلة"
         serviceName="خدمات تعلّم الآلة"
-        serviceDescription="تعلّم آلة عملي للشركات في الإمارات، يشمل التنبؤ بالطلب والتصنيف واكتشاف الحالات الشاذة، مع تقييم مقابل خط أساس واضح قبل التكامل."
+        serviceDescription="تعلّم آلة عملي يشمل التنبؤ بالطلب والتصنيف واكتشاف الحالات الشاذة، مع تقييم مقابل خط أساس واضح قبل التكامل."
         faq={translations.ar.machineLearning.faq}
       />
       <MachineLearningContent />

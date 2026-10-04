@@ -119,7 +119,7 @@ export default function DashboardContent({ profile, owned, resume, stats, certif
                     <p className="text-[14px] font-medium text-white">{title}</p>
                     {resource.expiresAt && (
                       <p className="mt-1 text-[12px] text-slate-500">
-                        {c.expires_label}: {new Date(resource.expiresAt).toLocaleDateString(lang === "ar" ? "ar" : "en-US")}
+                        {c.expires_label}: {new Date(resource.expiresAt).toLocaleDateString(lang === "ar" ? "ar" : "en-US", { year: "numeric", month: "long", day: "numeric", timeZoneName: "short" })}
                       </p>
                     )}
                     <div className="mt-3 flex flex-wrap gap-2">

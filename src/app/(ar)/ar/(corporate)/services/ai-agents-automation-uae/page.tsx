@@ -13,9 +13,9 @@ export default function Page() {
     <>
       <ArabicServiceJsonLd
         enPath={EN_PATH}
-        crumbName="وكلاء الذكاء الاصطناعي والأتمتة في الإمارات"
+        crumbName="وكلاء الذكاء الاصطناعي والأتمتة"
         serviceName="وكلاء الذكاء الاصطناعي وأتمتة الأعمال"
-        serviceDescription="وكلاء ذكاء اصطناعي وأتمتة أعمال آمنة وجاهزة للإنتاج للشركات في الإمارات، تربط المعرفة وسير العمل وأنظمة الأعمال مع إشراف بشري مضبوط."
+        serviceDescription="وكلاء ذكاء اصطناعي وأتمتة أعمال آمنة وجاهزة للإنتاج، تربط المعرفة وسير العمل وأنظمة الأعمال مع إشراف بشري مضبوط."
         faq={translations.ar.aiAgentsAutomation.faq}
       />
       <AiAgentsAutomationContent />

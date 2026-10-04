@@ -18,7 +18,7 @@ export default function CheckoutResultContent({ result }: { result: CheckoutVeri
           tone: "success" as const,
           extra: result.expiresAt ? (
             <p className="mt-2 text-[13px] text-slate-500">
-              {k.access_until_label}: {new Date(result.expiresAt).toLocaleDateString(lang === "ar" ? "ar" : "en-US")}
+              {k.access_until_label}: {new Date(result.expiresAt).toLocaleDateString(lang === "ar" ? "ar" : "en-US", { year: "numeric", month: "long", day: "numeric", timeZoneName: "short" })}
             </p>
           ) : null,
           actions: (

@@ -17,7 +17,7 @@ import {
   type Texture,
 } from "three";
 import { buildCard, loadPhoneModel, PHONE_MODEL, type CardBuilt } from "../devices";
-import { canvasTexture, lightPoolTexture, reflectionMaterial, softShadowTexture, vignetteTexture, type ShowcaseKit } from "../kit";
+import { canvasTexture, contentBounds, lightPoolTexture, reflectionMaterial, softShadowTexture, vignetteTexture, type ShowcaseKit } from "../kit";
 import { roundedPlane, roundedSlab } from "../shapes";
 import { glowTrail, ramp, trailPoints } from "../ribbon";
 import { buildGlow, createTrailPulse, easeInOutCubic, Timeline, type TrailPulse } from "../anim";
@@ -526,12 +526,14 @@ export function buildAgentsScene(kit: ShowcaseKit, font: UiFont, reducedMotion: 
       tick = staticTick;
     }
 
+    const portraitTarget = new Vector3(0.65, -0.15, PHONE_Z);
     return {
       group,
       anchors: {},
       lights,
       camera: { fov: 24, dist: 30, target: new Vector3(0, -0.7, 0), yaw: 4, pitch: 3, designAspect: 1.6 },
-      portrait: { target: new Vector3(0.65, -0.15, PHONE_Z), dist: 44, yaw: 6, pitch: 4 },
+      portrait: { target: portraitTarget, dist: 44, yaw: 6, pitch: 4 },
+      portraitBounds: contentBounds([phone.group, ...inputCards.map((c) => c.group), cal.group, ...resultCards.map((c) => c.group)], portraitTarget),
       environmentIntensity: 0.62,
       tick,
       dispose() {

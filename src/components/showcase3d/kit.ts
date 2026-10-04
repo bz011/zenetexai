@@ -1,4 +1,5 @@
 import {
+  Box3,
   CanvasTexture,
   MeshBasicMaterial,
   MeshPhysicalMaterial,
@@ -6,7 +7,9 @@ import {
   SRGBColorSpace,
   LinearFilter,
   LinearMipmapLinearFilter,
+  Vector3,
   type Material,
+  type Object3D,
   type Texture,
 } from "three";
 
@@ -207,4 +210,23 @@ export function reflectionMaterial<T extends Material>(mat: T, floorY: number, s
       );
   };
   return m;
+}
+
+/**
+ * Half-width/half-height of the union of `objects`' real world-space bounding
+ * boxes, measured from `center`. Used to derive the portrait camera distance
+ * from the scene's actual, measured geometry (the hero device + its context
+ * cards) instead of a single hand-picked distance that only happened to work
+ * for one guessed aspect ratio - see mountShowcase.ts's fitDistance(). Callers
+ * pass only the "meaningful" objects (hero device, context cards): purely
+ * decorative background planes (ground pool, contact shadow, vignette) are
+ * deliberately excluded, since they are meant to extend past the frame, not
+ * be fit inside it.
+ */
+export function contentBounds(objects: Object3D[], center: Vector3): { halfWidth: number; halfHeight: number } {
+  const box = new Box3();
+  for (const o of objects) box.union(new Box3().setFromObject(o));
+  const halfWidth = Math.max(Math.abs(box.min.x - center.x), Math.abs(box.max.x - center.x));
+  const halfHeight = Math.max(Math.abs(box.min.y - center.y), Math.abs(box.max.y - center.y));
+  return { halfWidth, halfHeight };
 }

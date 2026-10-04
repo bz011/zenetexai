@@ -33,7 +33,7 @@ export default function CoursesContent({
             <p className="text-[14px] text-slate-500">{s.empty}</p>
           </div>
         ) : (
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} owned={ownsProduct(product, ownedSet)} />
             ))}

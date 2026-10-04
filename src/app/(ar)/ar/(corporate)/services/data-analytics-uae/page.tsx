@@ -13,9 +13,9 @@ export default function Page() {
     <>
       <ArabicServiceJsonLd
         enPath={EN_PATH}
-        crumbName="خدمات تحليل البيانات في الإمارات"
+        crumbName="خدمات تحليل البيانات"
         serviceName="خدمات تحليل البيانات"
-        serviceDescription="أُطر مؤشرات الأداء وتدقيق البيانات ونمذجتها ولوحات المعلومات وأتمتة التقارير للشركات في الإمارات."
+        serviceDescription="أُطر مؤشرات الأداء وتدقيق البيانات ونمذجتها ولوحات المعلومات وأتمتة التقارير."
         faq={translations.ar.dataAnalytics.faq}
       />
       <ServiceLandingContent copyKey="dataAnalytics" mechanism="analytics" />

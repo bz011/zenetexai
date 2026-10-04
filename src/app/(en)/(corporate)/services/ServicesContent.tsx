@@ -56,11 +56,11 @@ export default function ServicesContent() {
       <section className="border-t border-line px-6 py-10 md:py-14">
         <div className="container-page">
           <RelatedLinkRow variant="accent" items={[
-              { href: "/services/ai-agents-automation-uae", en: "AI Agents & Automation UAE", ar: "وكلاء الذكاء الاصطناعي والأتمتة في الإمارات" },
-              { href: "/services/whatsapp-automation-uae", en: "WhatsApp Automation UAE", ar: "أتمتة واتساب في الإمارات" },
-              { href: "/services/machine-learning-uae", en: "Machine Learning Services UAE", ar: "خدمات تعلّم الآلة في الإمارات" },
-              { href: "/services/data-analytics-uae", en: "Data Analytics Services UAE", ar: "خدمات تحليل البيانات في الإمارات" },
-              { href: "/services/power-bi-consulting-uae", en: "Power BI Consulting UAE", ar: "استشارات Power BI في الإمارات" },
+              { href: "/services/ai-agents-automation-uae", en: "AI Agents & Automation", ar: "وكلاء الذكاء الاصطناعي والأتمتة" },
+              { href: "/services/whatsapp-automation-uae", en: "WhatsApp Automation", ar: "أتمتة واتساب" },
+              { href: "/services/machine-learning-uae", en: "Machine Learning Services", ar: "خدمات تعلّم الآلة" },
+              { href: "/services/data-analytics-uae", en: "Data Analytics Services", ar: "خدمات تحليل البيانات" },
+              { href: "/services/power-bi-consulting-uae", en: "Power BI Consulting", ar: "استشارات Power BI" },
             ]} />
         </div>
       </section>

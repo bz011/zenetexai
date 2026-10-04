@@ -157,10 +157,10 @@ export default function AiAgentsAutomationContent() {
       <section className="border-t border-line px-6 py-12 md:py-16">
         <div className="container-page">
           <RelatedLinkRow items={[
-              { href: "/services/whatsapp-automation-uae", en: "WhatsApp Automation & AI Agents UAE", ar: "أتمتة واتساب ووكلاء الذكاء الاصطناعي في الإمارات" },
-              { href: "/services/machine-learning-uae", en: "Machine Learning Services UAE", ar: "خدمات تعلّم الآلة في الإمارات" },
-              { href: "/services/data-analytics-uae", en: "Data Analytics Services UAE", ar: "خدمات تحليل البيانات في الإمارات" },
-              { href: "/services/power-bi-consulting-uae", en: "Power BI Consulting UAE", ar: "استشارات Power BI في الإمارات" },
+              { href: "/services/whatsapp-automation-uae", en: "WhatsApp Automation & AI Agents", ar: "أتمتة واتساب ووكلاء الذكاء الاصطناعي" },
+              { href: "/services/machine-learning-uae", en: "Machine Learning Services", ar: "خدمات تعلّم الآلة" },
+              { href: "/services/data-analytics-uae", en: "Data Analytics Services", ar: "خدمات تحليل البيانات" },
+              { href: "/services/power-bi-consulting-uae", en: "Power BI Consulting", ar: "استشارات Power BI" },
               { href: "/blog/ai-agents-for-business-uae", en: "AI Agents for Business in the UAE" },
               { href: "/blog/whatsapp-automation-uae-businesses", en: "WhatsApp Automation for UAE Businesses" },
               { href: "/blog/ai-automation-clinics-service-businesses", en: "AI Automation for Clinics and Service Businesses" },

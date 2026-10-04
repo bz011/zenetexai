@@ -26,7 +26,7 @@ export default function ArabicServiceJsonLd({
           { name: crumbName, path },
         ])}
       />
-      <JsonLd data={serviceJsonLd({ name: serviceName, description: serviceDescription, path, areaServed: ["United Arab Emirates"] })} />
+      <JsonLd data={serviceJsonLd({ name: serviceName, description: serviceDescription, path })} />
       <JsonLd data={faqJsonLd(faq, "ar")} />
     </>
   );

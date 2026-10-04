@@ -37,6 +37,16 @@ export interface ShowcaseScene {
   /** see PortraitCamera; absent scenes fall back to a scaled-down desktop framing */
   portrait?: PortraitCamera;
   /**
+   * Real, measured half-width/half-height of this scene's meaningful content
+   * (hero device + its context cards - see kit.ts's contentBounds()), centred
+   * on `portrait.target`. When present, the portrait camera distance is
+   * derived from this plus the actual device aspect ratio and FOV, so the
+   * full composition is guaranteed to fit on screen at any portrait width
+   * instead of only at the one aspect ratio `portrait.dist` happened to be
+   * tuned for.
+   */
+  portraitBounds?: { halfWidth: number; halfHeight: number };
+  /**
    * Advances this scene's own animation clock by `dtMs`. Only present when the
    * scene has a storytelling sequence (absent, e.g., under reduced motion).
    * Returns true while another frame should be scheduled soon; mountShowcase

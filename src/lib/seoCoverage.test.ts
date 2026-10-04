@@ -1,6 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
+import { createElement } from "react";
+import { renderToString } from "react-dom/server";
 
 vi.mock("@/lib/supabase/admin", () => ({
   supabaseAdmin: {
@@ -17,6 +19,11 @@ vi.mock("@/lib/supabase/admin", () => ({
   },
 }));
 vi.mock("@/lib/posts", () => ({ fetchPublishedPosts: async () => [] }));
+let mockPathname = "/services";
+vi.mock("next/navigation", () => ({ usePathname: () => mockPathname, useRouter: () => ({ push: vi.fn() }) }));
+vi.mock("next/link", () => ({
+  default: ({ href, children, ...rest }: { href: string; children: unknown }) => createElement("a", { href, ...rest }, children as never),
+}));
 
 import sitemap from "@/app/sitemap";
 import { classifyRoute } from "@/lib/auth/routeAccess";
@@ -24,6 +31,7 @@ import robots from "@/app/robots";
 import translations from "./translations";
 import { dataAnalyticsCopy, powerBiCopy } from "./serviceLandingCopy";
 import { faqJsonLd, serviceJsonLd } from "./structuredData";
+import { LanguageProvider } from "./LanguageContext";
 
 const ROOT = path.resolve(__dirname, "../..");
 const SERVICE_PATHS = [
@@ -68,6 +76,22 @@ describe("SEO coverage", () => {
     }
   });
 
+  it("emits the same number of Service entries on the English and Arabic services overview (no overview-page schema mismatch)", async () => {
+    const { default: EnServicesPage } = await import("@/app/(en)/(corporate)/services/page");
+    const { default: ArServicesPage } = await import("@/app/(ar)/ar/(corporate)/services/page");
+
+    mockPathname = "/services";
+    const enHtml = renderToString(createElement(LanguageProvider, null, createElement(EnServicesPage)));
+    mockPathname = "/ar/services";
+    const arHtml = renderToString(createElement(LanguageProvider, null, createElement(ArServicesPage)));
+
+    const countServiceEntries = (html: string) => (html.match(/"@type":"Service"/g) ?? []).length;
+    const enCount = countServiceEntries(enHtml);
+    const arCount = countServiceEntries(arHtml);
+    expect(enCount).toBeGreaterThan(0);
+    expect(arCount).toBe(enCount);
+  });
+
   it("gives each service page a unique title, description, and its own canonical path", async () => {
     const seen = new Set<string>();
     for (const p of SERVICE_PATHS) {
@@ -108,10 +132,10 @@ describe("service landing copy", () => {
     }
   });
 
-  it("appended Dubai/UAE FAQs to the existing AI agents, WhatsApp and ML pages in both languages", () => {
+  it("keeps AI agents, WhatsApp and ML FAQs geography-neutral and parallel across languages", () => {
     for (const key of ["aiAgentsAutomation", "whatsappAutomation", "machineLearning"] as const) {
       expect(translations.ar[key].faq.length).toBe(translations.en[key].faq.length);
-      expect(translations.en[key].faq.some((f) => /Dubai/.test(f.q))).toBe(true);
+      expect(translations.en[key].faq.some((f) => /Dubai/.test(f.q))).toBe(false);
     }
   });
 });

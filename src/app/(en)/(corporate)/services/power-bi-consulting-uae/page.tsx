@@ -5,9 +5,9 @@ import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd, faqJsonLd, serviceJsonLd } from "@/lib/structuredData";
 import { powerBiCopy } from "@/lib/serviceLandingCopy";
 
-const title = "Power BI Consulting UAE | ZentexAI";
+const title = "Power BI Consulting | ZentexAI";
 const description =
-  "Power BI consulting for UAE businesses: management dashboards, data models, scheduled refresh, access design, report reviews and team training.";
+  "Power BI consulting: management dashboards, data models, scheduled refresh, access design, report reviews and team training.";
 const PATH = "/services/power-bi-consulting-uae";
 
 export const metadata: Metadata = mirroredPageMetadata(PATH, "en", title, description);
@@ -19,15 +19,14 @@ export default function PowerBiConsultingPage() {
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
           { name: "Services", path: "/services" },
-          { name: "Power BI Consulting UAE", path: PATH },
+          { name: "Power BI Consulting", path: PATH },
         ])}
       />
       <JsonLd
         data={serviceJsonLd({
           name: "Power BI Consulting",
-          description: "Power BI dashboards, data models, refresh and access setup, report reviews, and training for UAE businesses.",
+          description: "Power BI dashboards, data models, refresh and access setup, report reviews, and training.",
           path: PATH,
-          areaServed: ["United Arab Emirates"],
         })}
       />
       <JsonLd data={faqJsonLd(powerBiCopy.en.faq)} />

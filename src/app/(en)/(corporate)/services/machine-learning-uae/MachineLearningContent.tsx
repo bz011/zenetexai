@@ -124,9 +124,9 @@ export default function MachineLearningContent() {
       <section className="border-t border-line px-6 py-12 md:py-16">
         <div className="container-page">
           <RelatedLinkRow items={[
-              { href: "/services/data-analytics-uae", en: "Data Analytics Services UAE", ar: "خدمات تحليل البيانات في الإمارات" },
-              { href: "/services/power-bi-consulting-uae", en: "Power BI Consulting UAE", ar: "استشارات Power BI في الإمارات" },
-              { href: "/services/ai-agents-automation-uae", en: "AI Agents & Automation UAE", ar: "وكلاء الذكاء الاصطناعي والأتمتة في الإمارات" },
+              { href: "/services/data-analytics-uae", en: "Data Analytics Services", ar: "خدمات تحليل البيانات" },
+              { href: "/services/power-bi-consulting-uae", en: "Power BI Consulting", ar: "استشارات Power BI" },
+              { href: "/services/ai-agents-automation-uae", en: "AI Agents & Automation", ar: "وكلاء الذكاء الاصطناعي والأتمتة" },
               { href: "/blog", en: "ZentexAI Blog" },
             ]} />
         </div>

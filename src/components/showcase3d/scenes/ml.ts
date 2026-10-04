@@ -14,7 +14,7 @@ import {
 } from "three";
 import { Timeline, createTrailPulse, easeInOutCubic, type TrailPulse } from "../anim";
 import { buildCard } from "../devices";
-import { canvasTexture, lightPoolTexture, softShadowTexture, vignetteTexture, makeCanvas, type ShowcaseKit } from "../kit";
+import { canvasTexture, contentBounds, lightPoolTexture, softShadowTexture, vignetteTexture, makeCanvas, type ShowcaseKit } from "../kit";
 import { mix, tapeGeometry } from "../../core3d/geometry";
 import type { UiFont } from "../uiFont";
 import type { Translations } from "@/lib/translations";
@@ -393,13 +393,15 @@ export function buildMlScene(kit: ShowcaseKit, font: UiFont, reducedMotion: bool
     };
   }
 
+  const portraitTarget = new Vector3(CORE_POS[0], CORE_POS[1] + 0.3, CORE_POS[2]);
   return Promise.resolve({
     group,
     anchors: {},
     lights,
     tick,
     camera: { fov: 24, dist: 32, target: new Vector3(0, -0.5, 0), yaw: 4, pitch: 3, designAspect: 1.6 },
-    portrait: { target: new Vector3(CORE_POS[0], CORE_POS[1] + 0.3, CORE_POS[2]), dist: 30, yaw: 4, pitch: 3 },
+    portrait: { target: portraitTarget, dist: 30, yaw: 4, pitch: 3 },
+    portraitBounds: contentBounds([histCard.group, core.group, predCard.group], portraitTarget),
     dispose() {
       group.traverse((o) => {
         const mm = o as { isMesh?: boolean; geometry?: { dispose(): void } };

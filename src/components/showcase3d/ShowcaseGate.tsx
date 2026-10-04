@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState, type ComponentType, type ReactNode } from "react";
 import { readFlow3DEnv } from "@/components/flow3d/capability";
-import { resolveShowcaseParams, type ShowcaseParams, type ShowcaseServiceId } from "./showcaseParam";
+import { resolveShowcaseParams, shouldLoadShowcase, type ShowcaseParams, type ShowcaseServiceId } from "./showcaseParam";
 
 interface HeroProps {
   initial: ShowcaseServiceId;
@@ -26,7 +26,7 @@ export default function ShowcaseGate({ enabled, children }: { enabled: boolean; 
     if (!enabled) return;
     const params = resolveShowcaseParams(window.location.search);
     if (!params) return;
-    if (!readFlow3DEnv().webgl) return;
+    if (!shouldLoadShowcase(readFlow3DEnv())) return;
     let cancelled = false;
     import("./ShowcaseHero").then((m) => {
       if (!cancelled) setActive({ Hero: m.default, params });

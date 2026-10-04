@@ -138,10 +138,14 @@ describe("rendered product page", () => {
     expect(html).not.toContain("DB description en");
   });
 
-  it("leaves other product pages untouched (PMP Mastery Program still shows Overview and its included list)", () => {
+  it("leaves other product pages untouched (PMP Mastery Program still shows its description once and its included list)", () => {
     const mastery = product({ slug: "pmp-mastery-program", type: "course", title_en: "PMP Mastery Program", capabilities: ["course:pmp"] });
     const html = page("/courses/pmp-mastery-program", mastery);
-    expect(html).toContain("Overview");
+    // The description now renders once, under the H1 - the separate "Overview"
+    // section was removed as a literal duplicate of the same text (see
+    // ProductDetailContent.tsx), not just relabeled.
+    expect(html.split("DB description en").length - 1).toBe(1);
+    expect(html).not.toContain(">Overview<");
     expect(html).toContain("PMP Mastery Program course access");
     expect(html).not.toContain(simulatorPageCopy.en.hero_h1);
   });

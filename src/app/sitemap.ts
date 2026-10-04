@@ -19,7 +19,9 @@ export const revalidate = 3600;
  * file - no package needed). Lists ONLY real, public, canonical pages that
  * return 200:
  *  - static marketing pages (home, services, the AI Agents & Automation UAE
- *    landing page, academy, about, contact, resources, blog index)
+ *    landing page, academy, about, contact, resources, blog index, legal
+ *    pages) - linked from the footer on every page, so already crawlable
+ *    without the sitemap, but listed here too so they aren't sitemap-orphans
  *  - published product pages (currently: PMP Mastery Program, PMP Exam
  *    Simulator) - read directly by slug/is_published, not hardcoded, so an
  *    admin publishing/unpublishing a product is reflected automatically
@@ -69,6 +71,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/resources`, changeFrequency: "weekly" },
     { url: `${SITE_URL}/blog`, changeFrequency: "weekly" },
     { url: `${SITE_URL}/courses`, changeFrequency: "monthly" },
+    { url: `${SITE_URL}/privacy`, changeFrequency: "yearly" },
+    { url: `${SITE_URL}/terms`, changeFrequency: "yearly" },
+    { url: `${SITE_URL}/refund`, changeFrequency: "yearly" },
   ]);
 
   let productEntries: MetadataRoute.Sitemap = [];

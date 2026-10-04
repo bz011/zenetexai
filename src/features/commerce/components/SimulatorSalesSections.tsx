@@ -67,7 +67,7 @@ export function SimulatorDetails() {
         <h2 className="mt-2 text-xl font-bold text-white">{copy.compare_h2}</h2>
         <p className="mt-2 text-body leading-relaxed text-slate-400">{copy.compare_sub}</p>
         <SimulatorLoopVisual />
-        <div className="mt-8 grid gap-4">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2">
           {[
             { tag: copy.mock_tag, title: copy.mock_title, intro: copy.mock_intro, points: copy.mock_points },
             { tag: copy.practice_tag, title: copy.practice_title, intro: copy.practice_intro, points: copy.practice_points },
@@ -90,7 +90,7 @@ export function SimulatorDetails() {
 
       <section>
         <h2 className="text-xl font-bold text-white">{copy.features_h2}</h2>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {copy.features.map((item) => (
             <div key={item.title} className="card p-4">
               <h3 className="text-body font-semibold text-white">{item.title}</h3>

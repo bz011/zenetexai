@@ -38,7 +38,8 @@ export default function ContactContent() {
                           href={item.href}
                           target={item.href.startsWith("http") ? "_blank" : undefined}
                           rel="noopener noreferrer"
-                          className="mt-0.5 block text-[14px] font-medium text-ink hover:text-accent-fg transition-colors"
+                          dir="ltr"
+                          className="mt-0.5 block text-[14px] font-medium text-ink hover:text-accent-fg transition-colors rtl:text-right"
                         >
                           {item.value}
                         </a>

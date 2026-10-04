@@ -15,7 +15,7 @@ import {
 } from "three";
 import { Timeline, createTrailPulse, easeInOutCubic, type TrailPulse } from "../anim";
 import { buildCard, buildDashboardPanel } from "../devices";
-import { canvasTexture, lightPoolTexture, makeCanvas, softShadowTexture, vignetteTexture, type ShowcaseKit } from "../kit";
+import { canvasTexture, contentBounds, lightPoolTexture, makeCanvas, softShadowTexture, vignetteTexture, type ShowcaseKit } from "../kit";
 import { mix, tapeGeometry } from "../../core3d/geometry";
 import { roundedPlane, roundedSlab } from "../shapes";
 import type { UiFont } from "../uiFont";
@@ -477,6 +477,8 @@ export function buildAcademyScene(kit: ShowcaseKit, font: UiFont, reducedMotion:
     };
   }
 
+  // the laptop's screen, in world space (content is scaled 1.08 and offset (0.15, 0.7, 0) as a group)
+  const academyPortraitTarget = new Vector3(0.15 + 1.08 * LAPTOP_POS[0], 0.7 + 1.08 * (LAPTOP_POS[1] + SCREEN.y), 1.08 * LAPTOP_POS[2]);
   return Promise.resolve({
     group,
     anchors: {},
@@ -484,12 +486,12 @@ export function buildAcademyScene(kit: ShowcaseKit, font: UiFont, reducedMotion:
     tick,
     camera: { fov: 24, dist: 32, target: new Vector3(0, -0.5, 0), yaw: 4, pitch: 3, designAspect: 1.6 },
     portrait: {
-      // the laptop's screen, in world space (content is scaled 1.08 and offset (0.15, 0.7, 0) as a group)
-      target: new Vector3(0.15 + 1.08 * LAPTOP_POS[0], 0.7 + 1.08 * (LAPTOP_POS[1] + SCREEN.y), 1.08 * LAPTOP_POS[2]),
+      target: academyPortraitTarget,
       dist: 30,
       yaw: 4,
       pitch: 3,
     },
+    portraitBounds: contentBounds([courseCard.group, laptop, simCard.group, certCard.group, aiCard.group], academyPortraitTarget),
     dispose() {
       group.traverse((o) => {
         const mm = o as { isMesh?: boolean; geometry?: { dispose(): void } };

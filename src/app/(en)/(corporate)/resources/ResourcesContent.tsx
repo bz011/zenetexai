@@ -9,13 +9,9 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 }
 
-function excerpt(body: string, maxLen = 120) {
-  const text = body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-  return text.length > maxLen ? text.slice(0, maxLen) + "…" : text;
-}
-
 interface Props {
-  latestPosts: PublishedPost[];
+  // excerpt is computed server-side in page.tsx - see HomeContent.tsx's Props comment.
+  latestPosts: (PublishedPost & { excerpt: string })[];
 }
 
 export default function ResourcesContent({ latestPosts }: Props) {
@@ -65,7 +61,7 @@ export default function ResourcesContent({ latestPosts }: Props) {
                 <Link key={post.id} href={`/blog/${post.slug}`} className="card card-hover block p-6">
                   <p className="text-[11px] text-ink-3">{formatDate(post.published_at)}</p>
                   <h3 className="mt-2 text-[15px] font-semibold text-ink leading-snug">{post.title}</h3>
-                  <p className="mt-2 text-[13px] leading-relaxed text-ink-2">{excerpt(post.body)}</p>
+                  <p className="mt-2 text-[13px] leading-relaxed text-ink-2">{post.excerpt}</p>
                 </Link>
               ))}
             </div>

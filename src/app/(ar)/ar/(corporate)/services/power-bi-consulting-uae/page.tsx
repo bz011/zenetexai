@@ -13,9 +13,9 @@ export default function Page() {
     <>
       <ArabicServiceJsonLd
         enPath={EN_PATH}
-        crumbName="استشارات Power BI في الإمارات"
+        crumbName="استشارات Power BI"
         serviceName="استشارات Power BI"
-        serviceDescription="لوحات معلومات ونماذج بيانات Power BI وإعداد التحديث والوصول ومراجعة التقارير والتدريب للشركات في الإمارات."
+        serviceDescription="لوحات معلومات ونماذج بيانات Power BI وإعداد التحديث والوصول ومراجعة التقارير والتدريب."
         faq={translations.ar.powerBi.faq}
       />
       <ServiceLandingContent copyKey="powerBi" mechanism="powerBi" />

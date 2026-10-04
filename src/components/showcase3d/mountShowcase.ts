@@ -58,6 +58,38 @@ const DOLLY = 0.05;
 /** below this host aspect (w/h) the portrait framing is used */
 const TALL_ASPECT = 0.85;
 const PORTRAIT_DESIGN_ASPECT = 0.62;
+/** breathing room beyond the tightest fit that still shows every meaningful object, so nothing sits flush against the edge */
+const PORTRAIT_FIT_MARGIN = 1.12;
+/**
+ * These scenes compose wide (cards spread left/right of the hero device for
+ * a landscape stage); the narrow horizontal FOV a portrait phone aspect
+ * produces means a literal "fit every card" distance pulls back far enough
+ * that the hero device itself shrinks to a small fraction of the screen -
+ * technically nothing is cropped, but it reads as empty, not "premium." This
+ * caps how much further than the hero device's own close framing (its
+ * `portrait.dist`) the camera is allowed to pull back, so the hero stays the
+ * dominant, legible subject and only the nearest context cards are pulled
+ * into frame - not the full spread.
+ */
+const PORTRAIT_MAX_PULLBACK = 2.0;
+
+/**
+ * The distance a PerspectiveCamera must sit at a scene's look-at point so
+ * that a box of half-width `hw` / half-height `hh` is fully inside both the
+ * vertical and horizontal field of view, at the given vertical `fovDeg` and
+ * `aspect` (w/h). Three.js's `fov` is vertical; horizontal FOV narrows (not
+ * just "the same angle on a different axis") as aspect drops below 1, which
+ * is exactly why a single hand-tuned portrait distance tuned for one phone's
+ * aspect under-filled or cropped every other one - this recomputes the
+ * correct distance for whatever aspect the device actually has.
+ */
+export function fitDistance(hw: number, hh: number, fovDeg: number, aspect: number, margin: number): number {
+  const vHalf = (fovDeg * Math.PI) / 360;
+  const hHalf = Math.atan(Math.tan(vHalf) * aspect);
+  const dV = hh / Math.tan(vHalf);
+  const dH = hw / Math.tan(hHalf);
+  return Math.max(dV, dH) * margin;
+}
 
 export interface ShowcaseHandle {
   setScene(id: ShowcaseServiceId): void;
@@ -216,16 +248,26 @@ export default async function mountShowcase(
     const tx = tall ? p.target.x : c.target.x;
     const ty0 = tall ? p.target.y : c.target.y;
     const tz = tall ? p.target.z : c.target.z;
-    const dist = tall ? p.dist : c.dist;
-    const designAspect = tall ? PORTRAIT_DESIGN_ASPECT : c.designAspect;
     const yawDeg = tall ? p.yaw ?? c.yaw : c.yaw;
     const pitchDeg = tall ? p.pitch ?? c.pitch : c.pitch;
     const e = smoothstep(fade);
     const ty = ty0 + 0.3 * e; // the dissolving scene settles very slightly
     const yaw = (yawDeg * Math.PI) / 180 + cam.yaw;
     const pitch = (pitchDeg * Math.PI) / 180 + cam.pitch;
-    // narrower hosts step back so nothing crops; the transition eases the camera back a touch
-    const d = dist * Math.max(1, designAspect / camera.aspect) * (1 + DOLLY * e);
+    const bounds = current.portraitBounds;
+    // Portrait with measured bounds: pull back enough to bring real context
+    // cards into frame (derived from the scene's actual geometry and the
+    // device's actual aspect, not a single hand-tuned guess) - but capped
+    // relative to the hero device's own close framing (PORTRAIT_MAX_PULLBACK)
+    // so a wide card spread can't push the hero itself down to a sliver.
+    // Desktop/landscape, or a portrait scene with no bounds yet, keeps the
+    // previous single-hand-tuned-distance behavior; the transition eases the
+    // camera back a touch either way.
+    const d =
+      tall && bounds
+        ? Math.min(fitDistance(bounds.halfWidth, bounds.halfHeight, c.fov, camera.aspect, PORTRAIT_FIT_MARGIN), p!.dist * PORTRAIT_MAX_PULLBACK) *
+          (1 + DOLLY * e)
+        : (tall ? p!.dist : c.dist) * Math.max(1, (tall ? PORTRAIT_DESIGN_ASPECT : c.designAspect) / camera.aspect) * (1 + DOLLY * e);
     camera.position.set(tx - Math.sin(yaw) * d * Math.cos(pitch), ty + Math.sin(pitch) * d, tz + Math.cos(yaw) * d * Math.cos(pitch));
     lookAt.set(tx, ty, tz);
     camera.lookAt(lookAt);

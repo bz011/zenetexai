@@ -55,7 +55,7 @@ describe("PMP discoverability section renders one language per page", () => {
   it("keeps the same English content and links on the English page as the English column had", () => {
     const html = render("/academy", { variant: "course", englishOnly: true });
     for (const s of [
-      "PMP Course in Arabic and English for Professionals in the UAE and MENA",
+      "PMP Course in Arabic and English for Working Professionals",
       "Is there a PMP course in Arabic?",
       'href="/courses/pmp-mastery-program"',
       'href="/courses/pmp-exam-simulator"',
@@ -74,7 +74,7 @@ describe("PMP discoverability section renders one language per page", () => {
 
   it("keeps the English academy title and hreflang set intact", async () => {
     const { metadata } = await import("@/app/(en)/(academy)/academy/page");
-    expect(metadata.title).toBe("PMP Course in Arabic & English (UAE) | ZentexAI Academy");
+    expect(metadata.title).toBe("PMP Course in Arabic & English | ZentexAI Academy");
     expect((metadata.alternates as { languages: Record<string, string> }).languages).toEqual({ en: "/academy", ar: "/ar/academy", "x-default": "/academy" });
   });
 });

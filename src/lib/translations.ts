@@ -509,7 +509,7 @@ const en: Translations = {
     resume: "Resume", results: "Results", previous: "← Previous", next: "Next →", pageOf: "Page {a} of {b}",
   },
   footer: {
-    tagline: "AI solutions, project management consulting, and professional learning — for the MENA region.",
+    tagline: "AI agents, data & analytics, and machine learning — backed by project management consulting and professional learning.",
     rights: "All rights reserved.",
   },
   shared: {
@@ -568,17 +568,35 @@ const en: Translations = {
   services: {
     hero_eyebrow: "What We Offer",
     hero_h1: "Services",
-    hero_sub: "AI solutions, AI consulting, and project management consulting for businesses in the UAE and across the region — built to produce real outcomes, not just recommendations.",
+    hero_sub: "AI agents, data & analytics, and machine learning — backed by project management consulting — built to produce real outcomes, not just recommendations.",
     categories: [
       {
         id: "ai-solutions",
-        title: "AI Solutions",
+        title: "AI Agents & Automation",
         desc: "Practical AI systems built to do real work inside your organization.",
         examples: ["AI Agents", "Workflow Automation", "Business Chatbots", "Knowledge Assistants", "Custom AI Applications"],
         learnMoreHref: "/services/ai-agents-automation-uae",
         learnMoreLabel: "Learn more about AI agents & automation →",
         learnMoreHref2: "/services/whatsapp-automation-uae",
         learnMoreLabel2: "See WhatsApp automation & AI agents →",
+      },
+      {
+        id: "data-analytics",
+        title: "Data & Analytics",
+        desc: "KPI frameworks, clean data models, and dashboards built around the decisions your business actually needs to make.",
+        examples: ["KPI Frameworks", "Data Audits", "Dashboards & Reporting", "Power BI", "Reporting Automation"],
+        learnMoreHref: "/services/data-analytics-uae",
+        learnMoreLabel: "Learn more about data analytics →",
+        learnMoreHref2: "/services/power-bi-consulting-uae",
+        learnMoreLabel2: "See Power BI consulting →",
+      },
+      {
+        id: "machine-learning",
+        title: "Machine Learning",
+        desc: "Practical machine learning for forecasting, classification, and anomaly detection.",
+        examples: ["Demand Forecasting", "Classification", "Anomaly Detection", "Predictive Analytics"],
+        learnMoreHref: "/services/machine-learning-uae",
+        learnMoreLabel: "Learn more about machine learning services →",
       },
       {
         id: "ai-consulting",
@@ -591,14 +609,6 @@ const en: Translations = {
         title: "Project Management Consulting",
         desc: "Hands-on project delivery expertise — from setting up a PMO to recovering a troubled project.",
         examples: ["PMO Setup", "Agile Transformation", "Hybrid Delivery", "Project Recovery", "Risk Management"],
-      },
-      {
-        id: "machine-learning",
-        title: "Machine Learning",
-        desc: "Practical machine learning for forecasting, classification, and anomaly detection.",
-        examples: ["Demand Forecasting", "Classification", "Anomaly Detection", "Predictive Analytics"],
-        learnMoreHref: "/services/machine-learning-uae",
-        learnMoreLabel: "Learn more about machine learning services →",
       },
     ],
     process_eyebrow: "How We Work",
@@ -617,7 +627,7 @@ const en: Translations = {
 
   aiAgentsAutomation: {
     hero_eyebrow: "AI Agents & Automation",
-    hero_h1: "AI Agents & Business Automation for UAE Businesses",
+    hero_h1: "AI Agents & Business Automation for Real Operations",
     hero_sub: "Secure, production-ready AI agents that connect knowledge, workflows, and business systems to perform approved work — with human oversight where it matters.",
     hero_cta1: "Discuss Your AI Workflow",
     hero_cta2: "Explore Use Cases",
@@ -664,8 +674,8 @@ const en: Translations = {
     ],
 
     usecases_eyebrow: "Use Cases",
-    usecases_h2: "UAE Business Use Cases",
-    usecases_sub: "Built for UAE SMEs, service businesses, clinics, professional services, education and training providers, and operations teams looking to automate real workflows — not just add a chat widget.",
+    usecases_h2: "Business Use Cases",
+    usecases_sub: "Built for SMEs, service businesses, clinics, professional services, education and training providers, and operations teams looking to automate real workflows — not just add a chat widget.",
     usecases: [
       { title: "Customer Service", desc: "An AI agent answers grounded, company-specific questions from customers and escalates anything it can't confidently resolve to your team." },
       { title: "Lead Qualification", desc: "A new enquiry is captured, qualified against your criteria, logged in your CRM, and queued for the right follow-up." },
@@ -692,11 +702,10 @@ const en: Translations = {
       { q: "What is an AI agent?", a: "An AI agent is a system that can understand a request, decide what to do about it within defined boundaries, take action through your approved systems, verify the result, and escalate to a person when needed — rather than only generating a reply." },
       { q: "How is an AI agent different from a chatbot?", a: "A chatbot typically responds to messages. A production AI agent can also make bounded decisions and take real actions in your systems, under permissions you define." },
       { q: "Can an AI agent connect to our existing systems?", a: "Yes, where an integration is technically possible and you approve the access. Agents are built to work through defined, permitted integrations rather than broad, unrestricted access." },
-      { q: "Can AI agents work with WhatsApp?", a: "Yes. WhatsApp is a common channel for enquiries, appointment booking, and customer communication in the UAE, and can be connected as one of an agent's approved channels." },
+      { q: "Can AI agents work with WhatsApp?", a: "Yes. WhatsApp is a common channel for enquiries, appointment booking, and customer communication, and can be connected as one of an agent's approved channels." },
       { q: "Can the system hand conversations to employees?", a: "Yes — escalation to a human is a core part of how these agents are designed, not an afterthought." },
       { q: "How do you control what an AI agent is allowed to do?", a: "Through explicit permission boundaries defined during the design phase, covering what the agent can know, decide, and act on, and what always requires human approval." },
       { q: "How long does an AI automation project take?", a: "Timelines depend on the complexity of the workflow and the systems being integrated. We define a realistic timeline together during the Discover and Design phases rather than quoting a fixed duration upfront." },
-      { q: "Do you build AI agents for businesses in Dubai and across the UAE?", a: "ZentexAI designs AI agents and business automation for companies across the UAE, including Dubai and Abu Dhabi, and the wider Middle East. Every project starts with a scoping conversation about your workflow, systems, and data, so we can confirm what is realistic before any build begins." },
       { q: "What does AI agent development involve?", a: "It usually covers defining the task the agent should own, connecting it to the right knowledge and business systems, setting permissions and human-approval points, testing against real scenarios, and monitoring after launch. The goal is a working, supervised agent, not a demo." },
     ],
 
@@ -707,7 +716,7 @@ const en: Translations = {
 
   whatsappAutomation: {
     hero_eyebrow: "WhatsApp Automation & AI Agents",
-    hero_h1: "WhatsApp Automation & AI Agents for UAE Businesses",
+    hero_h1: "WhatsApp Automation & AI Agents for Real Business Workflows",
     hero_sub: "Turn WhatsApp conversations into controlled business workflows — answer questions, qualify leads, book appointments, update business systems, follow up, and escalate to your team when needed.",
     hero_cta1: "Discuss Your WhatsApp Workflow",
     hero_cta2: "See What You Can Automate",
@@ -720,7 +729,7 @@ const en: Translations = {
 
     automate_eyebrow: "Capabilities",
     automate_h2: "What Can Be Automated",
-    automate_sub: "Real WhatsApp workflows we build for UAE businesses.",
+    automate_sub: "Real WhatsApp workflows we build for growing businesses.",
     automate_cards: [
       { title: "Customer Enquiries", desc: "Grounded answers to common questions, using your approved business information." },
       { title: "Lead Capture & Qualification", desc: "Collects requirements and identifies the appropriate next step for each enquiry." },
@@ -766,7 +775,7 @@ const en: Translations = {
     ],
 
     lang_h2: "Built for Arabic and English Conversations",
-    lang_p: "Multilingual workflows can be designed for UAE businesses, including both Arabic and English interactions. As with any AI system, accuracy depends on the specific language, dialect, and business context — we don't claim perfect understanding of every dialect, and human escalation stays available for anything the agent isn't confident about.",
+    lang_p: "Multilingual workflows can be designed for Arabic and English interactions. As with any AI system, accuracy depends on the specific language, dialect, and business context — we don't claim perfect understanding of every dialect, and human escalation stays available for anything the agent isn't confident about.",
 
     platform_h2: "Built on the Official WhatsApp Business Platform",
     platform_p: "Production WhatsApp automation should run on the official WhatsApp Business Platform, not unofficial methods that risk your business number being restricted. The platform has its own rules around business messaging, including approved templates for outbound messages sent outside the customer service window — we design workflows that respect those rules rather than work around them.",
@@ -785,8 +794,8 @@ const en: Translations = {
       { title: "Controlled CRM & Calendar Access", desc: "The agent only reads and writes the specific records it's permitted to." },
     ],
 
-    usecases_eyebrow: "UAE Use Cases",
-    usecases_h2: "Built for Real UAE Workflows",
+    usecases_eyebrow: "Use Cases",
+    usecases_h2: "Built for Real Business Workflows",
     usecases_sub: "Examples of the kind of WhatsApp workflows we design — not case studies, but the categories of work these systems handle well.",
     usecases: [
       { title: "Clinics", desc: "Appointment enquiries, booking requests, reminders, and escalation to staff for anything requiring medical judgment." },
@@ -822,7 +831,6 @@ const en: Translations = {
       { q: "Do we need WhatsApp Business API?", a: "Production automation should run on the official WhatsApp Business Platform rather than unofficial methods, which can put your business number at risk. We help determine the right setup for your business." },
       { q: "How do you control what the AI agent is allowed to do?", a: "Through explicit permission boundaries defined during the design phase — covering what the agent can know, decide, and act on, and what always requires human approval." },
       { q: "How long does implementation take?", a: "Timelines depend on workflow complexity, the number of integrations, and your WhatsApp setup. We define a realistic timeline together during the Discover and Map Workflow phases rather than quoting a fixed duration upfront." },
-      { q: "Can you automate WhatsApp for my Dubai or UAE business?", a: "ZentexAI builds WhatsApp automation and AI agents for UAE businesses, covering areas such as lead qualification, booking, and CRM handoff, with controlled human takeover. The exact setup depends on your systems and on WhatsApp Business platform requirements, which we review during scoping." },
       { q: "Does WhatsApp AI automation have to follow WhatsApp's rules?", a: "Yes. The WhatsApp Business platform has rules about customer opt-in and about message templates for business-initiated conversations. We design conversation flows to work within them and confirm the current requirements with you during scoping." },
     ],
 
@@ -833,7 +841,7 @@ const en: Translations = {
 
   machineLearning: {
     hero_eyebrow: "Machine Learning",
-    hero_h1: "Machine Learning Services for UAE Businesses",
+    hero_h1: "Machine Learning Services for Real Business Decisions",
     hero_sub: "Practical machine learning for forecasting, classification, and anomaly detection — built around your actual data and a clear business problem, not a generic model.",
     hero_cta1: "Discuss Your Data",
     hero_cta2: "See What's Possible",
@@ -875,7 +883,7 @@ const en: Translations = {
     compare_ml_desc: "Learns patterns from historical data to predict, classify, or detect outliers. The output is typically a prediction or a score that informs a decision.",
     compare_agents_label: "AI Agents & Automation",
     compare_agents_desc: "Understands a request and takes action across your systems. The output is typically a completed task, not a prediction.",
-    compare_link_label: "See AI Agents & Automation UAE",
+    compare_link_label: "See AI Agents & Automation",
 
     faq_eyebrow: "FAQ",
     faq_h2: "Common Questions",
@@ -885,7 +893,6 @@ const en: Translations = {
       { q: "Do you build custom models or use existing tools?", a: "The right approach depends on the problem. Sometimes a custom model is justified, and sometimes an existing tool or a simpler statistical method gets you there faster and more reliably. We recommend based on the problem, not a fixed toolset." },
       { q: "How long does a machine learning project take?", a: "Timelines depend heavily on data readiness and problem complexity — a project with clean, available historical data moves much faster than one starting from scattered or incomplete records. We give a realistic estimate after the data-readiness assessment, not before." },
       { q: "Is machine learning right for my business?", a: "Only if the problem is genuinely predictive, there's enough historical data to learn from, and there's a clear way to act on the result. Part of our first conversation is honestly assessing whether it's the right fit at all." },
-      { q: "Do you offer predictive analytics and forecasting for businesses in Dubai?", a: "ZentexAI's machine learning services are designed for businesses across the UAE, including Dubai and Abu Dhabi. Forecasting and predictive analytics projects are scoped around your own historical data and a specific business decision, so the first step is a conversation about the problem and the data available." },
       { q: "Do we need dashboards or clean reporting before machine learning?", a: "Often, yes. Models depend on reliable historical data, and if reporting is inconsistent today, fixing that first usually delivers value sooner and makes any later model more trustworthy. See our data analytics services for that foundation." },
     ],
 
@@ -908,7 +915,7 @@ const en: Translations = {
       { title: "Expert-Built Curriculum", desc: "Lessons and practice questions built around the current PMP Examination Content Outline." },
       { title: "Flexible Learning", desc: "Self-paced modules designed for busy professionals. Learn on your schedule." },
       { title: "Full Practice Engine", desc: "A large question bank, filterable practice sessions, and timed exam simulations." },
-      { title: "MENA-Focused", desc: "Bilingual content designed for the Gulf and MENA business landscape." },
+      { title: "Bilingual Learning", desc: "Content built in Arabic and English from the start, not translated after the fact." },
     ],
     programs_eyebrow: "Programs",
     programs_h2: "What's Available",
@@ -935,11 +942,11 @@ const en: Translations = {
   about: {
     hero_eyebrow: "Our Story",
     hero_h1: "About ZentexAI",
-    hero_sub: "An AI solutions, project management consulting, and professional learning company — built to deliver, not just advise.",
+    hero_sub: "An AI and technology company building agents, automation, data & analytics, and machine-learning systems — backed by project management consulting and professional learning. Built to deliver, not just advise.",
     mission_eyebrow: "Mission",
     mission_h2_line1: "Expertise that",
     mission_h2_line2: "actually delivers",
-    mission_p1: "ZentexAI exists to help organizations apply AI effectively and strengthen how they deliver projects — combining AI solutions, consulting, and professional learning under one roof.",
+    mission_p1: "ZentexAI exists to help organizations apply AI effectively and strengthen how they deliver projects — combining AI agents & automation, data & analytics, and machine learning with project management consulting and professional learning under one roof.",
     mission_p2: "We believe good AI adoption and good project management share the same foundation: clear thinking, realistic scope, and follow-through. That's what we build for our clients and teach through our programs.",
     vision_eyebrow: "Vision",
     vision_h2: "Where We're Headed",
@@ -959,7 +966,7 @@ const en: Translations = {
     founder: {
       name: "Zaid Al-Badareen",
       titles: ["Founder & CEO, ZentexAI", "Electrical Engineer", "PMP® Certified Project Management Professional", "MSc in Artificial Intelligence"],
-      bio: "Zaid Al-Badareen is the Founder and CEO of ZentexAI, an AI solutions and project management consulting company focused on helping organizations adopt practical artificial intelligence and deliver successful projects. He holds a Bachelor's degree in Electrical Engineering, is a PMP® certified project management professional, and holds a Master of Science (MSc) in Artificial Intelligence. Through ZentexAI, he combines engineering, project management, and AI expertise to help organizations implement practical AI solutions while supporting professionals in developing the project management skills needed to succeed in today's rapidly evolving workplace.",
+      bio: "Zaid Al-Badareen is the Founder and CEO of ZentexAI, an AI and technology company focused on helping organizations adopt practical artificial intelligence — AI agents & automation, data & analytics, and machine learning — and deliver successful projects. He holds a Bachelor's degree in Electrical Engineering, is a PMP® certified project management professional, and holds a Master of Science (MSc) in Artificial Intelligence. Through ZentexAI, he combines engineering, project management, and AI expertise to help organizations implement practical AI systems while supporting professionals in developing the project management skills needed to succeed in today's rapidly evolving workplace.",
     },
     cta_h2: "Want to work with us?",
     cta_p: "Tell us about your organization or your goals — we'll get back to you personally.",
@@ -1501,7 +1508,7 @@ const ar: Translations = {
     resume: "استئناف", results: "النتائج", previous: "← السابق", next: "التالي →", pageOf: "صفحة {a} من {b}",
   },
   footer: {
-    tagline: "حلول ذكاء اصطناعي، استشارات إدارة مشاريع، وتعليم احترافي — لمنطقة الشرق الأوسط وشمال أفريقيا.",
+    tagline: "وكلاء ذكاء اصطناعي، وتحليل بيانات، وتعلّم آلة — مدعومة باستشارات إدارة المشاريع والتعليم الاحترافي.",
     rights: "جميع الحقوق محفوظة.",
   },
   shared: {
@@ -1560,17 +1567,35 @@ const ar: Translations = {
   services: {
     hero_eyebrow: "ما نقدمه",
     hero_h1: "الخدمات",
-    hero_sub: "حلول ذكاء اصطناعي، واستشارات ذكاء اصطناعي، واستشارات إدارة مشاريع للشركات في دولة الإمارات وعبر المنطقة — مبنية لتحقيق نتائج فعلية، لا مجرد توصيات.",
+    hero_sub: "وكلاء ذكاء اصطناعي، وتحليل بيانات، وتعلّم آلة — مدعومة باستشارات إدارة المشاريع — مبنية لتحقيق نتائج فعلية، لا مجرد توصيات.",
     categories: [
       {
         id: "ai-solutions",
-        title: "حلول الذكاء الاصطناعي",
+        title: "وكلاء الذكاء الاصطناعي والأتمتة",
         desc: "أنظمة ذكاء اصطناعي عملية مبنية لتؤدي عملاً حقيقياً داخل مؤسستك.",
         examples: ["وكلاء ذكاء اصطناعي", "أتمتة سير العمل", "روبوتات محادثة للأعمال", "مساعدات معرفية", "تطبيقات ذكاء اصطناعي مخصصة"],
         learnMoreHref: "/services/ai-agents-automation-uae",
         learnMoreLabel: "اعرف المزيد عن وكلاء الذكاء الاصطناعي والأتمتة ←",
         learnMoreHref2: "/services/whatsapp-automation-uae",
         learnMoreLabel2: "اطّلع على أتمتة واتساب ووكلاء الذكاء الاصطناعي ←",
+      },
+      {
+        id: "data-analytics",
+        title: "تحليل البيانات",
+        desc: "أُطر مؤشرات الأداء ونماذج بيانات نظيفة ولوحات معلومات مبنية حول القرارات التي تحتاج مؤسستك فعلاً لاتخاذها.",
+        examples: ["أُطر مؤشرات الأداء", "تدقيق البيانات", "لوحات معلومات وتقارير", "Power BI", "أتمتة التقارير"],
+        learnMoreHref: "/services/data-analytics-uae",
+        learnMoreLabel: "اعرف المزيد عن تحليل البيانات ←",
+        learnMoreHref2: "/services/power-bi-consulting-uae",
+        learnMoreLabel2: "اطّلع على استشارات Power BI ←",
+      },
+      {
+        id: "machine-learning",
+        title: "تعلّم الآلة",
+        desc: "تعلّم آلة عملي للتنبؤ والتصنيف واكتشاف الحالات الشاذة.",
+        examples: ["التنبؤ بالطلب", "التصنيف", "اكتشاف الحالات الشاذة", "التحليلات التنبؤية"],
+        learnMoreHref: "/services/machine-learning-uae",
+        learnMoreLabel: "اعرف المزيد عن خدمات تعلّم الآلة ←",
       },
       {
         id: "ai-consulting",
@@ -1583,14 +1608,6 @@ const ar: Translations = {
         title: "استشارات إدارة المشاريع",
         desc: "خبرة عملية في تسليم المشاريع — من إنشاء مكتب إدارة المشاريع إلى إنقاذ مشروع متعثر.",
         examples: ["إنشاء مكتب إدارة المشاريع", "التحول إلى الأجايل", "التسليم الهجين", "إنقاذ المشاريع", "إدارة المخاطر"],
-      },
-      {
-        id: "machine-learning",
-        title: "تعلّم الآلة",
-        desc: "تعلّم آلة عملي للتنبؤ والتصنيف واكتشاف الحالات الشاذة.",
-        examples: ["التنبؤ بالطلب", "التصنيف", "اكتشاف الحالات الشاذة", "التحليلات التنبؤية"],
-        learnMoreHref: "/services/machine-learning-uae",
-        learnMoreLabel: "اعرف المزيد عن خدمات تعلّم الآلة ←",
       },
     ],
     process_eyebrow: "طريقة عملنا",
@@ -1609,7 +1626,7 @@ const ar: Translations = {
 
   aiAgentsAutomation: {
     hero_eyebrow: "وكلاء الذكاء الاصطناعي والأتمتة",
-    hero_h1: "وكلاء ذكاء اصطناعي وأتمتة أعمال للشركات في دولة الإمارات",
+    hero_h1: "وكلاء ذكاء اصطناعي وأتمتة أعمال لعمليات حقيقية",
     hero_sub: "وكلاء ذكاء اصطناعي آمنون وجاهزون للإنتاج يربطون المعرفة وسير العمل وأنظمة عملك لتنفيذ مهام معتمدة — مع إشراف بشري حيثما يلزم.",
     hero_cta1: "ناقش سير عملك مع الذكاء الاصطناعي",
     hero_cta2: "استكشف حالات الاستخدام",
@@ -1656,7 +1673,7 @@ const ar: Translations = {
     ],
 
     usecases_eyebrow: "حالات الاستخدام",
-    usecases_h2: "حالات استخدام لشركات في دولة الإمارات",
+    usecases_h2: "حالات استخدام للأعمال",
     usecases_sub: "مبني للشركات الصغيرة والمتوسطة، وشركات الخدمات، والعيادات، والمهن الاحترافية، ومقدمي التعليم والتدريب، وفرق العمليات التي تسعى لأتمتة سير عمل حقيقي — لا مجرد إضافة نافذة محادثة.",
     usecases: [
       { title: "خدمة العملاء", desc: "يجيب وكيل الذكاء الاصطناعي على أسئلة العملاء المبنية على معرفة معتمدة، ويصعّد ما لا يستطيع حله بثقة إلى فريقك." },
@@ -1684,11 +1701,10 @@ const ar: Translations = {
       { q: "ما هو وكيل الذكاء الاصطناعي؟", a: "وكيل الذكاء الاصطناعي هو نظام يستطيع فهم طلب ما، وتقرير ما يجب فعله حياله ضمن حدود محددة، وتنفيذ إجراء عبر أنظمتك المعتمدة، والتحقق من النتيجة، وتصعيد الأمر إلى شخص عند الحاجة — لا الاكتفاء بتوليد رد فقط." },
       { q: "ما الفرق بين وكيل الذكاء الاصطناعي وروبوت المحادثة؟", a: "عادةً ما يرد روبوت المحادثة على الرسائل فقط. أما وكيل الذكاء الاصطناعي الجاهز للإنتاج فيمكنه أيضاً اتخاذ قرارات محدودة وتنفيذ إجراءات حقيقية في أنظمتك، ضمن صلاحيات تحددها أنت." },
       { q: "هل يمكن لوكيل الذكاء الاصطناعي الاتصال بأنظمتنا الحالية؟", a: "نعم، حيثما يكون التكامل ممكناً تقنياً وتوافق أنت على الوصول إليه. يُبنى الوكلاء للعمل عبر تكاملات محددة ومصرّح بها بدلاً من وصول واسع وغير مقيّد." },
-      { q: "هل يمكن لوكلاء الذكاء الاصطناعي العمل عبر واتساب؟", a: "نعم. يُعد واتساب قناة شائعة للاستفسارات وحجز المواعيد والتواصل مع العملاء في دولة الإمارات، ويمكن ربطه كإحدى القنوات المعتمدة للوكيل." },
+      { q: "هل يمكن لوكلاء الذكاء الاصطناعي العمل عبر واتساب؟", a: "نعم. يُعد واتساب قناة شائعة للاستفسارات وحجز المواعيد والتواصل مع العملاء، ويمكن ربطه كإحدى القنوات المعتمدة للوكيل." },
       { q: "هل يمكن للنظام تحويل المحادثات إلى الموظفين؟", a: "نعم — التصعيد إلى شخص هو جزء أساسي من تصميم هذه الوكلاء، وليس فكرة لاحقة." },
       { q: "كيف تتحكمون بما يُسمح لوكيل الذكاء الاصطناعي بفعله؟", a: "من خلال حدود صلاحيات صريحة تُحدد أثناء مرحلة التصميم، تغطي ما يستطيع الوكيل معرفته وتقريره وتنفيذه، وما يتطلب دائماً موافقة بشرية." },
       { q: "كم يستغرق مشروع أتمتة الذكاء الاصطناعي؟", a: "تعتمد المدة الزمنية على تعقيد سير العمل والأنظمة المطلوب ربطها. نحدد جدولاً زمنياً واقعياً معاً خلال مرحلتي الاكتشاف والتصميم بدلاً من تحديد مدة ثابتة مسبقاً." },
-      { q: "هل تبنون وكلاء ذكاء اصطناعي للشركات في دبي وعموم الإمارات؟", a: "تصمم ZentexAI وكلاء الذكاء الاصطناعي وأتمتة الأعمال للشركات في عموم دولة الإمارات، بما في ذلك دبي وأبوظبي، ومنطقة الشرق الأوسط عموماً. يبدأ كل مشروع بحوار لتحديد النطاق حول سير عملك وأنظمتك وبياناتك، لنؤكد ما هو واقعي قبل بدء أي بناء." },
       { q: "ماذا يشمل تطوير وكلاء الذكاء الاصطناعي؟", a: "يشمل عادة تحديد المهمة التي سيتولاها الوكيل، وربطه بالمعرفة والأنظمة المناسبة، وتحديد الصلاحيات ونقاط الموافقة البشرية، والاختبار على سيناريوهات حقيقية، والمراقبة بعد الإطلاق. الهدف وكيل يعمل تحت الإشراف، لا مجرد عرض تجريبي." },
     ],
 
@@ -1699,7 +1715,7 @@ const ar: Translations = {
 
   whatsappAutomation: {
     hero_eyebrow: "أتمتة واتساب ووكلاء الذكاء الاصطناعي",
-    hero_h1: "أتمتة واتساب ووكلاء ذكاء اصطناعي للشركات في دولة الإمارات",
+    hero_h1: "أتمتة واتساب ووكلاء ذكاء اصطناعي لسير عمل حقيقي",
     hero_sub: "حوّل محادثات واتساب إلى سير عمل تجاري محكوم — أجب عن الأسئلة، وأهّل العملاء المحتملين، واحجز المواعيد، وحدّث أنظمة عملك، وتابع مع العملاء، وصعّد الأمر إلى فريقك عند الحاجة.",
     hero_cta1: "ناقش سير عمل واتساب الخاص بك",
     hero_cta2: "اطّلع على ما يمكن أتمتته",
@@ -1712,7 +1728,7 @@ const ar: Translations = {
 
     automate_eyebrow: "القدرات",
     automate_h2: "ما الذي يمكن أتمتته",
-    automate_sub: "سير عمل حقيقي عبر واتساب نبنيه للشركات في دولة الإمارات.",
+    automate_sub: "سير عمل حقيقي عبر واتساب نبنيه للشركات النامية.",
     automate_cards: [
       { title: "استفسارات العملاء", desc: "إجابات مبنية على معرفة معتمدة لأسئلة شائعة، باستخدام معلومات عملك المعتمدة." },
       { title: "استقطاب العملاء المحتملين وتأهيلهم", desc: "يجمع المتطلبات ويحدد الخطوة التالية المناسبة لكل استفسار." },
@@ -1758,7 +1774,7 @@ const ar: Translations = {
     ],
 
     lang_h2: "مبني لمحادثات باللغتين العربية والإنجليزية",
-    lang_p: "يمكن تصميم سير عمل متعدد اللغات للشركات في دولة الإمارات، بما يشمل التفاعل باللغتين العربية والإنجليزية. وكما هو الحال مع أي نظام ذكاء اصطناعي، تعتمد الدقة على اللغة واللهجة والسياق التجاري المحدد — لا ندّعي فهماً مثالياً لكل لهجة، ويبقى التصعيد إلى شخص متاحاً لأي حالة لا يكون الوكيل واثقاً منها.",
+    lang_p: "يمكن تصميم سير عمل متعدد اللغات يشمل التفاعل باللغتين العربية والإنجليزية. وكما هو الحال مع أي نظام ذكاء اصطناعي، تعتمد الدقة على اللغة واللهجة والسياق التجاري المحدد — لا ندّعي فهماً مثالياً لكل لهجة، ويبقى التصعيد إلى شخص متاحاً لأي حالة لا يكون الوكيل واثقاً منها.",
 
     platform_h2: "مبني على منصة واتساب بزنس الرسمية",
     platform_p: "يجب أن تعمل أتمتة واتساب الإنتاجية على منصة واتساب بزنس الرسمية، لا على طرق غير رسمية قد تعرّض رقم عملك التجاري لخطر التقييد. تمتلك المنصة قواعدها الخاصة المتعلقة بالمراسلة التجارية، بما في ذلك القوالب المعتمدة للرسائل الصادرة خارج نافذة خدمة العملاء — ونحن نصمم سير العمل بما يحترم هذه القواعد بدلاً من الالتفاف عليها.",
@@ -1777,8 +1793,8 @@ const ar: Translations = {
       { title: "وصول محكوم لنظام إدارة العملاء والتقويم", desc: "لا يقرأ الوكيل أو يكتب إلا السجلات المحددة المصرّح له بها." },
     ],
 
-    usecases_eyebrow: "حالات استخدام في دولة الإمارات",
-    usecases_h2: "مبني لسير عمل حقيقي في دولة الإمارات",
+    usecases_eyebrow: "حالات الاستخدام",
+    usecases_h2: "مبني لسير عمل حقيقي في الأعمال",
     usecases_sub: "أمثلة على نوعية سير عمل واتساب الذي نصممه — وليست دراسات حالة، بل فئات العمل التي تتعامل معها هذه الأنظمة بشكل جيد.",
     usecases: [
       { title: "العيادات", desc: "استفسارات المواعيد وطلبات الحجز والتذكيرات، والتصعيد إلى الموظفين لأي أمر يتطلب حكماً طبياً." },
@@ -1814,7 +1830,6 @@ const ar: Translations = {
       { q: "هل نحتاج إلى واجهة واتساب بزنس البرمجية؟", a: "يجب أن تعمل الأتمتة الإنتاجية على منصة واتساب بزنس الرسمية بدلاً من طرق غير رسمية قد تعرّض رقم عملك للخطر. نساعدك على تحديد الإعداد المناسب لعملك." },
       { q: "كيف تتحكمون بما يُسمح لوكيل الذكاء الاصطناعي بفعله؟", a: "من خلال حدود صلاحيات صريحة تُحدد أثناء مرحلة التصميم، تغطي ما يستطيع الوكيل معرفته وتقريره وتنفيذه، وما يتطلب دائماً موافقة بشرية." },
       { q: "كم يستغرق التنفيذ؟", a: "تعتمد المدة الزمنية على تعقيد سير العمل، وعدد التكاملات، وإعداد واتساب لديك. نحدد جدولاً زمنياً واقعياً معاً خلال مرحلتي الاكتشاف ورسم سير العمل بدلاً من تحديد مدة ثابتة مسبقاً." },
-      { q: "هل يمكنكم أتمتة واتساب لشركتي في دبي أو الإمارات؟", a: "تبني ZentexAI أتمتة واتساب ووكلاء ذكاء اصطناعي للشركات في الإمارات، تشمل مجالات مثل تأهيل العملاء المحتملين والحجوزات وتسليم البيانات إلى نظام إدارة العملاء، مع تسليم بشري مضبوط. يعتمد الإعداد الدقيق على أنظمتك وعلى متطلبات منصة WhatsApp Business التي نراجعها أثناء تحديد النطاق." },
       { q: "هل يجب أن تلتزم أتمتة واتساب بالذكاء الاصطناعي بقواعد واتساب؟", a: "نعم. لدى منصة WhatsApp Business قواعد بشأن موافقة العميل المسبقة وقوالب الرسائل للمحادثات التي تبدأها الشركة. نصمم تدفقات المحادثة لتعمل ضمنها ونؤكد معك المتطلبات الحالية أثناء تحديد النطاق." },
     ],
 
@@ -1825,7 +1840,7 @@ const ar: Translations = {
 
   machineLearning: {
     hero_eyebrow: "تعلّم الآلة",
-    hero_h1: "خدمات تعلّم الآلة للشركات في دولة الإمارات",
+    hero_h1: "خدمات تعلّم الآلة لقرارات عمل حقيقية",
     hero_sub: "تعلّم آلة عملي للتنبؤ والتصنيف واكتشاف الحالات الشاذة — مبني حول بياناتك الفعلية ومشكلة عمل واضحة، لا نموذج عام جاهز.",
     hero_cta1: "ناقش بياناتك",
     hero_cta2: "اطّلع على الإمكانيات",
@@ -1867,7 +1882,7 @@ const ar: Translations = {
     compare_ml_desc: "يتعلم الأنماط من البيانات التاريخية للتنبؤ أو التصنيف أو اكتشاف القيم الشاذة. النتيجة عادة تنبؤ أو درجة تُستخدم لاتخاذ قرار.",
     compare_agents_label: "وكلاء الذكاء الاصطناعي والأتمتة",
     compare_agents_desc: "يفهم طلباً وينفّذ إجراءً عبر أنظمتك. النتيجة عادة مهمة منجزة، لا تنبؤاً.",
-    compare_link_label: "اطّلع على وكلاء الذكاء الاصطناعي والأتمتة في الإمارات",
+    compare_link_label: "اطّلع على وكلاء الذكاء الاصطناعي والأتمتة",
 
     faq_eyebrow: "الأسئلة الشائعة",
     faq_h2: "أسئلة متكررة",
@@ -1877,7 +1892,6 @@ const ar: Translations = {
       { q: "هل تبنون نماذج مخصصة أم تستخدمون أدوات جاهزة؟", a: "يعتمد الأسلوب المناسب على المشكلة. أحياناً يكون النموذج المخصص مبرراً، وأحياناً تكون أداة جاهزة أو أسلوب إحصائي أبسط أسرع وأكثر موثوقية. نوصي بناءً على المشكلة، لا على أداة ثابتة مسبقاً." },
       { q: "كم يستغرق مشروع تعلّم الآلة؟", a: "تعتمد المدة الزمنية بشكل كبير على جاهزية البيانات وتعقيد المشكلة — فالمشروع ببيانات تاريخية نظيفة ومتاحة يتقدم أسرع بكثير من مشروع يبدأ من سجلات متفرقة أو غير مكتملة. نقدّم تقديراً واقعياً بعد تقييم جاهزية البيانات، لا قبله." },
       { q: "هل تعلّم الآلة مناسب لعملي؟", a: "فقط إذا كانت المشكلة تنبؤية فعلاً، وهناك بيانات تاريخية كافية للتعلم منها، وطريقة واضحة للتصرف بناءً على النتيجة. جزء من محادثتنا الأولى هو تقييم صادق لمدى ملاءمة الحل من الأساس." },
-      { q: "هل تقدمون التحليلات التنبؤية والتوقعات للشركات في دبي؟", a: "خدمات تعلّم الآلة من ZentexAI مصممة للشركات في عموم دولة الإمارات، بما في ذلك دبي وأبوظبي. تُحدَّد مشاريع التنبؤ والتحليلات التنبؤية حول بياناتك التاريخية وقرار عمل محدد، لذا فالخطوة الأولى حوار حول المشكلة والبيانات المتاحة." },
       { q: "هل نحتاج إلى لوحات معلومات أو تقارير نظيفة قبل تعلّم الآلة؟", a: "غالباً نعم. تعتمد النماذج على بيانات تاريخية موثوقة، وإذا كانت التقارير غير متسقة اليوم فإن إصلاح ذلك أولاً يحقق قيمة أسرع ويجعل أي نموذج لاحق أجدر بالثقة. راجع خدمات تحليل البيانات لدينا لهذا الأساس." },
     ],
 
@@ -1900,7 +1914,7 @@ const ar: Translations = {
       { title: "منهج مبني بعناية", desc: "دروس وأسئلة تدريبية مبنية حول مخطط محتوى امتحان PMP الحالي." },
       { title: "تعلّم مرن", desc: "وحدات بالوتيرة الذاتية مصممة للمهنيين المشغولين. تعلّم وفق جدولك." },
       { title: "محرك تدريب متكامل", desc: "بنك أسئلة كبير، جلسات تدريب قابلة للتصفية، ومحاكاة امتحانات مؤقتة." },
-      { title: "محتوى إقليمي", desc: "محتوى ثنائي اللغة مصمم للبيئة التجارية في الخليج ومنطقة الشرق الأوسط وشمال أفريقيا." },
+      { title: "تعلّم ثنائي اللغة", desc: "محتوى مبني بالعربية والإنجليزية منذ البداية، لا مترجماً لاحقاً." },
     ],
     programs_eyebrow: "البرامج",
     programs_h2: "المتاح حالياً",
@@ -1927,11 +1941,11 @@ const ar: Translations = {
   about: {
     hero_eyebrow: "قصتنا",
     hero_h1: "عن ZentexAI",
-    hero_sub: "شركة حلول ذكاء اصطناعي، واستشارات إدارة مشاريع، وتعليم احترافي — مبنية لتسلّم، لا لتنصح فقط.",
+    hero_sub: "شركة ذكاء اصطناعي وتكنولوجيا تبني وكلاء ذكاء اصطناعي وأتمتة وحلول تحليل بيانات وتعلّم آلة — مدعومة باستشارات إدارة المشاريع والتعليم الاحترافي. مبنية لتسلّم، لا لتنصح فقط.",
     mission_eyebrow: "رسالتنا",
     mission_h2_line1: "خبرة",
     mission_h2_line2: "تحقق نتائج فعلية",
-    mission_p1: "تأسست ZentexAI لمساعدة المؤسسات على تبني الذكاء الاصطناعي بفعالية وتعزيز طريقة تسليم مشاريعها — بالجمع بين حلول الذكاء الاصطناعي والاستشارات والتعليم الاحترافي تحت سقف واحد.",
+    mission_p1: "تأسست ZentexAI لمساعدة المؤسسات على تبني الذكاء الاصطناعي بفعالية وتعزيز طريقة تسليم مشاريعها — بالجمع بين وكلاء الذكاء الاصطناعي والأتمتة وتحليل البيانات وتعلّم الآلة مع استشارات إدارة المشاريع والتعليم الاحترافي تحت سقف واحد.",
     mission_p2: "نؤمن بأن التبني الجيد للذكاء الاصطناعي وإدارة المشاريع الجيدة يشتركان في الأساس نفسه: تفكير واضح، نطاق واقعي، ومتابعة حتى النهاية. هذا ما نبنيه لعملائنا ونعلّمه عبر برامجنا.",
     vision_eyebrow: "رؤيتنا",
     vision_h2: "إلى أين نتجه",
@@ -1951,7 +1965,7 @@ const ar: Translations = {
     founder: {
       name: "زيد البدّارين",
       titles: ["المؤسس والرئيس التنفيذي، ZentexAI", "مهندس كهربائي", "PMP® - محترف معتمد في إدارة المشاريع", "ماجستير في الذكاء الاصطناعي"],
-      bio: "زيد البدّارين هو المؤسس والرئيس التنفيذي لشركة ZentexAI، شركة حلول ذكاء اصطناعي واستشارات إدارة مشاريع تركز على مساعدة المؤسسات على تبني الذكاء الاصطناعي العملي وتسليم مشاريع ناجحة. يحمل درجة البكالوريوس في الهندسة الكهربائية، وهو محترف معتمد PMP® في إدارة المشاريع، وحاصل على درجة الماجستير في الذكاء الاصطناعي. من خلال ZentexAI، يجمع بين خبرته الهندسية وخبرته في إدارة المشاريع وتخصصه في الذكاء الاصطناعي لمساعدة المؤسسات على تطبيق حلول ذكاء اصطناعي عملية، ودعم المهنيين في تطوير مهارات إدارة المشاريع اللازمة للنجاح في بيئة العمل سريعة التطور اليوم.",
+      bio: "زيد البدّارين هو المؤسس والرئيس التنفيذي لشركة ZentexAI، شركة ذكاء اصطناعي وتكنولوجيا تركز على مساعدة المؤسسات على تبني الذكاء الاصطناعي العملي — وكلاء الذكاء الاصطناعي والأتمتة، وتحليل البيانات، وتعلّم الآلة — وتسليم مشاريع ناجحة. يحمل درجة البكالوريوس في الهندسة الكهربائية، وهو محترف معتمد PMP® في إدارة المشاريع، وحاصل على درجة الماجستير في الذكاء الاصطناعي. من خلال ZentexAI، يجمع بين خبرته الهندسية وخبرته في إدارة المشاريع وتخصصه في الذكاء الاصطناعي لمساعدة المؤسسات على تطبيق أنظمة ذكاء اصطناعي عملية، ودعم المهنيين في تطوير مهارات إدارة المشاريع اللازمة للنجاح في بيئة العمل سريعة التطور اليوم.",
     },
     cta_h2: "هل تريد العمل معنا؟",
     cta_p: "أخبرنا عن مؤسستك أو أهدافك — سنعاود التواصل معك شخصياً.",

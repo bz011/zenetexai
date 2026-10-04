@@ -4,6 +4,7 @@ import BlogContent from "./BlogContent";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/structuredData";
 import { fetchPublishedPosts, type PublishedPost } from "@/lib/posts";
+import { markdownExcerpt } from "@/lib/excerpt";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,8 @@ export const metadata: Metadata = pageMetadata({ title, description, path: "/blo
 export type { PublishedPost };
 
 export default async function BlogPage() {
-  const publishedPosts = await fetchPublishedPosts();
+  const posts = await fetchPublishedPosts();
+  const publishedPosts = posts.map((post) => ({ ...post, excerpt: markdownExcerpt(post.body, 120) }));
   return (
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }])} />

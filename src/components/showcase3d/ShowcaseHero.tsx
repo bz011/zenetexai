@@ -219,7 +219,6 @@ export default function ShowcaseHero({ initial, onFailed }: { initial: ShowcaseS
                 type="button"
                 role="tab"
                 aria-selected={selected}
-                aria-label={label(s.id)}
                 aria-disabled={!s.ready}
                 tabIndex={selected ? 0 : -1}
                 onClick={() => s.ready && select(s.id)}

@@ -14,11 +14,6 @@ function formatDate(iso: string, lang: "en" | "ar") {
   return new Date(iso).toLocaleDateString(lang === "ar" ? "ar" : "en-US", { year: "numeric", month: "short", day: "numeric" });
 }
 
-function excerpt(body: string, maxLen = 110) {
-  const text = body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-  return text.length > maxLen ? text.slice(0, maxLen) + "…" : text;
-}
-
 function Chevron({ className = "" }: { className?: string }) {
   return (
     <svg aria-hidden="true" width="18" height="18" viewBox="0 0 20 20" fill="none" className={className}>
@@ -36,7 +31,10 @@ function Check() {
 }
 
 interface Props {
-  latestPosts: PublishedPost[];
+  // excerpt is computed server-side in page.tsx (markdownExcerpt uses a
+  // Markdown parser - keeping that out of this "use client" component's
+  // bundle, since only the parent Server Component needs it).
+  latestPosts: (PublishedPost & { excerpt: string })[];
 }
 
 export default function HomeContent({ latestPosts }: Props) {
@@ -190,7 +188,7 @@ export default function HomeContent({ latestPosts }: Props) {
                   <p className="text-caption text-ink-3">{formatDate(post.published_at, lang)}</p>
                   <div>
                     <h3 className="text-h4 text-ink">{post.title}</h3>
-                    <p className="mt-1 text-small text-ink-2">{excerpt(post.body)}</p>
+                    <p className="mt-1 text-small text-ink-2">{post.excerpt}</p>
                   </div>
                 </Link>
               </li>

@@ -13,7 +13,7 @@ import {
 } from "three";
 import { Timeline, buildGlow, createTrailPulse, easeInOutCubic, type TrailPulse } from "../anim";
 import { buildCard, buildDashboardPanel, type CardBuilt } from "../devices";
-import { canvasTexture, lightPoolTexture, softShadowTexture, vignetteTexture, type ShowcaseKit } from "../kit";
+import { canvasTexture, contentBounds, lightPoolTexture, softShadowTexture, vignetteTexture, type ShowcaseKit } from "../kit";
 import { glowTrail, ramp, trailPoints } from "../ribbon";
 import { drawSheen } from "./agentsUi";
 import {
@@ -481,13 +481,18 @@ export function buildDataScene(kit: ShowcaseKit, font: UiFont, reducedMotion: bo
     };
   }
 
+  const portraitTarget = new Vector3(DASH_X, GROUND_Y + DASH_PANEL_H / 2 + 0.7, DASH_Z);
   return Promise.resolve({
     group,
     anchors: {},
     lights,
     tick,
     camera: { fov: 24, dist: 32, target: new Vector3(0, -0.5, 0), yaw: 4, pitch: 3, designAspect: 1.6 },
-    portrait: { target: new Vector3(DASH_X, GROUND_Y + DASH_PANEL_H / 2 + 0.7, DASH_Z), dist: 41, yaw: 6, pitch: 3 },
+    portrait: { target: portraitTarget, dist: 41, yaw: 6, pitch: 3 },
+    portraitBounds: contentBounds(
+      [dashboard.group, procModule.group, ...sourceCards.map((c) => c.group), ...outputCards.map((c) => c.group)],
+      portraitTarget,
+    ),
     dispose() {
       group.traverse((o) => {
         const mm = o as { isMesh?: boolean; geometry?: { dispose(): void } };

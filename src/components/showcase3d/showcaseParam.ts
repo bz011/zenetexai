@@ -34,3 +34,16 @@ export function resolveShowcaseParams(search: string): ShowcaseParams | null {
   const found = SHOWCASE_SERVICES.find((s) => s.id === wanted && s.ready);
   return { scene: found ? found.id : "agents" };
 }
+
+/**
+ * Whether ShowcaseGate may attempt to load the 3D showcase, given the two
+ * environment signals it checks. Deliberately NOT gated on pointer type or
+ * viewport width (unlike flow3d/capability.ts's shouldEnableFlow3D) - this
+ * showcase is touch-interactive (swipe) and shown at every screen size by
+ * design, see ShowcaseHero.tsx. reducedMotion is handled inside the showcase
+ * itself (disables parallax/auto-swipe, keeps static+keyboard/click
+ * interaction) rather than here, so it is not part of this gate either.
+ */
+export function shouldLoadShowcase(env: { webgl: boolean; saveData: boolean }): boolean {
+  return env.webgl && !env.saveData;
+}

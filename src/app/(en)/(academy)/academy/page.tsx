@@ -5,9 +5,9 @@ import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/structuredData";
 import PmpDiscoverabilitySection from "@/components/seo/PmpDiscoverabilitySection";
 
-const title = "PMP Course in Arabic & English (UAE) | ZentexAI Academy";
+const title = "PMP Course in Arabic & English | ZentexAI Academy";
 const description =
-  "ZentexAI Academy: an Arabic-friendly PMP Mastery Program (دورة PMP بالعربي) and a PMP exam simulator for professionals in the UAE and MENA.";
+  "ZentexAI Academy: an Arabic-friendly PMP Mastery Program (دورة PMP بالعربي) and a PMP exam simulator for working professionals.";
 
 export const metadata: Metadata = mirroredPageMetadata("/academy", "en", title, description);
 
