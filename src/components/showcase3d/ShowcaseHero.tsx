@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState, type Keyboar
 import LocaleLink from "@/components/LocaleLink";
 import { useLang } from "@/lib/LanguageContext";
 import type { ShowcaseHandle } from "./mountShowcase";
-import { SHOWCASE_SERVICES, type ShowcaseServiceId } from "./showcaseParam";
+import { SHOWCASE_CTA_HREF, SHOWCASE_SERVICES, type ShowcaseServiceId } from "./showcaseParam";
 
 /**
  * The homepage hero, shown by default (see ShowcaseGate; ?showcase=0 forces
@@ -26,14 +26,6 @@ import { SHOWCASE_SERVICES, type ShowcaseServiceId } from "./showcaseParam";
  * being hardcoded here, and each service's CTA is a LocaleLink so an Arabic
  * visitor lands on that service's real Arabic page.
  */
-
-/** Where each service's call to action goes: each of these is an existing, public page (LocaleLink sends Arabic visitors to its Arabic URL where one exists). */
-const CTA_HREF: Record<ShowcaseServiceId, string> = {
-  agents: "/services/ai-agents-automation-uae",
-  data: "/services/data-analytics-uae",
-  ml: "/services/machine-learning-uae",
-  academy: "/academy",
-};
 
 /** Fade the call to action out, swap it, fade it in: ms. */
 const CTA_SWAP_MS = 170;
@@ -148,7 +140,7 @@ export default function ShowcaseHero({ initial, onFailed }: { initial: ShowcaseS
   const shortLabel = (id: ShowcaseServiceId): string => copy.selector[`${id}Short` as const];
   const stageLabel = copy.stage[active];
   const ctaLabel = copy.cta[ctaFor];
-  const ctaHref = CTA_HREF[ctaFor];
+  const ctaHref = SHOWCASE_CTA_HREF[ctaFor];
 
   return (
     <section

@@ -36,14 +36,33 @@ export function resolveShowcaseParams(search: string): ShowcaseParams | null {
 }
 
 /**
- * Whether ShowcaseGate may attempt to load the 3D showcase, given the two
- * environment signals it checks. Deliberately NOT gated on pointer type or
- * viewport width (unlike flow3d/capability.ts's shouldEnableFlow3D) - this
- * showcase is touch-interactive (swipe) and shown at every screen size by
- * design, see ShowcaseHero.tsx. reducedMotion is handled inside the showcase
- * itself (disables parallax/auto-swipe, keeps static+keyboard/click
- * interaction) rather than here, so it is not part of this gate either.
+ * Below this viewport width, the interactive 3D showcase is not loaded at
+ * all - MobileShowcase (a static, lightweight presentation of the same four
+ * categories) is shown instead. This was a deliberate product decision after
+ * reviewing the real mobile-portrait result on device: the camera framing
+ * was technically correct (see fitDistance/contentBounds in
+ * mountShowcase.ts/kit.ts) but still didn't meet the bar at narrow widths.
+ * 768 matches Tailwind's `md` breakpoint, already used throughout the site
+ * for the same "phone vs tablet-and-up" split (e.g. the nav collapses to a
+ * hamburger below it), and matches where the 3D composition was separately
+ * confirmed to already look complete (tablet width, 768px).
  */
-export function shouldLoadShowcase(env: { webgl: boolean; saveData: boolean }): boolean {
-  return env.webgl && !env.saveData;
+export const SHOWCASE_MIN_WIDTH = 768;
+
+/**
+ * Whether ShowcaseGate may attempt to load the 3D showcase, given the
+ * environment signals it checks. reducedMotion is handled inside the
+ * showcase itself (disables parallax/auto-swipe, keeps static+keyboard/click
+ * interaction) rather than here, so it is not part of this gate.
+ */
+export function shouldLoadShowcase(env: { webgl: boolean; saveData: boolean; width: number }): boolean {
+  return env.webgl && !env.saveData && env.width >= SHOWCASE_MIN_WIDTH;
 }
+
+/** Where each service's call to action goes: each of these is an existing, public page. Shared by the 3D showcase (ShowcaseHero) and its mobile static replacement (MobileShowcase). */
+export const SHOWCASE_CTA_HREF: Record<ShowcaseServiceId, string> = {
+  agents: "/services/ai-agents-automation-uae",
+  data: "/services/data-analytics-uae",
+  ml: "/services/machine-learning-uae",
+  academy: "/academy",
+};

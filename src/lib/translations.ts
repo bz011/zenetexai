@@ -362,6 +362,8 @@ export interface Translations {
     cta: { agents: string; data: string; ml: string; academy: string };
     /** the stage's accessible name - one descriptive sentence per scene, not shown as visible text */
     stage: { agents: string; data: string; ml: string; academy: string };
+    /** one-line visible description per category, used by MobileShowcase (the static mobile replacement for the 3D stage) - agents/data/ml match homeCopy's services.build wording exactly */
+    description: { agents: string; data: string; ml: string; academy: string };
     agents: {
       inputs: { messages: ShowcaseCard; email: ShowcaseCard; website: ShowcaseCard; documents: ShowcaseCard };
       results: { confirmationSent: ShowcaseCard; customerNotified: ShowcaseCard };
@@ -1331,6 +1333,12 @@ const en: Translations = {
       ml: "Illustrative example, not real business data: a card of historical data (sales, users, transactions, market trends, external factors) feeds a machine learning model, which generates a prediction panel showing a future forecast with a confidence band and three results - demand forecast, churn risk and next month sales.",
       academy:
         "Illustrative example, not real student data: a PMP course panel with six modules, a lesson playing on a laptop, a PMP exam simulator showing question 45 of 180, and a certificate of completion earned at the end, with a small card announcing an AI Agents Course as coming soon.",
+    },
+    description: {
+      agents: "Agents that connect your approved knowledge, workflows and systems, with human oversight.",
+      data: "KPI frameworks, clean data models and reporting built around your real decisions.",
+      ml: "Forecasting, classification and anomaly detection, checked against a baseline before launch.",
+      academy: "PMP Mastery Program, practice questions, and a timed exam simulator.",
     },
     agents: {
       inputs: {
@@ -2331,6 +2339,12 @@ const ar: Translations = {
       ml: "مثال توضيحي وليس بيانات أعمال حقيقية: بطاقة بيانات تاريخية (المبيعات، المستخدمون، المعاملات، اتجاهات السوق، وعوامل خارجية) تُغذّي نموذج تعلّم آلي، يُنتج لوحة تنبؤ تعرض توقعاً مستقبلياً مع نطاق ثقة وثلاث نتائج: توقع الطلب، ومخاطر فقدان العملاء، ومبيعات الشهر القادم.",
       academy:
         "مثال توضيحي وليس بيانات طلاب حقيقية: لوحة دورة PMP بست وحدات، درس يُعرض على حاسوب محمول، محاكي امتحان PMP يعرض السؤال 45 من 180، وشهادة إتمام تُمنح في النهاية، مع بطاقة صغيرة تُعلن عن دورة وكلاء الذكاء الاصطناعي قريباً.",
+    },
+    description: {
+      agents: "وكلاء يربطون معرفتك المعتمدة وسير عملك وأنظمتك، مع إشراف بشري.",
+      data: "أُطر مؤشرات الأداء ونماذج بيانات نظيفة وتقارير مبنية حول قراراتك الفعلية.",
+      ml: "تنبؤ وتصنيف واكتشاف للحالات الشاذة، مع فحصها مقابل خط أساس قبل الإطلاق.",
+      academy: "برنامج احتراف PMP، وأسئلة تدريبية، ومحاكي اختبار موقّت.",
     },
     agents: {
       inputs: {

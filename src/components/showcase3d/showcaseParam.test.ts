@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import ShowcaseGate from "./ShowcaseGate";
-import { resolveShowcaseParams, shouldLoadShowcase, SHOWCASE_SERVICES } from "./showcaseParam";
+import { resolveShowcaseParams, shouldLoadShowcase, SHOWCASE_MIN_WIDTH, SHOWCASE_SERVICES } from "./showcaseParam";
 
 describe("showcase selector (on by default; ?showcase=0 opts out)", () => {
   it("is on unless explicitly turned off", () => {
@@ -33,15 +33,27 @@ describe("showcase selector (on by default; ?showcase=0 opts out)", () => {
 
 describe("shouldLoadShowcase (ShowcaseGate's load condition)", () => {
   it("requires WebGL", () => {
-    expect(shouldLoadShowcase({ webgl: false, saveData: false })).toBe(false);
+    expect(shouldLoadShowcase({ webgl: false, saveData: false, width: 1440 })).toBe(false);
   });
 
   it("respects the browser's Data Saver preference even when WebGL is available", () => {
-    expect(shouldLoadShowcase({ webgl: true, saveData: true })).toBe(false);
+    expect(shouldLoadShowcase({ webgl: true, saveData: true, width: 1440 })).toBe(false);
   });
 
-  it("loads when WebGL is available and Data Saver is off", () => {
-    expect(shouldLoadShowcase({ webgl: true, saveData: false })).toBe(true);
+  it("loads when WebGL is available, Data Saver is off, and the viewport is at least SHOWCASE_MIN_WIDTH", () => {
+    expect(shouldLoadShowcase({ webgl: true, saveData: false, width: 1440 })).toBe(true);
+  });
+
+  it("does not load below SHOWCASE_MIN_WIDTH (mobile portrait gets the static MobileShowcase instead)", () => {
+    for (const width of [360, 375, 390, 430, SHOWCASE_MIN_WIDTH - 1]) {
+      expect(shouldLoadShowcase({ webgl: true, saveData: false, width }), `width ${width}`).toBe(false);
+    }
+  });
+
+  it("loads at exactly SHOWCASE_MIN_WIDTH and above (tablet/desktop)", () => {
+    for (const width of [SHOWCASE_MIN_WIDTH, 1024, 1440]) {
+      expect(shouldLoadShowcase({ webgl: true, saveData: false, width }), `width ${width}`).toBe(true);
+    }
   });
 });
 

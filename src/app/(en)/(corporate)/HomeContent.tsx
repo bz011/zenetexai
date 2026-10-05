@@ -5,6 +5,7 @@ import { useLang } from "@/lib/LanguageContext";
 import { homeCopy } from "@/lib/homeCopy";
 import HeroVisual from "@/components/flow/HeroVisual";
 import ShowcaseGate from "@/components/showcase3d/ShowcaseGate";
+import MobileShowcase from "@/components/showcase3d/MobileShowcase";
 import CTASection from "@/components/CTASection";
 import Section from "@/components/ui/Section";
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -67,7 +68,18 @@ export default function HomeContent({ latestPosts }: Props) {
               </dl>
             </div>
 
-            <HeroVisual />
+            {/* Below md (768px, SHOWCASE_MIN_WIDTH): MobileShowcase, a static
+                4-card presentation of the same categories - not HeroVisual
+                shrunk down, and not a fallback the 3D bundle loads then
+                hides. hidden/md:hidden are pure CSS, resolved identically on
+                the server and first client paint, so there is no swap and no
+                layout shift for either breakpoint. */}
+            <div className="hidden md:block">
+              <HeroVisual />
+            </div>
+            <div className="md:hidden">
+              <MobileShowcase />
+            </div>
           </div>
         </section>
       </ShowcaseGate>

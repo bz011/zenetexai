@@ -36,7 +36,14 @@ describe("homepage v2", () => {
   });
 
   it("never hides hero copy behind an entrance animation (visible at first paint, so LCP is real text)", () => {
-    const hero = en.slice(en.indexOf('<section aria-labelledby="hero-title"'), en.indexOf("<figure"));
+    // Slice to the end of the copy block itself (closing </dl>, the facts
+    // list) - not further, since the sibling visual area past it legitimately
+    // uses "hidden" as a responsive Tailwind utility (hidden md:block /
+    // md:hidden, switching between HeroVisual and MobileShowcase by viewport
+    // width), which is unrelated to this test's actual concern.
+    const heroStart = en.indexOf('<section aria-labelledby="hero-title"');
+    const copyEnd = en.indexOf("</dl>", heroStart) + "</dl>".length;
+    const hero = en.slice(heroStart, copyEnd);
     expect(hero).not.toMatch(/animate-|opacity|invisible|hidden/);
     expect(en).not.toMatch(/animate-fade/);
   });
