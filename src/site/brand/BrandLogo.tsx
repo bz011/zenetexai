@@ -17,6 +17,9 @@ import ribbonLogoLight from "../../../public/images/branding/zentexai-ribbon-log
  */
 export const LOGO_ASSET = { light: ribbonLogo, dark: ribbonLogoLight } as const;
 
+/** Both artworks' intrinsic size, stated explicitly so the component never depends on the import's metadata. */
+export const LOGO_SIZE = { width: 1788, height: 324 } as const;
+
 export default function BrandLogo({
   surface = "light",
   height,
@@ -35,11 +38,13 @@ export default function BrandLogo({
   return (
     <Image
       src={src}
+      width={LOGO_SIZE.width}
+      height={LOGO_SIZE.height}
       alt={decorative ? "" : "ZentexAI"}
       aria-hidden={decorative || undefined}
       className={className}
       style={{ height, width: "auto" }}
-      sizes={`${Math.ceil((height * src.width) / src.height)}px`}
+      sizes={`${Math.ceil((height * LOGO_SIZE.width) / LOGO_SIZE.height)}px`}
       quality={90}
       priority={priority}
     />

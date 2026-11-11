@@ -38,6 +38,8 @@ function contrast(a: [number, number, number], b: [number, number, number]): num
 const themes = {
   dark: block(":root,"),
   light: block(".academy-shell,"),
+  // The approved redesign palette (corporate pages and the Academy shell).
+  zentex: block('[data-theme="zentex"],'),
 };
 
 const TEXT_TOKENS = ["ink", "ink-2", "ink-3", "accent-fg", "accent-2-fg", "positive", "caution", "danger"];
@@ -69,19 +71,20 @@ describe.each(Object.entries(themes))("%s theme tokens meet WCAG AA", (_name, t)
   });
 });
 
-describe("logo tagline on dark surfaces", () => {
-  it("uses tagline colours that meet AA (the brand blue #2563EB alone is only ~3.8:1 on the navy page)", () => {
-    const logo = fs.readFileSync(path.resolve(__dirname, "../src/components/brand/Logo.tsx"), "utf-8");
+describe("Ribbon logo on the dark footer", () => {
+  // The dark-surface lockup (zentexai-ribbon-logo-nav-light.png) sets the
+  // wordmark in the footer's own ivory and soft teal; both must meet AA on
+  // the footer navy. (The previous mark's tagline is retired.)
+  it("uses wordmark colours that meet AA on the footer navy", () => {
+    const css = fs.readFileSync(path.resolve(__dirname, "../src/site/home/footer.module.css"), "utf-8");
     const hex = (name: string) => {
-      const m = new RegExp(`${name} = "#([0-9A-Fa-f]{6})"`).exec(logo);
-      if (!m) throw new Error(`${name} not found in Logo.tsx`);
+      const m = new RegExp(`--${name}: #([0-9A-Fa-f]{6})`).exec(css);
+      if (!m) throw new Error(`--${name} not found in footer.module.css`);
       const n = parseInt(m[1], 16);
       return [(n >> 16) & 255, (n >> 8) & 255, n & 255] as [number, number, number];
     };
-    for (const name of ["TAGLINE_BLUE_ON_DARK", "TAGLINE_TEAL_ON_DARK"]) {
-      for (const surface of ["surface-0", "surface-1"]) {
-        expect(contrast(hex(name), themes.dark[surface]), `${name} on ${surface}`).toBeGreaterThanOrEqual(4.5);
-      }
+    for (const ink of ["ivory", "soft-teal"]) {
+      expect(contrast(hex(ink), hex("navy")), `${ink} on navy`).toBeGreaterThanOrEqual(4.5);
     }
   });
 });

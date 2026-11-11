@@ -103,8 +103,9 @@
 /* ZentexAI theme: the approved redesign palette (warm ivory, navy ink, deep
    teal, champagne) in the same token names and RGB-triplet format, so every
    token-based component renders in the unified identity without code
-   changes. Applied to the corporate <main> by SiteChrome. Contrast on the
-   ivory surface: ink 15.6:1, ink-2 9.4:1, ink-3 5.3:1, accent-fg 6.6:1. */
+   changes. Applied to the corporate <main> by SiteChrome and to the Academy
+   shell. Every text and status token is >= 4.5:1 on every surface (enforced
+   by tests/designTokens.contrast.test.ts). */
 [data-theme="zentex"],
 .academy-shell {
   color-scheme: light;
@@ -125,11 +126,11 @@
   --accent-fg: 30 100 97;
   --on-accent: 255 255 255;
 
-  --accent-2: 138 106 44;
-  --accent-2-fg: 138 106 44;
+  --accent-2: 126 96 40;
+  --accent-2-fg: 126 96 40;
 
-  --positive: 4 120 87;
-  --caution: 180 83 9;
+  --positive: 4 116 84;
+  --caution: 164 76 8;
   --danger: 163 64 43;
 
   --focus: 30 100 97;
@@ -140,12 +141,13 @@
 }
 
 /* The Academy (dashboard, lessons, simulator, results, history, certificate,
-   checkout) takes the ZentexAI palette above, but keeps the light theme's
-   exact status colours so correct / incorrect / caution keep their meaning
-   in the simulator and assessments. */
+   checkout) takes the ZentexAI palette above, with its status colours kept
+   on the light theme's hues (green / amber / red) so correct / incorrect /
+   caution keep their meaning in the simulator and assessments - darkened
+   just enough to stay >= 4.5:1 on the ivory surfaces. */
 .academy-shell {
-  --positive: 4 120 87;
-  --caution: 180 83 9;
+  --positive: 4 116 84;
+  --caution: 164 76 8;
   --danger: 185 28 28;
 }
 
