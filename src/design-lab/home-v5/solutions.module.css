@@ -1,0 +1,207 @@
+/* "Solutions in action": four editorial rows on thin champagne rules. Tokens
+   and type are inherited from the page (hero.module.css .page). */
+
+.section {
+  --rule: rgba(193, 155, 98, 0.38);
+  padding-block: clamp(72px, 8vw, 128px) clamp(48px, 5vw, 80px);
+}
+
+.section :where(ol, h2, h3, p) {
+  margin: 0;
+  padding: 0;
+}
+
+.section :where(ol) {
+  list-style: none;
+}
+
+/* ---------- Heading: title at the start, subtitle beside it ---------- */
+
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  column-gap: clamp(32px, 5vw, 96px);
+  align-items: end;
+  max-width: calc(var(--wrap) + 2 * var(--m));
+  margin: 0 auto clamp(40px, 4.5vw, 72px);
+  padding-inline: var(--m);
+}
+
+.eyebrow {
+  margin-bottom: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+
+.eyebrow:lang(ar) {
+  font-size: 15px;
+  letter-spacing: 0;
+}
+
+.title {
+  font-size: clamp(34px, 1rem + 2.4vw, 54px);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.032em;
+  color: var(--ink);
+}
+
+.title:lang(ar) {
+  font-size: clamp(31px, 1rem + 2vw, 48px);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0;
+}
+
+.accent {
+  color: var(--teal);
+}
+
+.sub {
+  max-width: 26em;
+  font-size: clamp(16.5px, 0.95rem + 0.2vw, 18px);
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+.sub:lang(ar) {
+  line-height: 1.9;
+}
+
+/* ---------- Rows ---------- */
+
+.rows {
+  max-width: calc(var(--wrap) + 2 * var(--m));
+  margin-inline: auto;
+  padding-inline: var(--m);
+}
+
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 64px minmax(0, 4fr) minmax(0, 7fr);
+  column-gap: clamp(24px, 3vw, 56px);
+  align-items: baseline;
+  padding-block: clamp(26px, 2.6vw, 40px);
+}
+
+/* The rule above each row, and one below the last. */
+.row::before,
+.row:last-child::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  height: 1px;
+  background: var(--rule);
+  transform-origin: left center;
+}
+
+.row::before {
+  top: 0;
+}
+
+.row:last-child::after {
+  bottom: 0;
+}
+
+.row:lang(ar)::before,
+.row:lang(ar):last-child::after {
+  transform-origin: right center;
+}
+
+.num {
+  font-family: var(--a3-sans), sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: var(--teal);
+}
+
+.rowTitle {
+  font-size: clamp(22px, 0.95rem + 0.95vw, 31px);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  transition:
+    color 260ms ease,
+    transform 360ms var(--ease);
+}
+
+.rowTitle:lang(ar) {
+  font-size: clamp(21px, 0.95rem + 0.8vw, 28px);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+.text {
+  max-width: 38em;
+  font-size: 16.5px;
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+.text:lang(ar) {
+  line-height: 1.9;
+}
+
+/* Hover (pointer devices): the title warms to teal and leans a few pixels
+   forward in the reading direction. Transform only, so nothing reflows. */
+@media (hover: hover) and (pointer: fine) {
+  .row:hover .rowTitle {
+    color: var(--teal);
+    transform: translateX(6px);
+  }
+  .row:lang(ar):hover .rowTitle {
+    transform: translateX(-6px);
+  }
+}
+
+/* ---------- Entrance (LabMotion: html[data-motion="on"], [data-shown]) ----------
+   The rows rise in with the page's shared reveal; their rules draw in from
+   the reading start at the same time. */
+
+:global(html[data-motion="on"]) .row::before,
+:global(html[data-motion="on"]) .row:last-child::after {
+  transition: transform 900ms var(--ease);
+  transition-delay: calc(var(--i, 0) * 75ms);
+}
+
+:global(html[data-motion="on"]) .row:not([data-shown])::before,
+:global(html[data-motion="on"]) .row:not([data-shown]):last-child::after {
+  transform: scaleX(0);
+}
+
+/* ---------- Tablet: title over description ---------- */
+
+@media (max-width: 900px) {
+  .head {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 18px;
+  }
+  .row {
+    grid-template-columns: 48px minmax(0, 1fr);
+    row-gap: 10px;
+  }
+  .text {
+    grid-column: 2;
+  }
+}
+
+/* ---------- Phone ---------- */
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 36px minmax(0, 1fr);
+    column-gap: 14px;
+    padding-block: 24px;
+  }
+  .text {
+    font-size: 16px;
+  }
+}
