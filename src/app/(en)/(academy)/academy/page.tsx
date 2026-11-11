@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { mirroredPageMetadata } from "@/lib/seo";
-import AcademyContent from "./AcademyContent";
+import AcademyV5 from "@/app/(en)/(academy)/academy/AcademyV5";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/structuredData";
 import PmpDiscoverabilitySection from "@/components/seo/PmpDiscoverabilitySection";
@@ -15,7 +15,7 @@ export default function AcademyPage() {
   return (
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Academy", path: "/academy" }])} />
-      <AcademyContent />
+      <AcademyV5 lang="en" />
       <PmpDiscoverabilitySection variant="course" englishOnly />
     </>
   );

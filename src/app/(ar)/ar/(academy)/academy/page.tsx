@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import AcademyContent from "@/app/(en)/(academy)/academy/AcademyContent";
+import AcademyV5 from "@/app/(en)/(academy)/academy/AcademyV5";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/structuredData";
 import PmpDiscoverabilitySection from "@/components/seo/PmpDiscoverabilitySection";
@@ -11,7 +11,7 @@ export default function ArabicAcademyPage() {
   return (
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "الرئيسية", path: "/ar" }, { name: "الأكاديمية", path: "/ar/academy" }])} />
-      <AcademyContent />
+      <AcademyV5 lang="ar" />
       <PmpDiscoverabilitySection variant="course" arabicOnly />
     </>
   );
