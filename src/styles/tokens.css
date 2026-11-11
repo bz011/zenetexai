@@ -105,7 +105,8 @@
    token-based component renders in the unified identity without code
    changes. Applied to the corporate <main> by SiteChrome. Contrast on the
    ivory surface: ink 15.6:1, ink-2 9.4:1, ink-3 5.3:1, accent-fg 6.6:1. */
-[data-theme="zentex"] {
+[data-theme="zentex"],
+.academy-shell {
   color-scheme: light;
 
   --surface-0: 246 242 234;
@@ -136,6 +137,16 @@
   --shadow-elev: 0 12px 32px -14px rgb(22 32 45 / 0.22);
 
   --bg: rgb(var(--surface-0));
+}
+
+/* The Academy (dashboard, lessons, simulator, results, history, certificate,
+   checkout) takes the ZentexAI palette above, but keeps the light theme's
+   exact status colours so correct / incorrect / caution keep their meaning
+   in the simulator and assessments. */
+.academy-shell {
+  --positive: 4 120 87;
+  --caution: 180 83 9;
+  --danger: 185 28 28;
 }
 
 @media (min-width: 640px) {

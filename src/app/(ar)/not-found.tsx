@@ -4,9 +4,9 @@ import Logo from "@/components/brand/Logo";
 /** Arabic 404 - the Arabic root layout (lang="ar" dir="rtl") has its own not-found boundary. */
 export default function ArabicNotFound() {
   return (
-    <main id="main-content" className="flex min-h-screen flex-col items-center justify-center px-6 py-24 text-center">
+    <main id="main-content" data-theme="zentex" className="bg-surface-0 flex min-h-screen flex-col items-center justify-center px-6 py-24 text-center">
       <Link href="/ar" className="mb-10 inline-flex">
-        <Logo variant="primary" />
+        <Logo variant="primary" tone="light" />
       </Link>
 
       <p className="label">404</p>
