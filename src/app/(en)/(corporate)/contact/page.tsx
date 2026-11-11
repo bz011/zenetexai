@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
-import ContactContent from "./ContactContent";
+import ContactV5 from "./ContactV5";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/structuredData";
 
@@ -14,7 +14,7 @@ export default function ContactPage() {
   return (
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Contact", path: "/contact" }])} />
-      <ContactContent />
+      <ContactV5 />
     </>
   );
 }

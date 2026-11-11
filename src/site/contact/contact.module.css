@@ -1,0 +1,643 @@
+/* Contact page (v5). Tokens, fonts, focus ring and header come from the
+   homepage's .page (home-v5/hero.module.css): ivory paper, navy ink, teal,
+   champagne; Hanken Grotesk / IBM Plex Sans Arabic. Its own character: one
+   spread with no illustration, a form set straight onto the page between
+   hairlines, quiet topic tiles, and a single deep-teal action. */
+
+.main {
+  --teal-deep: #0f5753;
+  --teal-ring: rgba(30, 100, 97, 0.16);
+  --champagne-line: #c9ab76;
+  --champagne-ink: #8a6a2c;
+  --field: #fffdf9;
+  --field-line: #d6cbb8;
+  --error: #a3402b;
+}
+
+.spread :where(h1, h2, p, ul, fieldset, legend) {
+  margin: 0;
+  padding: 0;
+}
+
+.spread ul {
+  list-style: none;
+}
+
+.spread {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(40px, 7vw, 120px);
+  align-items: start;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding: calc(var(--header) + clamp(40px, 6vw, 104px)) var(--m) clamp(72px, 9vw, 140px);
+  box-sizing: content-box;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Introduction ---------- */
+
+/* On desktop the introduction stays in view while the (longer) form is
+   filled in, so the WhatsApp line is always at hand. */
+@media (min-width: 901px) {
+  .intro {
+    position: sticky;
+    top: 32px;
+  }
+}
+
+.eyebrow {
+  margin-bottom: 20px !important;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+
+.eyebrow:lang(ar) {
+  font-size: 15px;
+  letter-spacing: 0;
+}
+
+.title {
+  font-size: clamp(40px, 1rem + 2.9vw, 70px);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+
+.title:lang(ar) {
+  font-size: clamp(34px, 1rem + 2.3vw, 58px);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.line {
+  display: block;
+}
+
+.accent {
+  color: var(--teal-deep);
+}
+
+.sub {
+  max-width: 30em;
+  margin-top: 24px !important;
+  font-size: clamp(17px, 1rem + 0.25vw, 19.5px);
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+.sub:lang(ar) {
+  line-height: 1.9;
+}
+
+.minorHeading {
+  margin-bottom: 12px !important;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.direct {
+  max-width: 420px;
+  margin-top: clamp(36px, 5vw, 64px);
+}
+
+.channel {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-block: 16px;
+  border-block: 1px solid var(--line);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.channelIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--teal);
+  transition: border-color 200ms var(--ease), background-color 200ms var(--ease);
+}
+
+.channelText {
+  display: grid;
+}
+
+.channelLabel {
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+.channelValue {
+  font-size: 19px;
+  line-height: 1.35;
+  transition: color 200ms var(--ease);
+}
+
+.channelValue:dir(rtl) {
+  text-align: end;
+}
+
+.channelArrow {
+  margin-inline-start: auto;
+  color: var(--teal);
+  transition: transform 220ms var(--ease);
+}
+
+.channelArrow:dir(rtl) {
+  transform: scaleX(-1);
+}
+
+.channel:hover .channelValue {
+  color: var(--teal-deep);
+}
+
+.channel:hover .channelIcon {
+  border-color: rgba(30, 100, 97, 0.4);
+  background: rgba(30, 100, 97, 0.05);
+}
+
+.channel:hover .channelArrow {
+  transform: translate(2px, -2px);
+}
+
+.channel:hover .channelArrow:dir(rtl) {
+  transform: scaleX(-1) translate(2px, -2px);
+}
+
+.include {
+  max-width: 420px;
+  margin-top: clamp(32px, 4vw, 48px);
+}
+
+.include li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-block: 11px;
+  border-top: 1px solid var(--line);
+  font-size: 16px;
+  color: var(--ink-2);
+}
+
+.include li:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.include li::before {
+  content: "";
+  flex: none;
+  width: 14px;
+  height: 1px;
+  background: var(--champagne-line);
+}
+
+/* ---------- The form ---------- */
+
+.formWrap {
+  padding-top: clamp(4px, 1vw, 14px);
+}
+
+.form {
+  display: grid;
+  gap: 22px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+
+.formHeading {
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 18px;
+}
+
+.field {
+  display: grid;
+  align-content: start;
+}
+
+.label {
+  margin-bottom: 8px;
+  font-size: 14.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.optional {
+  margin-inline-start: 4px;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(56, 66, 80, 0.75);
+}
+
+.input {
+  width: 100%;
+  min-height: 52px;
+  box-sizing: border-box;
+  padding: 0 16px;
+  border: 1px solid var(--field-line);
+  border-radius: 10px;
+  background: var(--field);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  transition: border-color 180ms var(--ease), box-shadow 180ms var(--ease);
+}
+
+.input::placeholder {
+  color: rgba(56, 66, 80, 0.55);
+}
+
+.input:hover {
+  border-color: #c4b8a3;
+}
+
+/* Fields show focus as a soft teal ring instead of the page's outline
+   (.form raises specificity above the page's `.page :focus-visible`). */
+.form .input:focus-visible {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px var(--teal-ring);
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--error);
+}
+
+.form .input[aria-invalid="true"]:focus-visible {
+  box-shadow: 0 0 0 3px rgba(163, 64, 43, 0.14);
+}
+
+.textarea {
+  min-height: 168px;
+  padding-block: 14px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.fieldError {
+  margin-top: 7px !important;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--error);
+}
+
+.counter {
+  margin-top: 6px !important;
+  font-size: 13px;
+  text-align: end;
+  color: var(--ink-2);
+}
+
+/* Topic tiles: real radio buttons (arrow keys move between them), styled
+   as quiet tiles with a ring that fills when chosen. */
+.topics {
+  min-width: 0;
+  border: 0;
+}
+
+.topicGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.topic {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.topicInput {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.topicBody {
+  position: relative;
+  display: grid;
+  gap: 3px;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  padding-inline-end: 44px;
+  border: 1px solid var(--field-line);
+  border-radius: 10px;
+  background: var(--field);
+  transition: border-color 180ms var(--ease), background-color 180ms var(--ease), box-shadow 180ms var(--ease);
+}
+
+.topicBody::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  inset-inline-end: 16px;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1.5px solid #bfb39e;
+  border-radius: 999px;
+  transition: border 180ms var(--ease), background-color 180ms var(--ease);
+}
+
+.topicLabel {
+  font-size: 15.5px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.topicHint {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+.topic:hover .topicBody {
+  border-color: #c4b8a3;
+}
+
+.topicInput:checked + .topicBody {
+  border-color: var(--teal);
+  background: rgba(30, 100, 97, 0.05);
+}
+
+.topicInput:checked + .topicBody::after {
+  border: 5px solid var(--teal);
+  background: var(--field);
+}
+
+.topicInput:focus-visible + .topicBody {
+  box-shadow: 0 0 0 3px var(--teal-ring);
+  border-color: var(--teal);
+}
+
+.form .topicInput:focus-visible {
+  outline: none;
+}
+
+.privacy {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.privacy a {
+  color: var(--teal-deep);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.live:empty {
+  display: none;
+}
+
+.summary {
+  font-size: 14.5px;
+  color: var(--error);
+}
+
+.notice,
+.alert {
+  padding: 14px 18px;
+  border-inline-start: 2px solid var(--champagne-line);
+  border-radius: 8px;
+  background: rgba(201, 171, 118, 0.12);
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.notice p {
+  margin: 0;
+}
+
+.noticeTitle {
+  margin-bottom: 4px !important;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.alert {
+  border-inline-start-color: var(--error);
+  background: rgba(163, 64, 43, 0.07);
+  color: var(--ink);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 22px;
+  margin-top: 4px;
+}
+
+.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--teal-deep);
+  color: #fff;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 200ms var(--ease), box-shadow 200ms var(--ease);
+}
+
+.submit:hover {
+  background: #0b4643;
+  box-shadow: 0 10px 24px -14px rgba(15, 87, 83, 0.7);
+}
+
+.submit:disabled {
+  cursor: progress;
+  opacity: 0.85;
+}
+
+.arrow {
+  transition: transform 220ms var(--ease);
+}
+
+.arrow:dir(rtl) {
+  transform: scaleX(-1);
+}
+
+.submit:hover .arrow {
+  transform: translateX(3px);
+}
+
+.submit:hover .arrow:dir(rtl) {
+  transform: scaleX(-1) translateX(3px);
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 999px;
+}
+
+.previewBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--champagne-ink);
+}
+
+.previewBadge::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--champagne-line);
+}
+
+.textButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--teal-deep);
+  font: inherit;
+  font-size: 15px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* Success (live mode only). */
+.done {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+}
+
+.doneMark {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(30, 100, 97, 0.35);
+  border-radius: 999px;
+  color: var(--teal);
+}
+
+.doneTitle {
+  margin: 8px 0 0;
+  font-size: 26px;
+  font-weight: 300;
+}
+
+.doneText {
+  margin: 0 0 8px;
+  color: var(--ink-2);
+}
+
+/* ---------- Motion ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .intro > * {
+    animation: ctRise 900ms var(--ease) both;
+  }
+  .intro > :nth-child(2) {
+    animation-delay: 90ms;
+  }
+  .intro > :nth-child(3) {
+    animation-delay: 200ms;
+  }
+  .intro > :nth-child(n + 4) {
+    animation-delay: 320ms;
+  }
+  .formWrap {
+    animation: ctRise 900ms var(--ease) 240ms both;
+  }
+  .spinner {
+    animation: ctSpin 800ms linear infinite;
+  }
+}
+
+@keyframes ctRise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+}
+
+@keyframes ctSpin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* ---------- Tablet ---------- */
+
+@media (max-width: 900px) {
+  .spread {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 48px;
+  }
+  .direct,
+  .include {
+    max-width: none;
+  }
+}
+
+/* ---------- Phone ---------- */
+
+@media (max-width: 640px) {
+  .row,
+  .topicGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .direct {
+    margin-top: 32px;
+  }
+  .submit {
+    width: 100%;
+  }
+}
