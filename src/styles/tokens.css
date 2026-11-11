@@ -100,6 +100,44 @@
   --shadow-elev: 0 12px 32px -14px rgb(15 23 42 / 0.28);
 }
 
+/* ZentexAI theme: the approved redesign palette (warm ivory, navy ink, deep
+   teal, champagne) in the same token names and RGB-triplet format, so every
+   token-based component renders in the unified identity without code
+   changes. Applied to the corporate <main> by SiteChrome. Contrast on the
+   ivory surface: ink 15.6:1, ink-2 9.4:1, ink-3 5.3:1, accent-fg 6.6:1. */
+[data-theme="zentex"] {
+  color-scheme: light;
+
+  --surface-0: 246 242 234;
+  --surface-1: 255 253 249;
+  --surface-2: 237 229 214;
+
+  --line: 220 210 193;
+  --line-strong: 200 188 168;
+
+  --ink: 22 32 45;
+  --ink-2: 56 66 80;
+  --ink-3: 92 102 114;
+
+  --accent: 15 87 83;
+  --accent-hover: 11 70 67;
+  --accent-fg: 30 100 97;
+  --on-accent: 255 255 255;
+
+  --accent-2: 138 106 44;
+  --accent-2-fg: 138 106 44;
+
+  --positive: 4 120 87;
+  --caution: 180 83 9;
+  --danger: 163 64 43;
+
+  --focus: 30 100 97;
+
+  --shadow-elev: 0 12px 32px -14px rgb(22 32 45 / 0.22);
+
+  --bg: rgb(var(--surface-0));
+}
+
 @media (min-width: 640px) {
   :root {
     --gutter: 1.5rem;

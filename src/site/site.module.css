@@ -1,16 +1,26 @@
 /* Site frame (SiteChrome). The approved header overlays the top of the page
-   (position: absolute, transparent over the ivory). Ordinary pages start
-   below it (padding on <main>); the redesigned v5 pages pad their own first
-   section for it, so they slide back up under it (underHeader). */
+   (position: absolute, transparent). Ordinary pages start below it (padding
+   on <main>); the redesigned v5 pages pad their own first section for it, so
+   they slide back up under it (underHeader). */
 
 .chrome {
+  --header: 72px;
   position: relative;
   min-height: 100vh;
+}
+
+/* Carries the approved tokens for the header / footer only; adds no box of
+   its own around the absolutely positioned header. */
+.band {
+  overflow: visible;
+  background: transparent;
 }
 
 .main {
   display: block;
   padding-top: var(--header);
+  background: rgb(var(--surface-0));
+  color: rgb(var(--ink));
 }
 
 .main:focus {
