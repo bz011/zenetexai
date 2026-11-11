@@ -1,6 +1,5 @@
 import { getLabContent, type Lang } from "@/site/content";
 import site from "@/site/site.module.css";
-import { hanken, plexArabicA3 } from "@/site/fonts";
 import FinalCta from "@/site/home/FinalCta";
 import { iconPaths } from "@/site/home/Services";
 import page from "@/site/home/hero.module.css";
@@ -33,7 +32,7 @@ export default function ServicesPage({ lang }: { lang: Lang }) {
   const k = servicesCopy[lang];
 
   return (
-    <div className={`${page.page} ${site.underHeader} ${hanken.variable} ${plexArabicA3.variable}`} lang={lang} dir={c.dir}>
+    <div className={`${page.page} ${site.underHeader}`} lang={lang} dir={c.dir}>
       <div>
         <section className={styles.hero} aria-labelledby="sv-title">
           <div className={styles.heroInner}>

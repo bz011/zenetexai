@@ -2,7 +2,6 @@ import { Fragment } from "react";
 import Image from "next/image";
 import { getLabContent, type Lang } from "@/site/content";
 import site from "@/site/site.module.css";
-import { hanken, plexArabicA3 } from "@/site/fonts";
 import LabMotion from "@/site/RevealMotion";
 import HeroParticles from "./HeroParticles";
 import profile from "../../../public/images/home/ai-profile.png";
@@ -29,7 +28,7 @@ export default function HomeV5({ lang }: { lang: Lang }) {
   const h = c.href;
 
   return (
-    <div className={`${styles.page} ${site.underHeader} ${hanken.variable} ${plexArabicA3.variable}`} lang={lang} dir={c.dir}>
+    <div className={`${styles.page} ${site.underHeader}`} lang={lang} dir={c.dir}>
       <div>
         <section className={styles.hero} aria-labelledby="h5-title">
           <div className={styles.media}>

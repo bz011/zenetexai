@@ -1,6 +1,5 @@
 import { getLabContent, type Lang } from "@/site/content";
 import site from "@/site/site.module.css";
-import { hanken, plexArabicA3 } from "@/site/fonts";
 import LabMotion from "@/site/RevealMotion";
 import FinalCta from "@/site/home/FinalCta";
 import page from "@/site/home/hero.module.css";
@@ -22,7 +21,7 @@ export default function AboutPage({ lang }: { lang: Lang }) {
   const k = aboutCopy[lang];
 
   return (
-    <div className={`${page.page} ${site.underHeader} ${hanken.variable} ${plexArabicA3.variable}`} lang={lang} dir={c.dir}>
+    <div className={`${page.page} ${site.underHeader}`} lang={lang} dir={c.dir}>
       <div className={styles.main}>
         <section className={styles.hero} aria-labelledby="ab-title">
           <div className={styles.heroCopy}>
