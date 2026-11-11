@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import SignupContent from "./SignupContent";
+import { SignupLive } from "@/site/auth/AuthLive";
 
 export const metadata: Metadata = { title: "Create Account — ZENTEXAI", robots: { index: false, follow: false } };
 
 export default function SignupPage() {
-  return <SignupContent />;
+  return <SignupLive />;
 }

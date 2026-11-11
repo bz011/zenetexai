@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import ForgotPasswordContent from "./ForgotPasswordContent";
+import { ForgotPasswordLive } from "@/site/auth/AuthLive";
 
 export const metadata: Metadata = { title: "Reset Password — ZENTEXAI", robots: { index: false, follow: false } };
 
 export default function ForgotPasswordPage() {
-  return <ForgotPasswordContent />;
+  return <ForgotPasswordLive />;
 }
