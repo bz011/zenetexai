@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { mirroredPageMetadata } from "@/lib/seo";
-import ServicesContent from "./ServicesContent";
+import ServicesV5 from "@/site/services/ServicesPage";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd, serviceJsonLd } from "@/lib/structuredData";
 
@@ -25,7 +25,7 @@ export default function ServicesPage() {
       {SERVICE_SCHEMAS.map((s) => (
         <JsonLd key={s.path} data={serviceJsonLd(s)} />
       ))}
-      <ServicesContent />
+      <ServicesV5 lang="en" />
     </>
   );
 }

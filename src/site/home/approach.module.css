@@ -1,0 +1,478 @@
+/* "Our approach": three stages on one champagne line. Tokens and type are
+   inherited from the page (hero.module.css .page): warm paper, navy ink,
+   muted teal; Hanken Grotesk / IBM Plex Sans Arabic. */
+
+.section {
+  --gold: #c19b62;
+  --gold-soft: rgba(193, 155, 98, 0.55);
+  --mark: 60px;
+  --col-gap: clamp(32px, 5vw, 88px);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  padding-top: clamp(80px, 9vw, 144px);
+  overflow: hidden;
+}
+
+.section :where(ol, ul, h2, h3, p) {
+  margin: 0;
+  padding: 0;
+}
+
+.section :where(ol, ul) {
+  list-style: none;
+}
+
+/* ---------- Heading ---------- */
+
+.head {
+  max-width: 40em;
+  margin: 0 auto clamp(56px, 6vw, 96px);
+  padding-inline: var(--m);
+  text-align: center;
+}
+
+.eyebrow {
+  margin-bottom: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+
+.eyebrow:lang(ar) {
+  font-size: 15px;
+  letter-spacing: 0;
+}
+
+.title {
+  font-size: clamp(34px, 1rem + 2.4vw, 54px);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.032em;
+  color: var(--ink);
+}
+
+.title:lang(ar) {
+  font-size: clamp(31px, 1rem + 2vw, 48px);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0;
+}
+
+.accent {
+  color: var(--teal);
+}
+
+.sub {
+  max-width: 34em;
+  margin: 22px auto 0;
+  font-size: clamp(16.5px, 0.95rem + 0.2vw, 18px);
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+.sub:lang(ar) {
+  line-height: 1.9;
+}
+
+/* ---------- Timeline ---------- */
+
+.stages {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+  max-width: calc(var(--wrap) + 2 * var(--m));
+  margin-inline: auto;
+  padding-inline: var(--m);
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* The numbered circle sits on the line, its paper fill covering it. */
+.marker {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--mark);
+  height: var(--mark);
+  border: 1px solid var(--teal);
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: 0 0 0 6px var(--paper);
+}
+
+.num {
+  font-family: var(--a3-sans), sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--teal);
+}
+
+/* From this circle's centre to the next one's, in the reading direction. */
+.link {
+  position: absolute;
+  top: calc(var(--mark) / 2 - 1px);
+  inset-inline-start: 50%;
+  width: calc(100% + var(--col-gap));
+  height: 2px;
+}
+
+.linkLine {
+  position: absolute;
+  inset: 0;
+  background: rgba(193, 155, 98, 0.8);
+  transform-origin: left center;
+}
+
+.section:lang(ar) .linkLine {
+  transform-origin: right center;
+}
+
+.glow {
+  position: absolute;
+  top: -6.5px;
+  inset-inline-start: 0;
+  width: 15px;
+  height: 15px;
+  margin-inline-start: -7px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 238, 205, 1) 0%, rgba(232, 196, 136, 0.75) 35%, rgba(232, 196, 136, 0) 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.body {
+  max-width: 22em;
+  margin-top: 30px;
+}
+
+.stageTitle {
+  font-size: clamp(20px, 0.95rem + 0.55vw, 25px);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--teal);
+}
+
+.stageTitle:lang(ar) {
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+.text {
+  margin-top: 14px;
+  font-size: 16.5px;
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+.text:lang(ar) {
+  line-height: 1.9;
+}
+
+/* Two pairs, "A · B" over "C · D". */
+.keywords {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.7;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  opacity: 0.85;
+}
+
+.keywords:lang(ar) {
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.9;
+}
+
+.keywords li {
+  display: inline;
+  white-space: nowrap;
+}
+
+.keywords li:nth-child(odd)::after {
+  content: "·";
+  content: "·" / "";
+  margin-inline: 0.6em;
+  color: var(--gold);
+}
+
+.keywords li:nth-child(even)::after {
+  content: "\A";
+  white-space: pre;
+}
+
+/* ---------- Flowing lines at the foot ---------- */
+
+.flow {
+  display: block;
+  width: 100%;
+  height: clamp(72px, 9vw, 140px);
+  margin-top: clamp(64px, 7vw, 112px);
+  fill: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+}
+
+.flow path {
+  vector-effect: non-scaling-stroke;
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+.gold {
+  stroke: var(--gold);
+  opacity: 0.45;
+}
+
+.gold2 {
+  stroke: var(--gold);
+  opacity: 0.25;
+}
+
+.teal {
+  stroke: var(--teal);
+  opacity: 0.22;
+}
+
+/* ---------- Entrance (ApproachMotion), once ----------
+   Header 0–0.9s; circle 01 at 0.5s; the line draws to 02 (0.85–1.5s), 02
+   appears as it arrives; on to 03 (1.78–2.43s), 03 appears; done by ~3s.
+   Hidden only once the script has armed the section. */
+
+.section {
+  --step: 925ms;
+}
+
+.section[data-motion="armed"] :is(.eyebrow, .title, .sub, .marker, .body, .glow) {
+  opacity: 0;
+}
+
+.section[data-motion="armed"] .linkLine {
+  transform: scaleX(0);
+}
+
+.section[data-motion="armed"] .flow path {
+  stroke-dashoffset: 1;
+}
+
+.section[data-motion="play"] .eyebrow {
+  animation: rise 700ms var(--ease) 0ms both;
+}
+
+.section[data-motion="play"] .title {
+  animation: rise 760ms var(--ease) 90ms both;
+}
+
+.section[data-motion="play"] .sub {
+  animation: rise 760ms var(--ease) 180ms both;
+}
+
+.section[data-motion="play"] .marker {
+  animation: mark 640ms var(--ease) calc(500ms + var(--n) * var(--step)) both;
+}
+
+.section[data-motion="play"] .body {
+  animation: rise 720ms var(--ease) calc(620ms + var(--n) * var(--step)) both;
+}
+
+.section[data-motion="play"] .linkLine {
+  animation: draw-x 650ms cubic-bezier(0.45, 0, 0.25, 1) calc(850ms + var(--n) * var(--step)) both;
+}
+
+.section[data-motion="play"] .glow {
+  animation: travel-x 650ms cubic-bezier(0.45, 0, 0.25, 1) calc(850ms + var(--n) * var(--step)) both;
+}
+
+.section[data-motion="play"] .flow path {
+  animation: trace 2400ms cubic-bezier(0.45, 0, 0.25, 1) 600ms both;
+}
+
+.section[data-motion="play"] .flow path + path {
+  animation-delay: 800ms;
+}
+
+.section[data-motion="play"] .flow path + path + path {
+  animation-delay: 1000ms;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes mark {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes draw-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes draw-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes travel-x {
+  0% {
+    inset-inline-start: 0%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    inset-inline-start: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes travel-y {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes trace {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ---------- Tablet ---------- */
+
+@media (max-width: 1024px) {
+  .section {
+    --mark: 54px;
+  }
+  .text {
+    font-size: 15.5px;
+  }
+  .keywords {
+    font-size: 11px;
+  }
+}
+
+/* ---------- Phone: a vertical timeline ---------- */
+
+@media (max-width: 720px) {
+  .section {
+    --mark: 48px;
+    --row-gap: 44px;
+  }
+  .head {
+    text-align: start;
+  }
+  .sub {
+    margin-inline: 0;
+  }
+  .stages {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--row-gap);
+  }
+  .stage {
+    display: grid;
+    grid-template-columns: var(--mark) minmax(0, 1fr);
+    column-gap: 20px;
+    align-items: start;
+    text-align: start;
+  }
+  .num {
+    font-size: 14.5px;
+  }
+  /* Down from this circle's centre to the next one's. */
+  .link {
+    top: calc(var(--mark) / 2);
+    inset-inline-start: calc(var(--mark) / 2 - 0.5px);
+    width: 1px;
+    height: calc(100% + var(--row-gap));
+  }
+  .linkLine,
+  .section:lang(ar) .linkLine {
+    transform-origin: center top;
+  }
+  .glow {
+    top: 0;
+    inset-inline-start: 0;
+    margin-top: -7px;
+  }
+  .body {
+    max-width: none;
+    margin-top: 8px;
+  }
+
+  .section[data-motion="armed"] .linkLine {
+    transform: scaleY(0);
+  }
+  .section[data-motion="play"] .linkLine {
+    animation-name: draw-y;
+  }
+  .section[data-motion="play"] .glow {
+    animation-name: travel-y;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .section[data-motion] * {
+    animation: none !important;
+  }
+}

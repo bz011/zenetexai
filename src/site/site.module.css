@@ -1,0 +1,22 @@
+/* Site frame (SiteChrome). The approved header overlays the top of the page
+   (position: absolute, transparent over the ivory). Ordinary pages start
+   below it (padding on <main>); the redesigned v5 pages pad their own first
+   section for it, so they slide back up under it (underHeader). */
+
+.chrome {
+  position: relative;
+  min-height: 100vh;
+}
+
+.main {
+  display: block;
+  padding-top: var(--header);
+}
+
+.main:focus {
+  outline: none;
+}
+
+.underHeader {
+  margin-top: calc(-1 * var(--header));
+}

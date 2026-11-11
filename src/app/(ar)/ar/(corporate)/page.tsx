@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import HomeContent from "@/app/(en)/(corporate)/HomeContent";
+import HomeV5 from "@/site/home/HomeV5";
 import { arabicMetadata } from "@/lib/arabicSeo";
 
 export const metadata: Metadata = arabicMetadata("/");
@@ -8,5 +8,5 @@ export const metadata: Metadata = arabicMetadata("/");
 // English-only, so showing them here would put English content on an
 // Arabic page.
 export default function ArabicHomePage() {
-  return <HomeContent latestPosts={[]} />;
+  return <HomeV5 lang="ar" />;
 }

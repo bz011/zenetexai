@@ -1,0 +1,218 @@
+/* Section 2: the dataflow wave with the seven offerings around it (v5 refinement of v4:
+   less dead space, one shared column frame for both rows, clearer type hierarchy,
+   roomier Arabic descriptions, and a slightly quieter wave behind the names).
+   Tokens and type are inherited from the page (hero.module.css .page): warm paper,
+   navy ink, muted teal; Hanken Grotesk / IBM Plex Sans Arabic. */
+
+.section {
+  --wave-h: calc(100vw / 3); /* 2172 x 724 */
+  position: relative;
+  padding: 0 0 clamp(56px, 6vw, 96px);
+}
+
+.section :where(ul) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Offerings ---------- */
+
+.row {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: clamp(24px, 3vw, 48px);
+  max-width: calc(var(--wrap) + 2 * var(--m));
+  margin-inline: auto;
+  padding-inline: var(--m);
+  /* Clean over the artwork's own stray particles. */
+  text-shadow: 0 0 2px var(--paper), 0 0 10px var(--paper), 0 0 18px var(--paper);
+}
+
+/* Both rows share one frame: the same outer edges and the same gutter, so the
+   three above and the four below line up at the ends of the wave. */
+.above {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  margin-bottom: calc(var(--wave-h) * -0.12);
+}
+
+.below {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: calc(var(--wave-h) * -0.12);
+}
+
+.offering {
+  display: block;
+  padding-block: 6px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin-bottom: 12px;
+  color: var(--teal);
+  opacity: 0.85;
+}
+
+.name {
+  display: block;
+  font-size: clamp(18px, 0.85rem + 0.45vw, 22px);
+  font-weight: 500;
+  line-height: 1.28;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+  transition: color 200ms ease;
+}
+
+.name:lang(ar) {
+  font-size: clamp(19px, 0.9rem + 0.45vw, 22px);
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+.line {
+  display: block;
+  margin-top: 8px;
+  max-width: 27em;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+/* Arabic needs a size up and more leading to read as comfortably. */
+.line:lang(ar) {
+  max-width: 25em;
+  font-size: 16px;
+  line-height: 1.9;
+}
+
+.offering:hover .name,
+.offering:focus-visible .name {
+  color: var(--teal);
+}
+
+/* ---------- The wave: static image, light flowing over it ---------- */
+
+.wave {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: var(--wave-h);
+  overflow: hidden;
+  /* Laid out left-to-right in both languages (it is never mirrored; and Chrome
+     clips composited children one pixel short in RTL boxes). */
+  direction: ltr;
+  /* Every edge fades out, so the artwork's cream never meets the paper along a line. */
+  --fade:
+    linear-gradient(90deg, transparent 0%, #000 7%, #000 93%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+  -webkit-mask-image: var(--fade);
+  -webkit-mask-composite: source-in;
+  mask-image: var(--fade);
+  mask-composite: intersect;
+  pointer-events: none;
+}
+
+.waveInner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2172 / 724;
+}
+
+.img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* A touch quieter, so the names lead and the wave supports them. */
+  opacity: 0.9;
+}
+
+.flow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1100px) {
+  .below {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 36px;
+  }
+}
+
+/* Tablet: the wave a little taller than its natural band, cropped at the ends. */
+@media (max-width: 900px) {
+  .section {
+    --wave-h: 46vw;
+    margin-top: 0;
+    padding-top: 24px;
+  }
+  .waveInner {
+    width: 138%;
+    margin-left: -19%;
+    margin-top: -2.5vw;
+  }
+  /* The wave's own faded top and foot leave room; let the rows sit into it. */
+  .above {
+    margin-bottom: calc(var(--wave-h) * -0.1);
+  }
+  .below {
+    margin-top: calc(var(--wave-h) * -0.14);
+  }
+}
+
+/* Mobile: two clean lists, with a band of the wave's middle between them. */
+@media (max-width: 640px) {
+  .section {
+    --wave-h: 60vw;
+    padding-top: 16px;
+  }
+  .row {
+    gap: 26px;
+  }
+  .above {
+    margin-bottom: calc(var(--wave-h) * -0.06);
+  }
+  .below {
+    margin-top: calc(var(--wave-h) * -0.08);
+  }
+  .above,
+  .below {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .waveInner {
+    width: 200%;
+    margin-left: -66%;
+    margin-top: -3.3vw;
+  }
+  .offering {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    column-gap: 14px;
+  }
+  .icon {
+    grid-row: 1 / span 2;
+    margin: 2px 0 0;
+  }
+  .line {
+    margin-top: 4px;
+  }
+}

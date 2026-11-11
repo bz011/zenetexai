@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import ServicesContent from "@/app/(en)/(corporate)/services/ServicesContent";
+import ServicesV5 from "@/site/services/ServicesPage";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd, serviceJsonLd } from "@/lib/structuredData";
 import { arabicMetadata } from "@/lib/arabicSeo";
@@ -23,7 +23,7 @@ export default function ArabicServicesPage() {
       {SERVICE_SCHEMAS.map((s) => (
         <JsonLd key={s.path} data={serviceJsonLd(s)} />
       ))}
-      <ServicesContent />
+      <ServicesV5 lang="ar" />
     </>
   );
 }

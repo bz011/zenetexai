@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
-import AboutContent from "./AboutContent";
+import AboutV5 from "./AboutV5";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/structuredData";
 
@@ -14,7 +14,7 @@ export default function AboutPage() {
   return (
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "About", path: "/about" }])} />
-      <AboutContent />
+      <AboutV5 />
     </>
   );
 }

@@ -1,0 +1,153 @@
+/* Sections 3–5: business value. Tokens and type are inherited from the page
+   (hero.module.css .page): warm paper, navy ink, muted teal. */
+
+.block {
+  --side: max(var(--m), (100% - var(--wrap)) / 2);
+  --gap: clamp(40px, 6vw, 104px);
+  display: grid;
+  grid-template-columns: var(--side) minmax(0, 5fr) var(--gap) minmax(0, 7fr) var(--side);
+  align-items: center;
+  padding-block: clamp(48px, 5vw, 88px);
+}
+
+/* Copy in the second column; the photograph from the fourth to the page edge. */
+.copy {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.media {
+  grid-column: 4 / 6;
+  grid-row: 1;
+  /* Fades into the paper on every side, most softly toward the copy. */
+  --fade-x: linear-gradient(to right, transparent 0%, transparent 1%, rgba(0, 0, 0, 0.4) 12%, #000 30%, #000 96%, transparent 99%);
+  --fade-y: linear-gradient(180deg, transparent 0%, transparent 1%, #000 16%, #000 80%, transparent 99%);
+  -webkit-mask-image: var(--fade-x), var(--fade-y);
+  -webkit-mask-composite: source-in;
+  mask-image: var(--fade-x), var(--fade-y);
+  mask-composite: intersect;
+  /* The columns fall on fractional pixels, where Chrome lets the photo's edge
+     pixel through the mask; the edges are transparent anyway, so trim them. */
+  clip-path: inset(2px);
+}
+
+/* Image first: the columns mirror. */
+.flip {
+  grid-template-columns: var(--side) minmax(0, 7fr) var(--gap) minmax(0, 5fr) var(--side);
+}
+
+.flip .copy {
+  grid-column: 4;
+}
+
+.flip .media {
+  grid-column: 1 / 3;
+  --fade-x: linear-gradient(to left, transparent 0%, transparent 1%, rgba(0, 0, 0, 0.4) 12%, #000 30%, #000 96%, transparent 99%);
+}
+
+/* In Arabic the grid runs right to left, so the copy side is the other way round. */
+.block:lang(ar) .media {
+  --fade-x: linear-gradient(to left, transparent 0%, transparent 1%, rgba(0, 0, 0, 0.4) 12%, #000 30%, #000 96%, transparent 99%);
+}
+
+.flip:lang(ar) .media {
+  --fade-x: linear-gradient(to right, transparent 0%, transparent 1%, rgba(0, 0, 0, 0.4) 12%, #000 30%, #000 96%, transparent 99%);
+}
+
+.img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ---------- Type ---------- */
+
+.eyebrow {
+  margin: 0 0 20px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+
+.eyebrow:lang(ar) {
+  font-size: 15px;
+  letter-spacing: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(32px, 0.9rem + 2vw, 46px);
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.title:lang(ar) {
+  font-size: clamp(30px, 0.9rem + 1.7vw, 42px);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0;
+}
+
+.accent {
+  display: block;
+  color: var(--teal);
+}
+
+.text {
+  margin: 22px 0 0;
+  max-width: 26em;
+  font-size: clamp(16.5px, 0.95rem + 0.2vw, 18px);
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+.text:lang(ar) {
+  line-height: 1.9;
+}
+
+/* ---------- Single column ---------- */
+
+@media (max-width: 900px) {
+  .block,
+  .flip {
+    grid-template-columns: var(--m) minmax(0, 1fr) var(--m);
+    row-gap: clamp(20px, 4vw, 36px);
+    padding-block: clamp(28px, 6vw, 48px);
+  }
+  /* Photograph first, full width and uncropped, then the copy. */
+  .media,
+  .flip .media {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    --fade-x: linear-gradient(to right, transparent 0%, transparent 1%, #000 5%, #000 95%, transparent 99%);
+    --fade-y: linear-gradient(180deg, transparent 0%, transparent 1%, #000 12%, #000 84%, transparent 99%);
+  }
+  .block:lang(ar) .media,
+  .flip:lang(ar) .media {
+    --fade-x: linear-gradient(to right, transparent 0%, transparent 1%, #000 5%, #000 95%, transparent 99%);
+  }
+  .copy,
+  .flip .copy {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .text {
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .eyebrow {
+    margin-bottom: 14px;
+  }
+  .title {
+    font-size: 30px;
+  }
+  .title:lang(ar) {
+    font-size: 27px;
+  }
+}

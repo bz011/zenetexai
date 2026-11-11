@@ -1,0 +1,327 @@
+/* Services overview (v5). Tokens, fonts, focus ring, header and the ink
+   button come from the homepage's .page (home-v5/hero.module.css): ivory
+   paper, navy ink, teal, champagne lines; Hanken Grotesk / IBM Plex Sans
+   Arabic. */
+
+.hero,
+.services {
+  --champagne-line: #c9ab76;
+}
+
+.hero :where(h1, h2, p, ul),
+.services :where(h2, p, ul) {
+  margin: 0;
+  padding: 0;
+}
+
+.services :where(ul) {
+  list-style: none;
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+  padding: calc(var(--header) + clamp(28px, 6vw, 96px)) var(--m) clamp(48px, 6vw, 96px);
+}
+
+.heroInner {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  align-items: center;
+  column-gap: clamp(32px, 4vw, 64px);
+  max-width: var(--wrap);
+  margin-inline: auto;
+}
+
+.eyebrow {
+  margin-bottom: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+
+.eyebrow:lang(ar) {
+  font-size: 15px;
+  letter-spacing: 0;
+}
+
+.title {
+  max-width: 13em;
+  font-size: clamp(36px, 1rem + 3vw, 66px);
+  font-weight: 300;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+
+.title:lang(ar) {
+  max-width: 14em;
+  font-size: clamp(32px, 1rem + 2.4vw, 54px);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0;
+}
+
+.accent {
+  color: var(--teal);
+}
+
+.sub {
+  max-width: 31em;
+  margin-top: 24px;
+  font-size: clamp(17px, 1rem + 0.25vw, 19px);
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.sub:lang(ar) {
+  line-height: 1.85;
+}
+
+.actions {
+  margin-top: 32px;
+}
+
+/* Decorative lines in the visual column; they fade out at both ends and are
+   mirrored in Arabic. Stand-in until a dedicated hero visual exists. */
+.flow {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  fill: none;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 30%, #000 80%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 30%, #000 80%, transparent 100%);
+}
+
+[dir="rtl"] .flow {
+  transform: scaleX(-1);
+}
+
+.flow path {
+  stroke-linecap: round;
+}
+
+.gold {
+  stroke: var(--champagne-line);
+  stroke-width: 1.2;
+  opacity: 0.6;
+}
+
+.gold2 {
+  stroke: var(--champagne-line);
+  stroke-width: 1;
+  opacity: 0.32;
+}
+
+.teal {
+  stroke: var(--teal);
+  stroke-width: 1;
+  opacity: 0.32;
+}
+
+/* ---------- Service rows ---------- */
+
+.services {
+  max-width: calc(var(--wrap) + 2 * var(--m));
+  margin-inline: auto;
+  padding: clamp(8px, 2vw, 32px) var(--m) clamp(72px, 8vw, 120px);
+}
+
+.listHead {
+  margin-bottom: clamp(24px, 3vw, 40px);
+}
+
+.listTitle {
+  font-size: clamp(28px, 1rem + 1.4vw, 42px);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.listTitle:lang(ar) {
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+.listSub {
+  max-width: 34em;
+  margin-top: 12px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.rows {
+  border-top: 1px solid var(--line);
+}
+
+.rows li {
+  border-bottom: 1px solid var(--line);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 5fr) minmax(0, 6fr) 16px;
+  align-items: center;
+  column-gap: clamp(20px, 3vw, 40px);
+  min-height: 84px;
+  padding: 18px clamp(4px, 1vw, 16px);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 220ms ease;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  color: var(--teal);
+}
+
+.name {
+  font-size: clamp(18px, 1rem + 0.35vw, 21px);
+  font-weight: 500;
+  line-height: 1.3;
+  transition: color 220ms ease;
+}
+
+.line {
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.line:lang(ar) {
+  line-height: 1.8;
+}
+
+.arrow {
+  color: var(--teal);
+  transition: transform 260ms var(--ease);
+}
+
+/* The arrow points to the reading end. */
+[dir="rtl"] .arrow {
+  transform: scaleX(-1);
+}
+
+.row:hover {
+  background: rgba(237, 229, 214, 0.45);
+}
+
+.row:hover .name {
+  color: var(--teal);
+}
+
+.row:hover .arrow {
+  transform: translateX(4px);
+}
+
+[dir="rtl"] .row:hover .arrow {
+  transform: scaleX(-1) translateX(4px);
+}
+
+/* ---------- Motion: the hero rises in once ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .heroCopy > * {
+    animation: svRise 900ms var(--ease) both;
+  }
+  .heroCopy > :nth-child(2) {
+    animation-delay: 120ms;
+  }
+  .heroCopy > :nth-child(3) {
+    animation-delay: 300ms;
+  }
+  .heroCopy > :nth-child(4) {
+    animation-delay: 440ms;
+  }
+  /* The dash pattern exists only while tracing (fill backwards), so the
+     finished lines are plain strokes. */
+  .flow path {
+    animation: svTrace 2200ms cubic-bezier(0.45, 0, 0.25, 1) 250ms backwards;
+  }
+  .flow .teal {
+    animation-delay: 450ms;
+  }
+  .flow .gold2 {
+    animation-delay: 650ms;
+  }
+}
+
+@keyframes svRise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+}
+
+@keyframes svTrace {
+  from {
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ---------- Tablet ---------- */
+
+@media (max-width: 900px) {
+  .heroInner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .flow {
+    display: none;
+  }
+}
+
+/* ---------- Phone: icon, name and arrow on one line, the sentence below ---------- */
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 22px minmax(0, 1fr) 16px;
+    grid-template-areas:
+      "icon name arrow"
+      ". line arrow";
+    column-gap: 14px;
+    row-gap: 4px;
+    min-height: 0;
+    padding: 18px 2px;
+  }
+  .icon {
+    grid-area: icon;
+    width: 22px;
+    height: 22px;
+  }
+  .name {
+    grid-area: name;
+    font-size: 17.5px;
+  }
+  .line {
+    grid-area: line;
+    font-size: 15px;
+  }
+  .arrow {
+    grid-area: arrow;
+  }
+  .sub {
+    margin-top: 18px;
+  }
+  .actions {
+    margin-top: 26px;
+  }
+}
+
+/* Section anchors (production URLs such as /services#ai-consulting) land
+   below the overlay header. */
+.anchored {
+  scroll-margin-top: calc(var(--header) + 16px);
+}
