@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
-import ResourcesContent from "./ResourcesContent";
+import ResourcesV5 from "./ResourcesV5";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/structuredData";
 import { fetchPublishedPosts } from "@/lib/posts";
-import { markdownExcerpt } from "@/lib/excerpt";
+import { toPost } from "@/site/blog/blogData";
 
 export const dynamic = "force-dynamic";
 
@@ -15,12 +15,12 @@ const description =
 export const metadata: Metadata = pageMetadata({ title, description, path: "/resources" });
 
 export default async function ResourcesPage() {
-  const posts = await fetchPublishedPosts(6);
-  const latestPosts = posts.map((post) => ({ ...post, excerpt: markdownExcerpt(post.body, 120) }));
+  const posts = await fetchPublishedPosts();
+  const articles = posts.map(toPost).map(({ slug, lang, title, date, topic }) => ({ slug, lang, title, date, topic }));
   return (
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Resources", path: "/resources" }])} />
-      <ResourcesContent latestPosts={latestPosts} />
+      <ResourcesV5 articles={articles} />
     </>
   );
 }

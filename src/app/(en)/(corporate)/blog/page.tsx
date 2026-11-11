@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
-import BlogContent from "./BlogContent";
+import BlogV5 from "./BlogV5";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/structuredData";
 import { fetchPublishedPosts, type PublishedPost } from "@/lib/posts";
-import { markdownExcerpt } from "@/lib/excerpt";
+import { toPost } from "@/site/blog/blogData";
 
 export const dynamic = "force-dynamic";
 
@@ -18,11 +18,11 @@ export type { PublishedPost };
 
 export default async function BlogPage() {
   const posts = await fetchPublishedPosts();
-  const publishedPosts = posts.map((post) => ({ ...post, excerpt: markdownExcerpt(post.body, 120) }));
+  const publishedPosts = posts.map(toPost);
   return (
     <>
       <JsonLd data={breadcrumbJsonLd([{ name: "Home", path: "/" }, { name: "Blog", path: "/blog" }])} />
-      <BlogContent publishedPosts={publishedPosts} />
+      <BlogV5 posts={publishedPosts} />
     </>
   );
 }
