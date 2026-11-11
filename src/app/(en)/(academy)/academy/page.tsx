@@ -9,6 +9,9 @@ const title = "PMP Course in Arabic & English | ZentexAI Academy";
 const description =
   "ZentexAI Academy: an Arabic-friendly PMP Mastery Program (دورة PMP بالعربي) and a PMP exam simulator for working professionals.";
 
+/** Effective prices are read at render; refresh them every 5 minutes. */
+export const revalidate = 300;
+
 export const metadata: Metadata = mirroredPageMetadata("/academy", "en", title, description);
 
 export default function AcademyPage() {

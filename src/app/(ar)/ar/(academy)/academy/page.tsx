@@ -5,6 +5,9 @@ import { breadcrumbJsonLd } from "@/lib/structuredData";
 import PmpDiscoverabilitySection from "@/components/seo/PmpDiscoverabilitySection";
 import { arabicMetadata } from "@/lib/arabicSeo";
 
+/** Effective prices are read at render; refresh them every 5 minutes. */
+export const revalidate = 300;
+
 export const metadata: Metadata = arabicMetadata("/academy");
 
 export default function ArabicAcademyPage() {

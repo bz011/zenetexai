@@ -35,7 +35,8 @@ describe("Academy price label (never a hard-coded Free)", () => {
 describe("Academy page", () => {
   it("never renders Free while products are paid, or when prices are unavailable", () => {
     for (const lang of ["en", "ar"] as const) {
-      for (const prices of [{}, { "pmp-mastery-program": paid, "pmp-exam-simulator": paid }]) {
+      const cases: Record<string, EffectivePrice | null>[] = [{}, { "pmp-mastery-program": paid, "pmp-exam-simulator": paid }];
+      for (const prices of cases) {
         const html = renderToStaticMarkup(createElement(AcademyPage, { lang, prices }));
         expect(html).not.toMatch(/>Free<|>مجاني</);
       }
