@@ -8,6 +8,8 @@ interface Props {
   provider: VideoProvider;
   url: string | null;
   placeholderLabel: string;
+  /** One supporting sentence under the label when no video is published yet. */
+  placeholderNote?: string;
   /** Called repeatedly while the video is actively playing, so a passive-watching student (no mouse/keyboard input) still registers as active study time. */
   onActivity?: () => void;
 }
@@ -63,7 +65,7 @@ function resolveEmbedSrc(provider: VideoProvider, url: string): string | null {
  * Swap in real play/pause detection once Bunny's actual embed postMessage
  * events are confirmed.
  */
-export default function VideoEmbed({ provider, url, placeholderLabel, onActivity }: Props) {
+export default function VideoEmbed({ provider, url, placeholderLabel, placeholderNote, onActivity }: Props) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const pingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -137,10 +139,21 @@ export default function VideoEmbed({ provider, url, placeholderLabel, onActivity
     };
   }, [provider, embedSrc, onActivity]);
 
+  // No published video: a compact notice instead of an empty 16:9 frame, so
+  // the lesson's own content stays near the top of the page.
   if (!embedSrc) {
     return (
-      <div className="flex aspect-video w-full items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.03]">
-        <p className="text-[13px] text-slate-500">{placeholderLabel}</p>
+      <div className="flex items-start gap-4 rounded-xl border border-line bg-surface-1 p-4 sm:items-center sm:p-5" data-testid="video-placeholder">
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent/10 text-accent-fg" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" focusable="false">
+            <rect x="3" y="5" width="18" height="14" rx="3" />
+            <path d="M10.5 9.5v5l4-2.5z" fill="currentColor" stroke="none" />
+          </svg>
+        </span>
+        <div className="min-w-0">
+          <p className="text-[15px] font-semibold text-ink">{placeholderLabel}</p>
+          {placeholderNote && <p className="mt-1 text-[13px] leading-relaxed text-ink-2">{placeholderNote}</p>}
+        </div>
       </div>
     );
   }

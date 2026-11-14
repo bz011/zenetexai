@@ -143,6 +143,7 @@ export default function LessonDetailContent({
                 provider={lesson.video_provider}
                 url={lesson.video_url}
                 placeholderLabel={l.video_placeholder}
+                placeholderNote={l.video_placeholder_note}
                 onActivity={markActive}
               />
             </div>
