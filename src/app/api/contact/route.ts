@@ -62,6 +62,14 @@ export async function POST(request: Request) {
   params.append("inquiryType", inquiryType);
   params.append("message", message);
 
+  // Real enquiries are forwarded only from a Production deployment. Local
+  // dev/start, tests and Vercel Preview (VERCEL_ENV "preview"/"development"
+  // or unset) stop here, so they can never reach the business's real Apps
+  // Script inbox/spreadsheet.
+  if (process.env.VERCEL_ENV !== "production") {
+    return NextResponse.json({ success: false, error: "contact_disabled" }, { status: 503 });
+  }
+
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);

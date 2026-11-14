@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 const checkRateLimitMock = vi.fn();
 const getHashedClientIpMock = vi.fn(() => "hashed-ip");
@@ -31,6 +31,12 @@ describe("POST /api/contact", () => {
     getHashedClientIpMock.mockClear();
     checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
     vi.stubGlobal("fetch", vi.fn());
+    // These cases describe the Production deployment, the only one that forwards.
+    vi.stubEnv("VERCEL_ENV", "production");
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it("rejects with 429 and no upstream call when rate-limited", async () => {
@@ -119,5 +125,45 @@ describe("POST /api/contact", () => {
     const response = await POST(makeRequest(VALID_BODY));
 
     expect(response.status).toBe(502);
+  });
+});
+
+describe("POST /api/contact outside Production", () => {
+  beforeEach(() => {
+    checkRateLimitMock.mockReset();
+    checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true }));
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  for (const env of ["preview", "development", "", undefined]) {
+    it(`never calls the Apps Script when VERCEL_ENV is ${env === undefined ? "unset" : JSON.stringify(env)}`, async () => {
+      if (env === undefined) vi.stubEnv("VERCEL_ENV", undefined as unknown as string);
+      else vi.stubEnv("VERCEL_ENV", env);
+
+      const response = await POST(makeRequest(VALID_BODY));
+      const json = (await response.json()) as { success: boolean; error: string };
+
+      expect(response.status).toBe(503);
+      expect(json).toEqual({ success: false, error: "contact_disabled" });
+      expect(fetch).not.toHaveBeenCalled();
+    });
+  }
+
+  it("still validates input before refusing (400, no upstream call)", async () => {
+    vi.stubEnv("VERCEL_ENV", "preview");
+    const response = await POST(makeRequest({ ...VALID_BODY, email: "not-an-email" }));
+    expect(response.status).toBe(400);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("treats a near-miss value as non-production", async () => {
+    vi.stubEnv("VERCEL_ENV", "Production");
+    const response = await POST(makeRequest(VALID_BODY));
+    expect(response.status).toBe(503);
+    expect(fetch).not.toHaveBeenCalled();
   });
 });
