@@ -99,13 +99,13 @@ const CONTENT: Record<Variant, Block> = {
       { q: "What is a PMP exam simulator?", a: "A PMP exam simulator is a practice tool that presents exam-style questions under realistic conditions — including timed, full-length mock exams — so you can build stamina and find weak areas before the real exam." },
       { q: "Can I practise PMP questions in Arabic?", a: "Yes. The ZentexAI simulator shows questions and answer options in Arabic or English, and you can switch language during practice." },
       { q: "What is the difference between Practice Mode and a Mock Exam?", a: "Practice Mode lets you choose filters such as domain, approach, and difficulty and review answers straight away. A Mock Exam is a full-length, timed 180-question exam sat in sections with scheduled breaks." },
-      { q: "Where can I see pricing and access details?", a: "The PMP Exam Simulator page shows the current price and what access includes." },
+      { q: "Is the PMP Exam Simulator free?", a: "Yes. The PMP Exam Simulator and the PMP Mastery Program are free with a ZentexAI account." },
     ],
     faqAr: [
       { q: "ما هو محاكي اختبار PMP؟", a: "محاكي اختبار PMP أداة تدريب تعرض أسئلة بأسلوب الاختبار في ظروف واقعية — بما في ذلك اختبارات تجريبية كاملة بوقت محدد — لتبني قدرة التحمل وتكتشف نقاط الضعف قبل الاختبار الفعلي." },
       { q: "هل يمكنني التدرب على أسئلة PMP بالعربي؟", a: "نعم. يعرض محاكي ZentexAI الأسئلة وخيارات الإجابة بالعربية أو الإنجليزية، ويمكنك تبديل اللغة أثناء التدريب." },
       { q: "ما الفرق بين وضع التدريب والاختبار التجريبي؟", a: "يتيح وضع التدريب اختيار مرشحات مثل المجال والنهج والصعوبة ومراجعة الإجابات فوراً. أما الاختبار التجريبي فهو اختبار كامل بوقت محدد من 180 سؤالاً على أقسام مع فترات استراحة مجدولة." },
-      { q: "أين أجد الأسعار وتفاصيل الوصول؟", a: "تعرض صفحة محاكي اختبار PMP السعر الحالي وما يتضمنه الوصول." },
+      { q: "هل محاكي اختبار PMP مجاني؟", a: "نعم. محاكي اختبار PMP وبرنامج احتراف PMP مجانيان مع حساب ZentexAI." },
     ],
   },
 };

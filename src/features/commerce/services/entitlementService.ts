@@ -39,6 +39,22 @@ async function getActiveProductIds(supabase: SupabaseClient, userId: string): Pr
  * pages) - those pages already trust this module as the sole source of
  * truth for access, so the bypass belongs here, not duplicated at each caller.
  */
+/**
+ * Permanently free, active, published products (migration 033). Every
+ * signed-in user holds their capabilities with no entitlement row; the
+ * database applies the same rule in has_active_capability().
+ */
+async function getFreeProductIds(supabase: SupabaseClient): Promise<string[]> {
+  const { data, error } = await supabase
+    .from("products")
+    .select("id")
+    .eq("is_free", true)
+    .eq("is_active", true)
+    .eq("is_published", true);
+  if (error || !data) return [];
+  return (data as { id: string }[]).map((row) => row.id);
+}
+
 async function isAdmin(supabase: SupabaseClient, userId: string): Promise<boolean> {
   const { data } = await supabase.from("profiles").select("role").eq("id", userId).maybeSingle();
   return (data as { role: string } | null)?.role === "admin";
@@ -61,7 +77,11 @@ export async function getUserCapabilities(supabase: SupabaseClient, userId: stri
     return new Set((data as { capability: string }[]).map((r) => r.capability));
   }
 
-  const activeProductIds = await getActiveProductIds(supabase, userId);
+  const [entitledProductIds, freeProductIds] = await Promise.all([
+    getActiveProductIds(supabase, userId),
+    getFreeProductIds(supabase),
+  ]);
+  const activeProductIds = [...new Set([...entitledProductIds, ...freeProductIds])];
   if (activeProductIds.length === 0) return new Set();
 
   const { data, error } = await supabase
@@ -90,22 +110,21 @@ export interface OwnedLearningResource {
 
 /** Products the user actually owns (active, unexpired entitlement), for Dashboard/My Learning. */
 export async function getOwnedLearningResources(supabase: SupabaseClient, userId: string): Promise<OwnedLearningResource[]> {
-  const { data: entitlements, error } = await supabase
-    .from("entitlements")
-    .select("product_id, expires_at")
-    .eq("user_id", userId)
-    .eq("status", "active");
-
-  if (error || !entitlements || entitlements.length === 0) return [];
+  const [{ data: entitlements, error }, freeProductIds] = await Promise.all([
+    supabase.from("entitlements").select("product_id, expires_at").eq("user_id", userId).eq("status", "active"),
+    getFreeProductIds(supabase),
+  ]);
 
   const now = Date.now();
-  const active = (entitlements as ActiveEntitlementRow[]).filter(
+  const active = error || !entitlements ? [] : (entitlements as ActiveEntitlementRow[]).filter(
     (row) => !row.expires_at || new Date(row.expires_at).getTime() > now
   );
-  if (active.length === 0) return [];
+  // Free products are available to every signed-in user, with no expiry.
+  const expiryByProduct = new Map<string, string | null>(active.map((row) => [row.product_id, row.expires_at]));
+  for (const id of freeProductIds) expiryByProduct.set(id, null);
+  if (expiryByProduct.size === 0) return [];
 
-  const productIds = active.map((row) => row.product_id);
-  const expiryByProduct = new Map(active.map((row) => [row.product_id, row.expires_at]));
+  const productIds = [...expiryByProduct.keys()];
 
   const [{ data: products }, { data: capRows }] = await Promise.all([
     supabase.from("products").select("id, slug, type, title_en, title_ar").in("id", productIds),

@@ -16,6 +16,8 @@ export interface Product {
   description_ar: string;
   is_active: boolean;
   is_published: boolean;
+  /** Permanently free: every signed-in user holds this product's capabilities (migration 033). */
+  is_free: boolean;
   order_index: number;
 }
 
@@ -41,6 +43,8 @@ export interface EffectivePrice {
   isPromotionActive: boolean;
   promotionValidUntil: string | null;
   accessDurationDays: number | null;
+  /** Set for a permanently free product: no price applies and access needs only an account. */
+  alwaysFree?: true;
 }
 
 export interface ProductWithPricing extends Product {

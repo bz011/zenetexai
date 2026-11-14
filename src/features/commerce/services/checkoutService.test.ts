@@ -100,13 +100,13 @@ const PRICE_ROW = {
   is_active: true,
 };
 
-function buildRlsSupabase(config: { existingEntitlement?: { id: string; expires_at: string | null } | null; priceRows?: unknown[] }) {
+function buildRlsSupabase(config: { existingEntitlement?: { id: string; expires_at: string | null } | null; priceRows?: unknown[]; isFree?: boolean }) {
   return {
     from: (table: string) => {
       if (table === "products") {
         return {
           select: () => ({
-            eq: () => ({ maybeSingle: async () => ({ data: { id: PRODUCT_ID, is_active: true, is_published: true }, error: null }) }),
+            eq: () => ({ maybeSingle: async () => ({ data: { id: PRODUCT_ID, is_active: true, is_published: true, is_free: config.isFree ?? false }, error: null }) }),
           }),
         };
       }
@@ -285,6 +285,20 @@ describe("startZiinaCheckout", () => {
 
     expect(result).toEqual({ success: false, error: "not_payable" });
     expect(createIntentMock).not.toHaveBeenCalled();
+  });
+
+  it("never starts checkout for a permanently free product, even if an old paid price row is still active", async () => {
+    requireProfileMock.mockResolvedValue({
+      supabase: buildRlsSupabase({ isFree: true }),
+      user: { id: USER_ID },
+      profile: { role: "admin" },
+    });
+
+    const result = await startZiinaCheckout("pmp-mastery-program");
+
+    expect(result).toEqual({ success: false, error: "not_payable" });
+    expect(createIntentMock).not.toHaveBeenCalled();
+    expect(adminFromMock).not.toHaveBeenCalled();
   });
 
   it("marks the purchase failed and reports checkout_unavailable when the Ziina API call throws", async () => {

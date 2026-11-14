@@ -4,6 +4,7 @@ import Link from "@/components/LocaleLink";
 import { useLang } from "@/lib/LanguageContext";
 import type { ProductWithPricing } from "@/features/commerce/types/commerce";
 import { formatMoney } from "@/features/commerce/utils/money";
+import { isAlwaysFree, isFreePrice } from "@/features/commerce/utils/freeAccess";
 
 export default function ProductCard({ product, owned }: { product: ProductWithPricing; owned: boolean }) {
   const { t, lang } = useLang();
@@ -12,7 +13,8 @@ export default function ProductCard({ product, owned }: { product: ProductWithPr
   const title = lang === "ar" && product.title_ar ? product.title_ar : product.title_en;
   const description = lang === "ar" && product.description_ar ? product.description_ar : product.description_en;
   const price = product.price;
-  const isFreeNow = !!price && price.isPromotionActive && price.effectiveAmountMinorUnits === 0;
+  const isFreeNow = isFreePrice(price);
+  const alwaysFree = isAlwaysFree(price);
 
   return (
     <Link href={`/courses/${product.slug}`} className="card card-hover flex flex-col p-6">
@@ -20,10 +22,10 @@ export default function ProductCard({ product, owned }: { product: ProductWithPr
         <span className="label text-[10px]">{product.type}</span>
         {owned ? (
           <span className="shrink-0 rounded-full bg-emerald-500/[0.12] px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
-            {c.owned_badge}
+            {alwaysFree ? c.free_access_badge : c.owned_badge}
           </span>
         ) : (
-          isFreeNow && (
+          isFreeNow && !alwaysFree && (
             <span className="shrink-0 rounded-full bg-amber-500/[0.15] px-2.5 py-0.5 text-[11px] font-semibold text-amber-400">
               {c.launch_offer_badge}
             </span>

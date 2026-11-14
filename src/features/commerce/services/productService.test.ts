@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveEffectivePrice } from "./productService";
+import { resolveEffectivePrice, getProductBySlug } from "./productService";
 import type { Price } from "@/features/commerce/types/commerce";
 
 function price(overrides: Partial<Price>): Price {
@@ -102,5 +102,31 @@ describe("resolveEffectivePrice", () => {
 
     expect(combined).toBe(70000);
     expect(savings).toBe(20000);
+  });
+});
+
+describe("permanently free product pricing (migration 033)", () => {
+  function supabaseFor(isFree: boolean) {
+    const product = { id: "product-1", slug: "pmp-mastery-program", type: "course", title_en: "M", title_ar: "M", description_en: "", description_ar: "", is_active: true, is_published: true, is_free: isFree, order_index: 0 };
+    return {
+      from: (table: string) => ({
+        select: () =>
+          table === "products"
+            ? { eq: () => ({ maybeSingle: async () => ({ data: product, error: null }) }) }
+            : { in: async () => ({ data: table === "prices" ? [price({})] : [{ product_id: "product-1", capability: "course:pmp" }], error: null }) },
+      }),
+    };
+  }
+
+  it("ignores any stored price row and reports FREE with no amount, term or promotion", async () => {
+    const result = await getProductBySlug(supabaseFor(true) as never, "pmp-mastery-program");
+    expect(result?.price).toMatchObject({ alwaysFree: true, effectiveAmountMinorUnits: 0, regularAmountMinorUnits: null, isPromotionActive: false, accessDurationDays: null });
+    expect(result?.capabilities).toEqual(["course:pmp"]);
+  });
+
+  it("keeps the real price for a product that is not free", async () => {
+    const result = await getProductBySlug(supabaseFor(false) as never, "pmp-mastery-program");
+    expect(result?.price?.alwaysFree).toBeUndefined();
+    expect(result?.price?.effectiveAmountMinorUnits).toBe(35000);
   });
 });

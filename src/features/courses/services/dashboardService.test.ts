@@ -25,7 +25,13 @@ function buildSupabaseMock(f: Fixture) {
         return { select: () => ({ eq: () => ({ eq: async () => ({ data: f.entitlements, error: null }) }) }) };
       }
       if (table === "products") {
-        return { select: () => ({ in: async () => ({ data: f.products, error: null }) }) };
+        return {
+          select: () => ({
+            in: async () => ({ data: f.products, error: null }),
+            // No free products in these fixtures (migration 033's free-product lookup).
+            eq: () => ({ eq: () => ({ eq: async () => ({ data: [], error: null }) }) }),
+          }),
+        };
       }
       if (table === "product_capabilities") {
         return { select: () => ({ in: async () => ({ data: f.capabilities, error: null }) }) };

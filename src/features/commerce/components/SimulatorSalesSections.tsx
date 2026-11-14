@@ -6,6 +6,7 @@ import { getActiveBlueprint } from "@/features/mock-exam/config/examBlueprint";
 import { fillCopy, simulatorFactsFromBlueprint, simulatorPageCopy } from "@/lib/simulatorPageCopy";
 import { SimulatorLoopVisual } from "@/components/visuals/Visuals";
 import { formatMoney } from "@/features/commerce/utils/money";
+import { isAlwaysFree, isFreePrice } from "@/features/commerce/utils/freeAccess";
 import type { ProductWithPricing } from "@/features/commerce/types/commerce";
 
 function useSimulatorCopy() {
@@ -18,11 +19,13 @@ function useSimulatorCopy() {
 export function SimulatorHero({ product }: { product: ProductWithPricing }) {
   const { t, copy, facts } = useSimulatorCopy();
   const price = product.price;
-  const isFreeNow = !!price && price.isPromotionActive && price.effectiveAmountMinorUnits === 0;
+  const isFreeNow = isFreePrice(price);
   const months = price?.accessDurationDays ? Math.round(price.accessDurationDays / 30) : null;
 
   const accessValue = price ? (isFreeNow ? t.commerce.card.free_badge : formatMoney(price.effectiveAmountMinorUnits, price.currency)) : "—";
-  const accessNote = months ? fillCopy(copy.facts_access_note, { months }) : copy.facts_access_note_no_term;
+  const accessNote = isAlwaysFree(price)
+    ? t.commerce.product.free_access_note
+    : months ? fillCopy(copy.facts_access_note, { months }) : copy.facts_access_note_no_term;
 
   const cards = [
     { label: copy.facts_questions_label, value: String(facts.questions), note: copy.facts_questions_note },

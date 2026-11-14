@@ -16,7 +16,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Product, Price, EffectivePrice, ProductWithPricing, Capability } from "@/features/commerce/types/commerce";
 
 const PRODUCT_COLUMNS =
-  "id, slug, type, title_en, title_ar, description_en, description_ar, is_active, is_published, order_index";
+  "id, slug, type, title_en, title_ar, description_en, description_ar, is_active, is_published, is_free, order_index";
 const PRICE_COLUMNS =
   "id, product_id, kind, currency, amount_minor_units, access_duration_days, valid_from, valid_until, is_active";
 
@@ -56,6 +56,17 @@ export function resolveEffectivePrice(prices: Price[], now: Date = new Date()): 
     accessDurationDays: effective.access_duration_days,
   };
 }
+
+/** The effective "price" of a permanently free product: no amount, no term, no promotion. */
+export const FREE_PRICE: EffectivePrice = {
+  currency: "AED",
+  effectiveAmountMinorUnits: 0,
+  regularAmountMinorUnits: null,
+  isPromotionActive: false,
+  promotionValidUntil: null,
+  accessDurationDays: null,
+  alwaysFree: true,
+};
 
 export async function getStorefrontProducts(supabase: SupabaseClient): Promise<ProductWithPricing[]> {
   const { data: products, error } = await supabase
@@ -107,6 +118,6 @@ async function attachPricingAndCapabilities(supabase: SupabaseClient, products: 
   return products.map((product) => ({
     ...product,
     capabilities: capsByProduct.get(product.id) ?? [],
-    price: resolveEffectivePrice(pricesByProduct.get(product.id) ?? []),
+    price: product.is_free ? FREE_PRICE : resolveEffectivePrice(pricesByProduct.get(product.id) ?? []),
   }));
 }

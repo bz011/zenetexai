@@ -7,6 +7,7 @@ import heroArt from "../../../public/images/academy/academy-hero.webp";
 import masteryArt from "../../../public/images/academy/program-pmp-mastery.webp";
 import simulatorArt from "../../../public/images/academy/program-pmp-simulator.webp";
 import { formatMoney } from "@/features/commerce/utils/money";
+import { isFreePrice } from "@/features/commerce/utils/freeAccess";
 import type { EffectivePrice } from "@/features/commerce/types/commerce";
 import { academyCopy, type FeatureIcon } from "./academyCopy";
 import styles from "./academy.module.css";
@@ -67,12 +68,12 @@ function Arrow() {
  * Rendered inside the Academy shell (its own sticky header), so the hero
  * needs no space for an overlay header (--header: 0). Prices: `prices` maps
  * product slug -> effective price from the commerce tables; none is shown
- * when it is unknown, and "Free" only for an active AED 0 promotion.
+ * when it is unknown, and "FREE" for a free product or an active AED 0 promotion.
  */
 /** Display label of a product's effective price (commerce tables), or null when unknown. */
 export function priceLabel(price: EffectivePrice | null | undefined, lang: Lang): string | null {
   if (!price) return null;
-  if (price.isPromotionActive && price.effectiveAmountMinorUnits === 0) return lang === "ar" ? "مجاني" : "Free";
+  if (isFreePrice(price)) return lang === "ar" ? "مجاناً" : "FREE";
   return formatMoney(price.effectiveAmountMinorUnits, price.currency);
 }
 

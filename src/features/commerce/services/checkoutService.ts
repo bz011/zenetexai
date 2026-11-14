@@ -119,12 +119,17 @@ export async function startZiinaCheckout(productSlug: string): Promise<StartChec
 
   const { data: product } = await supabase
     .from("products")
-    .select("id, is_active, is_published")
+    .select("id, is_active, is_published, is_free")
     .eq("slug", productSlug)
     .maybeSingle();
 
   if (!product || !(product as { is_active: boolean }).is_active || !(product as { is_published: boolean }).is_published) {
     return { success: false, error: "product_unavailable" };
+  }
+  // A permanently free product is never sold: signed-in users already hold
+  // its capabilities (migration 033), so no purchase row or Ziina intent.
+  if ((product as { is_free?: boolean }).is_free) {
+    return { success: false, error: "not_payable" };
   }
   const productId = (product as { id: string }).id;
 

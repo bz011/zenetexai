@@ -272,7 +272,7 @@ export interface Translations {
     dashboard: { eyebrow: string; heading: string; empty: string };
     detail: { lessons_label: string; empty: string; module_assessment_cta: string };
     lesson: {
-      back_to_course: string; video_placeholder: string;
+      back_to_course: string; video_placeholder: string; video_placeholder_note: string;
       mark_complete: string; marking: string; completed: string;
       checkpoint_label: string;
     };
@@ -300,7 +300,7 @@ export interface Translations {
       view_details: string; enroll_free: string; enrolling: string; continue_learning: string;
       owned_badge: string; opening_soon: string; access_duration: string; free_badge: string;
       launch_offer_badge: string; buy_now: string; redirecting_to_payment: string;
-      payment_stay_on_page_notice: string;
+      payment_stay_on_page_notice: string; free_access_badge: string;
     };
     product: {
       overview_heading: string; curriculum_heading: string; curriculum_empty: string;
@@ -308,6 +308,7 @@ export interface Translations {
       promo_ends_label: string; capability_course: string; capability_practice: string;
       capability_mock_exam: string; not_found: string;
       login_prompt: string; login_cta: string; signup_cta: string;
+      access_heading: string; free_access_note: string; free_login_prompt: string; free_signup_cta: string;
       learn_heading: string; learn_points: string[]; included_structure_label: string;
       instructor: { heading: string; name: string; credentials: string; role: string; bio: string };
     };
@@ -1113,6 +1114,7 @@ const en: Translations = {
     lesson: {
       back_to_course: "Back to course",
       video_placeholder: "Video coming soon",
+      video_placeholder_note: "The video for this lesson hasn't been published yet. You can still mark the lesson complete and move on.",
       mark_complete: "Mark as complete",
       marking: "Saving...",
       completed: "Completed",
@@ -1188,6 +1190,7 @@ const en: Translations = {
       buy_now: "Buy Now",
       redirecting_to_payment: "Redirecting to payment...",
       payment_stay_on_page_notice: "Please don't close the payment page or your browser until your payment is complete and you're returned to ZentexAI with your access confirmed.",
+      free_access_badge: "Free access",
     },
     product: {
       overview_heading: "Overview",
@@ -1204,6 +1207,10 @@ const en: Translations = {
       login_prompt: "Log in or create an account to continue.",
       login_cta: "Log In",
       signup_cta: "Sign Up",
+      access_heading: "Access",
+      free_access_note: "Free with a ZentexAI account",
+      free_login_prompt: "Create a free account or log in to start.",
+      free_signup_cta: "Create Free Account",
       learn_heading: "What You'll Learn",
       learn_points: [
         "Core PMP foundations, terminology, and exam content areas",
@@ -2119,6 +2126,7 @@ const ar: Translations = {
     lesson: {
       back_to_course: "العودة إلى الدورة",
       video_placeholder: "الفيديو قادم قريباً",
+      video_placeholder_note: "لم يُنشر فيديو هذا الدرس بعد. يمكنك مع ذلك وضع علامة مكتمل على الدرس والانتقال إلى التالي.",
       mark_complete: "وضع علامة مكتمل",
       marking: "جارٍ الحفظ...",
       completed: "مكتمل",
@@ -2194,6 +2202,7 @@ const ar: Translations = {
       buy_now: "اشترِ الآن",
       redirecting_to_payment: "جارٍ التحويل إلى صفحة الدفع...",
       payment_stay_on_page_notice: "يرجى عدم إغلاق صفحة الدفع أو المتصفح حتى تكتمل عملية الدفع وتعود إلى ZentexAI ويتم تأكيد تفعيل وصولك.",
+      free_access_badge: "وصول مجاني",
     },
     product: {
       overview_heading: "نظرة عامة",
@@ -2210,6 +2219,10 @@ const ar: Translations = {
       login_prompt: "سجّل الدخول أو أنشئ حساباً للمتابعة.",
       login_cta: "تسجيل الدخول",
       signup_cta: "إنشاء حساب",
+      access_heading: "الوصول",
+      free_access_note: "مجاناً مع حساب ZentexAI",
+      free_login_prompt: "أنشئ حساباً مجانياً أو سجّل الدخول للبدء.",
+      free_signup_cta: "إنشاء حساب مجاني",
       learn_heading: "ماذا ستتعلم",
       learn_points: [
         "أساسيات PMP ومصطلحاتها ومجالات محتوى الامتحان",

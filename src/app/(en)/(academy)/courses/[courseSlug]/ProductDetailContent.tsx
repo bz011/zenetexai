@@ -5,6 +5,7 @@ import { useLang } from "@/lib/LanguageContext";
 import type { ProductWithPricing } from "@/features/commerce/types/commerce";
 import type { PublicCurriculumModule } from "@/features/courses/services/courseService";
 import { formatMoney } from "@/features/commerce/utils/money";
+import { isAlwaysFree, isFreePrice } from "@/features/commerce/utils/freeAccess";
 import EnrollFreeButton from "@/features/commerce/components/EnrollFreeButton";
 import BuyNowButton from "@/features/commerce/components/BuyNowButton";
 import { SimulatorHero, SimulatorDetails } from "@/features/commerce/components/SimulatorSalesSections";
@@ -26,7 +27,9 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
   const title = lang === "ar" && product.title_ar ? product.title_ar : product.title_en;
   const description = lang === "ar" && product.description_ar ? product.description_ar : product.description_en;
   const price = product.price;
-  const isFreeNow = !!price && price.isPromotionActive && price.effectiveAmountMinorUnits === 0;
+  const isFreeNow = isFreePrice(price);
+  // Permanently free: no purchase or enrolment step; an account is enough.
+  const alwaysFree = isAlwaysFree(price);
 
   const totalLessons = curriculum.reduce((sum, mod) => sum + mod.lessons.length, 0);
 
@@ -128,9 +131,14 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
 
           <aside id="purchase" className={`card h-fit space-y-5 p-6 ${isMastery ? "order-first md:order-none" : ""}`}>
             <div>
-              <h2 className="text-small font-semibold text-slate-400">{p.pricing_heading}</h2>
+              <h2 className="text-small font-semibold text-slate-400">{alwaysFree ? p.access_heading : p.pricing_heading}</h2>
               {price ? (
-                isFreeNow ? (
+                alwaysFree ? (
+                  <div className="mt-2">
+                    <p className="text-2xl font-bold text-emerald-400">{c.free_badge}</p>
+                    <p className="mt-1 text-small text-slate-400">{p.free_access_note}</p>
+                  </div>
+                ) : isFreeNow ? (
                   <div className="mt-2">
                     <span className="mb-2 inline-block rounded-full bg-amber-500/[0.15] px-2.5 py-0.5 text-caption font-semibold text-amber-800">
                       {c.launch_offer_badge}
@@ -163,19 +171,19 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
             <div className="border-t border-white/[0.06] pt-5">
               {!isAuthenticated ? (
                 <div className="space-y-3">
-                  <p className="text-small text-slate-400">{p.login_prompt}</p>
+                  <p className="text-small text-slate-400">{alwaysFree ? p.free_login_prompt : p.login_prompt}</p>
                   <div className="flex gap-3">
                     <Link href={`/login?redirectTo=${pathForLang(`/courses/${product.slug}`, lang)}`} className="btn-primary flex-1 text-center">
                       {p.login_cta}
                     </Link>
                     <Link href="/signup" className="btn-secondary flex-1 text-center">
-                      {p.signup_cta}
+                      {alwaysFree ? p.free_signup_cta : p.signup_cta}
                     </Link>
                   </div>
                 </div>
-              ) : alreadyOwned ? (
+              ) : alreadyOwned || alwaysFree ? (
                 <div className="space-y-2">
-                  <p className="text-small font-medium text-emerald-400">{c.owned_badge} ✓</p>
+                  <p className="text-small font-medium text-emerald-400">{alwaysFree ? c.free_access_badge : c.owned_badge} ✓</p>
                   {hasCourse && courseSlug && curriculum.length > 0 && (
                     <Link
                       href={`/courses/${courseSlug}/lessons/${curriculum[0].lessons[0].id}`}

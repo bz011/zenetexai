@@ -13,6 +13,8 @@ function buildSupabaseMock(config: {
    * only consulted for an admin caller (mirrors product_capabilities' own
    * "anyone can view" RLS policy - see migration 019). */
   allCapabilities?: string[];
+  /** Ids of free, active, published products (migration 033). Defaults to none. */
+  freeProductIds?: string[];
 }) {
   return {
     from: (table: string) => {
@@ -38,7 +40,13 @@ function buildSupabaseMock(config: {
         };
       }
       if (table === "products") {
-        return { select: () => ({ in: async () => ({ data: config.products ?? [], error: null }) }) };
+        return {
+          select: () => ({
+            in: async () => ({ data: config.products ?? [], error: null }),
+            // getFreeProductIds(): .eq("is_free").eq("is_active").eq("is_published")
+            eq: () => ({ eq: () => ({ eq: async () => ({ data: (config.freeProductIds ?? []).map((id) => ({ id })), error: null }) }) }),
+          }),
+        };
       }
       if (table === "profiles") {
         return {
@@ -197,5 +205,53 @@ describe("getOwnedLearningResources", () => {
     expect(result).toHaveLength(1);
     expect(result[0].productSlug).toBe("pmp-mastery-program");
     expect(result[0].capabilities).toEqual(["course:pmp"]);
+  });
+});
+
+describe("permanently free products (migration 033)", () => {
+  const caps = [
+    { product_id: "mastery", capability: "course:pmp" },
+    { product_id: "simulator", capability: "practice:pmp" },
+    { product_id: "simulator", capability: "mock_exam:pmp" },
+    { product_id: "other-paid", capability: "course:other" },
+  ];
+  // The mock's .in() ignores ids, so capabilities are filtered per test to the
+  // product ids the service actually asked for.
+  function mockFor(entitled: string[], free: string[]) {
+    const ids = new Set([...entitled, ...free]);
+    return buildSupabaseMock({
+      entitlements: entitled.map((product_id) => ({ product_id, expires_at: null })),
+      capabilities: caps.filter((c) => ids.has(c.product_id)),
+      products: [
+        { id: "mastery", slug: "pmp-mastery-program", type: "course", title_en: "Mastery", title_ar: "Mastery" },
+        { id: "simulator", slug: "pmp-exam-simulator", type: "simulator", title_en: "Simulator", title_ar: "Simulator" },
+      ].filter((p) => ids.has(p.id)),
+      freeProductIds: free,
+    });
+  }
+
+  it("a signed-in student with no entitlement holds every free capability", async () => {
+    const supabase = mockFor([], ["mastery", "simulator"]);
+    for (const c of ["course:pmp", "practice:pmp", "mock_exam:pmp"]) {
+      expect(await hasCapability(supabase as never, "student-a", c)).toBe(true);
+    }
+  });
+
+  it("free access never extends to a paid product's capabilities", async () => {
+    const supabase = mockFor([], ["mastery", "simulator"]);
+    expect(await hasCapability(supabase as never, "student-a", "course:other")).toBe(false);
+  });
+
+  it("paid entitlements keep working alongside free products", async () => {
+    const supabase = mockFor(["other-paid"], ["mastery"]);
+    const result = await getUserCapabilities(supabase as never, "student-b");
+    expect([...result].sort()).toEqual(["course:other", "course:pmp"]);
+  });
+
+  it("lists free products on the dashboard with no expiry", async () => {
+    const supabase = mockFor([], ["mastery", "simulator"]);
+    const owned = await getOwnedLearningResources(supabase as never, "student-a");
+    expect(owned.map((o) => o.productSlug).sort()).toEqual(["pmp-exam-simulator", "pmp-mastery-program"]);
+    expect(owned.every((o) => o.expiresAt === null)).toBe(true);
   });
 });
