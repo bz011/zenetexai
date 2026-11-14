@@ -45,13 +45,16 @@ export interface LegalDoc {
 
 const LAST_UPDATED = "September 30, 2026";
 const LAST_UPDATED_AR = "30 سبتمبر 2026";
+/** Privacy Policy and Terms: revised when the PMP programs became free to access. */
+const PT_UPDATED = "November 14, 2026";
+const PT_UPDATED_AR = "14 نوفمبر 2026";
 const CONTACT_EMAIL = "albadareen011@gmail.com";
 
 // ─── Privacy Policy ─────────────────────────────────────────────────────────
 
 const privacyEn: LegalDoc = {
   title: "Privacy Policy",
-  updated: `Last updated: ${LAST_UPDATED}`,
+  updated: `Last updated: ${PT_UPDATED}`,
   intro: [
     "This Privacy Policy explains what information ZentexAI collects through zentexai.com and the ZentexAI Academy, why it is collected, and who it is shared with. It covers the public marketing site, the Contact form, account registration, course and Simulator access, and certificate verification.",
   ],
@@ -73,7 +76,7 @@ const privacyEn: LegalDoc = {
         "- Contact form: when you submit the Contact form, we collect your name, email address, company name (if provided), the type of inquiry you selected, and your message, so we can respond to you.",
         "- Creating an account: if you register for the ZentexAI Academy, we collect your email address, first and last name, and a securely hashed password (we never see or store your password in plain text - this is handled by our authentication provider).",
         "- Course activity: if you enroll in a course, we store your lesson completion status, quiz/assessment attempts and answers, and any personal notes you write against a lesson.",
-        "- Purchases: if you buy access to a paid program (currently the PMP Exam Simulator and/or PMP Mastery Program), your payment is handled entirely by our payment processor - see \"Third-Party Service Providers\" below. We store a record that you purchased access (what you bought, when, and its status), but we do not receive or store your full card number.",
+        "- Purchases: the PMP Mastery Program and PMP Exam Simulator are currently available free of charge with a ZentexAI account, so using them involves no payment. If you buy access to a paid program or feature, your payment is handled entirely by our payment processor - see \"Third-Party Service Providers\" below. We store a record of any purchase (what you bought, when, and its status), but we do not receive or store your full card number.",
         "- Certificates: if you complete a course that issues a certificate, we store your name (as you provide it for the certificate), the course name, the date issued, and a unique certificate number.",
       ],
     },
@@ -131,7 +134,7 @@ const privacyEn: LegalDoc = {
 
 const privacyAr: LegalDoc = {
   title: "سياسة الخصوصية",
-  updated: `آخر تحديث: ${LAST_UPDATED_AR}`,
+  updated: `آخر تحديث: ${PT_UPDATED_AR}`,
   intro: [
     "توضّح سياسة الخصوصية هذه المعلومات التي تجمعها ZentexAI عبر موقع zentexai.com وأكاديمية ZentexAI، وسبب جمعها، والجهات التي تُشارَك معها. تغطي هذه السياسة الموقع التسويقي العام، ونموذج التواصل، وإنشاء الحساب، والوصول إلى الدورات والمحاكي، والتحقق من الشهادات.",
   ],
@@ -153,7 +156,7 @@ const privacyAr: LegalDoc = {
         "- نموذج التواصل: عند إرسال نموذج التواصل، نجمع اسمك وبريدك الإلكتروني واسم شركتك (إن ذُكر) ونوع الاستفسار الذي اخترته ورسالتك، لنتمكن من الرد عليك.",
         "- إنشاء حساب: عند التسجيل في أكاديمية ZentexAI، نجمع بريدك الإلكتروني واسمك الأول واسم عائلتك، وكلمة مرور مشفّرة بشكل آمن (لا نرى كلمة مرورك أو نخزّنها كنص صريح مطلقاً — يتولى هذا مزوّد خدمة المصادقة لدينا).",
         "- نشاط الدورة: عند التسجيل في دورة، نخزّن حالة إكمالك للدروس، ومحاولات وإجابات الاختبارات/التقييمات، وأي ملاحظات شخصية تكتبها على درس معين.",
-        "- المشتريات: عند شراء الوصول إلى برنامج مدفوع (حالياً محاكي اختبار PMP و/أو برنامج احتراف PMP)، تتم معالجة دفعتك بالكامل عبر معالج الدفع لدينا — انظر \"مزوّدو الخدمة من الأطراف الثالثة\" أدناه. نحتفظ بسجل يثبت أنك اشتريت الوصول (ماذا اشتريت، ومتى، وحالته)، لكننا لا نستلم أو نخزّن رقم بطاقتك الكامل.",
+        "- المشتريات: يتوفر برنامج احتراف PMP ومحاكي اختبار PMP حالياً مجاناً مع حساب ZentexAI، لذا لا يتطلب استخدامهما أي دفع. عند شراء الوصول إلى برنامج أو ميزة مدفوعة، تتم معالجة دفعتك بالكامل عبر معالج الدفع لدينا — انظر \"مزوّدو الخدمة من الأطراف الثالثة\" أدناه. نحتفظ بسجل لأي عملية شراء (ماذا اشتريت، ومتى، وحالتها)، لكننا لا نستلم أو نخزّن رقم بطاقتك الكامل.",
         "- الشهادات: عند إكمال دورة تصدر شهادة، نخزّن اسمك (كما تقدمه للشهادة)، واسم الدورة، وتاريخ الإصدار، ورقم شهادة فريد.",
       ],
     },
@@ -213,9 +216,9 @@ const privacyAr: LegalDoc = {
 
 const termsEn: LegalDoc = {
   title: "Terms of Service",
-  updated: `Last updated: ${LAST_UPDATED}`,
+  updated: `Last updated: ${PT_UPDATED}`,
   intro: [
-    "These Terms of Service govern your use of zentexai.com and the ZentexAI Academy, including the Contact form, account registration, paid programs (the PMP Exam Simulator and PMP Mastery Program), and certificates. \"ZentexAI\", \"we\", and \"us\" refer to the individual(s) operating ZentexAI.",
+    "These Terms of Service govern your use of zentexai.com and the ZentexAI Academy, including the Contact form, account registration, the ZentexAI Academy programs (the PMP Exam Simulator and PMP Mastery Program), any paid programs or features, and certificates. \"ZentexAI\", \"we\", and \"us\" refer to the individual(s) operating ZentexAI.",
   ],
   sections: [
     {
@@ -238,7 +241,8 @@ const termsEn: LegalDoc = {
     {
       heading: "Purchases and Payment",
       body: [
-        "Paid programs are purchased through Ziina, our third-party payment processor. The price shown at checkout is the amount you will be charged. Purchasing access to the PMP Exam Simulator and/or PMP Mastery Program grants you access to that program for the period stated at purchase.",
+        "The PMP Mastery Program and PMP Exam Simulator are currently available free of charge to anyone with a ZentexAI account. We may change which programs or features are free, and may offer paid programs or features, in the future.",
+        "Paid programs or features, where offered, are purchased through Ziina, our third-party payment processor. The price shown at checkout is the amount you will be charged, and a purchase grants access for the period stated at purchase.",
       ],
     },
     {
@@ -249,15 +253,15 @@ const termsEn: LegalDoc = {
       heading: "Acceptable Use",
       body: [
         "- Do not attempt to access another user's account, course content, or certificate.",
-        "- Do not attempt to circumvent access controls on paid content.",
+        "- Do not attempt to circumvent access controls on any content, including content that requires an account or a purchase.",
         "- Do not misrepresent your affiliation with ZentexAI or misuse the Certificate of Completion or certificate verification system.",
-        "- Do not share your account or resell access to purchased content.",
+        "- Do not share your account or resell access to any ZentexAI Academy content.",
       ],
     },
     {
       heading: "Intellectual Property",
       body: [
-        "Course content, lesson videos, practice questions, and the ZentexAI name and logo belong to ZentexAI or its licensors. Your enrollment grants you a personal, non-transferable right to access the content you purchased for your own learning - it does not grant you rights to copy, redistribute, or resell it.",
+        "Course content, lesson videos, practice questions, and the ZentexAI name and logo belong to ZentexAI or its licensors. Your enrollment grants you a personal, non-transferable right to access the content made available to you for your own learning - it does not grant you rights to copy, redistribute, or resell it.",
       ],
     },
     {
@@ -289,9 +293,9 @@ const termsEn: LegalDoc = {
 
 const termsAr: LegalDoc = {
   title: "شروط الخدمة",
-  updated: `آخر تحديث: ${LAST_UPDATED_AR}`,
+  updated: `آخر تحديث: ${PT_UPDATED_AR}`,
   intro: [
-    "تحكم شروط الخدمة هذه استخدامك لموقع zentexai.com وأكاديمية ZentexAI، بما يشمل نموذج التواصل، وإنشاء الحساب، والبرامج المدفوعة (محاكي اختبار PMP وبرنامج احتراف PMP)، والشهادات. تشير عبارات \"ZentexAI\" و\"نحن\" إلى الجهة/الأفراد الذين يُشغّلون ZentexAI.",
+    "تحكم شروط الخدمة هذه استخدامك لموقع zentexai.com وأكاديمية ZentexAI، بما يشمل نموذج التواصل، وإنشاء الحساب، وبرامج أكاديمية ZentexAI (محاكي اختبار PMP وبرنامج احتراف PMP)، وأي برامج أو ميزات مدفوعة، والشهادات. تشير عبارات \"ZentexAI\" و\"نحن\" إلى الجهة/الأفراد الذين يُشغّلون ZentexAI.",
   ],
   sections: [
     {
@@ -314,7 +318,8 @@ const termsAr: LegalDoc = {
     {
       heading: "المشتريات والدفع",
       body: [
-        "تتم عملية شراء البرامج المدفوعة عبر Ziina، معالج الدفع من الطرف الثالث لدينا. السعر المعروض عند الدفع هو المبلغ الذي سيُخصم منك. يمنحك شراء الوصول إلى محاكي اختبار PMP و/أو برنامج احتراف PMP إمكانية الوصول إلى ذلك البرنامج للمدة المذكورة وقت الشراء.",
+        "يتوفر برنامج احتراف PMP ومحاكي اختبار PMP حالياً مجاناً لكل من لديه حساب في ZentexAI. وقد نغيّر مستقبلاً البرامج أو الميزات المتاحة مجاناً، وقد نقدّم برامج أو ميزات مدفوعة.",
+        "تتم عملية شراء البرامج أو الميزات المدفوعة، عند توفرها، عبر Ziina، معالج الدفع من الطرف الثالث لدينا. السعر المعروض عند الدفع هو المبلغ الذي سيُخصم منك، ويمنحك الشراء الوصول للمدة المذكورة وقت الشراء.",
       ],
     },
     {
@@ -325,15 +330,15 @@ const termsAr: LegalDoc = {
       heading: "الاستخدام المقبول",
       body: [
         "- عدم محاولة الوصول إلى حساب مستخدم آخر أو محتوى دورته أو شهادته.",
-        "- عدم محاولة تجاوز ضوابط الوصول إلى المحتوى المدفوع.",
+        "- عدم محاولة تجاوز ضوابط الوصول إلى أي محتوى، بما في ذلك المحتوى الذي يتطلب حساباً أو عملية شراء.",
         "- عدم تحريف انتسابك إلى ZentexAI أو إساءة استخدام شهادة الإتمام أو نظام التحقق من الشهادات.",
-        "- عدم مشاركة حسابك أو إعادة بيع الوصول إلى المحتوى المشترى.",
+        "- عدم مشاركة حسابك أو إعادة بيع الوصول إلى أي محتوى من أكاديمية ZentexAI.",
       ],
     },
     {
       heading: "الملكية الفكرية",
       body: [
-        "محتوى الدورات وفيديوهات الدروس والأسئلة التدريبية واسم ZentexAI وشعارها ملك لـ ZentexAI أو الجهات المرخِّصة لها. يمنحك تسجيلك حقاً شخصياً غير قابل للتحويل للوصول إلى المحتوى الذي اشتريته لأغراض تعلمك الخاص — ولا يمنحك حق نسخه أو إعادة توزيعه أو إعادة بيعه.",
+        "محتوى الدورات وفيديوهات الدروس والأسئلة التدريبية واسم ZentexAI وشعارها ملك لـ ZentexAI أو الجهات المرخِّصة لها. يمنحك تسجيلك حقاً شخصياً غير قابل للتحويل للوصول إلى المحتوى المتاح لك لأغراض تعلمك الخاص — ولا يمنحك حق نسخه أو إعادة توزيعه أو إعادة بيعه.",
       ],
     },
     {
