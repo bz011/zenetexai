@@ -34,6 +34,8 @@ describe("upstashRateLimit", () => {
     limitMock.mockReset();
     ratelimitCtorMock.mockReset();
     process.env = { ...ORIGINAL_ENV };
+    delete process.env.KV_REST_API_URL;
+    delete process.env.KV_REST_API_TOKEN;
   });
   afterEach(() => {
     process.env = { ...ORIGINAL_ENV };
@@ -64,6 +66,46 @@ describe("upstashRateLimit", () => {
 
     it("only one of the two vars set still counts as not configured", async () => {
       process.env.UPSTASH_REDIS_REST_KV_REST_API_URL = "https://example.upstash.io";
+      delete process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN;
+      const mod = await freshModule();
+      expect(mod.isRateLimitingConfigured()).toBe(false);
+    });
+  });
+
+  describe("credential precedence", () => {
+    it("prefers the KV_REST_API_* pair over the legacy UPSTASH_REDIS_REST_* pair", async () => {
+      process.env.KV_REST_API_URL = "https://new.example.upstash.io";
+      process.env.KV_REST_API_TOKEN = "new-fake-token";
+      process.env.UPSTASH_REDIS_REST_KV_REST_API_URL = "https://old.example.upstash.io";
+      process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN = "old-fake-token";
+      const mod = await freshModule();
+      const { Redis } = await import("@upstash/redis");
+      expect(mod.isRateLimitingConfigured()).toBe(true);
+      expect(Redis).toHaveBeenLastCalledWith({ url: "https://new.example.upstash.io", token: "new-fake-token" });
+    });
+
+    it("falls back to the legacy pair when the KV pair is absent", async () => {
+      process.env.UPSTASH_REDIS_REST_KV_REST_API_URL = "https://old.example.upstash.io";
+      process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN = "old-fake-token";
+      const mod = await freshModule();
+      const { Redis } = await import("@upstash/redis");
+      expect(mod.isRateLimitingConfigured()).toBe(true);
+      expect(Redis).toHaveBeenLastCalledWith({ url: "https://old.example.upstash.io", token: "old-fake-token" });
+    });
+
+    it("never mixes a URL from one pair with a token from the other", async () => {
+      process.env.KV_REST_API_URL = "https://new.example.upstash.io";
+      process.env.UPSTASH_REDIS_REST_KV_REST_API_URL = "https://old.example.upstash.io";
+      process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN = "old-fake-token";
+      const mod = await freshModule();
+      const { Redis } = await import("@upstash/redis");
+      expect(mod.isRateLimitingConfigured()).toBe(true);
+      expect(Redis).toHaveBeenLastCalledWith({ url: "https://old.example.upstash.io", token: "old-fake-token" });
+    });
+
+    it("an incomplete KV pair alone is not configured (fails open loudly, as before)", async () => {
+      process.env.KV_REST_API_URL = "https://new.example.upstash.io";
+      delete process.env.UPSTASH_REDIS_REST_KV_REST_API_URL;
       delete process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN;
       const mod = await freshModule();
       expect(mod.isRateLimitingConfigured()).toBe(false);

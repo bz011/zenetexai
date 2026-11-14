@@ -9,8 +9,9 @@
  * counter, backed by Upstash's REST-based Redis (works from any serverless
  * runtime, no persistent connection needed).
  *
- * CONFIGURATION: requires UPSTASH_REDIS_REST_KV_REST_API_URL and
- * UPSTASH_REDIS_REST_KV_REST_API_TOKEN (server-only - never NEXT_PUBLIC_,
+ * CONFIGURATION: requires KV_REST_API_URL and KV_REST_API_TOKEN, or (fallback)
+ * UPSTASH_REDIS_REST_KV_REST_API_URL and UPSTASH_REDIS_REST_KV_REST_API_TOKEN
+ * - see getRedis() for the precedence (server-only - never NEXT_PUBLIC_,
  * never printed/logged) - these are the exact variable names the Vercel
  * Marketplace Upstash integration generates on connect; do not rename them
  * in Vercel to match some other expected name, this module reads the
@@ -46,11 +47,32 @@ import { headers } from "next/headers";
 
 let redis: Redis | null | undefined;
 
+/**
+ * Credentials are read as a complete pair, never mixed across pairs:
+ *  1. KV_REST_API_URL + KV_REST_API_TOKEN - the currently connected Upstash
+ *     database (Vercel Storage integration, no prefix).
+ *  2. UPSTASH_REDIS_REST_KV_REST_API_URL + UPSTASH_REDIS_REST_KV_REST_API_TOKEN
+ *     - the original integration's names, kept as a fallback so existing
+ *     environments keep working.
+ * The first pair with both values set wins; the URL of one database is never
+ * combined with the token of another.
+ */
+const CREDENTIAL_PAIRS = [
+  ["KV_REST_API_URL", "KV_REST_API_TOKEN"],
+  ["UPSTASH_REDIS_REST_KV_REST_API_URL", "UPSTASH_REDIS_REST_KV_REST_API_TOKEN"],
+] as const;
+
 function getRedis(): Redis | null {
   if (redis !== undefined) return redis;
-  const url = process.env.UPSTASH_REDIS_REST_KV_REST_API_URL;
-  const token = process.env.UPSTASH_REDIS_REST_KV_REST_API_TOKEN;
-  redis = url && token ? new Redis({ url, token }) : null;
+  redis = null;
+  for (const [urlName, tokenName] of CREDENTIAL_PAIRS) {
+    const url = process.env[urlName];
+    const token = process.env[tokenName];
+    if (url && token) {
+      redis = new Redis({ url, token });
+      break;
+    }
+  }
   return redis;
 }
 
@@ -112,7 +134,7 @@ export async function checkRateLimit(bucket: RateLimitBucket, identifier: string
   const client = getRedis();
   if (!client) {
     console.warn(
-      `[upstashRateLimit] NOT CONFIGURED (UPSTASH_REDIS_REST_KV_REST_API_URL/UPSTASH_REDIS_REST_KV_REST_API_TOKEN missing) - ` +
+      `[upstashRateLimit] NOT CONFIGURED (neither KV_REST_API_URL/KV_REST_API_TOKEN nor UPSTASH_REDIS_REST_KV_REST_API_URL/UPSTASH_REDIS_REST_KV_REST_API_TOKEN set) - ` +
         `request allowed WITHOUT distributed rate limiting. bucket=${bucket}`
     );
     return { allowed: true, configured: false };
