@@ -27,7 +27,7 @@ function product(overrides: Partial<ProductWithPricing> = {}): ProductWithPricin
     id: "p1", slug: SIMULATOR_SLUG, type: "simulator",
     title_en: "PMP Exam Simulator", title_ar: "محاكي اختبار PMP",
     description_en: "DB description en", description_ar: "DB description ar",
-    is_active: true, is_published: true, order_index: 2,
+    is_active: true, is_published: true, is_free: false, order_index: 2,
     capabilities: ["practice:pmp", "mock_exam:pmp"],
     price: { currency: "AED", effectiveAmountMinorUnits: 12300, regularAmountMinorUnits: 12300, isPromotionActive: false, promotionValidUntil: null, accessDurationDays: 180 },
     ...overrides,

@@ -28,7 +28,7 @@ describe("product page metadata (drives the HTTP status)", () => {
   });
 
   it("still returns metadata for a published product", async () => {
-    getProductBySlugMock.mockResolvedValue({ slug: "pmp-mastery-program", is_published: true, title_en: "PMP Mastery Program", description_en: "A course." });
+    getProductBySlugMock.mockResolvedValue({ slug: "pmp-mastery-program", is_published: true, is_free: false, title_en: "PMP Mastery Program", description_en: "A course." });
     const meta = await generateMetadata(params("pmp-mastery-program"));
     expect(meta.title).toContain("PMP Mastery Program");
     expect(meta.alternates?.canonical).toBe("/courses/pmp-mastery-program");

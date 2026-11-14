@@ -11,6 +11,8 @@ vi.mock("next/link", () => ({
 import { LanguageProvider } from "@/lib/LanguageContext";
 import ProductDetailContent from "./ProductDetailContent";
 import type { ProductWithPricing } from "@/features/commerce/types/commerce";
+import { FREE_PRICE } from "@/features/commerce/services/productService";
+import translations from "@/lib/translations";
 import type { PublicCurriculumModule } from "@/features/courses/services/courseService";
 
 const curriculum: PublicCurriculumModule[] = [
@@ -28,7 +30,7 @@ function masteryProduct(overrides: Partial<ProductWithPricing> = {}): ProductWit
     description_en: "A structured PMP exam preparation course.",
     description_ar: "دورة منظمة للتحضير لاختبار PMP.",
     is_active: true,
-    is_published: true,
+    is_published: true, is_free: false,
     order_index: 0,
     capabilities: ["course:pmp", "practice:pmp"],
     price: {
@@ -43,7 +45,7 @@ function masteryProduct(overrides: Partial<ProductWithPricing> = {}): ProductWit
   };
 }
 
-function render(product: ProductWithPricing, courseSlug: string | null, pathname: string) {
+function render(product: ProductWithPricing, courseSlug: string | null, pathname: string, session: { isAuthenticated?: boolean; alreadyOwned?: boolean } = {}) {
   mockPathname = pathname;
   return renderToString(
     createElement(
@@ -53,8 +55,8 @@ function render(product: ProductWithPricing, courseSlug: string | null, pathname
         product,
         courseSlug,
         curriculum,
-        isAuthenticated: false,
-        alreadyOwned: false,
+        isAuthenticated: session.isAuthenticated ?? false,
+        alreadyOwned: session.alreadyOwned ?? false,
       })
     )
   );
@@ -100,5 +102,41 @@ describe("ProductDetailContent layout", () => {
     const html = render(simulator, null, "/courses/pmp-exam-simulator");
     expect(html).not.toContain('max-w-3xl">');
     expect(html).not.toContain("Project Integration Management");
+  });
+});
+
+describe("ProductDetailContent for a permanently free product", () => {
+  const free = () => masteryProduct({ is_free: true, price: FREE_PRICE });
+
+  it("shows FREE with an account prompt and no price, promotion, Buy or Enroll button to a visitor", () => {
+    const html = render(free(), "pmp-mastery-program", "/courses/pmp-mastery-program");
+    expect(html).toContain(">FREE<");
+    expect(html).toContain("Free with a ZentexAI account");
+    expect(html).toContain("Create a free account or log in to start.");
+    expect(html).toContain("Create Free Account");
+    expect(html).not.toMatch(/AED|Buy Now|Enroll for Free|Launch Offer|Regular price|months access/);
+  });
+
+  it("gives a signed-in student the learning links directly, with no purchase step", () => {
+    const html = render(free(), "pmp-mastery-program", "/courses/pmp-mastery-program", { isAuthenticated: true });
+    expect(html).toContain("Free access");
+    expect(html).toContain('href="/courses/pmp-mastery-program/lessons/l1"');
+    expect(html).toContain('href="/pmp/practice"');
+    expect(html).not.toMatch(/Buy Now|Enroll for Free/);
+  });
+
+  it("has Arabic copy for every free-access string, labelled مجاناً", () => {
+    // Product pages take Arabic from the visitor's stored preference (no /ar route), so check the strings themselves.
+    const ar = translations.ar.commerce;
+    expect(ar.card.free_badge).toBe("مجاناً");
+    for (const v of [ar.card.free_access_badge, ar.product.access_heading, ar.product.free_access_note, ar.product.free_login_prompt, ar.product.free_signup_cta]) {
+      expect(v).toMatch(/[\u0600-\u06FF]/);
+    }
+  });
+
+  it("still offers Buy Now for a paid product (payment path kept for future paid offerings)", () => {
+    const paid = masteryProduct({ price: { currency: "AED", effectiveAmountMinorUnits: 35000, regularAmountMinorUnits: 35000, isPromotionActive: false, promotionValidUntil: null, accessDurationDays: 365 } });
+    const html = render(paid, "pmp-mastery-program", "/courses/pmp-mastery-program", { isAuthenticated: true });
+    expect(html).toContain("Buy Now");
   });
 });

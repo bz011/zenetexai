@@ -21,7 +21,7 @@ const SRC = fs.readFileSync(path.resolve(__dirname, "../app/(en)/(academy)/cours
 function product(overrides: Partial<ProductWithPricing>): ProductWithPricing {
   return {
     id: "p", slug: "pmp-mastery-program", type: "course", title_en: "PMP Mastery Program", title_ar: "برنامج احتراف PMP",
-    description_en: "Course description", description_ar: "وصف الدورة", is_active: true, is_published: true, order_index: 1,
+    description_en: "Course description", description_ar: "وصف الدورة", is_active: true, is_published: true, is_free: false, order_index: 1,
     capabilities: ["course:pmp"],
     price: { currency: "AED", effectiveAmountMinorUnits: 12300, regularAmountMinorUnits: 12300, isPromotionActive: false, promotionValidUntil: null, accessDurationDays: 365 },
     ...overrides,

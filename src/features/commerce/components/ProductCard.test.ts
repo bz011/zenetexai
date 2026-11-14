@@ -17,7 +17,7 @@ function product(overrides: Partial<ProductWithPricing> = {}): ProductWithPricin
     id: "p1", slug: "pmp-exam-simulator", type: "simulator",
     title_en: "PMP Exam Simulator", title_ar: "محاكي اختبار PMP",
     description_en: "English description", description_ar: "وصف بالعربية",
-    is_active: true, is_published: true, order_index: 1, capabilities: [], price: null,
+    is_active: true, is_published: true, is_free: false, order_index: 1, capabilities: [], price: null,
     ...overrides,
   } as ProductWithPricing;
 }
