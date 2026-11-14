@@ -6,9 +6,7 @@ import type { CtaCopy } from "@/site/home/ctaCopy";
  * company history, clients, team size, deployments or achievements are added.
  * Founder facts are the live site's own: name, Founder & CEO, BSc in
  * Electrical Engineering, PMP® certified, MSc in Artificial Intelligence; the
- * bio is a shortened form of the published one. The hero portrait is the
- * owner's approved transparent photograph (public/images/about), used as
- * supplied; `portraitAlt` describes it.
+ * bio is a shortened form of the published one.
  */
 export type AboutCopy = {
   eyebrow: string;
@@ -16,7 +14,7 @@ export type AboutCopy = {
   sub: string;
   who: { eyebrow: string; title: string; lead: string; body: string; focus: { title: string; text: string }[] };
   think: { eyebrow: string; title: string; principles: { title: string; text: string }[] };
-  founder: { eyebrow: string; name: string; role: string; portraitAlt: string; credentials: string[]; bio: string };
+  founder: { eyebrow: string; name: string; role: string; credentials: string[]; bio: string };
   cta: CtaCopy;
 };
 
@@ -49,7 +47,6 @@ const en: AboutCopy = {
     eyebrow: "Founder",
     name: "Zaid Al-Badareen",
     role: "Founder & CEO, ZentexAI",
-    portraitAlt: "Portrait of Zaid Al-Badareen, Founder and CEO of ZentexAI",
     credentials: ["BSc in Electrical Engineering", "PMP® certified project management professional", "MSc in Artificial Intelligence"],
     bio: "Zaid combines engineering, project management and AI expertise to help organizations implement practical AI systems, while supporting professionals as they develop the project management skills today's workplace demands.",
   },
@@ -89,7 +86,6 @@ const ar: AboutCopy = {
     eyebrow: "المؤسس",
     name: "زيد البدارين",
     role: "المؤسس والرئيس التنفيذي، ZentexAI",
-    portraitAlt: "صورة زيد البدارين، مؤسس ZentexAI ورئيسها التنفيذي",
     credentials: ["بكالوريوس في الهندسة الكهربائية", "محترف معتمد في إدارة المشاريع \u2066PMP®\u2069", "ماجستير في الذكاء الاصطناعي"],
     bio: "يجمع زيد بين خبرته الهندسية وخبرته في إدارة المشاريع وتخصّصه في الذكاء الاصطناعي لمساعدة المؤسسات على تطبيق أنظمة ذكاء اصطناعي عملية، ودعم المهنيين في تطوير مهارات إدارة المشاريع التي تتطلبها بيئة العمل اليوم.",
   },

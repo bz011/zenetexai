@@ -5,13 +5,11 @@ import FinalCta from "@/site/home/FinalCta";
 import page from "@/site/home/hero.module.css";
 import { aboutCopy } from "./aboutCopy";
 import styles from "./about.module.css";
-import HeroPortrait from "./HeroPortrait";
 
 /**
- * About page (v5): a founder-led hero (the headline and description beside
- * the founder's transparent portrait, set into the ivory page, see
- * HeroPortrait), "Who we are" as an editorial spread, three principles on a
- * sand band, a type-led founder section (the portrait is not repeated), then
+ * About page (v5): a type-led hero (headline and description on the ivory
+ * page, no photograph), "Who we are" as an editorial spread, three
+ * principles on a sand band, a type-led founder section, then
  * the shared CTA band and footer. Server-rendered; the hero rises in once and
  * sections reveal on scroll (LabMotion). Reduced motion: static.
  */
@@ -32,7 +30,6 @@ export default function AboutPage({ lang }: { lang: Lang }) {
             </h1>
             <p className={styles.sub}>{k.sub}</p>
           </div>
-          <HeroPortrait alt={k.founder.portraitAlt} />
         </section>
 
         <section className={styles.who} aria-labelledby="ab-who">

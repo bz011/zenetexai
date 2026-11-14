@@ -1,7 +1,7 @@
 /* About page (v5). Tokens, fonts, focus ring and header come from the
    homepage's .page (home-v5/hero.module.css): ivory paper, navy ink, teal,
    champagne; Hanken Grotesk / IBM Plex Sans Arabic. Its own character: a
-   founder-led hero (portrait set into the page), an editorial spread, a sand band for the
+   type-led hero, an editorial spread, a sand band for the
    principles, and a type-led founder section. */
 
 .main {
@@ -64,13 +64,14 @@
 
 /* ---------- Hero ---------- */
 
+/* Type-led: one measured column, the headline carries the section. */
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
-  align-items: center;
-  gap: clamp(24px, 4vw, 72px);
-  padding-top: calc(var(--header) + clamp(40px, 5.5vw, 96px));
-  padding-bottom: clamp(32px, 4vw, 64px);
+  padding-top: calc(var(--header) + clamp(48px, 6.5vw, 112px));
+  padding-bottom: clamp(48px, 6vw, 96px);
+}
+
+.heroCopy {
+  max-width: 50rem;
 }
 
 .eyebrow {
@@ -120,51 +121,6 @@
 
 .sub:lang(ar) {
   line-height: 1.9;
-}
-
-/* The founder portrait (HeroPortrait). A square box (reserved up front, so
-   nothing shifts) holding, back to front: the decor (glow, organic teal
-   shape, champagne arch) and the transparent photograph with its softly
-   faded lower edge. It is a little wider than its
-   column and runs half-way into the page margin, and sits on the hero's
-   bottom edge. */
-.portraitArt {
-  position: relative;
-  align-self: end;
-  justify-self: end;
-  width: 118%;
-  max-width: 560px;
-  aspect-ratio: 1 / 1;
-  margin-inline-end: calc(var(--m) * -0.5);
-  /* The box's lowest band is the faded lower edge; let it overlap the hero's
-     bottom padding so the portrait sits close to the next hairline. */
-  margin-bottom: calc(-1 * clamp(32px, 4vw, 64px) - clamp(12px, 2.4vw, 40px));
-}
-
-.portraitDecor {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-/* The background decor mirrors for Arabic; the photograph never does. */
-.portraitBack:dir(rtl) {
-  transform: scaleX(-1);
-}
-
-/* Only the last ~13% of the photograph fades into the ivory: the suit stays
-   clearly visible and the straight crop dissolves instead of ending in an
-   edge. */
-.portraitPhoto {
-  position: absolute;
-  inset-inline: 3%;
-  bottom: 0;
-  width: 94%;
-  height: auto;
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 87%, rgba(0, 0, 0, 0.86) 90%, rgba(0, 0, 0, 0.6) 93.5%, rgba(0, 0, 0, 0.3) 96.5%, rgba(0, 0, 0, 0.08) 98.8%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 87%, rgba(0, 0, 0, 0.86) 90%, rgba(0, 0, 0, 0.6) 93.5%, rgba(0, 0, 0, 0.3) 96.5%, rgba(0, 0, 0, 0.08) 98.8%, transparent 100%);
 }
 
 /* ---------- Who we are ---------- */
@@ -373,18 +329,6 @@
   .heroCopy > :nth-child(3) {
     animation-delay: 260ms;
   }
-  /* The portrait arrives once: the teal shape and glow fade in, the
-     photograph rises a few pixels, the gold arch draws. No loop. */
-  .pGlow,
-  .pShape {
-    animation: abFade 900ms var(--ease) 100ms backwards;
-  }
-  .pArch {
-    animation: abLine 1100ms var(--ease) 500ms backwards;
-  }
-  .portraitPhoto {
-    animation: abRise 850ms var(--ease) 200ms backwards;
-  }
 }
 
 @keyframes abRise {
@@ -394,36 +338,9 @@
   }
 }
 
-@keyframes abFade {
-  from {
-    opacity: 0;
-  }
-}
-
-@keyframes abLine {
-  from {
-    stroke-dasharray: 1 1;
-    stroke-dashoffset: 1;
-  }
-  to {
-    stroke-dasharray: 1 1;
-    stroke-dashoffset: 0;
-  }
-}
-
 /* ---------- Tablet ---------- */
 
 @media (max-width: 900px) {
-  .hero {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  /* The portrait follows the text, centred, at a controlled size. */
-  .portraitArt {
-    justify-self: center;
-    width: min(100%, 440px);
-    margin-inline-end: 0;
-    margin-top: 8px;
-  }
   .who,
   .founder {
     grid-template-columns: minmax(0, 1fr);
