@@ -28,8 +28,13 @@ describe("Academy price label (never a hard-coded Free)", () => {
     expect(priceLabel(zeroWithoutPromotion, "en")).not.toBe("FREE");
   });
   it("shows FREE (EN) and مجاناً (AR) for a permanently free product", () => {
-    expect(priceLabel(alwaysFree, "en")).toBe("FREE");
-    expect(priceLabel(alwaysFree, "ar")).toBe("مجاناً");
+    expect(priceLabel(alwaysFree, "en", "pmp-mastery-program")).toBe("FREE");
+    expect(priceLabel(alwaysFree, "ar", "pmp-mastery-program")).toBe("مجاناً");
+  });
+  it("marks the Simulator's free access as a launch offer, with no date", () => {
+    expect(priceLabel(alwaysFree, "en", "pmp-exam-simulator")).toBe("FREE · Launch offer");
+    expect(priceLabel(alwaysFree, "ar", "pmp-exam-simulator")).toBe("مجاناً · عرض الإطلاق");
+    expect(priceLabel(paid, "en", "pmp-exam-simulator")).toBe(formatMoney(35000, "AED"));
   });
   it("shows no price when the catalog is unknown", () => {
     expect(priceLabel(null, "en")).toBeNull();
@@ -47,11 +52,12 @@ describe("Academy page", () => {
       }
     }
   });
-  it("labels both free offerings FREE, with no AED amount", () => {
-    for (const [lang, label] of [["en", ">FREE<"], ["ar", ">مجاناً<"]] as const) {
+  it("labels the Mastery Program FREE and the Simulator a FREE launch offer, with no AED amount or date", () => {
+    for (const [lang, free, launch] of [["en", ">FREE<", ">FREE · Launch offer<"], ["ar", ">مجاناً<", ">مجاناً · عرض الإطلاق<"]] as const) {
       const html = renderToStaticMarkup(createElement(AcademyPage, { lang, prices: { "pmp-mastery-program": alwaysFree, "pmp-exam-simulator": alwaysFree } }));
-      expect(html.split(label).length - 1).toBe(2);
-      expect(html).not.toContain("AED");
+      expect(html.split(free).length - 1).toBe(1);
+      expect(html.split(launch).length - 1).toBe(1);
+      expect(html).not.toMatch(/AED|60[- ]day|days left|expires|ينتهي/i);
     }
   });
   it("renders the paid price and links to the real product pages", () => {

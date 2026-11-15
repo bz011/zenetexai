@@ -4,7 +4,7 @@ import Link from "@/components/LocaleLink";
 import { useLang } from "@/lib/LanguageContext";
 import type { ProductWithPricing } from "@/features/commerce/types/commerce";
 import { formatMoney } from "@/features/commerce/utils/money";
-import { isAlwaysFree, isFreePrice } from "@/features/commerce/utils/freeAccess";
+import { isAlwaysFree, isFreePrice, isLaunchOffer } from "@/features/commerce/utils/freeAccess";
 
 export default function ProductCard({ product, owned }: { product: ProductWithPricing; owned: boolean }) {
   const { t, lang } = useLang();
@@ -15,6 +15,7 @@ export default function ProductCard({ product, owned }: { product: ProductWithPr
   const price = product.price;
   const isFreeNow = isFreePrice(price);
   const alwaysFree = isAlwaysFree(price);
+  const launchOffer = isLaunchOffer(product.slug, price);
 
   return (
     <Link href={`/courses/${product.slug}`} className="card card-hover flex flex-col p-6">
@@ -25,7 +26,7 @@ export default function ProductCard({ product, owned }: { product: ProductWithPr
             {alwaysFree ? c.free_access_badge : c.owned_badge}
           </span>
         ) : (
-          isFreeNow && !alwaysFree && (
+          isFreeNow && (!alwaysFree || launchOffer) && (
             <span className="shrink-0 rounded-full bg-amber-500/[0.15] px-2.5 py-0.5 text-[11px] font-semibold text-amber-400">
               {c.launch_offer_badge}
             </span>

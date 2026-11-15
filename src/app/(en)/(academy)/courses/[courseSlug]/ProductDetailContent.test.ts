@@ -140,3 +140,19 @@ describe("ProductDetailContent for a permanently free product", () => {
     expect(html).toContain("Buy Now");
   });
 });
+
+describe("ProductDetailContent distinguishes the two free offerings", () => {
+  it("shows the Mastery Program as free with an account, without a launch-offer label", () => {
+    const html = render(masteryProduct({ is_free: true, price: FREE_PRICE }), "pmp-mastery-program", "/courses/pmp-mastery-program");
+    expect(html).toContain("Free with a ZentexAI account");
+    expect(html).not.toMatch(/Launch Offer|launch period/);
+  });
+
+  it("shows the Simulator as a free launch offer with advance notice of pricing, and no date or countdown", () => {
+    const sim = masteryProduct({ is_free: true, price: FREE_PRICE, slug: "pmp-exam-simulator", title_en: "PMP Exam Simulator", capabilities: ["practice:pmp", "mock_exam:pmp"] });
+    const html = render(sim, null, "/courses/pmp-exam-simulator");
+    expect(html).toContain("Launch Offer");
+    expect(html).toContain("Free during our launch period. Any future pricing will be announced in advance.");
+    expect(html).not.toMatch(/AED|Buy Now|60[- ]day|days left|Offer ends/);
+  });
+});

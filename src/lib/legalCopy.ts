@@ -43,11 +43,12 @@ export interface LegalDoc {
   sections: LegalSection[];
 }
 
-const LAST_UPDATED = "September 30, 2026";
-const LAST_UPDATED_AR = "30 سبتمبر 2026";
-/** Privacy Policy and Terms: revised when the PMP programs became free to access. */
+/** Privacy Policy: revised when the PMP programs became free to access. */
 const PT_UPDATED = "November 14, 2026";
 const PT_UPDATED_AR = "14 نوفمبر 2026";
+/** Terms and Refund Policy: revised for the free Mastery Program and the Simulator's launch offer. */
+const OFFER_UPDATED = "November 15, 2026";
+const OFFER_UPDATED_AR = "15 نوفمبر 2026";
 const CONTACT_EMAIL = "albadareen011@gmail.com";
 
 // ─── Privacy Policy ─────────────────────────────────────────────────────────
@@ -216,7 +217,7 @@ const privacyAr: LegalDoc = {
 
 const termsEn: LegalDoc = {
   title: "Terms of Service",
-  updated: `Last updated: ${PT_UPDATED}`,
+  updated: `Last updated: ${OFFER_UPDATED}`,
   intro: [
     "These Terms of Service govern your use of zentexai.com and the ZentexAI Academy, including the Contact form, account registration, the ZentexAI Academy programs (the PMP Exam Simulator and PMP Mastery Program), any paid programs or features, and certificates. \"ZentexAI\", \"we\", and \"us\" refer to the individual(s) operating ZentexAI.",
   ],
@@ -241,7 +242,8 @@ const termsEn: LegalDoc = {
     {
       heading: "Purchases and Payment",
       body: [
-        "The PMP Mastery Program and PMP Exam Simulator are currently available free of charge to anyone with a ZentexAI account. We may change which programs or features are free, and may offer paid programs or features, in the future.",
+        "The PMP Mastery Program is currently available free of charge to anyone with a ZentexAI account, with no planned end date. The PMP Exam Simulator is currently free as a launch offer for a limited period.",
+        "We may change which programs or features are free, and may offer paid programs or features, in the future. Before a price is introduced for a program you can currently use for free, we will announce it in advance on this website and explain how the change affects existing accounts before it takes effect.",
         "Paid programs or features, where offered, are purchased through Ziina, our third-party payment processor. The price shown at checkout is the amount you will be charged, and a purchase grants access for the period stated at purchase.",
       ],
     },
@@ -293,7 +295,7 @@ const termsEn: LegalDoc = {
 
 const termsAr: LegalDoc = {
   title: "شروط الخدمة",
-  updated: `آخر تحديث: ${PT_UPDATED_AR}`,
+  updated: `آخر تحديث: ${OFFER_UPDATED_AR}`,
   intro: [
     "تحكم شروط الخدمة هذه استخدامك لموقع zentexai.com وأكاديمية ZentexAI، بما يشمل نموذج التواصل، وإنشاء الحساب، وبرامج أكاديمية ZentexAI (محاكي اختبار PMP وبرنامج احتراف PMP)، وأي برامج أو ميزات مدفوعة، والشهادات. تشير عبارات \"ZentexAI\" و\"نحن\" إلى الجهة/الأفراد الذين يُشغّلون ZentexAI.",
   ],
@@ -318,7 +320,8 @@ const termsAr: LegalDoc = {
     {
       heading: "المشتريات والدفع",
       body: [
-        "يتوفر برنامج احتراف PMP ومحاكي اختبار PMP حالياً مجاناً لكل من لديه حساب في ZentexAI. وقد نغيّر مستقبلاً البرامج أو الميزات المتاحة مجاناً، وقد نقدّم برامج أو ميزات مدفوعة.",
+        "يتوفر برنامج احتراف PMP حالياً مجاناً لكل من لديه حساب في ZentexAI، دون تاريخ انتهاء مخطط له. ويتوفر محاكي اختبار PMP حالياً مجاناً كعرض إطلاق لفترة محدودة.",
+        "قد نغيّر مستقبلاً البرامج أو الميزات المتاحة مجاناً، وقد نقدّم برامج أو ميزات مدفوعة. وقبل فرض سعر على برنامج يمكنك استخدامه حالياً مجاناً، سنعلن ذلك مسبقاً على هذا الموقع ونوضّح كيف يؤثر التغيير على الحسابات القائمة قبل سريانه.",
         "تتم عملية شراء البرامج أو الميزات المدفوعة، عند توفرها، عبر Ziina، معالج الدفع من الطرف الثالث لدينا. السعر المعروض عند الدفع هو المبلغ الذي سيُخصم منك، ويمنحك الشراء الوصول للمدة المذكورة وقت الشراء.",
       ],
     },
@@ -372,9 +375,10 @@ const termsAr: LegalDoc = {
 
 const refundEn: LegalDoc = {
   title: "Refund Policy",
-  updated: `Last updated: ${LAST_UPDATED}`,
+  updated: `Last updated: ${OFFER_UPDATED}`,
   intro: [
-    "This Refund Policy covers paid, digital access purchased through ZentexAI Academy: the PMP Exam Simulator and the PMP Mastery Program. It does not cover the AI/consulting services engaged through the Contact page, which are scoped and agreed individually.",
+    "This Refund Policy covers paid, digital access purchased through ZentexAI Academy. The PMP Mastery Program and the PMP Exam Simulator are currently free, so no payment is taken and no refund applies to them while they remain free. If a price is introduced for either of them, or for any other program or feature, this policy applies to those purchases.",
+    "It does not cover the AI/consulting services engaged through the Contact page, which are scoped and agreed individually.",
   ],
   sections: [
     {
@@ -412,9 +416,10 @@ const refundEn: LegalDoc = {
 
 const refundAr: LegalDoc = {
   title: "سياسة الاسترداد",
-  updated: `آخر تحديث: ${LAST_UPDATED_AR}`,
+  updated: `آخر تحديث: ${OFFER_UPDATED_AR}`,
   intro: [
-    "تغطي سياسة الاسترداد هذه الوصول الرقمي المدفوع المُشترى عبر أكاديمية ZentexAI: محاكي اختبار PMP وبرنامج احتراف PMP. ولا تغطي خدمات الذكاء الاصطناعي/الاستشارات التي يتم التواصل بشأنها عبر صفحة التواصل، والتي يُحدَّد نطاقها ويُتفق عليها بشكل فردي.",
+    "تغطي سياسة الاسترداد هذه الوصول الرقمي المدفوع المُشترى عبر أكاديمية ZentexAI. ويتوفر برنامج احتراف PMP ومحاكي اختبار PMP حالياً مجاناً، لذا لا يُحصَّل أي مبلغ ولا ينطبق الاسترداد عليهما ما داما مجانيين. وإذا فُرض سعر على أيٍّ منهما، أو على أي برنامج أو ميزة أخرى، تنطبق هذه السياسة على تلك المشتريات.",
+    "ولا تغطي خدمات الذكاء الاصطناعي/الاستشارات التي يتم التواصل بشأنها عبر صفحة التواصل، والتي يُحدَّد نطاقها ويُتفق عليها بشكل فردي.",
   ],
   sections: [
     {

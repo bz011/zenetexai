@@ -308,7 +308,7 @@ export interface Translations {
       promo_ends_label: string; capability_course: string; capability_practice: string;
       capability_mock_exam: string; not_found: string;
       login_prompt: string; login_cta: string; signup_cta: string;
-      access_heading: string; free_access_note: string; free_login_prompt: string; free_signup_cta: string;
+      access_heading: string; free_access_note: string; free_launch_note: string; free_login_prompt: string; free_signup_cta: string;
       learn_heading: string; learn_points: string[]; included_structure_label: string;
       instructor: { heading: string; name: string; credentials: string; role: string; bio: string };
     };
@@ -1209,6 +1209,7 @@ const en: Translations = {
       signup_cta: "Sign Up",
       access_heading: "Access",
       free_access_note: "Free with a ZentexAI account",
+      free_launch_note: "Free during our launch period. Any future pricing will be announced in advance.",
       free_login_prompt: "Create a free account or log in to start.",
       free_signup_cta: "Create Free Account",
       learn_heading: "What You'll Learn",
@@ -2221,6 +2222,7 @@ const ar: Translations = {
       signup_cta: "إنشاء حساب",
       access_heading: "الوصول",
       free_access_note: "مجاناً مع حساب ZentexAI",
+      free_launch_note: "مجاناً خلال فترة الإطلاق. سنعلن مسبقاً عن أي تسعير مستقبلي.",
       free_login_prompt: "أنشئ حساباً مجانياً أو سجّل الدخول للبدء.",
       free_signup_cta: "إنشاء حساب مجاني",
       learn_heading: "ماذا ستتعلم",

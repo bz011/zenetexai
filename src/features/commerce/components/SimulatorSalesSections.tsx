@@ -6,7 +6,7 @@ import { getActiveBlueprint } from "@/features/mock-exam/config/examBlueprint";
 import { fillCopy, simulatorFactsFromBlueprint, simulatorPageCopy } from "@/lib/simulatorPageCopy";
 import { SimulatorLoopVisual } from "@/components/visuals/Visuals";
 import { formatMoney } from "@/features/commerce/utils/money";
-import { isAlwaysFree, isFreePrice } from "@/features/commerce/utils/freeAccess";
+import { isAlwaysFree, isFreePrice, isLaunchOffer } from "@/features/commerce/utils/freeAccess";
 import type { ProductWithPricing } from "@/features/commerce/types/commerce";
 
 function useSimulatorCopy() {
@@ -24,7 +24,7 @@ export function SimulatorHero({ product }: { product: ProductWithPricing }) {
 
   const accessValue = price ? (isFreeNow ? t.commerce.card.free_badge : formatMoney(price.effectiveAmountMinorUnits, price.currency)) : "—";
   const accessNote = isAlwaysFree(price)
-    ? t.commerce.product.free_access_note
+    ? isLaunchOffer(product.slug, price) ? t.commerce.product.free_launch_note : t.commerce.product.free_access_note
     : months ? fillCopy(copy.facts_access_note, { months }) : copy.facts_access_note_no_term;
 
   const cards = [

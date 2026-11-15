@@ -7,7 +7,7 @@ import heroArt from "../../../public/images/academy/academy-hero.webp";
 import masteryArt from "../../../public/images/academy/program-pmp-mastery.webp";
 import simulatorArt from "../../../public/images/academy/program-pmp-simulator.webp";
 import { formatMoney } from "@/features/commerce/utils/money";
-import { isFreePrice } from "@/features/commerce/utils/freeAccess";
+import { isFreePrice, isLaunchOffer } from "@/features/commerce/utils/freeAccess";
 import type { EffectivePrice } from "@/features/commerce/types/commerce";
 import { academyCopy, type FeatureIcon } from "./academyCopy";
 import styles from "./academy.module.css";
@@ -71,8 +71,10 @@ function Arrow() {
  * when it is unknown, and "FREE" for a free product or an active AED 0 promotion.
  */
 /** Display label of a product's effective price (commerce tables), or null when unknown. */
-export function priceLabel(price: EffectivePrice | null | undefined, lang: Lang): string | null {
+export function priceLabel(price: EffectivePrice | null | undefined, lang: Lang, slug = ""): string | null {
   if (!price) return null;
+  // The Simulator's free access is a limited launch offer (no date shown); the Mastery Program's is not.
+  if (isLaunchOffer(slug, price)) return lang === "ar" ? "مجاناً · عرض الإطلاق" : "FREE · Launch offer";
   if (isFreePrice(price)) return lang === "ar" ? "مجاناً" : "FREE";
   return formatMoney(price.effectiveAmountMinorUnits, price.currency);
 }
@@ -125,8 +127,8 @@ export default function AcademyPage({ lang, prices }: { lang: Lang; prices: Reco
                 <div className={styles.body}>
                   <div className={styles.titleRow}>
                     <h3 className={styles.programTitle}>{p.title}</h3>
-                    {priceLabel(prices[slugOf(p.href)], lang) && (
-                      <span className={styles.price}>{priceLabel(prices[slugOf(p.href)], lang)}</span>
+                    {priceLabel(prices[slugOf(p.href)], lang, slugOf(p.href)) && (
+                      <span className={styles.price}>{priceLabel(prices[slugOf(p.href)], lang, slugOf(p.href))}</span>
                     )}
                   </div>
                   <p className={styles.desc}>{p.desc}</p>

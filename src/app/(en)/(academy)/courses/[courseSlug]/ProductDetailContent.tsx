@@ -5,7 +5,7 @@ import { useLang } from "@/lib/LanguageContext";
 import type { ProductWithPricing } from "@/features/commerce/types/commerce";
 import type { PublicCurriculumModule } from "@/features/courses/services/courseService";
 import { formatMoney } from "@/features/commerce/utils/money";
-import { isAlwaysFree, isFreePrice } from "@/features/commerce/utils/freeAccess";
+import { isAlwaysFree, isFreePrice, isLaunchOffer } from "@/features/commerce/utils/freeAccess";
 import EnrollFreeButton from "@/features/commerce/components/EnrollFreeButton";
 import BuyNowButton from "@/features/commerce/components/BuyNowButton";
 import { SimulatorHero, SimulatorDetails } from "@/features/commerce/components/SimulatorSalesSections";
@@ -30,6 +30,8 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
   const isFreeNow = isFreePrice(price);
   // Permanently free: no purchase or enrolment step; an account is enough.
   const alwaysFree = isAlwaysFree(price);
+  // The Simulator is free as a limited launch offer; the Mastery Program has no planned end date.
+  const launchOffer = isLaunchOffer(product.slug, price);
 
   const totalLessons = curriculum.reduce((sum, mod) => sum + mod.lessons.length, 0);
 
@@ -135,8 +137,13 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
               {price ? (
                 alwaysFree ? (
                   <div className="mt-2">
+                    {launchOffer && (
+                      <span className="mb-2 inline-block rounded-full bg-amber-500/[0.15] px-2.5 py-0.5 text-caption font-semibold text-amber-800">
+                        {c.launch_offer_badge}
+                      </span>
+                    )}
                     <p className="text-2xl font-bold text-emerald-400">{c.free_badge}</p>
-                    <p className="mt-1 text-small text-slate-400">{p.free_access_note}</p>
+                    <p className="mt-1 text-small text-slate-400">{launchOffer ? p.free_launch_note : p.free_access_note}</p>
                   </div>
                 ) : isFreeNow ? (
                   <div className="mt-2">
