@@ -31,7 +31,8 @@ import styles from "./contact.module.css";
  * Each enquiry carries a submissionId. Trying again with the same text reuses
  * it, so the Apps Script never stores the enquiry twice (and, if only the
  * email failed, re-attempts just the email). Editing any field starts a new id.
- * "notification_failed" (saved, team not notified) is never shown as success.
+ * "notification_failed" / "notification_unconfirmed" (saved, team notification
+ * not confirmed) are never shown as success.
  */
 
 type Field = "name" | "email" | "company" | "message";
@@ -126,7 +127,8 @@ export default function InquiryForm({ lang, mode, privacyHref }: { lang: Lang; m
         setAttempted(false);
         submissionId.current = null;
       } else {
-        setStatus(data?.error === "notification_failed" ? "notNotified" : "failed");
+        const notConfirmed = data?.error === "notification_failed" || data?.error === "notification_unconfirmed";
+        setStatus(notConfirmed ? "notNotified" : "failed");
       }
     } catch {
       setStatus("failed");

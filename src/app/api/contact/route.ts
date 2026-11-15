@@ -36,6 +36,9 @@ const WEBHOOK_URL =
 const UPSTREAM_TIMEOUT_MS = 15_000;
 export const maxDuration = 25;
 
+// Matches the Apps Script's own minimum (contact-webhook.gs MIN_SECRET_LENGTH).
+const MIN_SECRET_LENGTH = 32;
+
 // The live project's production domains. VERCEL_PROJECT_PRODUCTION_URL is set
 // by Vercel per project (no protocol), so another project - including
 // zentexai-staging - never matches, whatever its VERCEL_ENV.
@@ -90,6 +93,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "contact_disabled" }, { status: 503 });
   }
 
+  // Authenticates this server to the Apps Script. Apps Script web apps cannot
+  // read request headers, so the secret goes in the POST body (never the URL).
+  // Fails closed: without a configured secret nothing is forwarded.
+  const webhookSecret = process.env.CONTACT_WEBHOOK_SECRET ?? "";
+  if (webhookSecret.length < MIN_SECRET_LENGTH) {
+    console.error("[contact] CONTACT_WEBHOOK_SECRET is not configured; enquiry not forwarded");
+    return NextResponse.json({ success: false, error: "contact_disabled" }, { status: 503 });
+  }
+  params.append("webhookSecret", webhookSecret);
+
   let upstream: Response;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), UPSTREAM_TIMEOUT_MS);
@@ -125,10 +138,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: "upstream_error" }, { status: 502 });
   }
   if (!result.emailed) {
-    // Saved but the team was not notified: never reported as success. A retry
-    // with the same submissionId re-attempts only the email, without a second row.
-    console.error(`[contact] enquiry saved but notification failed (code=${safeCode(result.error)}, inquiryType=${inquiryType})`);
-    return NextResponse.json({ success: false, error: "notification_failed" }, { status: 502 });
+    // Saved but the team's notification is not confirmed: never reported as
+    // success. "sent_unconfirmed" = MailApp accepted it but "sent" could not be
+    // recorded. A retry with the same submissionId adds no row; it re-attempts
+    // only the email (marked as a possible repeat when one may have gone out).
+    const unconfirmed = result.emailStatus === "sent_unconfirmed";
+    console.error(
+      `[contact] enquiry saved but notification ${unconfirmed ? "unconfirmed" : "failed"} (code=${safeCode(result.error)}, inquiryType=${inquiryType})`
+    );
+    return NextResponse.json({ success: false, error: unconfirmed ? "notification_unconfirmed" : "notification_failed" }, { status: 502 });
   }
   return NextResponse.json({ success: true });
 }
@@ -138,7 +156,7 @@ const scriptResultSchema = z.object({
   saved: z.boolean(),
   emailed: z.boolean(),
   duplicate: z.boolean().optional(),
-  emailStatus: z.enum(["sending", "sent", "failed", "quota_exceeded"]).nullable().optional(),
+  emailStatus: z.enum(["sending", "sent", "sent_unconfirmed", "failed", "quota_exceeded"]).nullable().optional(),
   submissionId: z.string().nullable().optional(),
   error: z.string().nullable().optional(),
 });
@@ -163,6 +181,9 @@ function parseScriptResult(body: string, submissionId: string): ScriptResult | n
   // A self-contradicting answer ("ok" without both steps done) is not trusted.
   if (parsed.data.ok !== (parsed.data.saved && parsed.data.emailed)) return null;
   if (parsed.data.saved && parsed.data.submissionId !== submissionId) return null;
+  // "emailed" (sent and recorded) must agree with emailStatus when one is given.
+  const { emailed, emailStatus } = parsed.data;
+  if (emailStatus != null && emailed !== (emailStatus === "sent")) return null;
   return parsed.data;
 }
 

@@ -9,6 +9,9 @@ vi.mock("@/lib/upstashRateLimit", () => ({
 
 const { POST } = await import("./route");
 
+// A test-only value. The real secret lives only in Vercel env vars and Apps Script properties.
+const TEST_SECRET = "test-only-secret-0123456789abcdef0123456789abcdef";
+
 const VALID_BODY = {
   name: "Jane Tester",
   email: "jane@example.com",
@@ -62,6 +65,7 @@ describe("POST /api/contact", () => {
     checkRateLimitMock.mockReset();
     getHashedClientIpMock.mockClear();
     checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
+    vi.stubEnv("CONTACT_WEBHOOK_SECRET", TEST_SECRET);
     vi.stubGlobal("fetch", vi.fn());
     // These cases describe the live project's Production deployment, the only one that forwards.
     vi.stubEnv("VERCEL_ENV", "production");
@@ -165,6 +169,7 @@ describe("POST /api/contact outside Production", () => {
   beforeEach(() => {
     checkRateLimitMock.mockReset();
     checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
+    vi.stubEnv("CONTACT_WEBHOOK_SECRET", TEST_SECRET);
     vi.stubGlobal("fetch", vi.fn().mockImplementation(scriptReply(DELIVERED)));
   });
 
@@ -205,6 +210,7 @@ describe("POST /api/contact on other Vercel projects", () => {
   beforeEach(() => {
     checkRateLimitMock.mockReset();
     checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
+    vi.stubEnv("CONTACT_WEBHOOK_SECRET", TEST_SECRET);
     vi.stubGlobal("fetch", vi.fn().mockImplementation(scriptReply(DELIVERED)));
   });
 
@@ -245,6 +251,7 @@ describe("POST /api/contact checks the Apps Script's verdict, not just HTTP 200"
   beforeEach(() => {
     checkRateLimitMock.mockReset();
     checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
+    vi.stubEnv("CONTACT_WEBHOOK_SECRET", TEST_SECRET);
     vi.stubGlobal("fetch", vi.fn());
     vi.stubEnv("VERCEL_ENV", "production");
     vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", "www.zentexai.com");
@@ -377,4 +384,114 @@ describe("POST /api/contact checks the Apps Script's verdict, not just HTTP 200"
       expect(fetch).not.toHaveBeenCalled();
     });
   });
+});
+
+describe("POST /api/contact authenticates to the Apps Script", () => {
+  let errorLog: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    checkRateLimitMock.mockReset();
+    checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
+    vi.stubGlobal("fetch", vi.fn().mockImplementation(scriptReply(DELIVERED)));
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", "zentexai.com");
+    vi.stubEnv("CONTACT_WEBHOOK_SECRET", TEST_SECRET);
+    errorLog = vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    errorLog.mockRestore();
+  });
+
+  it("sends the secret in the POST body, never in the URL", async () => {
+    await POST(makeRequest(VALID_BODY));
+    const [url] = fetchMock().mock.calls[0] as [string];
+    expect(sentParams().get("webhookSecret")).toBe(TEST_SECRET);
+    expect(url).not.toContain(TEST_SECRET);
+    expect(url).not.toContain("webhookSecret");
+  });
+
+  for (const [label, value] of [
+    ["unset", undefined],
+    ["empty", ""],
+    ["shorter than 32 characters", "too-short-secret"],
+  ] as const) {
+    it(`fails closed without forwarding when the secret is ${label}`, async () => {
+      vi.stubEnv("CONTACT_WEBHOOK_SECRET", value as unknown as string);
+      const response = await POST(makeRequest(VALID_BODY));
+      expect(response.status).toBe(503);
+      expect(await response.json()).toEqual({ success: false, error: "contact_disabled" });
+      expect(fetch).not.toHaveBeenCalled();
+      expect(String(errorLog.mock.calls[0][0])).toContain("CONTACT_WEBHOOK_SECRET is not configured");
+    });
+  }
+
+  it("does not require the secret where nothing is forwarded (Preview)", async () => {
+    vi.stubEnv("VERCEL_ENV", "preview");
+    vi.stubEnv("CONTACT_WEBHOOK_SECRET", undefined as unknown as string);
+    expect((await POST(makeRequest(VALID_BODY))).status).toBe(503);
+    expect(errorLog).not.toHaveBeenCalled();
+  });
+
+  it("treats a script rejection as a generic failure and logs only the code", async () => {
+    fetchMock().mockImplementation(scriptReply({ ok: false, saved: false, emailed: false, submissionId: null, error: "unauthorized" }));
+    const response = await POST(makeRequest(VALID_BODY));
+    expect(response.status).toBe(502);
+    expect(await response.json()).toEqual({ success: false, error: "upstream_error" });
+    expect(String(errorLog.mock.calls[0][0])).toContain("code=unauthorized");
+  });
+
+  it("never logs the secret, whatever fails", async () => {
+    const failures = [
+      scriptReply({ ok: false, saved: false, emailed: false, error: "unauthorized" }),
+      scriptReply({ ok: false, saved: true, emailed: false, emailStatus: "failed", error: "email_failed" }),
+      scriptReply("<html>error</html>", { contentType: "text/html" }),
+      () => Promise.reject(new Error(`boom ${TEST_SECRET}`)),
+    ];
+    for (const reply of failures) {
+      fetchMock().mockImplementationOnce(reply);
+      await POST(makeRequest(VALID_BODY));
+    }
+    expect(errorLog.mock.calls.flat().map(String).join("\n")).not.toContain(TEST_SECRET);
+  });
+});
+
+describe("POST /api/contact reports an unconfirmed notification as uncertain", () => {
+  beforeEach(() => {
+    checkRateLimitMock.mockReset();
+    checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
+    vi.stubGlobal("fetch", vi.fn());
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", "zentexai.com");
+    vi.stubEnv("CONTACT_WEBHOOK_SECRET", TEST_SECRET);
+    vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
+  it("returns notification_unconfirmed, not success, when 'sent' could not be recorded", async () => {
+    fetchMock().mockImplementation(
+      scriptReply({ ok: false, saved: true, emailed: false, emailStatus: "sent_unconfirmed", error: "status_unrecorded" })
+    );
+    const response = await POST(makeRequest(VALID_BODY));
+    expect(response.status).toBe(502);
+    expect(await response.json()).toEqual({ success: false, error: "notification_unconfirmed" });
+  });
+
+  for (const [label, verdict] of [
+    ["confirmed delivery with status sent_unconfirmed", { ok: true, saved: true, emailed: true, emailStatus: "sent_unconfirmed", error: null }],
+    ["confirmed delivery with status failed", { ok: true, saved: true, emailed: true, emailStatus: "failed", error: null }],
+    ["no delivery with status sent", { ok: false, saved: true, emailed: false, emailStatus: "sent", error: null }],
+  ] as const) {
+    it(`rejects a contradictory reply: ${label}`, async () => {
+      fetchMock().mockImplementation(scriptReply(verdict));
+      const response = await POST(makeRequest(VALID_BODY));
+      expect(response.status).toBe(502);
+      expect(await response.json()).toEqual({ success: false, error: "upstream_error" });
+    });
+  }
 });

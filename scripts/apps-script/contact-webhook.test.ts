@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
+import { createHash } from "node:crypto";
 
 /**
  * Runs the real contact-webhook.gs in a sandbox with in-memory fakes of the
@@ -12,6 +13,7 @@ import vm from "node:vm";
 const SOURCE = readFileSync(path.join(__dirname, "contact-webhook.gs"), "utf8");
 
 const HEADERS = ["Submission ID", "Name", "Email", "Company", "Inquiry Type", "Message", "Submitted At", "Email Status", "Email Sent At"];
+const SECRET = "test-only-secret-0123456789abcdef0123456789abcdef";
 const ID = "3f1c2b9e-8d4a-4f6b-9c2e-1a7b5d0e6f42";
 const ID2 = "9b2d7c1e-4a3f-4e8b-8c6d-2f1e0a9b8c7d";
 const FIELDS = {
@@ -89,7 +91,9 @@ class FakeSheet {
   }
 }
 
-function makeScript(opts: { existingTabs?: Record<string, Cell[][]> } = {}) {
+function makeScript(opts: { existingTabs?: Record<string, Cell[][]>; props?: Record<string, string> } = {}) {
+  const props = new Map<string, string>(Object.entries(opts.props ?? { CONTACT_WEBHOOK_SECRET: SECRET }));
+  let failPropWrites = false;
   const tabs = new Map<string, FakeSheet>();
   for (const [name, rows] of Object.entries(opts.existingTabs ?? {})) {
     const s = new FakeSheet(name);
@@ -118,7 +122,16 @@ function makeScript(opts: { existingTabs?: Record<string, Cell[][]> } = {}) {
   const sandbox: Record<string, unknown> = {
     console: { error: (m: string) => logs.push(String(m)), log: (m: string) => logs.push(String(m)) },
     SpreadsheetApp: { getActiveSpreadsheet: () => ss, openById: () => ss, flush: () => undefined },
-    PropertiesService: { getScriptProperties: () => ({ getProperty: () => null }) },
+    PropertiesService: {
+      getScriptProperties: () => ({
+        getProperty: (k: string) => props.get(k) ?? null,
+        setProperty: (k: string, v: string) => {
+          if (failPropWrites) throw Object.assign(new Error("Properties unavailable"), { name: "Exception" });
+          props.set(k, v);
+        },
+        deleteProperty: (k: string) => void props.delete(k),
+      }),
+    },
     MailApp: {
       getRemainingDailyQuota: () => env.quota,
       sendEmail: (msg: Record<string, string>) => {
@@ -146,9 +159,15 @@ function makeScript(opts: { existingTabs?: Record<string, Cell[][]> } = {}) {
     },
     ScriptApp: {
       getProjectTriggers: () => triggers.map((h) => ({ getHandlerFunction: () => h })),
+      deleteTrigger: (t: { getHandlerFunction: () => string }) => void triggers.splice(triggers.indexOf(t.getHandlerFunction()), 1),
       newTrigger: (h: string) => ({ timeBased: () => ({ everyHours: () => ({ create: () => void triggers.push(h) }) }) }),
     },
-    Utilities: { getUuid: () => "00000000-0000-4000-8000-" + String(outbox.length + tabs.size + logs.length).padStart(12, "0") },
+    Utilities: {
+      getUuid: () => "00000000-0000-4000-8000-" + String(outbox.length + tabs.size + logs.length).padStart(12, "0"),
+      DigestAlgorithm: { SHA_256: "sha256" },
+      Charset: { UTF_8: "utf8" },
+      computeDigest: (_alg: string, value: string) => Array.from(createHash("sha256").update(value, "utf8").digest(), (b) => (b > 127 ? b - 256 : b)),
+    },
     ContentService: {
       MimeType: { JSON: "application/json" },
       createTextOutput: (text: string) => ({ setMimeType: (type: string) => ({ text, type }) }),
@@ -157,7 +176,9 @@ function makeScript(opts: { existingTabs?: Record<string, Cell[][]> } = {}) {
   vm.createContext(sandbox);
   vm.runInContext(SOURCE, sandbox);
 
-  const post = (parameter: Record<string, string>): Verdict => {
+  /** Posts as the site does: with the shared secret unless the test overrides or removes it. */
+  const post = (fields: Record<string, string>, secret: string | null = SECRET): Verdict => {
+    const parameter = secret === null ? { ...fields } : { webhookSecret: secret, ...fields };
     const out = (sandbox.doPost as (e: unknown) => { text: string; type: string })({ parameter });
     expect(out.type).toBe("application/json");
     return JSON.parse(out.text) as Verdict;
@@ -166,7 +187,9 @@ function makeScript(opts: { existingTabs?: Record<string, Cell[][]> } = {}) {
   const sheet = () => tabs.get("Website Enquiries") as FakeSheet;
   const SandboxDate = vm.runInContext("Date", sandbox) as DateConstructor;
   const dataRows = () => sheet().rows.slice(1);
-  return { post, call, sheet, dataRows, tabs, outbox, logs, triggers, env, SandboxDate };
+  const track = (id: string) => (props.has("mail:" + id) ? JSON.parse(props.get("mail:" + id) as string) : null);
+  const failProps = (on: boolean) => (failPropWrites = on);
+  return { post, call, sheet, dataRows, tabs, outbox, logs, triggers, env, SandboxDate, props, track, failProps };
 }
 
 let s: ReturnType<typeof makeScript>;
@@ -278,13 +301,41 @@ describe("partial failures", () => {
     expect(s.dataRows()[1][7]).toBe("sending"); // left for retry / recovery
   });
 
-  it("if only recording 'sent' fails, it reports sent (the email went out) and the row stays recoverable", () => {
+  it("if only recording 'sent' fails, it reports an uncertain result, not confirmed success", () => {
     s.post({ ...FIELDS, submissionId: ID2 });
     s.sheet().failStatusWrite = "sent";
-    expect(s.post(FIELDS)).toMatchObject({ ok: true, emailed: true, emailStatus: "sent" });
-    expect(s.outbox).toHaveLength(2);
+    expect(s.post(FIELDS)).toEqual({
+      ok: false,
+      saved: true,
+      emailed: false,
+      duplicate: false,
+      emailStatus: "sent_unconfirmed",
+      submissionId: ID,
+      error: "status_unrecorded",
+    });
+    expect(s.outbox).toHaveLength(2); // MailApp did accept it
     expect(s.dataRows()[1][7]).toBe("sending");
+    expect(s.track(ID)).toMatchObject({ m: true });
     expect(s.logs.join("\n")).toContain("sent but status not recorded");
+  });
+
+  it("a retry after an unconfirmed send adds no row and re-sends marked as a possible repeat", () => {
+    s.post({ ...FIELDS, submissionId: ID2 });
+    s.sheet().failStatusWrite = "sent";
+    s.post(FIELDS);
+    s.sheet().failStatusWrite = null;
+    expect(s.post(FIELDS)).toMatchObject({ ok: true, duplicate: true, emailStatus: "sent" });
+    expect(s.dataRows()).toHaveLength(2);
+    expect(s.outbox[2].subject).toMatch(/^\[Possible repeat\] /);
+    expect(s.track(ID)).toBeNull(); // bookkeeping cleared once "sent" is recorded
+  });
+
+  it("if the delivery bookkeeping cannot be written, nothing is sent and the row stays recoverable", () => {
+    s.post({ ...FIELDS, submissionId: ID2 });
+    s.failProps(true);
+    expect(s.post(FIELDS)).toMatchObject({ saved: true, emailed: false, error: "email_failed" });
+    expect(s.outbox).toHaveLength(1);
+    expect(s.dataRows()[1][7]).toBe("sending");
   });
 });
 
@@ -385,7 +436,83 @@ describe("the limits of exactly-once email", () => {
 });
 
 describe("recovery trigger", () => {
+  const enabled = () => makeScript({ props: { CONTACT_WEBHOOK_SECRET: SECRET, RETRY_ENABLED: "true" } });
+
+  it("is off by default: does nothing and refuses to install its trigger", () => {
+    s.env.sendError = "Temporary failure";
+    s.post(FIELDS);
+    s.env.sendError = null;
+    expect(s.call("retryUnsentNotifications")).toEqual({ attempted: 0, sent: 0, skipped: "disabled" });
+    expect(s.outbox).toHaveLength(0);
+    expect(() => s.call("installRetryTrigger")).toThrow(/RETRY_ENABLED/);
+    expect(s.triggers).toEqual([]);
+  });
+
+  it("re-sends an interrupted send marked as a possible repeat", () => {
+    s = enabled();
+    s.post(FIELDS);
+    s.dataRows()[0][7] = "sending"; // as if the execution died after MailApp accepted it
+    expect(s.call("retryUnsentNotifications")).toEqual({ attempted: 1, sent: 1 });
+    expect(s.outbox[1].subject).toMatch(/^\[Possible repeat\] /);
+  });
+
+  it("keeps the possible-repeat mark across a quota stop", () => {
+    s = enabled();
+    s.post(FIELDS);
+    s.dataRows()[0][7] = "sending";
+    s.env.quota = 0;
+    s.call("retryUnsentNotifications");
+    expect(s.dataRows()[0][7]).toBe("quota_exceeded");
+    s.env.quota = 10;
+    s.call("retryUnsentNotifications");
+    expect(s.outbox[1].subject).toMatch(/^\[Possible repeat\] /);
+  });
+
+  it("gives up on a row after the attempt limit instead of retrying it every hour", () => {
+    s = enabled();
+    s.env.sendError = "Permanent failure";
+    s.post(FIELDS);
+    for (let run = 0; run < 8; run++) s.call("retryUnsentNotifications");
+    expect(s.track(ID)).toMatchObject({ a: 5 });
+    expect(s.call("retryUnsentNotifications")).toEqual({ attempted: 0, sent: 0 });
+  });
+
+  it("stops re-sending a row whose 'sent' status can never be written", () => {
+    s = enabled();
+    s.post({ ...FIELDS, submissionId: ID2 });
+    s.sheet().failStatusWrite = "sent";
+    s.post(FIELDS);
+    for (let run = 0; run < 8; run++) s.call("retryUnsentNotifications");
+    // first-party send + 4 recovery sends = the 5-attempt cap, then no more emails
+    expect(s.outbox.filter((m) => m.body.includes(ID))).toHaveLength(5);
+  });
+
+  it("one row's error does not stop the others", () => {
+    s = enabled();
+    s.env.quota = 0;
+    s.post(FIELDS);
+    s.post({ ...FIELDS, submissionId: ID2 });
+    s.env.quota = 10;
+    // The first row's bookkeeping write throws once; the second row must still go out.
+    const realSet = s.props.set.bind(s.props);
+    let calls = 0;
+    s.props.set = (k: string, v: string) => {
+      if (k === "mail:" + ID && calls++ === 0) throw new Error("transient");
+      return realSet(k, v);
+    };
+    expect(s.call("retryUnsentNotifications")).toEqual({ attempted: 2, sent: 1 });
+    expect(s.dataRows()[1][7]).toBe("sent");
+  });
+
+  it("removeRetryTrigger removes the installed trigger", () => {
+    s = enabled();
+    s.call("installRetryTrigger");
+    s.call("removeRetryTrigger");
+    expect(s.triggers).toEqual([]);
+  });
+
   it("re-sends recent unsent rows and skips sent ones", () => {
+    s = enabled();
     s.post(FIELDS);
     s.env.sendError = "Temporary failure";
     s.post({ ...FIELDS, submissionId: ID2 });
@@ -396,6 +523,7 @@ describe("recovery trigger", () => {
   });
 
   it("stops at the quota and leaves the rest for the next run", () => {
+    s = enabled();
     s.env.quota = 0;
     s.post(FIELDS);
     s.post({ ...FIELDS, submissionId: ID2 });
@@ -405,6 +533,7 @@ describe("recovery trigger", () => {
   });
 
   it("ignores rows older than seven days", () => {
+    s = enabled();
     s.env.sendError = "Temporary failure";
     s.post(FIELDS);
     s.env.sendError = null;
@@ -413,11 +542,13 @@ describe("recovery trigger", () => {
   });
 
   it("does nothing while a submission holds the lock", () => {
+    s = enabled();
     s.env.lockHeld = true;
     expect(s.call("retryUnsentNotifications")).toMatchObject({ attempted: 0, skipped: "busy" });
   });
 
-  it("installs its hourly trigger only once", () => {
+  it("installs its hourly trigger only once (when enabled)", () => {
+    s = enabled();
     s.call("installRetryTrigger");
     s.call("installRetryTrigger");
     expect(s.triggers).toEqual(["retryUnsentNotifications"]);
@@ -460,5 +591,90 @@ describe("logging", () => {
     const logged = s.logs.join("\n");
     expect(logged).toContain(ID);
     for (const v of [FIELDS.name, FIELDS.email, FIELDS.company, FIELDS.message]) expect(logged).not.toContain(v);
+  });
+});
+
+describe("authentication", () => {
+  const nothingHappened = () => {
+    expect(s.tabs.size).toBe(0);
+    expect(s.outbox).toHaveLength(0);
+  };
+
+  it("accepts the correct secret", () => {
+    expect(s.post(FIELDS).ok).toBe(true);
+  });
+
+  for (const [label, secret] of [
+    ["a missing secret", null],
+    ["an empty secret", ""],
+    ["a wrong secret", "wrong-secret-0123456789abcdef0123456789abcdef"],
+    ["the secret with a trailing character", SECRET + "x"],
+    ["a prefix of the secret", SECRET.slice(0, 40)],
+  ] as const) {
+    it(`rejects ${label} before any sheet or email work`, () => {
+      expect(s.post(FIELDS, secret)).toEqual({
+        ok: false,
+        saved: false,
+        emailed: false,
+        duplicate: false,
+        emailStatus: null,
+        submissionId: null,
+        error: "unauthorized",
+      });
+      nothingHappened();
+    });
+  }
+
+  it("rejects even invalid input as unauthorized first (no information leak)", () => {
+    expect(s.post({ name: "" }, "wrong").error).toBe("unauthorized");
+  });
+
+  for (const [label, props] of [
+    ["is not set", {}],
+    ["is shorter than 32 characters", { CONTACT_WEBHOOK_SECRET: "short" }],
+  ] as const) {
+    it(`fails closed for every request when the script secret ${label}`, () => {
+      s = makeScript({ props: { ...props, CONTACT_AUTH_MODE: "transition" } });
+      expect(s.post(FIELDS).error).toBe("not_configured");
+      expect(s.post(FIELDS, null).error).toBe("not_configured");
+      nothingHappened();
+    });
+  }
+
+  describe("transition mode", () => {
+    beforeEach(() => {
+      s = makeScript({ props: { CONTACT_WEBHOOK_SECRET: SECRET, CONTACT_AUTH_MODE: "transition" } });
+    });
+
+    it("accepts a request without a secret (today's live site)", () => {
+      const { submissionId, ...liveSite } = FIELDS; // the live site sends neither secret nor id
+      void submissionId;
+      expect(s.post(liveSite, null)).toMatchObject({ ok: true, saved: true, emailed: true });
+    });
+
+    it("still rejects a wrong secret", () => {
+      expect(s.post(FIELDS, "wrong-secret-0123456789abcdef0123456789abcdef").error).toBe("unauthorized");
+      nothingHappened();
+    });
+
+    it("accepts the correct secret", () => {
+      expect(s.post(FIELDS).ok).toBe(true);
+    });
+  });
+
+  it("treats any mode value other than 'transition' as enforce", () => {
+    s = makeScript({ props: { CONTACT_WEBHOOK_SECRET: SECRET, CONTACT_AUTH_MODE: "Transition " } });
+    expect(s.post(FIELDS, null).error).toBe("unauthorized");
+  });
+
+  it("never logs or stores the secret", () => {
+    s.post(FIELDS, "wrong-secret-0123456789abcdef0123456789abcdef");
+    s.post(FIELDS);
+    const logged = s.logs.join("\n");
+    expect(logged).toContain("request rejected (unauthorized)");
+    expect(logged).not.toContain(SECRET);
+    expect(logged).not.toContain("wrong-secret");
+    expect(s.dataRows().flat().map(String).join("|")).not.toContain(SECRET);
+    expect(s.outbox[0].body).not.toContain(SECRET);
   });
 });
