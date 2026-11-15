@@ -27,15 +27,29 @@ import styles from "./contact.module.css";
  *
  * The topic is optional: no choice is sent as "general", the live form's
  * own default. Double submits are ignored while a request is in flight.
+ *
+ * Each enquiry carries a submissionId. Trying again with the same text reuses
+ * it, so the Apps Script never stores the enquiry twice (and, if only the
+ * email failed, re-attempts just the email). Editing any field starts a new id.
+ * "notification_failed" (saved, team not notified) is never shown as success.
  */
 
 type Field = "name" | "email" | "company" | "message";
 type Values = { name: string; email: string; company: string; inquiryType: InquiryValue | ""; message: string };
-type Status = "idle" | "sending" | "preview" | "success" | "failed" | "rateLimited";
+type Status = "idle" | "sending" | "preview" | "success" | "failed" | "notNotified" | "rateLimited";
 
 const EMPTY: Values = { name: "", email: "", company: "", inquiryType: "", message: "" };
 const LIMITS = { name: 120, email: 254, company: 160, message: 5000 } as const;
 const ORDER: Field[] = ["name", "email", "company", "message"];
+
+function newSubmissionId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+  const b = crypto.getRandomValues(new Uint8Array(16));
+  b[6] = (b[6] & 0x0f) | 0x40;
+  b[8] = (b[8] & 0x3f) | 0x80;
+  const h = Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
+}
 
 export default function InquiryForm({ lang, mode, privacyHref }: { lang: Lang; mode: "preview" | "live"; privacyHref: string }) {
   const k = contactCopy[lang];
@@ -44,6 +58,7 @@ export default function InquiryForm({ lang, mode, privacyHref }: { lang: Lang; m
   const [attempted, setAttempted] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
   const busy = useRef(false);
+  const submissionId = useRef<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   const payload = (v: Values) => ({ ...v, inquiryType: v.inquiryType || "general" });
@@ -67,7 +82,8 @@ export default function InquiryForm({ lang, mode, privacyHref }: { lang: Lang; m
   function onChange(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const next = { ...values, [e.target.name]: e.target.value } as Values;
     setValues(next);
-    if (status === "preview" || status === "failed" || status === "rateLimited") setStatus("idle");
+    submissionId.current = null;
+    if (status === "preview" || status === "failed" || status === "notNotified" || status === "rateLimited") setStatus("idle");
     if (attempted) setErrors(validate(next));
   }
 
@@ -93,22 +109,24 @@ export default function InquiryForm({ lang, mode, privacyHref }: { lang: Lang; m
         setStatus(sim === "error" ? "failed" : sim === "rate-limited" ? "rateLimited" : "preview");
         return;
       }
+      submissionId.current ??= newSubmissionId();
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload(values)),
+        body: JSON.stringify({ ...payload(values), submissionId: submissionId.current }),
       });
       if (res.status === 429) {
         setStatus("rateLimited");
         return;
       }
-      const data = (await res.json().catch(() => null)) as { success?: boolean } | null;
-      if (res.ok && data?.success) {
+      const data = (await res.json().catch(() => null)) as { success?: boolean; error?: string } | null;
+      if (res.ok && data?.success === true) {
         setStatus("success");
         setValues(EMPTY);
         setAttempted(false);
+        submissionId.current = null;
       } else {
-        setStatus("failed");
+        setStatus(data?.error === "notification_failed" ? "notNotified" : "failed");
       }
     } catch {
       setStatus("failed");
@@ -228,9 +246,9 @@ export default function InquiryForm({ lang, mode, privacyHref }: { lang: Lang; m
           </div>
         )}
       </div>
-      {(status === "failed" || status === "rateLimited") && (
+      {(status === "failed" || status === "notNotified" || status === "rateLimited") && (
         <p className={styles.alert} role="alert">
-          {status === "failed" ? k.result.failed : k.result.rateLimited}
+          {status === "failed" ? k.result.failed : status === "notNotified" ? k.result.notNotified : k.result.rateLimited}
         </p>
       )}
 

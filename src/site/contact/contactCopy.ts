@@ -58,6 +58,7 @@ export type ContactCopy = {
     successText: string;
     sendAnother: string;
     failed: string;
+    notNotified: string;
     rateLimited: string;
   };
 };
@@ -111,6 +112,7 @@ const en: ContactCopy = {
     successText: "We'll read it and get back to you by email.",
     sendAnother: "Send another inquiry",
     failed: "Your inquiry could not be sent. Please try again, or message us on WhatsApp.",
+    notNotified: "We received your inquiry, but could not confirm it reached our team. Please press Send inquiry again in a moment (it won't be duplicated), or message us on WhatsApp.",
     rateLimited: "Too many messages were sent from this connection. Please wait a few minutes and try again.",
   },
 };
@@ -164,6 +166,7 @@ const ar: ContactCopy = {
     successText: "سنقرؤه ونعاود التواصل معك عبر البريد الإلكتروني.",
     sendAnother: "إرسال استفسار آخر",
     failed: "تعذّر إرسال استفسارك. يرجى المحاولة مرة أخرى، أو مراسلتنا عبر واتساب.",
+    notNotified: "استلمنا استفسارك، لكن تعذّر التأكد من وصوله إلى فريقنا. يرجى الضغط على «أرسل الاستفسار» مرة أخرى بعد قليل (لن يتكرر)، أو مراسلتنا عبر واتساب.",
     rateLimited: "أُرسل عدد كبير من الرسائل من هذا الاتصال. يرجى الانتظار بضع دقائق ثم المحاولة مرة أخرى.",
   },
 };

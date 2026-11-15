@@ -17,6 +17,23 @@ const VALID_BODY = {
   message: "We'd like to discuss an AI agent for lead qualification.",
 };
 
+type Verdict = { ok: boolean; saved: boolean; emailed: boolean; duplicate?: boolean; error?: string | null };
+const DELIVERED: Verdict = { ok: true, saved: true, emailed: true, duplicate: false, error: null };
+
+/** What the Apps Script web app answers: a fresh Response per call (bodies are single-use). */
+function scriptReply(body: Verdict | string, init: { status?: number; contentType?: string } = {}) {
+  return () =>
+    Promise.resolve(
+      new Response(typeof body === "string" ? body : JSON.stringify(body), {
+        status: init.status ?? 200,
+        headers: { "Content-Type": init.contentType ?? "application/json; charset=utf-8" },
+      })
+    );
+}
+
+const fetchMock = () => fetch as unknown as ReturnType<typeof vi.fn>;
+const sentParams = (call = 0) => (fetchMock().mock.calls[call][1] as RequestInit).body as URLSearchParams;
+
 function makeRequest(body: unknown): Request {
   return new Request("http://localhost/api/contact", {
     method: "POST",
@@ -81,7 +98,7 @@ describe("POST /api/contact", () => {
   });
 
   it("accepts a missing optional company field", async () => {
-    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({ ok: true });
+    fetchMock().mockImplementation(scriptReply(DELIVERED));
     const { company, ...withoutCompany } = VALID_BODY;
     void company;
 
@@ -91,7 +108,7 @@ describe("POST /api/contact", () => {
   });
 
   it("forwards valid input to the Apps Script destination and returns success", async () => {
-    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({ ok: true });
+    fetchMock().mockImplementation(scriptReply(DELIVERED));
 
     const response = await POST(makeRequest(VALID_BODY));
     const json = (await response.json()) as { success: boolean };
@@ -102,15 +119,15 @@ describe("POST /api/contact", () => {
     const [url, init] = (fetch as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
     expect(url).toContain("script.google.com");
     expect(init.method).toBe("POST");
-    const sentParams = init.body as URLSearchParams;
-    expect(sentParams.get("name")).toBe(VALID_BODY.name);
-    expect(sentParams.get("email")).toBe(VALID_BODY.email);
-    expect(sentParams.get("inquiryType")).toBe(VALID_BODY.inquiryType);
-    expect(sentParams.get("message")).toBe(VALID_BODY.message);
+    const params = init.body as URLSearchParams;
+    expect(params.get("name")).toBe(VALID_BODY.name);
+    expect(params.get("email")).toBe(VALID_BODY.email);
+    expect(params.get("inquiryType")).toBe(VALID_BODY.inquiryType);
+    expect(params.get("message")).toBe(VALID_BODY.message);
   });
 
   it("returns 502 without leaking upstream detail when the Apps Script rejects the request", async () => {
-    (fetch as ReturnType<typeof vi.fn>).mockResolvedValue({ ok: false, status: 500 });
+    fetchMock().mockImplementation(scriptReply("Internal error", { status: 500, contentType: "text/plain" }));
 
     const response = await POST(makeRequest(VALID_BODY));
     const json = (await response.json()) as { success: boolean; error: string };
@@ -133,7 +150,7 @@ describe("POST /api/contact outside Production", () => {
   beforeEach(() => {
     checkRateLimitMock.mockReset();
     checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true }));
+    vi.stubGlobal("fetch", vi.fn().mockImplementation(scriptReply(DELIVERED)));
   });
 
   afterEach(() => {
@@ -173,7 +190,7 @@ describe("POST /api/contact on other Vercel projects", () => {
   beforeEach(() => {
     checkRateLimitMock.mockReset();
     checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true }));
+    vi.stubGlobal("fetch", vi.fn().mockImplementation(scriptReply(DELIVERED)));
   });
 
   afterEach(() => {
@@ -204,5 +221,133 @@ describe("POST /api/contact on other Vercel projects", () => {
     const response = await POST(makeRequest(VALID_BODY));
     expect(response.status).toBe(503);
     expect(fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("POST /api/contact checks the Apps Script's verdict, not just HTTP 200", () => {
+  let errorLog: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    checkRateLimitMock.mockReset();
+    checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
+    vi.stubGlobal("fetch", vi.fn());
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", "www.zentexai.com");
+    errorLog = vi.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    errorLog.mockRestore();
+  });
+
+  async function submit(body: unknown = VALID_BODY) {
+    const response = await POST(makeRequest(body));
+    return { status: response.status, json: (await response.json()) as { success: boolean; error?: string } };
+  }
+
+  function expectNoPersonalDataLogged() {
+    const logged = errorLog.mock.calls.flat().map(String).join("\n");
+    for (const value of [VALID_BODY.name, VALID_BODY.email, VALID_BODY.company, VALID_BODY.message]) {
+      expect(logged).not.toContain(value);
+    }
+  }
+
+  it("reports success only when the row was saved and the email was sent", async () => {
+    fetchMock().mockImplementation(scriptReply(DELIVERED));
+    expect(await submit()).toEqual({ status: 200, json: { success: true } });
+    expect(errorLog).not.toHaveBeenCalled();
+  });
+
+  it("never reports success when the row was saved but the email failed", async () => {
+    fetchMock().mockImplementation(scriptReply({ ok: false, saved: true, emailed: false, error: "email_failed" }));
+    const { status, json } = await submit();
+    expect(status).toBe(502);
+    expect(json).toEqual({ success: false, error: "notification_failed" });
+    expect(String(errorLog.mock.calls[0][0])).toContain("code=email_failed");
+    expectNoPersonalDataLogged();
+  });
+
+  it("treats an exhausted email quota as a failed notification", async () => {
+    fetchMock().mockImplementation(scriptReply({ ok: false, saved: true, emailed: false, error: "email_quota" }));
+    expect((await submit()).json.error).toBe("notification_failed");
+  });
+
+  it("returns a generic failure when the row was not saved", async () => {
+    fetchMock().mockImplementation(scriptReply({ ok: false, saved: false, emailed: false, error: "save_failed" }));
+    expect(await submit()).toEqual({ status: 502, json: { success: false, error: "upstream_error" } });
+    expectNoPersonalDataLogged();
+  });
+
+  const invalidReplies: [string, string, string][] = [
+    ["an HTML error page served with 200", "<!DOCTYPE html><html><body>TypeError: Cannot read properties of null</body></html>", "text/html"],
+    ["a Google sign-in page served with 200", "<html><title>Sign in - Google Accounts</title></html>", "text/html"],
+    ["plain text 'Success' (the old script)", "Success", "text/plain"],
+    ["the legacy {result: success} shape", JSON.stringify({ result: "success" }), "application/json"],
+    ["JSON with a field of the wrong type", JSON.stringify({ ok: "yes", saved: true, emailed: true }), "application/json"],
+    ["a self-contradicting verdict", JSON.stringify({ ok: true, saved: true, emailed: false }), "application/json"],
+    ["an empty body", "", "application/json"],
+    ["an oversized body", JSON.stringify({ ...DELIVERED, error: "x".repeat(5000) }), "application/json"],
+  ];
+  for (const [label, body, contentType] of invalidReplies) {
+    it(`rejects ${label}`, async () => {
+      fetchMock().mockImplementation(scriptReply(body, { contentType }));
+      expect(await submit()).toEqual({ status: 502, json: { success: false, error: "upstream_error" } });
+      expect(String(errorLog.mock.calls[0][0])).toContain("unconfirmed upstream response");
+      expectNoPersonalDataLogged();
+    });
+  }
+
+  it("never logs the script's own error text, only a known-safe code", async () => {
+    fetchMock().mockImplementation(scriptReply({ ok: false, saved: true, emailed: false, error: `failed for ${VALID_BODY.email}` }));
+    await submit();
+    expect(String(errorLog.mock.calls[0][0])).toContain("code=unknown");
+    expectNoPersonalDataLogged();
+  });
+
+  it("logs no personal data when the upstream cannot be reached", async () => {
+    fetchMock().mockRejectedValue(new Error(`socket hang up for ${VALID_BODY.email}`));
+    expect((await submit()).status).toBe(502);
+    expectNoPersonalDataLogged();
+  });
+
+  describe("duplicate submissions", () => {
+    const ID = "3f1c2b9e-8d4a-4f6b-9c2e-1a7b5d0e6f42";
+
+    it("forwards the form's submissionId unchanged", async () => {
+      fetchMock().mockImplementation(scriptReply(DELIVERED));
+      await submit({ ...VALID_BODY, submissionId: ID });
+      expect(sentParams().get("submissionId")).toBe(ID);
+    });
+
+    it("sends the same id on every retry of the same enquiry", async () => {
+      fetchMock()
+        .mockImplementationOnce(scriptReply({ ok: false, saved: true, emailed: false, error: "email_failed" }))
+        .mockImplementationOnce(scriptReply({ ok: true, saved: true, emailed: true, duplicate: true, error: null }));
+      expect((await submit({ ...VALID_BODY, submissionId: ID })).json.error).toBe("notification_failed");
+      expect(await submit({ ...VALID_BODY, submissionId: ID })).toEqual({ status: 200, json: { success: true } });
+      expect(sentParams(0).get("submissionId")).toBe(ID);
+      expect(sentParams(1).get("submissionId")).toBe(ID);
+    });
+
+    it("reports success for a retry the script recognises as already delivered", async () => {
+      fetchMock().mockImplementation(scriptReply({ ...DELIVERED, duplicate: true }));
+      expect((await submit({ ...VALID_BODY, submissionId: ID })).json.success).toBe(true);
+    });
+
+    it("generates a valid id for callers that send none", async () => {
+      fetchMock().mockImplementation(scriptReply(DELIVERED));
+      await submit();
+      await submit();
+      const first = sentParams(0).get("submissionId");
+      expect(first).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+      expect(sentParams(1).get("submissionId")).not.toBe(first);
+    });
+
+    it("rejects a malformed submissionId before forwarding", async () => {
+      const { status } = await submit({ ...VALID_BODY, submissionId: "1; DROP TABLE" });
+      expect(status).toBe(400);
+      expect(fetch).not.toHaveBeenCalled();
+    });
   });
 });
