@@ -106,7 +106,7 @@ export async function POST(request: Request) {
   // pages and sign-in redirects too. Only the script's JSON verdict counts.
   let result: ScriptResult | null = null;
   try {
-    result = upstream.ok ? parseScriptResult(await upstream.text()) : null;
+    result = upstream.ok ? parseScriptResult(await upstream.text(), submissionId) : null;
   } catch {
     result = null;
   } finally {
@@ -138,14 +138,19 @@ const scriptResultSchema = z.object({
   saved: z.boolean(),
   emailed: z.boolean(),
   duplicate: z.boolean().optional(),
+  emailStatus: z.enum(["sending", "sent", "failed", "quota_exceeded"]).nullable().optional(),
+  submissionId: z.string().nullable().optional(),
   error: z.string().nullable().optional(),
 });
 type ScriptResult = z.infer<typeof scriptResultSchema>;
 
 const MAX_UPSTREAM_BODY = 4096;
 
-/** The script's verdict, or null when the body is not the JSON it promises. */
-function parseScriptResult(body: string): ScriptResult | null {
+/**
+ * The script's verdict, or null when the body is not the JSON it promises or
+ * claims a saved enquiry under a different id than the one sent.
+ */
+function parseScriptResult(body: string, submissionId: string): ScriptResult | null {
   if (body.length > MAX_UPSTREAM_BODY) return null;
   let json: unknown;
   try {
@@ -157,6 +162,7 @@ function parseScriptResult(body: string): ScriptResult | null {
   if (!parsed.success) return null;
   // A self-contradicting answer ("ok" without both steps done) is not trusted.
   if (parsed.data.ok !== (parsed.data.saved && parsed.data.emailed)) return null;
+  if (parsed.data.saved && parsed.data.submissionId !== submissionId) return null;
   return parsed.data;
 }
 

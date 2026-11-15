@@ -17,18 +17,33 @@ const VALID_BODY = {
   message: "We'd like to discuss an AI agent for lead qualification.",
 };
 
-type Verdict = { ok: boolean; saved: boolean; emailed: boolean; duplicate?: boolean; error?: string | null };
-const DELIVERED: Verdict = { ok: true, saved: true, emailed: true, duplicate: false, error: null };
+type Verdict = {
+  ok: boolean;
+  saved: boolean;
+  emailed: boolean;
+  duplicate?: boolean;
+  emailStatus?: string | null;
+  submissionId?: string | null;
+  error?: string | null;
+};
+const DELIVERED: Verdict = { ok: true, saved: true, emailed: true, duplicate: false, emailStatus: "sent", error: null };
 
-/** What the Apps Script web app answers: a fresh Response per call (bodies are single-use). */
+/**
+ * What the Apps Script web app answers: a fresh Response per call (bodies are
+ * single-use). A verdict object echoes the request's submissionId, as the real
+ * script does, unless the verdict sets its own.
+ */
 function scriptReply(body: Verdict | string, init: { status?: number; contentType?: string } = {}) {
-  return () =>
-    Promise.resolve(
-      new Response(typeof body === "string" ? body : JSON.stringify(body), {
+  return (_url: string, req: RequestInit) => {
+    const sentId = (req.body as URLSearchParams).get("submissionId");
+    const text = typeof body === "string" ? body : JSON.stringify({ submissionId: sentId, ...body });
+    return Promise.resolve(
+      new Response(text, {
         status: init.status ?? 200,
         headers: { "Content-Type": init.contentType ?? "application/json; charset=utf-8" },
       })
     );
+  };
 }
 
 const fetchMock = () => fetch as unknown as ReturnType<typeof vi.fn>;
@@ -269,8 +284,13 @@ describe("POST /api/contact checks the Apps Script's verdict, not just HTTP 200"
   });
 
   it("treats an exhausted email quota as a failed notification", async () => {
-    fetchMock().mockImplementation(scriptReply({ ok: false, saved: true, emailed: false, error: "email_quota" }));
+    fetchMock().mockImplementation(scriptReply({ ok: false, saved: true, emailed: false, emailStatus: "quota_exceeded", error: "email_quota" }));
     expect((await submit()).json.error).toBe("notification_failed");
+  });
+
+  it("returns a generic failure when the script was busy with another submission", async () => {
+    fetchMock().mockImplementation(scriptReply({ ok: false, saved: false, emailed: false, error: "busy" }));
+    expect((await submit()).json.error).toBe("upstream_error");
   });
 
   it("returns a generic failure when the row was not saved", async () => {
@@ -286,6 +306,8 @@ describe("POST /api/contact checks the Apps Script's verdict, not just HTTP 200"
     ["the legacy {result: success} shape", JSON.stringify({ result: "success" }), "application/json"],
     ["JSON with a field of the wrong type", JSON.stringify({ ok: "yes", saved: true, emailed: true }), "application/json"],
     ["a self-contradicting verdict", JSON.stringify({ ok: true, saved: true, emailed: false }), "application/json"],
+    ["a saved verdict without a submissionId", JSON.stringify({ ...DELIVERED }), "application/json"],
+    ["an unknown emailStatus", JSON.stringify({ ...DELIVERED, emailStatus: "maybe" }), "application/json"],
     ["an empty body", "", "application/json"],
     ["an oversized body", JSON.stringify({ ...DELIVERED, error: "x".repeat(5000) }), "application/json"],
   ];
@@ -322,12 +344,17 @@ describe("POST /api/contact checks the Apps Script's verdict, not just HTTP 200"
 
     it("sends the same id on every retry of the same enquiry", async () => {
       fetchMock()
-        .mockImplementationOnce(scriptReply({ ok: false, saved: true, emailed: false, error: "email_failed" }))
-        .mockImplementationOnce(scriptReply({ ok: true, saved: true, emailed: true, duplicate: true, error: null }));
+        .mockImplementationOnce(scriptReply({ ok: false, saved: true, emailed: false, emailStatus: "failed", error: "email_failed" }))
+        .mockImplementationOnce(scriptReply({ ...DELIVERED, duplicate: true }));
       expect((await submit({ ...VALID_BODY, submissionId: ID })).json.error).toBe("notification_failed");
       expect(await submit({ ...VALID_BODY, submissionId: ID })).toEqual({ status: 200, json: { success: true } });
       expect(sentParams(0).get("submissionId")).toBe(ID);
       expect(sentParams(1).get("submissionId")).toBe(ID);
+    });
+
+    it("rejects a verdict for a different submission than the one sent", async () => {
+      fetchMock().mockImplementation(scriptReply({ ...DELIVERED, submissionId: "9b2d7c1e-4a3f-4e8b-8c6d-2f1e0a9b8c7d" }));
+      expect(await submit({ ...VALID_BODY, submissionId: ID })).toEqual({ status: 502, json: { success: false, error: "upstream_error" } });
     });
 
     it("reports success for a retry the script recognises as already delivered", async () => {
