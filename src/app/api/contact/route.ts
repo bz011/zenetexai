@@ -31,6 +31,18 @@ const WEBHOOK_URL =
 // Script execution, so one stuck request can't tie up the function.
 const UPSTREAM_TIMEOUT_MS = 10_000;
 
+// The live project's production domains. VERCEL_PROJECT_PRODUCTION_URL is set
+// by Vercel per project (no protocol), so another project - including
+// zentexai-staging - never matches, whatever its VERCEL_ENV.
+const LIVE_PRODUCTION_HOSTS = new Set(["zentexai.com", "www.zentexai.com"]);
+
+function isLiveProduction(): boolean {
+  return (
+    process.env.VERCEL_ENV === "production" &&
+    LIVE_PRODUCTION_HOSTS.has((process.env.VERCEL_PROJECT_PRODUCTION_URL ?? "").toLowerCase())
+  );
+}
+
 export async function POST(request: Request) {
   const limit = await checkRateLimit("contact-form-ip", getHashedClientIp());
   if (!limit.allowed) {
@@ -62,11 +74,12 @@ export async function POST(request: Request) {
   params.append("inquiryType", inquiryType);
   params.append("message", message);
 
-  // Real enquiries are forwarded only from a Production deployment. Local
-  // dev/start, tests and Vercel Preview (VERCEL_ENV "preview"/"development"
-  // or unset) stop here, so they can never reach the business's real Apps
-  // Script inbox/spreadsheet.
-  if (process.env.VERCEL_ENV !== "production") {
+  // Real enquiries are forwarded only from the live ZentexAI project's
+  // Production deployment. Local dev/start, tests, Vercel Preview, and the
+  // separate staging project (whose own production builds also have
+  // VERCEL_ENV "production") stop here, so they can never reach the
+  // business's real Apps Script inbox/spreadsheet.
+  if (!isLiveProduction()) {
     return NextResponse.json({ success: false, error: "contact_disabled" }, { status: 503 });
   }
 

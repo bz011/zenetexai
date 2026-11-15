@@ -31,8 +31,9 @@ describe("POST /api/contact", () => {
     getHashedClientIpMock.mockClear();
     checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
     vi.stubGlobal("fetch", vi.fn());
-    // These cases describe the Production deployment, the only one that forwards.
+    // These cases describe the live project's Production deployment, the only one that forwards.
     vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", "zentexai.com");
   });
 
   afterEach(() => {
@@ -162,6 +163,44 @@ describe("POST /api/contact outside Production", () => {
 
   it("treats a near-miss value as non-production", async () => {
     vi.stubEnv("VERCEL_ENV", "Production");
+    const response = await POST(makeRequest(VALID_BODY));
+    expect(response.status).toBe(503);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("POST /api/contact on other Vercel projects", () => {
+  beforeEach(() => {
+    checkRateLimitMock.mockReset();
+    checkRateLimitMock.mockResolvedValue({ allowed: true, configured: true });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true }));
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  for (const host of ["zentexai-staging.vercel.app", "zenetexai-git-integration-site-v5.vercel.app", "zentexai.com.evil.example", "", undefined]) {
+    it(`never forwards from a production build whose project domain is ${host === undefined ? "unset" : JSON.stringify(host)}`, async () => {
+      vi.stubEnv("VERCEL_ENV", "production");
+      vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", host as string);
+      const response = await POST(makeRequest(VALID_BODY));
+      expect(response.status).toBe(503);
+      expect(fetch).not.toHaveBeenCalled();
+    });
+  }
+
+  it("forwards from the live project on its www domain too", async () => {
+    vi.stubEnv("VERCEL_ENV", "production");
+    vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", "www.zentexai.com");
+    const response = await POST(makeRequest(VALID_BODY));
+    expect(response.status).toBe(200);
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("never forwards from a Preview of the live project", async () => {
+    vi.stubEnv("VERCEL_ENV", "preview");
+    vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", "zentexai.com");
     const response = await POST(makeRequest(VALID_BODY));
     expect(response.status).toBe(503);
     expect(fetch).not.toHaveBeenCalled();
