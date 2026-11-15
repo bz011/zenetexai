@@ -1,6 +1,6 @@
 /**
  * Homepage v5 footer copy. Destinations are existing routes only (localized
- * through the page's href(), like the header): Services, Academy, About, Blog,
+ * through the page's href(), like the header): Services, Academy, About, Blog, Resources,
  * Contact, Privacy and Terms are real pages; Solutions has no page, so it
  * points at the homepage's Solutions section. The "Connect" column is left
  * out: the project has no verified LinkedIn or Instagram URL, and the company
@@ -35,6 +35,7 @@ const en: FooterCopy = {
       links: [
         { label: "About Us", href: "/about" },
         { label: "Blog", href: "/blog" },
+        { label: "Resources", href: "/resources" },
         { label: "Contact", href: "/contact" },
       ],
     },
@@ -65,6 +66,7 @@ const ar: FooterCopy = {
       links: [
         { label: "من نحن", href: "/about" },
         { label: "المدونة", href: "/blog" },
+        { label: "الموارد", href: "/resources" },
         { label: "تواصل معنا", href: "/contact" },
       ],
     },
