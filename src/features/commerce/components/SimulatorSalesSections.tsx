@@ -38,7 +38,7 @@ export function SimulatorHero({ product }: { product: ProductWithPricing }) {
   return (
     <div>
       <span className="label">{copy.hero_eyebrow}</span>
-      <h1 className="mt-3 text-3xl font-bold text-white md:text-4xl">{copy.hero_h1}</h1>
+      <h1 className="mt-3 text-h1 text-white">{copy.hero_h1}</h1>
       <p className="mt-4 max-w-2xl text-body leading-relaxed text-slate-400">{copy.hero_sub}</p>
       <div className="mt-6 flex flex-wrap gap-3">
         <Link href="#purchase" className="btn-primary">{copy.cta_primary}</Link>

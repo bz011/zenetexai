@@ -65,7 +65,9 @@ function render(product: ProductWithPricing, courseSlug: string | null, pathname
 describe("ProductDetailContent layout", () => {
   it("does not cap the whole page at a narrow max-w-3xl (the reported 'narrow column' bug)", () => {
     const html = render(masteryProduct(), "pmp-mastery-program", "/courses/pmp-mastery-program");
-    expect(html).toContain('class="container-page relative"><div class="mx-auto max-w-5xl">');
+    // The hero/pricing column is max-w-5xl, aligned to the content edge (the
+    // header's edge), not centred (audit P2-10/P2-11).
+    expect(html).toContain('class="container-page relative"><div class="max-w-5xl">');
     expect(html).not.toContain('class="container-page relative max-w-3xl"');
   });
 

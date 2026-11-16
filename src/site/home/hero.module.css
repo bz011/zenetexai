@@ -110,6 +110,27 @@
   }
 }
 
+/* Narrow phones: logo + 28px gap + language pill + menu + 2 x 20px padding
+   came to ~328-348px, wider than a 320px screen (the Arabic "English" pill is
+   the widest). Tighten the gap, the logo and the pill so everything fits with
+   nothing hidden: ~314px in Arabic, ~297px in English at 320px. */
+@media (max-width: 400px) {
+  .header {
+    gap: 12px;
+  }
+  .logoMark {
+    width: 136px;
+  }
+  .header .lang {
+    padding: 0 12px;
+  }
+}
+
+.logo,
+.headerEnd {
+  flex-shrink: 0;
+}
+
 /* Pages other than the homepage show the logo still. */
 .logoStill * {
   animation: none !important;
@@ -194,12 +215,12 @@
 }
 
 /* Current page, including Home on the homepage. */
-.nav a[aria-current="page"] {
+.nav a[aria-current] {
   position: relative;
   color: var(--ink);
 }
 
-.nav a[aria-current="page"]::after {
+.nav a[aria-current]::after {
   content: "";
   position: absolute;
   inset-inline: 12px;
@@ -222,7 +243,7 @@
   color: var(--teal);
 }
 
-.nav a.navAcademy[aria-current="page"] {
+.nav a.navAcademy[aria-current] {
   color: var(--teal);
   background: rgba(30, 100, 97, 0.08);
 }
@@ -306,7 +327,7 @@
   background: var(--sand);
 }
 
-.menu li a[aria-current="page"] {
+.menu li a[aria-current] {
   color: var(--teal);
   background: rgba(30, 100, 97, 0.06);
 }
@@ -443,6 +464,9 @@
 .copy {
   width: min(40%, 560px);
   margin-right: auto;
+  /* The headline's size is capped to this column (cqi below), so its longest
+     unbreakable phrase always fits on one line at every width. */
+  container-type: inline-size;
 }
 
 .eyebrow {
@@ -464,7 +488,7 @@
 }
 
 .title {
-  font-size: clamp(40px, 1rem + 2.75vw, 58px);
+  font-size: min(clamp(40px, 1rem + 2.75vw, 58px), 10cqi);
   font-weight: 300;
   line-height: 1.06;
   letter-spacing: -0.035em;
@@ -472,7 +496,7 @@
 }
 
 .title:lang(ar) {
-  font-size: clamp(36px, 1rem + 2.4vw, 52px);
+  font-size: min(clamp(36px, 1rem + 2.4vw, 52px), 10.5cqi);
   font-weight: 400;
   line-height: 1.4;
   letter-spacing: 0;
@@ -480,6 +504,11 @@
 
 .line {
   display: block;
+}
+
+/* A phrase that reads as one unit ("Automation & Analytics"): never split. */
+.keep {
+  white-space: nowrap;
 }
 
 .accent {
@@ -606,6 +635,23 @@
   }
 }
 
+/* Tablets in portrait (~768 x 1024): the full-width portrait above pushed the
+   headline ~60% down the screen. Here the portrait takes at most ~42% of the
+   viewport height and the image is drawn smaller, so the whole head stays in
+   frame and the value proposition starts in the upper part of the screen.
+   Phones (<= 640px) and short landscape screens keep the layout above. */
+@media (min-width: 641px) and (max-width: 900px) and (min-height: 700px) {
+  .media {
+    max-height: min(620px, 42svh);
+  }
+  .mediaInner {
+    width: 150%;
+    /* Centres the head (at 55.3% of the image) like the 185% layout does. */
+    margin-left: -33%;
+    margin-top: 2%;
+  }
+}
+
 @media (max-width: 640px) {
   .headerCta {
     display: none;
@@ -627,10 +673,10 @@
     display: none;
   }
   .title {
-    font-size: 36px;
+    font-size: min(36px, 10cqi);
   }
   .title:lang(ar) {
-    font-size: 31px;
+    font-size: min(31px, 10.5cqi);
   }
   .sub {
     margin-top: 16px;

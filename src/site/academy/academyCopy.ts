@@ -3,9 +3,10 @@ import type { CtaCopy } from "@/site/home/ctaCopy";
 /**
  * Academy overview (v5), following design-references/ZentexAI Academy
  * Learning Programs.png. Features checked against the product (2026-11-03):
- *  - PMP Mastery Program: 6 modules and module assessments (live product page:
- *    "6 modules · 61 video lessons"); a Certificate of Completion
- *    (features/courses/services/certificateService.ts).
+ *  - PMP Mastery Program: 6 modules and module assessments (product page:
+ *    "6 modules · 61 lessons"; lesson videos are not yet published); a
+ *    Certificate of Completion (features/courses/services/certificateService.ts).
+ *    Practice Mode and mock exams belong to the Simulator only.
  *  - PMP Exam Simulator: the reference's "~800 questions" and "3 mock exams"
  *    appear nowhere in the product, and simulatorPageCopy.ts rules them out on
  *    purpose (no question-bank size; no numbered mock exams, each attempt is
@@ -86,7 +87,7 @@ const ar: AcademyCopy = {
   programs: [
     {
       id: "mastery",
-      title: "برنامج إتقان إدارة المشاريع PMP",
+      title: "برنامج احتراف PMP",
       desc: "برنامج تدريبي منظّم يساعدك على الاستعداد لاختبار شهادة PMP®.",
       features: [
         { icon: "modules", label: "6 وحدات تعليمية" },

@@ -1220,7 +1220,7 @@ const en: Translations = {
         "The decision-making mindset the PMP exam actually tests",
         "Practical, scenario-based understanding — not memorization",
       ],
-      included_structure_label: "{modules} modules · {lessons} video lessons",
+      included_structure_label: "{modules} modules · {lessons} lessons",
       instructor: {
         heading: "Meet Your Instructor",
         name: "Zaid Al-Badareen, PMP®",
@@ -2233,7 +2233,7 @@ const ar: Translations = {
         "عقلية اتخاذ القرار التي يقيسها امتحان PMP فعلياً",
         "فهم عملي قائم على سيناريوهات واقعية — لا حفظ",
       ],
-      included_structure_label: "{modules} وحدات · {lessons} درس فيديو",
+      included_structure_label: "{modules} وحدات · {lessons} درساً",
       instructor: {
         heading: "تعرّف على مدربك",
         name: "زيد البدارين، PMP®",

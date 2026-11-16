@@ -1,0 +1,160 @@
+/* Academy navigation bar (AcademySubnav), under the one site header.
+   Same type, pill links, teal current marker and ink buttons as the header
+   (src/site/home/hero.module.css), drawn from the Academy's tokens (RGB
+   triplets, see src/styles/tokens.css). Edges line up with the header's
+   (same --m inline padding). */
+
+.bar {
+  --m: clamp(20px, 4vw, 56px);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: var(--academy-header-h, 57px);
+  border-block: 1px solid rgb(var(--line));
+  background: rgb(var(--surface-0) / 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-family: var(--a3-sans), "Helvetica Neue", Arial, sans-serif;
+}
+
+.bar:lang(ar) {
+  font-family: var(--a3-arabic), var(--a3-sans), sans-serif;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 100%;
+  padding-inline: var(--m);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  /* The first label's text lines up with the logo and the content edge. */
+  margin: 0;
+  margin-inline-start: -12px;
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgb(var(--ink-2));
+  transition: background-color 160ms ease;
+}
+
+.link:hover {
+  background: rgb(var(--surface-2) / 0.85);
+  color: rgb(var(--ink));
+}
+
+.link[aria-current] {
+  color: rgb(var(--ink));
+}
+
+.link[aria-current]::after {
+  content: "";
+  position: absolute;
+  inset-inline: 12px;
+  bottom: 6px;
+  height: 1.5px;
+  background: rgb(var(--accent-fg));
+}
+
+.actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.primary,
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.primary {
+  background: rgb(var(--ink));
+  color: rgb(var(--surface-0));
+}
+
+.primary:hover {
+  background: rgb(var(--accent-fg));
+}
+
+.secondary {
+  border: 1px solid rgb(var(--ink) / 0.24);
+  background: transparent;
+  color: rgb(var(--ink));
+}
+
+.secondary:hover {
+  background: rgb(var(--surface-2));
+}
+
+/* Phones: two rows (destinations, then account actions), not sticky, so the
+   bar never takes a permanent slice of a small screen. Everything stays
+   visible; nothing scrolls sideways. */
+@media (max-width: 640px) {
+  .bar {
+    position: static;
+    height: auto;
+  }
+  .inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding-block: 8px;
+  }
+  .links {
+    justify-content: space-between;
+    margin-inline: -8px;
+  }
+  .link {
+    padding: 0 8px;
+    font-size: 14px;
+  }
+  .link[aria-current]::after {
+    inset-inline: 8px;
+  }
+  .actions > * {
+    flex: 1 1 0;
+  }
+}
+
+/* Narrow phones: the four destinations fit on one row (~290px of 292px at
+   320px in English) with slightly tighter pills. */
+@media (max-width: 400px) {
+  .links {
+    margin-inline: -6px;
+  }
+  .link {
+    padding: 0 6px;
+    font-size: 13.5px;
+  }
+  .link[aria-current]::after {
+    inset-inline: 6px;
+  }
+}

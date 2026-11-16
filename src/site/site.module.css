@@ -6,6 +6,8 @@
 .chrome {
   --header: 72px;
   position: relative;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
 }
 
@@ -18,6 +20,7 @@
 
 .main {
   display: block;
+  flex: 1 0 auto;
   padding-top: var(--header);
   background: rgb(var(--surface-0));
   color: rgb(var(--ink));
@@ -29,4 +32,36 @@
 
 .underHeader {
   margin-top: calc(-1 * var(--header));
+}
+
+/* Academy frame: <main> carries .academy-shell (globals.css), which sets the
+   same ivory surface; nothing else differs from a corporate page. */
+.academyMain {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Floating action rail (WhatsApp). A zero-height sticky line at the end of
+   <main>: while content scrolls by, it is held 20px above the viewport's
+   bottom edge; when the end of <main> arrives it stays there, so the button
+   comes to rest 20px above the footer and never covers the footer's links,
+   text or legal line. The slot is lifted above the line by its own height.
+   Inline-end side: right in English, left in Arabic. */
+.floatRail {
+  position: sticky;
+  bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 40;
+  display: flex;
+  /* flex-start, not the default stretch: the slot keeps its own height, so
+     the -100% lift below is the button's height, not 0. */
+  align-items: flex-start;
+  justify-content: flex-end;
+  height: 0;
+  padding-inline: 20px;
+  pointer-events: none;
+}
+
+.floatSlot {
+  pointer-events: auto;
+  transform: translateY(calc(-100% - 20px));
 }

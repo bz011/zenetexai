@@ -141,7 +141,7 @@ const ar: ContactCopy = {
     topics: [
       { value: "business", label: "مشروع لمؤسستك", hint: "وكلاء ذكاء اصطناعي، أتمتة، بيانات وتحليلات" },
       { value: "consultation", label: "استشارة", hint: "استراتيجية الذكاء الاصطناعي أو إدارة المشاريع" },
-      { value: "training", label: "التدريب والأكاديمية", hint: "⁦PMP Mastery Program⁩ ومحاكي اختبار ⁦PMP⁩" },
+      { value: "training", label: "التدريب والأكاديمية", hint: "برنامج احتراف ⁦PMP⁩ ومحاكي اختبار ⁦PMP⁩" },
       { value: "general", label: "استفسار آخر", hint: "أي سؤال آخر" },
     ],
     message: "تفاصيل المشروع",

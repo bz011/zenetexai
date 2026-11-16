@@ -20,12 +20,12 @@ export default function CoursesContent({
   const ownedSet = new Set(ownedCapabilities);
 
   return (
-    <div className="relative min-h-screen overflow-hidden px-6 py-24">
+    <div className="relative min-h-screen overflow-hidden py-16 md:py-24">
       <div className="pointer-events-none absolute left-1/2 top-0 h-[350px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/[0.08] blur-[100px]" />
 
-      <div className="container-page relative max-w-4xl">
+      <div className="container-page relative">
         <span className="label">{s.eyebrow}</span>
-        <h1 className="mt-3 text-3xl font-bold text-white">{s.heading}</h1>
+        <h1 className="mt-3 text-h1 text-white">{s.heading}</h1>
         <p className="mt-3 max-w-xl text-[14px] leading-relaxed text-slate-400">{s.sub}</p>
 
         {products.length === 0 ? (
@@ -33,7 +33,7 @@ export default function CoursesContent({
             <p className="text-[14px] text-slate-500">{s.empty}</p>
           </div>
         ) : (
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          <div className="mt-8 grid max-w-5xl gap-4 sm:grid-cols-2">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} owned={ownsProduct(product, ownedSet)} />
             ))}

@@ -61,8 +61,8 @@ export default function HomeV5({ lang }: { lang: Lang }) {
               <h1 id="h5-title" className={styles.title}>
                 {k.title.lead}{" "}
                 <span className={styles.line}>
-                  {k.title.pre}
-                  <span className={styles.accent}>{k.title.highlight}</span>
+                  {k.title.pre && <><span className={styles.keep}>{k.title.pre.trim()}</span>{" "}</>}
+                  <span className={`${styles.accent} ${styles.keep}`}>{k.title.highlight}</span>
                   {k.title.tail}
                 </span>
               </h1>

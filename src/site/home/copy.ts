@@ -3,8 +3,11 @@ import { heroDCopy } from "@/site/home/heroCopy";
 /**
  * Homepage v5 copy (a refinement of v4).
  *
- * Hero: Hero D's approved copy with the approved headline, the same in both
- * languages ("AI that turns your ideas into real results.").
+ * Hero: Hero D's design with the owner-approved positioning headline
+ * (audit P2-18, 2026-11-16): "Practical AI Agents, Automation & Analytics for
+ * Businesses", no country named (the market is international). The supporting
+ * line names only existing services (see `en.above` / `en.below` below and
+ * /services) and avoids repeating the headline's words.
  * The language switch points at this preview.
  *
  * Services: descriptions are the production site's own wording (the /services
@@ -18,14 +21,16 @@ export type IconName = "agents" | "ml" | "whatsapp" | "data" | "advice" | "pm" |
 const hero = {
   en: {
     ...heroDCopy.en,
-    // Matches the Arabic: "AI that turns your ideas into real results." with the result in teal.
-    title: { lead: "AI that turns your ideas", pre: "into ", highlight: "real results.", tail: "" },
+    // "Practical AI Agents, / Automation & Analytics for Businesses", the audience in teal.
+    title: { lead: "Practical AI Agents,", pre: "Automation & Analytics ", highlight: "for Businesses", tail: "" },
+    sub: "We design and build systems that take repetitive work off your team and turn your data into clearer decisions, from WhatsApp workflows and dashboards to machine learning, backed by AI consulting and project management expertise.",
     language: { ...heroDCopy.en.language, href: "/ar" },
   },
   ar: {
     ...heroDCopy.ar,
-    // Two lines: "ذكاء اصطناعي يحوّل أفكارك / إلى نتائج حقيقية." with the result in teal.
-    title: { lead: "ذكاء اصطناعي يحوّل أفكارك", pre: "إلى ", highlight: "نتائج حقيقية", tail: "." },
+    // "وكلاء ذكاء اصطناعي / وأتمتة وتحليلات عملية للشركات", the closing words in teal.
+    title: { lead: "وكلاء ذكاء اصطناعي", pre: "وأتمتة وتحليلات ", highlight: "عملية للشركات", tail: "" },
+    sub: "نصمّم ونبني أنظمة تخفّف عن فريقك الأعمال المتكررة وتحوّل بياناتك إلى قرارات أوضح، من سير عمل واتساب ولوحات المعلومات إلى تعلّم الآلة، مدعومةً بخبرة في استشارات الذكاء الاصطناعي وإدارة المشاريع.",
     language: { ...heroDCopy.ar.language, href: "/" },
   },
 };
@@ -41,7 +46,7 @@ const en = {
     { icon: "data", name: "Data Analytics & Business Intelligence", line: "KPI frameworks, clean data models and dashboards built around your real decisions.", href: "/services/data-analytics-uae" },
     { icon: "advice", name: "AI Consulting", line: "Clear guidance on where AI fits your organization, and how to adopt it responsibly.", href: "/services#ai-consulting" },
     { icon: "pm", name: "Project Management Consulting", line: "Hands-on delivery expertise, from setting up a PMO to recovering a troubled project.", href: "/services#pm-consulting" },
-    { icon: "academy", name: "ZentexAI Academy", line: "The PMP Mastery Program and PMP Exam Simulator, in Arabic and English.", href: "/academy" },
+    { icon: "academy", name: "ZentexAI Academy", line: "The PMP Mastery Program and the PMP Exam Simulator, on a platform you can use in Arabic or English.", href: "/academy" },
   ] as Offering[],
 };
 
@@ -56,7 +61,7 @@ const ar: typeof en = {
     { icon: "data", name: "تحليل البيانات وذكاء الأعمال", line: "مؤشرات أداء واضحة، ونماذج بيانات نظيفة، ولوحات معلومات مبنية حول قراراتك الفعلية.", href: "/services/data-analytics-uae" },
     { icon: "advice", name: "استشارات الذكاء الاصطناعي", line: "إرشاد واضح لمواضع الاستفادة من الذكاء الاصطناعي في مؤسستك، وتبنّيه بمسؤولية.", href: "/services#ai-consulting" },
     { icon: "pm", name: "استشارات المشاريع وإدارتها", line: "خبرة عملية في تنفيذ المشاريع، من تأسيس مكتب لإدارة المشاريع إلى إنقاذ المشاريع المتعثرة.", href: "/services#pm-consulting" },
-    { icon: "academy", name: "أكاديمية ZentexAI", line: "برنامج PMP Mastery Program ومحاكي اختبار PMP، بمحتوى عربي وإنجليزي.", href: "/academy" },
+    { icon: "academy", name: "أكاديمية ZentexAI", line: "برنامج احتراف PMP ومحاكي اختبار PMP، على منصة يمكنك استخدامها بالعربية أو الإنجليزية.", href: "/academy" },
   ],
 };
 

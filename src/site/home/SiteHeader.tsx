@@ -24,14 +24,16 @@ import styles from "./hero.module.css";
  * Navigation: Home | Services | Academy | Blog | About, then Contact as the
  * closing call to action, in the same order in the mobile menu. Academy is
  * set apart with a quiet teal outline. There are no account actions here:
- * Login, Dashboard and Log out live in the Academy header (AcademyHeader),
- * where learners use them.
+ * Login, Dashboard and Log out live in the Academy's own navigation bar
+ * (src/site/academy/AcademySubnav.tsx), directly under this header on every
+ * Academy page, where learners use them. With section="academy" (set by
+ * SiteChrome there), Academy is marked as the current section.
  *
  * The Ribbon logo plays its intro on the homepage only.
  */
 const NAV = ["/", "/services", "/academy", "/blog", "/about"] as const;
 
-export default function SiteHeader() {
+export default function SiteHeader({ section }: { section?: "academy" } = {}) {
   const { lang, setLang } = useLang();
   const pathname = usePathname() ?? "/";
   const menuRef = useRef<HTMLDetailsElement>(null);
@@ -50,8 +52,12 @@ export default function SiteHeader() {
     "/about": c.nav.about,
   };
   const nav = NAV.map((path) => ({ path, label: labels[path], href: c.href(path) }));
-  const here = (path: string) =>
-    (path === "/" ? onHome : route.enPath === path || route.enPath.startsWith(`${path}/`)) ? ("page" as const) : undefined;
+  const here = (path: string) => {
+    if (path === "/" ? onHome : route.enPath === path || route.enPath.startsWith(`${path}/`)) return "page" as const;
+    // Inside the Academy (courses, dashboard, practice, ...) Academy is the current section.
+    if (path === "/academy" && section === "academy") return "true" as const;
+    return undefined;
+  };
   const linkClass = (path: string) => (path === "/academy" ? styles.navAcademy : undefined);
 
   // The mobile menu closes after any navigation.

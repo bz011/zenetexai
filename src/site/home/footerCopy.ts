@@ -1,7 +1,8 @@
 /**
  * Homepage v5 footer copy. Destinations are existing routes only (localized
  * through the page's href(), like the header): Services, Academy, About, Blog, Resources,
- * Contact, Privacy and Terms are real pages; Solutions has no page, so it
+ * Contact, Privacy, Terms and Refund are real pages (Refund joined when this
+ * footer became the Academy's footer too, which had linked it); Solutions has no page, so it
  * points at the homepage's Solutions section. The "Connect" column is left
  * out: the project has no verified LinkedIn or Instagram URL, and the company
  * address in src/lib/branding.ts is marked as not yet live.
@@ -44,6 +45,7 @@ const en: FooterCopy = {
   legal: [
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Service", href: "/terms" },
+    { label: "Refund Policy", href: "/refund" },
   ],
   legalLabel: "Legal",
 };
@@ -75,6 +77,7 @@ const ar: FooterCopy = {
   legal: [
     { label: "سياسة الخصوصية", href: "/privacy" },
     { label: "شروط الاستخدام", href: "/terms" },
+    { label: "سياسة الاسترداد", href: "/refund" },
   ],
   legalLabel: "روابط قانونية",
 };

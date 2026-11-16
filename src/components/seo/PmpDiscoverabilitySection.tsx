@@ -14,6 +14,18 @@ import Section from "@/components/ui/Section";
  * stated elsewhere on the site or verifiable in the app (bilingual
  * interface/questions, Practice Mode filters, 180-question timed Mock
  * Exam) - no prices, access rules, pass-rate or outcome claims.
+ *
+ * Product accuracy (audit P2-14, 2026-11-16): the two products grant
+ * different capabilities (migrations/019_academy_commerce.sql):
+ *   - PMP Mastery Program (course:pmp): the structured course - modules and
+ *     lessons, module quizzes, progress, and a ZentexAI Certificate of
+ *     Completion (certificateService.ts). Its interface is bilingual; lesson
+ *     content is not claimed to be Arabic, and lessons are not called "video
+ *     lessons" while lesson videos are not yet published.
+ *   - PMP Exam Simulator (practice:pmp + mock_exam:pmp): Practice Mode, the
+ *     180-question timed Mock Exam, the bilingual question bank, results review.
+ * So the "course" block below no longer lists the question bank or timed
+ * exams as Mastery Program features; it points to the Simulator for them.
  */
 
 type Variant = "course" | "simulator";
@@ -37,34 +49,36 @@ const CONTENT: Record<Variant, Block> = {
     h2En: "PMP Course in Arabic and English for Working Professionals",
     h2Ar: "دورة PMP بالعربي والإنجليزي للمحترفين",
     pEn: [
-      "The ZentexAI PMP Mastery Program is a structured, self-paced PMP exam preparation course built around the current PMP Examination Content Outline, with a bilingual, Arabic-friendly learning platform.",
+      "The ZentexAI PMP Mastery Program is a structured, self-paced PMP exam preparation course built around the current PMP Examination Content Outline, on a learning platform you can use in Arabic or English.",
     ],
     pAr: [
-      "برنامج ZentexAI PMP Mastery هو دورة منظمة ذاتية الوتيرة للتحضير لاختبار PMP، مبنية على مخطط محتوى اختبار PMP الحالي، بمنصة تعلّم ثنائية اللغة تدعم العربية.",
+      "برنامج احتراف PMP من ZentexAI دورة منظمة ذاتية الوتيرة للتحضير لاختبار PMP، مبنية على مخطط محتوى اختبار PMP الحالي، على منصة تعلّم يمكنك استخدامها بالعربية أو الإنجليزية.",
     ],
     bulletsEn: [
-      "Structured modules over an 8-week programme, learnable at your own pace",
-      "A full practice question bank with timed exam simulations",
-      "Practice questions and the learning platform available in Arabic and English",
+      "Structured modules and lessons, studied at your own pace",
+      "A quiz at the end of each module to check your understanding",
+      "A ZentexAI Certificate of Completion when you finish the course",
+      "Practice questions and timed mock exams are part of the separate PMP Exam Simulator",
     ],
     bulletsAr: [
-      "وحدات منظمة ضمن برنامج مدته 8 أسابيع، يمكن دراستها بوتيرتك الخاصة",
-      "بنك أسئلة تدريبي متكامل مع محاكاة اختبار بوقت محدد",
-      "أسئلة التدريب ومنصة التعلّم متاحة بالعربية والإنجليزية",
+      "وحدات ودروس منظمة تدرسها بوتيرتك الخاصة",
+      "اختبار في نهاية كل وحدة للتحقق من فهمك",
+      "شهادة إتمام من ZentexAI عند إنهاء الدورة",
+      "أسئلة التدريب والاختبارات التجريبية بوقت محدد جزء من محاكي اختبار PMP المنفصل",
     ],
     links: [
-      { href: "/courses/pmp-mastery-program", en: "PMP Mastery Program details", ar: "تفاصيل برنامج PMP Mastery" },
+      { href: "/courses/pmp-mastery-program", en: "PMP Mastery Program details", ar: "تفاصيل برنامج احتراف PMP" },
       { href: "/courses/pmp-exam-simulator", en: "PMP Exam Simulator", ar: "محاكي اختبار PMP" },
       { href: "/contact", en: "Ask us a question", ar: "اسألنا" },
     ],
     faq: [
-      { q: "Is there a PMP course in Arabic?", a: "The ZentexAI PMP Mastery Program is bilingual and Arabic-friendly: the learning platform and the practice questions are available in Arabic and English, and you can switch language at any time. See the program page for the current details of what is included." },
-      { q: "Who is the PMP Mastery Program for?", a: "Working professionals preparing for the PMP exam who want a structured programme with a practice engine behind it." },
+      { q: "Is there a PMP course in Arabic?", a: "The ZentexAI learning platform can be used in Arabic or English, and you can switch language at any time. See the PMP Mastery Program page for the current details of what is included. The separate PMP Exam Simulator offers its practice questions and mock exams in both Arabic and English." },
+      { q: "Who is the PMP Mastery Program for?", a: "Working professionals preparing for the PMP exam who want a structured, self-paced course with a quiz for each module and a Certificate of Completion at the end." },
       { q: "Can I practise with a PMP exam simulator as well?", a: "Yes. The ZentexAI PMP Exam Simulator offers filterable Practice Mode and full-length timed mock exams. See the PMP Exam Simulator page for details." },
     ],
     faqAr: [
-      { q: "هل توجد دورة PMP بالعربي؟", a: "برنامج ZentexAI PMP Mastery ثنائي اللغة ويدعم العربية: منصة التعلّم وأسئلة التدريب متاحة بالعربية والإنجليزية، ويمكنك تبديل اللغة في أي وقت. راجع صفحة البرنامج للاطلاع على تفاصيل ما يتضمنه حالياً." },
-      { q: "لمن هذا البرنامج؟", a: "للمحترفين الذين يستعدون لاختبار PMP ويريدون برنامجاً منظماً يدعمه محرك تدريب." },
+      { q: "هل توجد دورة PMP بالعربي؟", a: "يمكنك استخدام منصة ZentexAI التعليمية بالعربية أو الإنجليزية، وتبديل اللغة في أي وقت. راجع صفحة برنامج احتراف PMP للاطلاع على تفاصيل ما يتضمنه حالياً. أما محاكي اختبار PMP المنفصل فيقدّم أسئلة التدريب والاختبارات التجريبية بالعربية والإنجليزية." },
+      { q: "لمن هذا البرنامج؟", a: "للمحترفين الذين يستعدون لاختبار PMP ويريدون دورة منظمة ذاتية الوتيرة، مع اختبار لكل وحدة وشهادة إتمام في النهاية." },
       { q: "هل يمكنني التدريب باستخدام محاكي اختبار PMP أيضاً؟", a: "نعم. يوفر محاكي ZentexAI لاختبار PMP وضع تدريب قابلاً للتصفية واختبارات تجريبية كاملة بوقت محدد. راجع صفحة المحاكي للتفاصيل." },
     ],
   },
@@ -92,7 +106,7 @@ const CONTENT: Record<Variant, Block> = {
     ],
     links: [
       { href: "/courses/pmp-exam-simulator", en: "PMP Exam Simulator details", ar: "تفاصيل محاكي PMP" },
-      { href: "/courses/pmp-mastery-program", en: "PMP Mastery Program", ar: "برنامج PMP Mastery" },
+      { href: "/courses/pmp-mastery-program", en: "PMP Mastery Program", ar: "برنامج احتراف PMP" },
       { href: "/academy", en: "ZentexAI Academy", ar: "أكاديمية ZentexAI" },
     ],
     faq: [

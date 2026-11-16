@@ -237,6 +237,14 @@
     --academy-header-h: 57px;
     --academy-workspace-bar-h: 56px;
   }
+  /* --academy-header-h is the height of the sticky Academy navigation bar
+     (src/site/academy/AcademySubnav.tsx). On phones that bar is not sticky,
+     so sticky consumers start at the top of the screen. */
+  @media (max-width: 640px) {
+    .academy-shell {
+      --academy-header-h: 0px;
+    }
+  }
   .academy-shell [class*="blur-["] {
     opacity: 0.35;
   }
@@ -286,4 +294,56 @@
   .academy-shell .border-white\/\[0\.14\] { border-color: rgb(var(--line-strong)); }
   .academy-shell .hover\:border-white\/\[0\.16\]:hover,
   .academy-shell .hover\:border-white\/\[0\.28\]:hover { border-color: rgb(var(--ink-3)); }
+}
+
+/* ─── Shared design tokens: one visual language across templates ───────────
+   Audit P2-10 / P2-11 (2026-11-16). Pages built on the shared Tailwind
+   components (service detail pages, /courses and product pages, dashboard,
+   lessons, practice, mock exam, ...) render inside the corporate <main>
+   ([data-theme="zentex"]) or the Academy <main> (.academy-shell), both set by
+   SiteChrome. Here those components take the approved main-site values the
+   v5 pages use (src/site/home/hero.module.css):
+     - type: body text in Hanken Grotesk / IBM Plex Sans Arabic (--a3-sans /
+       --a3-arabic, loaded by SiteChrome), as on the v5 pages; headings keep
+       the site-wide heading face (Manrope, --font-heading), which the v5
+       pages' headings use too, with the extra-bold 800 of the legacy scale
+       softened to 600;
+     - width: the same 1320px wrap and clamp(20px, 4vw, 56px) gutters, so page
+       content lines up with the header (P2-11);
+     - buttons: the same pill shape, ink primary with a teal hover, and the
+       hairline secondary;
+     - radius: the v5 panel (18px) and inner (12px) radii.
+   Colours were already shared (tokens.css). Nothing outside these two
+   scopes changes. */
+[data-theme="zentex"],
+.academy-shell {
+  --gutter: clamp(20px, 4vw, 56px);
+  --content-max: calc(1320px + 2 * var(--gutter));
+  --radius-card: 18px;
+  --radius-inner: 12px;
+  font-family: var(--a3-sans), var(--a3-arabic), "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Legacy-scale headings: 600 instead of 700/800, closer to the main site's
+   lighter headings without redesigning these pages. */
+:is([data-theme="zentex"], .academy-shell) :is(.text-display, .text-h1, .text-h2, .text-h3, .text-h4) {
+  font-weight: 600;
+}
+
+:is([data-theme="zentex"], .academy-shell) :is(.btn-primary, .btn-secondary) {
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+:is([data-theme="zentex"], .academy-shell) .btn-primary {
+  background-color: rgb(var(--ink));
+  color: rgb(var(--surface-0));
+}
+
+:is([data-theme="zentex"], .academy-shell) .btn-primary:hover:not(:disabled) {
+  background-color: rgb(var(--accent-fg));
+}
+
+:is([data-theme="zentex"], .academy-shell) .btn-secondary {
+  border-color: rgb(var(--ink) / 0.24);
 }

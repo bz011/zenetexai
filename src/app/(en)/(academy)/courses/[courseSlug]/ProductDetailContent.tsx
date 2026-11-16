@@ -52,17 +52,17 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
   ].filter((v): v is string => !!v);
 
   return (
-    <div dir={lang === "ar" ? "rtl" : "ltr"} className="ux-page relative min-h-screen overflow-hidden px-6 py-16 md:py-24">
+    <div dir={lang === "ar" ? "rtl" : "ltr"} className="ux-page relative min-h-screen overflow-hidden py-16 md:py-24">
       <div className="pointer-events-none absolute left-1/2 top-0 h-[350px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/[0.08] blur-[100px]" />
 
       <div className="container-page relative">
-       <div className="mx-auto max-w-5xl">
+       <div className="max-w-5xl">
         {isSimulator ? (
           <SimulatorHero product={product} />
         ) : (
           <>
             <span className="label">{product.type}</span>
-            <h1 className="mt-3 text-3xl font-bold text-white">{title}</h1>
+            <h1 className="mt-3 text-h1 text-white">{title}</h1>
             {description && <p className="mt-3 max-w-xl text-body leading-relaxed text-slate-400">{description}</p>}
           </>
         )}
@@ -231,7 +231,7 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
               courseSlug/course:pmp capability), since the bundle product
               also carries course:pmp but is a different page/offer. */}
           {product.slug === "pmp-mastery-program" && (
-            <section className="mx-auto max-w-3xl">
+            <section className="max-w-3xl">
               <h2 className="text-body font-semibold text-white">{p.instructor.heading}</h2>
               <div className="mt-3 card p-5">
                 <div className="flex flex-col items-center gap-4 text-center md:flex-row md:items-start md:text-start">

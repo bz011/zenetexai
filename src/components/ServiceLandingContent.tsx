@@ -19,7 +19,7 @@ export default function ServiceLandingContent({ copyKey, mechanism }: { copyKey:
 
       {mechanism && <MechanismSection kind={mechanism} />}
 
-      <section className="px-6 py-16 md:py-24">
+      <section className="py-16 md:py-24">
         <div className="container-page">
           <div className="mb-10 max-w-2xl">
             <span className="label">{c.audience_eyebrow}</span>
@@ -40,7 +40,7 @@ export default function ServiceLandingContent({ copyKey, mechanism }: { copyKey:
         </div>
       </section>
 
-      <section id="deliverables" className="border-t border-line bg-surface-1/50 px-6 py-16 md:py-24">
+      <section id="deliverables" className="border-t border-line bg-surface-1/50 py-16 md:py-24">
         <div className="container-page">
           <div className="mb-10 max-w-2xl">
             <span className="label">{c.deliverables_eyebrow}</span>
@@ -58,7 +58,7 @@ export default function ServiceLandingContent({ copyKey, mechanism }: { copyKey:
         </div>
       </section>
 
-      <section className="px-6 py-16 md:py-24">
+      <section className="py-16 md:py-24">
         <div className="container-page">
           <div className="mb-10 max-w-2xl">
             <span className="label">{c.usecases_eyebrow}</span>
@@ -76,7 +76,7 @@ export default function ServiceLandingContent({ copyKey, mechanism }: { copyKey:
         </div>
       </section>
 
-      <section className="border-t border-line bg-surface-1/50 px-6 py-16 md:py-24">
+      <section className="border-t border-line bg-surface-1/50 py-16 md:py-24">
         <div className="container-page">
           <div className="mb-12 text-center">
             <span className="label">{c.process_eyebrow}</span>
@@ -95,7 +95,7 @@ export default function ServiceLandingContent({ copyKey, mechanism }: { copyKey:
         </div>
       </section>
 
-      <section className="px-6 py-16 md:py-24">
+      <section className="py-16 md:py-24">
         <div className="container-page max-w-3xl">
           <div className="mb-12 text-center">
             <span className="label">{c.faq_eyebrow}</span>
@@ -112,11 +112,11 @@ export default function ServiceLandingContent({ copyKey, mechanism }: { copyKey:
         </div>
       </section>
 
-      <section className="border-t border-line bg-surface-1/50 px-6 py-14 md:py-20">
+      <section className="border-t border-line bg-surface-1/50 py-14 md:py-20">
         <div className="container-page">
           <div className="mb-8 text-center">
             <span className="label">{c.related_eyebrow}</span>
-            <h2 className="mt-3 text-xl font-bold text-ink">{c.related_h2}</h2>
+            <h2 className="mt-3 text-h3 text-ink">{c.related_h2}</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {c.related.map((r) => (
@@ -129,7 +129,7 @@ export default function ServiceLandingContent({ copyKey, mechanism }: { copyKey:
         </div>
       </section>
 
-      <section className="border-t border-line px-6 py-16 md:py-24 text-center">
+      <section className="border-t border-line py-16 md:py-24 text-center">
         <div className="container-page">
           <div className="mx-auto max-w-xl">
             <h2 className="text-h2 text-ink">{c.cta_h2}</h2>

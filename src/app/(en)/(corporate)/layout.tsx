@@ -8,8 +8,7 @@ export default function CorporateLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <SkipLink />
-      <SiteChrome>{children}</SiteChrome>
-      <WhatsAppButton />
+      <SiteChrome floating={<WhatsAppButton docked />}>{children}</SiteChrome>
     </>
   );
 }
