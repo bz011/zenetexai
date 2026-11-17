@@ -126,6 +126,14 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
                       {p.included_structure_label.replace("{modules}", String(curriculum.length)).replace("{lessons}", String(totalLessons))}
                     </li>
                   )}
+                  {/* Language of instruction (owner-confirmed): the Mastery
+                      Program's explanations are in Arabic; the site itself
+                      can be used in Arabic or English. */}
+                  {isMastery && (
+                    <li className="flex items-center gap-2 text-small text-slate-300">
+                      <span className="text-emerald-400">✓</span> {p.included_language_label}
+                    </li>
+                  )}
                 </ul>
               </section>
             )}
@@ -233,21 +241,13 @@ export default function ProductDetailContent({ product, courseSlug, curriculum, 
           {product.slug === "pmp-mastery-program" && (
             <section className="max-w-3xl">
               <h2 className="text-body font-semibold text-white">{p.instructor.heading}</h2>
-              <div className="mt-3 card p-5">
-                <div className="flex flex-col items-center gap-4 text-center md:flex-row md:items-start md:text-start">
-                  <div
-                    aria-hidden="true"
-                    className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xl font-bold text-[#fff]"
-                  >
-                    {p.instructor.name.charAt(0)}
-                  </div>
-                  <div>
-                    <h3 className="text-body font-semibold text-white">{p.instructor.name}</h3>
-                    <p className="mt-1 text-small font-medium text-indigo-400">{p.instructor.credentials}</p>
-                    <p className="mt-0.5 text-small text-slate-400">{p.instructor.role}</p>
-                    <p className="mt-3 text-small leading-relaxed text-slate-400">{p.instructor.bio}</p>
-                  </div>
-                </div>
+              {/* Text only, by owner decision: no photo, avatar, initials or
+                  placeholder. */}
+              <div className="mt-3 card p-6 md:p-8">
+                <h3 className="text-body font-semibold text-white">{p.instructor.name}</h3>
+                <p className="mt-1 text-small font-medium text-indigo-400">{p.instructor.credentials}</p>
+                <p className="mt-0.5 text-small text-slate-400">{p.instructor.role}</p>
+                <p className="mt-4 text-small leading-relaxed text-slate-400">{p.instructor.bio}</p>
               </div>
             </section>
           )}

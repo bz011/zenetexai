@@ -20,7 +20,7 @@ export default function CoursesContent({
   const ownedSet = new Set(ownedCapabilities);
 
   return (
-    <div className="relative min-h-screen overflow-hidden py-16 md:py-24">
+    <div className="relative min-h-screen overflow-hidden pb-16 pt-10 md:pb-24 md:pt-12">
       <div className="pointer-events-none absolute left-1/2 top-0 h-[350px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/[0.08] blur-[100px]" />
 
       <div className="container-page relative">

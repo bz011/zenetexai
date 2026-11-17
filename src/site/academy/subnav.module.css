@@ -79,6 +79,11 @@
   gap: 8px;
 }
 
+/* Session still loading: keep the actions' space, show nothing yet. */
+.actions[data-loading] {
+  visibility: hidden;
+}
+
 .primary,
 .secondary {
   display: inline-flex;
@@ -129,8 +134,8 @@
     padding-block: 8px;
   }
   .links {
-    justify-content: space-between;
     margin-inline: -8px;
+    column-gap: 10px;
   }
   .link {
     padding: 0 8px;
@@ -149,6 +154,7 @@
 @media (max-width: 400px) {
   .links {
     margin-inline: -6px;
+    column-gap: 2px;
   }
   .link {
     padding: 0 6px;

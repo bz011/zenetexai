@@ -6,6 +6,8 @@ import type { CtaCopy } from "@/site/home/ctaCopy";
  *  - PMP Mastery Program: 6 modules and module assessments (product page:
  *    "6 modules · 61 lessons"; lesson videos are not yet published); a
  *    Certificate of Completion (features/courses/services/certificateService.ts).
+ *    Lessons are explained in Arabic (owner-confirmed, 2026-11-17); the
+ *    website itself can be used in Arabic or English.
  *    Practice Mode and mock exams belong to the Simulator only.
  *  - PMP Exam Simulator: the reference's "~800 questions" and "3 mock exams"
  *    appear nowhere in the product, and simulatorPageCopy.ts rules them out on
@@ -48,7 +50,7 @@ const en: AcademyCopy = {
     {
       id: "mastery",
       title: "PMP Mastery Program",
-      desc: "A structured learning program designed to help you prepare for the PMP® certification exam.",
+      desc: "A structured, self-paced program to help you prepare for the PMP® certification exam, with lessons explained in Arabic.",
       features: [
         { icon: "modules", label: "6 Modules" },
         { icon: "quiz", label: "Module Quizzes" },
@@ -88,7 +90,7 @@ const ar: AcademyCopy = {
     {
       id: "mastery",
       title: "برنامج احتراف PMP",
-      desc: "برنامج تدريبي منظّم يساعدك على الاستعداد لاختبار شهادة PMP®.",
+      desc: "برنامج تدريبي منظّم بوتيرتك الخاصة يساعدك على الاستعداد لاختبار شهادة PMP®، بدروس مشروحة باللغة العربية.",
       features: [
         { icon: "modules", label: "6 وحدات تعليمية" },
         { icon: "quiz", label: "اختبارات لكل وحدة" },

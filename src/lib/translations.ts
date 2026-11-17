@@ -309,7 +309,7 @@ export interface Translations {
       capability_mock_exam: string; not_found: string;
       login_prompt: string; login_cta: string; signup_cta: string;
       access_heading: string; free_access_note: string; free_launch_note: string; free_login_prompt: string; free_signup_cta: string;
-      learn_heading: string; learn_points: string[]; included_structure_label: string;
+      learn_heading: string; learn_points: string[]; included_structure_label: string; included_language_label: string;
       instructor: { heading: string; name: string; credentials: string; role: string; bio: string };
     };
     locked: {
@@ -1221,6 +1221,7 @@ const en: Translations = {
         "Practical, scenario-based understanding — not memorization",
       ],
       included_structure_label: "{modules} modules · {lessons} lessons",
+      included_language_label: "Lessons explained in Arabic (the website is available in Arabic and English)",
       instructor: {
         heading: "Meet Your Instructor",
         name: "Zaid Al-Badareen, PMP®",
@@ -2234,6 +2235,7 @@ const ar: Translations = {
         "فهم عملي قائم على سيناريوهات واقعية — لا حفظ",
       ],
       included_structure_label: "{modules} وحدات · {lessons} درساً",
+      included_language_label: "الدروس مشروحة باللغة العربية (والموقع متاح بالعربية والإنجليزية)",
       instructor: {
         heading: "تعرّف على مدربك",
         name: "زيد البدارين، PMP®",

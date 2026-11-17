@@ -46,7 +46,7 @@ const en = {
     { icon: "data", name: "Data Analytics & Business Intelligence", line: "KPI frameworks, clean data models and dashboards built around your real decisions.", href: "/services/data-analytics-uae" },
     { icon: "advice", name: "AI Consulting", line: "Clear guidance on where AI fits your organization, and how to adopt it responsibly.", href: "/services#ai-consulting" },
     { icon: "pm", name: "Project Management Consulting", line: "Hands-on delivery expertise, from setting up a PMO to recovering a troubled project.", href: "/services#pm-consulting" },
-    { icon: "academy", name: "ZentexAI Academy", line: "The PMP Mastery Program and the PMP Exam Simulator, on a platform you can use in Arabic or English.", href: "/academy" },
+    { icon: "academy", name: "ZentexAI Academy", line: "The PMP Mastery Program, with lessons explained in Arabic, and the PMP Exam Simulator.", href: "/academy" },
   ] as Offering[],
 };
 
@@ -61,7 +61,7 @@ const ar: typeof en = {
     { icon: "data", name: "تحليل البيانات وذكاء الأعمال", line: "مؤشرات أداء واضحة، ونماذج بيانات نظيفة، ولوحات معلومات مبنية حول قراراتك الفعلية.", href: "/services/data-analytics-uae" },
     { icon: "advice", name: "استشارات الذكاء الاصطناعي", line: "إرشاد واضح لمواضع الاستفادة من الذكاء الاصطناعي في مؤسستك، وتبنّيه بمسؤولية.", href: "/services#ai-consulting" },
     { icon: "pm", name: "استشارات المشاريع وإدارتها", line: "خبرة عملية في تنفيذ المشاريع، من تأسيس مكتب لإدارة المشاريع إلى إنقاذ المشاريع المتعثرة.", href: "/services#pm-consulting" },
-    { icon: "academy", name: "أكاديمية ZentexAI", line: "برنامج احتراف PMP ومحاكي اختبار PMP، على منصة يمكنك استخدامها بالعربية أو الإنجليزية.", href: "/academy" },
+    { icon: "academy", name: "أكاديمية ZentexAI", line: "برنامج احتراف PMP بدروس مشروحة بالعربية، ومحاكي اختبار PMP.", href: "/academy" },
   ],
 };
 

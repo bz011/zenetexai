@@ -55,7 +55,9 @@ describe("PMP discoverability section renders one language per page", () => {
   it("keeps the same English content and links on the English page as the English column had", () => {
     const html = render("/academy", { variant: "course", englishOnly: true });
     for (const s of [
-      "PMP Course in Arabic and English for Working Professionals",
+      // Lessons are explained in Arabic (owner-confirmed 2026-11-17), so the
+      // heading no longer says "in Arabic and English".
+      "PMP Course in Arabic for Working Professionals",
       "Is there a PMP course in Arabic?",
       'href="/courses/pmp-mastery-program"',
       'href="/courses/pmp-exam-simulator"',
