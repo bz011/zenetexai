@@ -16,6 +16,6 @@ describe("public product route answers a real HTTP 404 for missing products", ()
     // page.tsx first redirects a COURSE slug (/courses/pmp) to its product
     // page; any other missing or unpublished slug still ends in notFound().
     expect(page).toMatch(/if \(!product \|\| !product\.is_published\) \{[\s\S]*?permanentRedirect\([\s\S]*?notFound\(\);\s*\}/);
-    expect(body).toMatch(/if \(!product \|\| !product\.is_published\) notFound\(\)/);
+    expect(body).toMatch(/if \(!product \|\| !product\.is_published\) \{[\s\S]*?permanentRedirect\([\s\S]*?notFound\(\);\s*\}/);
   });
 });

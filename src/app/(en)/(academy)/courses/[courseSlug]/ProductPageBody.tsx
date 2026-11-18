@@ -1,6 +1,6 @@
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { getOptionalUser } from "@/lib/auth/requireRole";
-import { getProductBySlug } from "@/features/commerce/services/productService";
+import { getCourseProductSlug, getProductBySlug } from "@/features/commerce/services/productService";
 import { getUserCapabilities } from "@/features/commerce/services/entitlementService";
 import { getPublicCurriculumOutline } from "@/features/courses/services/courseService";
 import ProductDetailContent from "./ProductDetailContent";
@@ -24,7 +24,13 @@ export default async function ProductPageBody({ productSlug, lang = "en" }: { pr
   const { supabase, user } = await getOptionalUser();
 
   const product = await getProductBySlug(supabase, productSlug);
-  if (!product || !product.is_published) notFound();
+  if (!product || !product.is_published) {
+    // Same as generateMetadata in page.tsx (the two run concurrently, so both
+    // must decide): a course slug goes to its product page, anything else 404s.
+    const courseProductSlug = lang === "en" ? await getCourseProductSlug(supabase, productSlug) : null;
+    if (courseProductSlug && courseProductSlug !== productSlug) permanentRedirect(`/courses/${courseProductSlug}`);
+    notFound();
+  }
 
   const courseCapability = product.capabilities.find((c) => c.startsWith("course:"));
   const courseSlug = courseCapability ? courseCapability.split(":")[1] : null;
