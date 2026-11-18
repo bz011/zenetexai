@@ -4,6 +4,7 @@ import { hasCapability } from "@/features/commerce/services/entitlementService";
 import LockedAccess from "@/components/academy/LockedAccess";
 import { findActiveMockExamAttemptId } from "@/features/mock-exam/services/examAttemptService";
 import ExamStartPanel from "@/features/mock-exam/components/ExamStartPanel";
+import SimulatorPageHeader from "@/components/academy/SimulatorPageHeader";
 
 export const metadata: Metadata = { title: "PMP Mock Exam — ZENTEXAI", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
@@ -21,9 +22,7 @@ export default async function MockExamStartPage() {
   return (
     <div className="relative min-h-screen px-6 py-24">
       <div className="container-page relative max-w-2xl">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-indigo-600">PMP</span>
-        <h1 className="mt-3 text-2xl font-bold text-slate-900">Mock Exam</h1>
-        <p className="mt-2 text-[14px] text-slate-500">A full-length, timed simulation of the PMP exam drawn from the approved question bank.</p>
+        <SimulatorPageHeader variant="mockExam" />
 
         <div className="mt-8">
           <ExamStartPanel activeAttemptId={activeAttemptId} />

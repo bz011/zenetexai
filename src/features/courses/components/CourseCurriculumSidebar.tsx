@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useLang } from "@/lib/LanguageContext";
 
@@ -70,6 +71,20 @@ export default function CourseCurriculumSidebar({
   const progressPct = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
   const progressLabel = w.progress_label.replace("{completed}", String(completedLessons)).replace("{total}", String(totalLessons));
 
+  // Audit F11: bring the current lesson into view inside the sidebar's own
+  // scroll area (never scrolling the page itself), so learners deep in the
+  // course do not have to hunt for where they are.
+  const listRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const list = listRef.current;
+    const current = list?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (!list || !current) return;
+    const top = current.offsetTop - list.offsetTop;
+    if (top < list.scrollTop || top + current.offsetHeight > list.scrollTop + list.clientHeight) {
+      list.scrollTop = Math.max(0, top - list.clientHeight / 3);
+    }
+  }, [currentLessonId]);
+
   return (
     <div className="card flex max-h-[calc(100vh-7rem)] flex-col overflow-hidden p-0">
       <div className="border-b border-white/[0.06] p-4">
@@ -81,7 +96,7 @@ export default function CourseCurriculumSidebar({
         <p className="mt-1.5 text-[12px] text-slate-500">{progressLabel}</p>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3">
+      <div ref={listRef} className="relative flex-1 overflow-y-auto p-3">
         {modules.map((mod, mi) => {
           const modTitle = lang === "ar" && mod.titleAr ? mod.titleAr : mod.titleEn;
           return (
@@ -98,7 +113,8 @@ export default function CourseCurriculumSidebar({
                       key={lesson.id}
                       href={`/courses/${courseSlug}/lessons/${lesson.id}`}
                       aria-current={isCurrent ? "page" : undefined}
-                      className={`flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] transition-colors ${
+                      title={lessonTitle}
+                      className={`flex min-h-[44px] items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] leading-snug transition-colors lg:min-h-0 ${
                         isCurrent
                           ? "bg-indigo-500/[0.12] font-medium text-indigo-400"
                           : "text-slate-400 hover:bg-white/[0.04] hover:text-slate-200"
@@ -111,7 +127,7 @@ export default function CourseCurriculumSidebar({
                       >
                         {lesson.completed ? "✓" : ""}
                       </span>
-                      <span className="flex-1 truncate">{lessonTitle}</span>
+                      <span className="line-clamp-2 flex-1 [overflow-wrap:anywhere]">{lessonTitle}</span>
                       {lesson.durationMinutes != null && (
                         <span className="shrink-0 text-[11px] text-slate-600">
                           {w.duration_minutes_label.replace("{n}", String(lesson.durationMinutes))}

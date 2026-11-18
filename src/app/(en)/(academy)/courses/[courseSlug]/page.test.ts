@@ -1,7 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const getProductBySlugMock = vi.fn();
-vi.mock("@/features/commerce/services/productService", () => ({ getProductBySlug: (...a: unknown[]) => getProductBySlugMock(...a) }));
+const getCourseProductSlugMock = vi.fn();
+vi.mock("@/features/commerce/services/productService", () => ({
+  getProductBySlug: (...a: unknown[]) => getProductBySlugMock(...a),
+  getCourseProductSlug: (...a: unknown[]) => getCourseProductSlugMock(...a),
+}));
 vi.mock("@/lib/supabase/server", () => ({ createSupabaseServer: () => ({}) }));
 vi.mock("./ProductPageBody", () => ({ default: () => null }));
 
@@ -15,7 +19,18 @@ async function expectNotFound(promise: Promise<unknown>) {
 }
 
 describe("product page metadata (drives the HTTP status)", () => {
-  beforeEach(() => getProductBySlugMock.mockReset());
+  beforeEach(() => {
+    getProductBySlugMock.mockReset();
+    getCourseProductSlugMock.mockReset().mockResolvedValue(null);
+  });
+
+  it("permanently redirects a course slug (/courses/pmp) to its product page instead of a 404", async () => {
+    getProductBySlugMock.mockResolvedValue(null);
+    getCourseProductSlugMock.mockResolvedValue("pmp-mastery-program");
+    await expect(generateMetadata(params("pmp"))).rejects.toMatchObject({
+      digest: expect.stringMatching(/NEXT_REDIRECT;[^;]*;\/courses\/pmp-mastery-program;308/),
+    });
+  });
 
   it("404s a slug that does not exist instead of returning a 200 soft-404", async () => {
     getProductBySlugMock.mockResolvedValue(null);

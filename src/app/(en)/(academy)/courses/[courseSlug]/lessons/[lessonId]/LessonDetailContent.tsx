@@ -13,6 +13,7 @@ import CourseCurriculumSidebar, { type CurriculumModule } from "@/features/cours
 import { markLessonComplete } from "@/features/courses/services/progressService";
 import { useActiveStudyTracker } from "@/features/courses/hooks/useActiveStudyTracker";
 import type { Lesson, LearningAssessment, QuizQuestion } from "@/features/courses/types/course";
+import type { NavStep } from "@/features/courses/utils/curriculumNav";
 
 interface Props {
   courseSlug: string;
@@ -22,8 +23,11 @@ interface Props {
   completed: boolean;
   checkpoint: LearningAssessment | null;
   checkpointQuestions: QuizQuestion[];
-  previousLesson: { id: string; title_en: string; title_ar: string | null } | null;
-  nextLesson: { id: string; title_en: string; title_ar: string | null } | null;
+  previousStep: NavStep | null;
+  nextStep: NavStep | null;
+  isCourseEnd: boolean;
+  /** False for a hidden (unpublished) lesson an admin is previewing: it cannot be completed. */
+  completable: boolean;
   resources: { id: string; fileName: string; fileUrl: string }[];
   initialNoteText: string;
   curriculum: CurriculumModule[];
@@ -39,8 +43,10 @@ export default function LessonDetailContent({
   completed,
   checkpoint,
   checkpointQuestions,
-  previousLesson,
-  nextLesson,
+  previousStep,
+  nextStep,
+  isCourseEnd,
+  completable,
   resources,
   initialNoteText,
   curriculum,
@@ -85,12 +91,12 @@ export default function LessonDetailContent({
       {/* Compact in-page workspace bar - the global AcademyHeader above this
           already carries branding + EN/AR + Dashboard, so this stays slim:
           just where-am-I (course + back link) and progress. */}
-      <div className="sticky top-[var(--academy-header-h)] z-30 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <div className="sticky top-[var(--academy-header-h)] z-30 border-b border-line bg-surface-0 shadow-[0_1px_0_rgb(var(--line))]">
         <div className="container-page flex items-center justify-between gap-4 py-3">
           <div className="flex min-w-0 items-center gap-3">
             <Link
               href={`/courses/${courseSlug}`}
-              className="shrink-0 text-[13px] text-slate-500 transition-colors hover:text-slate-700"
+              className="inline-flex min-h-[44px] shrink-0 items-center text-[13px] text-slate-500 transition-colors hover:text-slate-700"
             >
               ← {l.back_to_course}
             </Link>
@@ -110,7 +116,7 @@ export default function LessonDetailContent({
             </div>
             <button
               onClick={() => setShowCurriculum((v) => !v)}
-              className="btn-ghost whitespace-nowrap px-3 py-1.5 text-[12px] lg:hidden"
+              className="btn-ghost min-h-[44px] whitespace-nowrap px-3 py-1.5 text-[12px] lg:hidden"
             >
               {showCurriculum ? w.close_curriculum : w.view_curriculum}
             </button>
@@ -159,14 +165,14 @@ export default function LessonDetailContent({
             <div className="mt-6 flex items-center justify-between gap-3">
               <button
                 onClick={handleMarkComplete}
-                disabled={isCompleted || isPending}
+                disabled={isCompleted || isPending || !completable}
                 className="btn-primary px-5 py-2.5 text-[13px] disabled:opacity-50"
               >
                 {isCompleted ? l.completed : isPending ? l.marking : l.mark_complete}
               </button>
             </div>
 
-            <LessonNav courseSlug={courseSlug} previous={previousLesson} next={nextLesson} />
+            <LessonNav courseSlug={courseSlug} previous={previousStep} next={nextStep} isCourseEnd={isCourseEnd} />
 
             <div className="mt-6">
               <LessonNotes lessonId={lesson.id} initialNoteText={initialNoteText} />

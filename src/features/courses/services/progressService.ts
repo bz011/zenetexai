@@ -8,6 +8,8 @@
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth/requireRole";
 import { checkRateLimit } from "@/lib/upstashRateLimit";
+import { getCourseSlugForModule } from "@/features/courses/services/courseService";
+import { hasCapability } from "@/features/commerce/services/entitlementService";
 
 export async function markLessonComplete(
   lessonId: string,
@@ -17,6 +19,20 @@ export async function markLessonComplete(
 
   const limit = await checkRateLimit("progress-write", user.id);
   if (!limit.allowed) return { success: false, error: "rate_limited" };
+
+  // Only a PUBLISHED lesson of a course this user may access can be marked
+  // complete (audit F4). The lesson is read with the caller's own session, so
+  // RLS already hides unpublished lessons from students; is_published is
+  // checked explicitly too, so even an admin previewing a hidden lesson cannot
+  // record progress on it. The course comes from the database, not from the
+  // client's courseSlug, which is only used for revalidation below.
+  const { data: lesson } = await supabase.from("lessons").select("id, module_id, is_published").eq("id", lessonId).maybeSingle();
+  const row = lesson as { id: string; module_id: string; is_published: boolean } | null;
+  if (!row || !row.is_published) return { success: false, error: "lesson_unavailable" };
+  const lessonCourseSlug = await getCourseSlugForModule(supabase, row.module_id);
+  if (!lessonCourseSlug || !(await hasCapability(supabase, user.id, `course:${lessonCourseSlug}`))) {
+    return { success: false, error: "lesson_unavailable" };
+  }
 
   const { error } = await supabase
     .from("lesson_progress")

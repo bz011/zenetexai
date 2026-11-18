@@ -8,6 +8,12 @@ export interface SimulatorNavAccess {
   mockExam: boolean;
 }
 
+/** The Academy navigation's starting state, resolved on the server for the current request. */
+export interface AcademyNavState extends SimulatorNavAccess {
+  /** The signed-in user's id, or null when signed out. */
+  userId: string | null;
+}
+
 /**
  * Which Simulator destinations the CURRENT visitor may open, for the Academy
  * navigation only (AcademySubnav): Practice and Mock Exam links are shown to
@@ -21,16 +27,29 @@ export interface SimulatorNavAccess {
  * does not change who may open the URL directly.
  */
 export async function getSimulatorNavAccess(): Promise<SimulatorNavAccess> {
-  const none = { practice: false, mockExam: false };
+  const { practice, mockExam } = await getAcademyNavState();
+  return { practice, mockExam };
+}
+
+/**
+ * Who is signed in and which Simulator links they may see, for the request
+ * being rendered (audit F3): the Academy layout calls this on the server so
+ * the first HTML already carries the right navigation - no signed-out state
+ * that flips after the browser has loaded the session. Verified with
+ * supabase.auth.getUser() (checked by the auth server, not just a decoded
+ * cookie). Never grants anything: the pages enforce access themselves.
+ */
+export async function getAcademyNavState(): Promise<AcademyNavState> {
+  const signedOut = { userId: null, practice: false, mockExam: false };
   try {
     const supabase = createSupabaseServer();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return none;
+    if (!user) return signedOut;
     const capabilities = await getUserCapabilities(supabase, user.id);
-    return { practice: capabilities.has("practice:pmp"), mockExam: capabilities.has("mock_exam:pmp") };
+    return { userId: user.id, practice: capabilities.has("practice:pmp"), mockExam: capabilities.has("mock_exam:pmp") };
   } catch {
-    return none;
+    return signedOut;
   }
 }

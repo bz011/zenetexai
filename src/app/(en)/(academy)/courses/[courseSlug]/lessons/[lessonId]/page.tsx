@@ -4,7 +4,6 @@ import { requireUser } from "@/lib/auth/requireRole";
 import {
   getLessonById,
   getLessonCheckpoint,
-  getPreviousNextLesson,
   getLessonResources,
   isLessonCompleted,
   getCourseBySlug,
@@ -17,6 +16,7 @@ import { getLessonNote } from "@/features/courses/services/noteService";
 import { recordLessonView } from "@/features/courses/services/progressService";
 import { hasCapability } from "@/features/commerce/services/entitlementService";
 import LockedAccess from "@/components/academy/LockedAccess";
+import { lessonNeighbours } from "@/features/courses/utils/curriculumNav";
 import LessonDetailContent from "./LessonDetailContent";
 
 interface Props {
@@ -47,10 +47,9 @@ export default async function LessonDetailPage({ params }: Props) {
 
   const course = await getCourseBySlug(supabase, courseSlug);
 
-  const [checkpoint, completed, navLessons, resources, note, , courseWithProgress] = await Promise.all([
+  const [checkpoint, completed, resources, note, , courseWithProgress] = await Promise.all([
     getLessonCheckpoint(supabase, lessonId),
     isLessonCompleted(supabase, user.id, lessonId),
-    getPreviousNextLesson(supabase, lesson.module_id, lesson.order_index),
     getLessonResources(supabase, lessonId),
     getLessonNote(lessonId),
     recordLessonView(lessonId),
@@ -113,6 +112,19 @@ export default async function LessonDetailPage({ params }: Props) {
     };
   });
 
+  // Previous / Next across the whole published curriculum, each module's ready
+  // quiz in its place after the module's lessons (audit F1). Built from the
+  // published modules/lessons already loaded above, so hidden lessons are
+  // never a destination.
+  const nav = lessonNeighbours(
+    curriculum.map((m) => ({
+      id: m.id,
+      lessons: m.lessons.map((l) => ({ id: l.id, titleEn: l.titleEn, titleAr: l.titleAr })),
+      quiz: m.quiz ? { assessmentId: m.quiz.assessmentId, titleEn: m.quiz.titleEn, titleAr: m.quiz.titleAr } : null,
+    })),
+    lesson.id
+  );
+
   return (
     <LessonDetailContent
       courseSlug={courseSlug}
@@ -122,8 +134,10 @@ export default async function LessonDetailPage({ params }: Props) {
       completed={completed}
       checkpoint={checkpoint}
       checkpointQuestions={checkpointQuestions}
-      previousLesson={navLessons.previous}
-      nextLesson={navLessons.next}
+      previousStep={nav.previous}
+      nextStep={nav.next}
+      isCourseEnd={nav.isCourseEnd}
+      completable={lesson.is_published}
       resources={resources}
       initialNoteText={note?.noteText ?? ""}
       curriculum={curriculum}

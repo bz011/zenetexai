@@ -92,6 +92,30 @@ export async function getProductBySlug(supabase: SupabaseClient, slug: string): 
   return withPricing ?? null;
 }
 
+/**
+ * The published course product that grants `course:<courseSlug>` - the public
+ * page for a course's curriculum. Learner pages address a course by its course
+ * slug (e.g. "pmp", /courses/pmp/lessons/...), while its public page lives at
+ * the product slug (/courses/pmp-mastery-program); this maps one to the other
+ * from the data (product_capabilities), never a hard-coded URL. Prefers the
+ * type "course" product, so a bundle that also grants the course is never
+ * chosen. Read-only; both tables are publicly readable for published rows.
+ */
+export async function getCourseProductSlug(supabase: SupabaseClient, courseSlug: string): Promise<string | null> {
+  const { data: caps } = await supabase.from("product_capabilities").select("product_id").eq("capability", `course:${courseSlug}`);
+  const productIds = ((caps ?? []) as { product_id: string }[]).map((c) => c.product_id);
+  if (productIds.length === 0) return null;
+  const { data: products } = await supabase
+    .from("products")
+    .select("slug, type, order_index")
+    .in("id", productIds)
+    .eq("is_published", true)
+    .eq("type", "course")
+    .order("order_index", { ascending: true })
+    .limit(1);
+  return ((products ?? []) as { slug: string }[])[0]?.slug ?? null;
+}
+
 async function attachPricingAndCapabilities(supabase: SupabaseClient, products: Product[]): Promise<ProductWithPricing[]> {
   const productIds = products.map((p) => p.id);
   if (productIds.length === 0) return [];

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { getProductBySlug } from "@/features/commerce/services/productService";
+import { notFound, permanentRedirect } from "next/navigation";
+import { getCourseProductSlug, getProductBySlug } from "@/features/commerce/services/productService";
 import ProductPageBody from "./ProductPageBody";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import { SIMULATOR_SLUG, simulatorMetadataText } from "@/lib/simulatorPageCopy";
@@ -21,7 +21,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // is the first place the product is read, so deciding here also skips
   // building metadata for a page that does not exist. ProductPageBody keeps its
   // own notFound() as a second guard. (tests/productRoute404.test.ts guards this.)
-  if (!product || !product.is_published) notFound();
+  if (!product || !product.is_published) {
+    // A course slug (/courses/pmp, linked from lesson and quiz pages as "back
+    // to course") is that course's public page under its product slug:
+    // redirect there instead of a 404. Anything else is still a real 404.
+    const courseProductSlug = await getCourseProductSlug(supabase, productSlug);
+    if (courseProductSlug && courseProductSlug !== productSlug) permanentRedirect(`/courses/${courseProductSlug}`);
+    notFound();
+  }
 
   const path = `/courses/${product.slug}`;
 

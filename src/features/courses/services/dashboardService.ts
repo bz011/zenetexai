@@ -7,7 +7,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { computeStudyStreak, isModuleComplete } from "@/features/courses/services/progressUtils";
-import { getOwnedLearningResources } from "@/features/commerce/services/entitlementService";
+import { getUserCapabilities } from "@/features/commerce/services/entitlementService";
 import type { ContinueLearningInfo, DashboardStats } from "@/features/courses/types/course";
 
 export async function getResumePointer(supabase: SupabaseClient, userId: string): Promise<ContinueLearningInfo | null> {
@@ -51,8 +51,16 @@ export async function getDashboardStats(supabase: SupabaseClient, userId: string
   // same entitlement source LessonDetailContent/CourseCurriculumSidebar's
   // per-course progress already implicitly relies on via page-level access
   // control.
-  const owned = await getOwnedLearningResources(supabase, userId);
-  const ownedCourseSlugs = owned.filter((r) => r.productType === "course").map((r) => r.productSlug);
+  //
+  // Audit F2 (2026-11-18): this used to take the owned PRODUCT slugs
+  // ("pmp-mastery-program") and look them up as COURSE slugs ("pmp") - they
+  // never match, so every total showed 0/0. A product is tied to its course by
+  // its `course:<slug>` capability, so the courses come from the user's
+  // capabilities - exactly the rule that lets them open the lessons (the same
+  // getUserCapabilities behind hasCapability, including free products and the
+  // admin rule).
+  const capabilities = await getUserCapabilities(supabase, userId);
+  const ownedCourseSlugs = [...capabilities].filter((c) => c.startsWith("course:")).map((c) => c.slice("course:".length));
 
   const { data: courses } = ownedCourseSlugs.length
     ? await supabase.from("courses").select("id").eq("is_published", true).in("slug", ownedCourseSlugs)
@@ -126,7 +134,10 @@ export async function getDashboardStats(supabase: SupabaseClient, userId: string
     completedCourses,
     overallProgressPct: totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0,
     quizzesAttempted: attemptList.length,
-    quizzesPassed: attemptList.filter((a) => a.passed).length,
+    // Same definitions as certificate eligibility (certificateService): every
+    // PUBLISHED module_assessment in the user's courses must be passed once.
+    quizzesPassed: [...assessmentByModule.values()].filter((id) => passedAssessmentIds.has(id)).length,
+    totalQuizzes: assessmentByModule.size,
     studyStreakDays,
     totalStudyMinutes,
   };

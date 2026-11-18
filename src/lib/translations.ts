@@ -71,11 +71,13 @@ export interface Translations {
     };
   };
   examStart: {
+    pageTitle: string; pageIntro: string;
     questions: string; timeAllowed: string; scheduledBreaks: string;
     description1: string; description2: string; description3: string;
     resumeInProgress: string; beginExam: string; preparingExam: string; failedToStart: string; failedToRetake: string;
   };
   practiceConfig: {
+    pageTitle: string; pageIntro: string;
     questionCount: string; domain: string; approach: string; difficulty: string; questionType: string; language: string;
     all: string;
     domains: { people: string; process: string; businessEnvironment: string };
@@ -282,7 +284,7 @@ export interface Translations {
     };
     notes: { title: string; placeholder: string; save: string; saving: string; saved: string };
     resources: { title: string };
-    nav: { first_lesson: string; last_lesson: string };
+    nav: { first_lesson: string; last_lesson: string; quiz_step: string; course_end: string; back_to_course_overview: string };
     history: {
       title: string; back_to_quiz: string; back_to_history: string; empty: string;
       your_answer: string; no_answer: string; hotspot_answered: string;
@@ -481,6 +483,7 @@ const en: Translations = {
     },
   },
   examStart: {
+    pageTitle: "Mock Exam", pageIntro: "A full-length, timed simulation of the PMP exam drawn from the approved question bank.",
     questions: "Questions", timeAllowed: "Time Allowed", scheduledBreaks: "Scheduled Breaks",
     description1: "This is a full-length, timed simulation of the PMP exam ({sections} sections of {count} questions each). Once started, your question set is fixed and will not change if you refresh or return later.",
     description2: "You may flag questions for review and move freely within a section. Once you take a scheduled break, that section is sealed for review.",
@@ -489,6 +492,7 @@ const en: Translations = {
     failedToStart: "Failed to start Mock Exam", failedToRetake: "Failed to start retake",
   },
   practiceConfig: {
+    pageTitle: "Practice Mode", pageIntro: "Configure a practice session from the approved PMP question bank.",
     questionCount: "Number of questions", domain: "Domain", approach: "Approach", difficulty: "Difficulty",
     questionType: "Question type", language: "Language", all: "All",
     domains: { people: "People", process: "Process", businessEnvironment: "Business Environment" },
@@ -1145,6 +1149,9 @@ const en: Translations = {
     nav: {
       first_lesson: "This is the first lesson",
       last_lesson: "This is the last lesson",
+      quiz_step: "Module quiz: {title}",
+      course_end: "You've reached the end of the course",
+      back_to_course_overview: "Back to the course overview",
     },
     history: {
       title: "Quiz History",
@@ -1494,14 +1501,16 @@ const ar: Translations = {
     },
   },
   examStart: {
+    pageTitle: "الامتحان التجريبي", pageIntro: "محاكاة كاملة وموقّتة لامتحان PMP من بنك الأسئلة المعتمد.",
     questions: "الأسئلة", timeAllowed: "الوقت المتاح", scheduledBreaks: "الاستراحات المجدولة",
     description1: "هذا محاكاة كاملة وموقّتة لامتحان PMP ({sections} أقسام، كل قسم {count} سؤالاً). بعد البدء، تكون مجموعة أسئلتك ثابتة ولن تتغير إذا أعدت تحميل الصفحة أو عدت لاحقاً.",
     description2: "يمكنك تمييز الأسئلة للمراجعة والتنقل بحرية داخل القسم. بمجرد أخذ استراحة مجدولة، يُغلق ذلك القسم أمام المراجعة.",
-    description3: "يُرسَل الامتحان تلقائياً عند انتهاء الوقت، ويتم حفظ إجاباتك تلقائياً أثناء التقدم - إذا انقطع اتصالك، تابع من حيث توقفت.",
+    description3: "يُرسَل الامتحان تلقائياً عند انتهاء الوقت، ويتم حفظ إجاباتك تلقائياً أثناء التقدم؛ وإذا انقطع اتصالك، تابع من حيث توقفت.",
     resumeInProgress: "استئناف الامتحان الجاري", beginExam: "بدء الامتحان التجريبي", preparingExam: "جارٍ تجهيز امتحانك...",
     failedToStart: "تعذّر بدء الامتحان التجريبي", failedToRetake: "تعذّر بدء الإعادة",
   },
   practiceConfig: {
+    pageTitle: "وضع التدريب", pageIntro: "اضبط جلسة تدريب من بنك أسئلة PMP المعتمد.",
     questionCount: "عدد الأسئلة", domain: "المجال", approach: "المنهجية", difficulty: "مستوى الصعوبة",
     questionType: "نوع السؤال", language: "اللغة", all: "الكل",
     domains: { people: "الأشخاص", process: "العمليات", businessEnvironment: "بيئة الأعمال" },
@@ -2159,6 +2168,9 @@ const ar: Translations = {
     nav: {
       first_lesson: "هذا هو الدرس الأول",
       last_lesson: "هذا هو الدرس الأخير",
+      quiz_step: "اختبار الوحدة: {title}",
+      course_end: "وصلت إلى نهاية الدورة",
+      back_to_course_overview: "العودة إلى صفحة الدورة",
     },
     history: {
       title: "سجل الاختبارات",

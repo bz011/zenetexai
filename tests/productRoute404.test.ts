@@ -13,7 +13,9 @@ describe("public product route answers a real HTTP 404 for missing products", ()
   it("decides not-found before any UI streams (generateMetadata + page body both call notFound)", () => {
     const page = fs.readFileSync(path.join(routeDir, "page.tsx"), "utf-8");
     const body = fs.readFileSync(path.join(routeDir, "ProductPageBody.tsx"), "utf-8");
-    expect(page).toMatch(/if \(!product \|\| !product\.is_published\) notFound\(\)/);
+    // page.tsx first redirects a COURSE slug (/courses/pmp) to its product
+    // page; any other missing or unpublished slug still ends in notFound().
+    expect(page).toMatch(/if \(!product \|\| !product\.is_published\) \{[\s\S]*?permanentRedirect\([\s\S]*?notFound\(\);\s*\}/);
     expect(body).toMatch(/if \(!product \|\| !product\.is_published\) notFound\(\)/);
   });
 });

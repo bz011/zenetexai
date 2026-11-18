@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useLang } from "@/lib/LanguageContext";
 import { checkEligibleQuestionCount, createPracticeSession } from "@/features/practice/services/practiceSessionService";
@@ -29,7 +29,7 @@ const selectCls =
 
 export default function PracticeConfigForm() {
   const router = useRouter();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const k = t.practiceConfig;
 
   const domainLabel: Record<(typeof DOMAINS)[number], string> = {
@@ -52,8 +52,17 @@ export default function PracticeConfigForm() {
     difficulty: null,
     interactionType: null,
     answerType: null,
-    language: "en",
+    // Questions in the interface's language by default (audit F7); the learner
+    // can still choose English, Arabic or bilingual below.
+    language: lang === "ar" ? "ar" : "en",
   });
+  // Follow the interface language (e.g. when the stored Arabic preference loads
+  // after the first render) until the learner picks a question language.
+  const languageChosen = useRef(false);
+  useEffect(() => {
+    if (languageChosen.current) return;
+    setFilters((prev) => ({ ...prev, language: lang === "ar" ? "ar" : "en" }));
+  }, [lang]);
   const [questionCount, setQuestionCount] = useState<PracticeQuestionCount>(10);
   const [isTimed, setIsTimed] = useState(false);
   const [timerMode, setTimerMode] = useState<"60" | "78" | "custom">("60");
@@ -185,7 +194,10 @@ export default function PracticeConfigForm() {
           <select
             className={selectCls}
             value={filters.language}
-            onChange={(e) => setFilters((prev) => ({ ...prev, language: e.target.value as PracticeFilters["language"] }))}
+            onChange={(e) => {
+              languageChosen.current = true;
+              setFilters((prev) => ({ ...prev, language: e.target.value as PracticeFilters["language"] }));
+            }}
           >
             <option value="en">{k.languages.english}</option>
             <option value="ar">{k.languages.arabic}</option>

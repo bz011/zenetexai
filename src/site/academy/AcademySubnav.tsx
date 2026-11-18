@@ -6,7 +6,7 @@ import Link from "@/components/LocaleLink";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useLang } from "@/lib/LanguageContext";
 import { toEnglishPath } from "@/lib/i18nRoutes";
-import { getSimulatorNavAccess, type SimulatorNavAccess } from "@/features/commerce/services/navAccessService";
+import { getSimulatorNavAccess, type AcademyNavState, type SimulatorNavAccess } from "@/features/commerce/services/navAccessService";
 import styles from "./subnav.module.css";
 
 /**
@@ -21,10 +21,13 @@ import styles from "./subnav.module.css";
  * Account actions, as the Academy header had them:
  *  - signed out: Log in, and Enroll (to /courses);
  *  - signed in: Dashboard, and Log out (then /login, as before).
- * While the session is loading, no restricted link is shown and the account
- * actions keep their space but stay invisible, so nothing flashes or jumps;
- * Practice / Mock Exam are appended after Courses once confirmed, so the
- * links before them never move.
+ * No flicker (audit F3): `initial` is resolved on the server for this request
+ * (Academy layout -> getAcademyNavState), so the first HTML already shows the
+ * right links and account actions. Until the browser has loaded its own
+ * session, that server answer is used; afterwards the live session decides
+ * (e.g. after logging out). Simulator access is only ever used for the user it
+ * was resolved for, and re-checked when the signed-in user changes, so it can
+ * never be stale or another user's.
  *
  * Sticky under the header from 641px up, at exactly --academy-header-h
  * (57px, globals.css), so the lesson player's own sticky bar keeps its
@@ -36,19 +39,22 @@ const copy = {
   ar: { label: "أكاديمية ZentexAI", overview: "نظرة عامة" },
 } as const;
 
-export default function AcademySubnav() {
+export default function AcademySubnav({ initial }: { initial: AcademyNavState }) {
   const { lang, t } = useLang();
   const k = copy[lang];
   const { user, isAuthenticated, isLoading, logout } = useAuth();
   const router = useRouter();
   const current = toEnglishPath(usePathname() ?? "/");
 
-  const authed = !isLoading && isAuthenticated;
-  const userId = authed ? user?.id ?? null : null;
-  const [access, setAccess] = useState<{ userId: string; value: SimulatorNavAccess } | null>(null);
+  // The server's answer for this request until the browser's session is known.
+  const userId = isLoading ? initial.userId : isAuthenticated ? user?.id ?? null : null;
+  const authed = userId !== null;
+  const [access, setAccess] = useState<{ userId: string; value: SimulatorNavAccess } | null>(
+    initial.userId ? { userId: initial.userId, value: { practice: initial.practice, mockExam: initial.mockExam } } : null
+  );
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || access?.userId === userId) return;
     let live = true;
     getSimulatorNavAccess()
       .then((value) => {
@@ -60,6 +66,8 @@ export default function AcademySubnav() {
     return () => {
       live = false;
     };
+    // `access` is deliberately not a dependency: it only changes as a result of this effect.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   // Only ever the current user's answer; nothing while signed out or unknown.
@@ -90,7 +98,7 @@ export default function AcademySubnav() {
             </li>
           ))}
         </ul>
-        <div className={styles.actions} aria-hidden={isLoading || undefined} data-loading={isLoading || undefined}>
+        <div className={styles.actions}>
           {authed ? (
             <>
               <Link href="/dashboard" aria-current={isCurrent("/dashboard") ? "page" : undefined} className={styles.primary}>

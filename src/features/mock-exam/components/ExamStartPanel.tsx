@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useLang } from "@/lib/LanguageContext";
+import { formatExamBreaks, formatExamDuration } from "@/features/mock-exam/utils/formatDuration";
 import { createMockExamAttempt } from "@/features/mock-exam/services/examAttemptService";
 import { getActiveBlueprint } from "@/features/mock-exam/config/examBlueprint";
 
@@ -12,7 +13,7 @@ interface Props {
 
 export default function ExamStartPanel({ activeAttemptId }: Props) {
   const router = useRouter();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const k = t.examStart;
   const blueprint = getActiveBlueprint();
   const [isPending, startTransition] = useTransition();
@@ -44,13 +45,13 @@ export default function ExamStartPanel({ activeAttemptId }: Props) {
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">{k.timeAllowed}</p>
           <p className="mt-1 text-xl font-bold text-slate-900">
-            {hours}h {minutes > 0 ? `${minutes}m` : ""}
+            {formatExamDuration(hours * 60 + minutes, lang)}
           </p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">{k.scheduledBreaks}</p>
           <p className="mt-1 text-xl font-bold text-slate-900">
-            {breakMinutes.length} × {breakMinutes[0] ?? 0}m
+            {formatExamBreaks(breakMinutes.length, breakMinutes[0] ?? 0, lang)}
           </p>
         </div>
       </div>

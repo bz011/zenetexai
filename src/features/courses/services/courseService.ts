@@ -160,41 +160,6 @@ export async function isLessonCompleted(
   return !!data;
 }
 
-/**
- * Previous/next lesson within the SAME module, by order_index — Sprint 6
- * lesson navigation deliberately doesn't cross module boundaries, since
- * "next" after a module's last lesson is naturally its module assessment
- * (already linked from the course page), not an arbitrary next module.
- */
-export async function getPreviousNextLesson(
-  supabase: SupabaseClient,
-  moduleId: string,
-  currentOrderIndex: number
-): Promise<{ previous: Pick<Lesson, "id" | "title_en" | "title_ar"> | null; next: Pick<Lesson, "id" | "title_en" | "title_ar"> | null }> {
-  const [{ data: previous }, { data: next }] = await Promise.all([
-    supabase
-      .from("lessons")
-      .select("id, title_en, title_ar")
-      .eq("module_id", moduleId)
-      .eq("is_published", true)
-      .lt("order_index", currentOrderIndex)
-      .order("order_index", { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    supabase
-      .from("lessons")
-      .select("id, title_en, title_ar")
-      .eq("module_id", moduleId)
-      .eq("is_published", true)
-      .gt("order_index", currentOrderIndex)
-      .order("order_index", { ascending: true })
-      .limit(1)
-      .maybeSingle(),
-  ]);
-
-  return { previous: previous ?? null, next: next ?? null };
-}
-
 export async function getLessonResources(
   supabase: SupabaseClient,
   lessonId: string
@@ -210,6 +175,21 @@ export async function getLessonResources(
     fileName: r.file_name,
     fileUrl: r.file_url,
   }));
+}
+
+/**
+ * Slug of the published course a module belongs to, or null. Lesson and quiz
+ * URLs carry a course slug (/courses/<slug>/lessons/<id>) and access is checked
+ * against `course:<slug>`, so the item must actually belong to THAT course -
+ * otherwise access to one course could open another course's content by
+ * putting it under the first course's URL.
+ */
+export async function getCourseSlugForModule(supabase: SupabaseClient, moduleId: string): Promise<string | null> {
+  const { data: mod } = await supabase.from("modules").select("course_id").eq("id", moduleId).eq("is_published", true).maybeSingle();
+  const courseId = (mod as { course_id: string } | null)?.course_id;
+  if (!courseId) return null;
+  const { data: course } = await supabase.from("courses").select("slug").eq("id", courseId).eq("is_published", true).maybeSingle();
+  return (course as { slug: string } | null)?.slug ?? null;
 }
 
 export async function getLessonById(supabase: SupabaseClient, lessonId: string): Promise<Lesson | null> {

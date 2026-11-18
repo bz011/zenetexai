@@ -210,8 +210,12 @@ export interface DashboardStats {
   totalCourses: number;
   completedCourses: number;
   overallProgressPct: number;
+  /** Attempts of any quiz, kept for reference. */
   quizzesAttempted: number;
+  /** DISTINCT published module quizzes passed at least once (certificate definition). */
   quizzesPassed: number;
+  /** Published module quizzes in the user's courses: the denominator for quizzesPassed. */
+  totalQuizzes: number;
   studyStreakDays: number;
   totalStudyMinutes: number;
 }

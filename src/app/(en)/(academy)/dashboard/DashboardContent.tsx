@@ -1,10 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLang } from "@/lib/LanguageContext";
-import { logout as logoutRequest } from "@/features/auth/services/authService";
 import type { ContinueLearningInfo, DashboardStats } from "@/features/courses/types/course";
 import type { OwnedLearningResource } from "@/features/commerce/services/entitlementService";
 
@@ -37,17 +34,7 @@ export default function DashboardContent({ profile, owned, resume, stats, certif
   const { t, lang } = useLang();
   const d = t.auth.dashboard;
   const c = t.commerce.dashboard;
-  const router = useRouter();
-  const [loggingOut, setLoggingOut] = useState(false);
-
   const displayName = [profile.firstName, profile.lastName].filter(Boolean).join(" ") || profile.email;
-
-  async function handleLogout() {
-    setLoggingOut(true);
-    await logoutRequest();
-    router.push("/login");
-    router.refresh();
-  }
 
   return (
     <div className="relative min-h-screen overflow-hidden px-6 py-24">
@@ -61,9 +48,8 @@ export default function DashboardContent({ profile, owned, resume, stats, certif
               {d.welcome}, {displayName}
             </h1>
           </div>
-          <button onClick={handleLogout} disabled={loggingOut} className="btn-ghost px-5 py-2.5 text-[13px]">
-            {d.logout}
-          </button>
+          {/* Log out lives in the Academy navigation bar on every Academy
+              page (audit F8: the dashboard showed a second one here). */}
         </div>
 
         {resume && (
@@ -94,7 +80,7 @@ export default function DashboardContent({ profile, owned, resume, stats, certif
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <StatCard label={d.completed_lessons} value={`${stats.completedLessons}/${stats.totalLessons}`} />
             <StatCard label={d.completed_modules} value={`${stats.completedModules}/${stats.totalModules}`} />
-            <StatCard label={d.quiz_progress} value={`${stats.quizzesPassed}/${stats.quizzesAttempted}`} />
+            <StatCard label={d.quiz_progress} value={`${stats.quizzesPassed}/${stats.totalQuizzes}`} />
           </div>
         </div>
 

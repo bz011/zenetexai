@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import SkipLink from "@/components/nav/SkipLink";
 import SiteChrome from "@/site/SiteChrome";
 import AcademySubnav from "@/site/academy/AcademySubnav";
+import type { AcademyNavState } from "@/features/commerce/services/navAccessService";
 
 // The one deliberate exception within the Academy shell: the active Mock
 // Exam runner (/pmp/mock-exam/<attemptId>, not /history, not /results) gets
@@ -19,7 +20,7 @@ const BARE_EXAM_RUNNER_ROUTE = /^\/pmp\/mock-exam\/(?!history$)[^/]+$/;
  * account actions) directly under the header. <main> keeps `.academy-shell`
  * for the Academy palette, compatibility layer and sticky offsets.
  */
-export default function AcademyShell({ children }: { children: React.ReactNode }) {
+export default function AcademyShell({ children, initialNav }: { children: React.ReactNode; initialNav: AcademyNavState }) {
   const pathname = usePathname();
   const isBareExamRunner = BARE_EXAM_RUNNER_ROUTE.test(pathname ?? "");
 
@@ -30,7 +31,7 @@ export default function AcademyShell({ children }: { children: React.ReactNode }
   return (
     <>
       <SkipLink />
-      <SiteChrome section="academy" subnav={<AcademySubnav />}>
+      <SiteChrome section="academy" subnav={<AcademySubnav initial={initialNav} />}>
         {children}
       </SiteChrome>
     </>
